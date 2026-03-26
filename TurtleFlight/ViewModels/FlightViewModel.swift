@@ -29,6 +29,7 @@ final class FlightViewModel: ObservableObject {
     // MARK: - Character Info
     var currentCharacter: CharacterType = .turtle
     var currentVehicle: VehicleType = .shellJet
+    var currentMapTheme: MapTheme = .sky
 
     // MARK: - Sensitivity
     @Published var sensitivityLevel: SensitivityLevel = .easy {
@@ -47,9 +48,10 @@ final class FlightViewModel: ObservableObject {
 
     // MARK: - Flight Control
 
-    func startFlight(scene: SCNScene, character: CharacterType, vehicle: VehicleType) {
+    func startFlight(scene: SCNScene, character: CharacterType, vehicle: VehicleType, theme: MapTheme = .sky) {
         currentCharacter = character
         currentVehicle = vehicle
+        currentMapTheme = theme
 
         // Build character and vehicle nodes
         let registry = CharacterRegistry.shared
@@ -75,8 +77,8 @@ final class FlightViewModel: ObservableObject {
         scene.rootNode.addChildNode(camera)
         self.cameraNode = camera
 
-        // Setup terrain
-        terrainGenerator = TerrainGenerator(parentNode: scene.rootNode)
+        // Setup terrain with selected theme
+        terrainGenerator = TerrainGenerator(parentNode: scene.rootNode, seed: 42, theme: theme)
         terrainGenerator?.updateChunks(playerPosition: charNode.position)
 
         // Setup items
@@ -211,9 +213,9 @@ final class FlightViewModel: ObservableObject {
 
     private func updateRegionName() {
         guard let pos = characterNode?.position else { return }
-        // Simple region based on position hash
-        let regionIndex = abs(Int(pos.x / 500) + Int(pos.z / 500) * 7) % Constants.regionNames.count
-        let newRegion = Constants.regionNames[regionIndex]
+        let names = currentMapTheme.regionNames
+        let regionIndex = abs(Int(pos.x / 500) + Int(pos.z / 500) * 7) % names.count
+        let newRegion = names[regionIndex]
         if newRegion != currentRegion {
             currentRegion = newRegion
         }

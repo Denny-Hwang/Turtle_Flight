@@ -7,6 +7,7 @@ struct FlightView: View {
     let character: CharacterType
     let vehicle: VehicleType
     let flightMode: FlightMode
+    let mapTheme: MapTheme
 
     @Environment(\.dismiss) private var dismiss
     @State private var scene = SCNScene()
@@ -14,7 +15,6 @@ struct FlightView: View {
 
     var body: some View {
         ZStack {
-            // SceneKit 3D View
             SceneKitView(
                 scene: scene,
                 flightVM: flightVM,
@@ -26,18 +26,15 @@ struct FlightView: View {
             )
             .ignoresSafeArea()
 
-            // HUD Overlay
             HUDOverlay(flightVM: flightVM)
 
-            // Mission HUD (Step Goal mode only)
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
                 MissionHUD(missionEngine: engine, missionVM: missionVM)
             }
 
-            // Control Buttons
             ControlButtons(
-                onBoost: { flightVM.activateBoost() },
-                onFire: { flightVM.fireItem() },
+                onBoost:     { flightVM.activateBoost() },
+                onFire:      { flightVM.fireItem() },
                 onCalibrate: { flightVM.calibrateGyro() },
                 onExit: {
                     flightVM.stopFlight()
@@ -45,46 +42,106 @@ struct FlightView: View {
                 }
             )
         }
-        .onAppear {
-            setupScene()
-        }
-        .onDisappear {
-            flightVM.stopFlight()
-        }
+        .onAppear { setupScene() }
+        .onDisappear { flightVM.stopFlight() }
         .statusBar(hidden: true)
     }
 
+    // MARK: - Scene Setup
+
     private func setupScene() {
-        // Sky
-        scene.background.contents = UIColor(
-            red: 0.53, green: 0.81, blue: 0.92, alpha: 1.0
-        )
+        scene.background.contents = mapTheme.backgroundColor
 
         // Ambient light
-        let ambientLight = SCNNode()
-        ambientLight.light = SCNLight()
-        ambientLight.light?.type = .ambient
-        ambientLight.light?.intensity = 600
-        ambientLight.light?.color = UIColor.white
-        scene.rootNode.addChildNode(ambientLight)
+        let ambient = SCNNode()
+        ambient.light = SCNLight()
+        ambient.light?.type = .ambient
+        ambient.light?.intensity = mapTheme.ambientLightIntensity
+        ambient.light?.color = mapTheme.ambientLightColor
+        scene.rootNode.addChildNode(ambient)
 
-        // Directional light (sun)
-        let sunLight = SCNNode()
-        sunLight.light = SCNLight()
-        sunLight.light?.type = .directional
-        sunLight.light?.intensity = 800
-        sunLight.light?.castsShadow = true
-        sunLight.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 4, 0)
-        scene.rootNode.addChildNode(sunLight)
+        // Directional light (sun / star)
+        let sun = SCNNode()
+        sun.light = SCNLight()
+        sun.light?.type = .directional
+        sun.light?.intensity = mapTheme.sunLightIntensity
+        sun.light?.color = mapTheme.sunLightColor
+        sun.light?.castsShadow = true
+        sun.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 4, 0)
+        scene.rootNode.addChildNode(sun)
 
-        // Start flight
-        flightVM.startFlight(scene: scene, character: character, vehicle: vehicle)
+        // Theme-specific extras
+        switch mapTheme {
+        case .sky:
+            addSunSphere()
+        case .space:
+            addStarDome()
+        case .ocean:
+            addCausticsOverlay()
+        }
 
-        // Start mission if Step Goal mode
+        flightVM.startFlight(scene: scene, character: character, vehicle: vehicle, theme: mapTheme)
+
         if flightMode == .stepGoal, let stage = missionVM.currentStage {
             flightVM.missionEngine?.startStage(stage)
             missionVM.startMission()
         }
+    }
+
+    /// Bright yellow sun sphere in sky theme
+    private func addSunSphere() {
+        let sun = SCNNode(geometry: SCNSphere(radius: 30))
+        sun.position = SCNVector3(500, 800, -800)
+        sun.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.95, blue: 0.5, alpha: 1)
+        sun.geometry?.firstMaterial?.emission.contents = UIColor(red: 1.0, green: 0.85, blue: 0.2, alpha: 0.9)
+        scene.rootNode.addChildNode(sun)
+    }
+
+    /// Distant star particles for space theme
+    private func addStarDome() {
+        let starCount = 200
+        for i in 0..<starCount {
+            let angle1 = Float(i) / Float(starCount) * .pi * 2
+            let angle2 = Float.random(in: 0...(Float.pi))
+            let radius: Float = 3000
+            let x = radius * sin(angle2) * cos(angle1)
+            let y = radius * cos(angle2)
+            let z = radius * sin(angle2) * sin(angle1)
+            let star = SCNNode(geometry: SCNSphere(radius: CGFloat(Float.random(in: 0.5...2.5))))
+            star.position = SCNVector3(x, y, z)
+            let brightness = Float.random(in: 0.6...1.0)
+            star.geometry?.firstMaterial?.diffuse.contents =
+                UIColor(red: CGFloat(brightness), green: CGFloat(brightness), blue: 1.0, alpha: 1)
+            star.geometry?.firstMaterial?.emission.contents =
+                UIColor(red: CGFloat(brightness), green: CGFloat(brightness), blue: 1.0, alpha: 0.8)
+            scene.rootNode.addChildNode(star)
+        }
+        // Distant nebula sphere
+        let nebula = SCNNode(geometry: SCNSphere(radius: 2800))
+        nebula.geometry?.firstMaterial?.diffuse.contents =
+            UIColor(red: 0.2, green: 0.05, blue: 0.35, alpha: 0.4)
+        nebula.geometry?.firstMaterial?.isDoubleSided = true
+        scene.rootNode.addChildNode(nebula)
+    }
+
+    /// Subtle caustic glow layer for ocean theme
+    private func addCausticsOverlay() {
+        let caustics = SCNNode(geometry: SCNSphere(radius: 2800))
+        caustics.geometry?.firstMaterial?.diffuse.contents =
+            UIColor(red: 0.1, green: 0.55, blue: 0.75, alpha: 0.25)
+        caustics.geometry?.firstMaterial?.isDoubleSided = true
+        scene.rootNode.addChildNode(caustics)
+        // Gentle light rays from above
+        let rays = SCNNode()
+        rays.light = SCNLight()
+        rays.light?.type = .spot
+        rays.light?.intensity = 400
+        rays.light?.color = UIColor(red: 0.6, green: 0.9, blue: 1.0, alpha: 1)
+        rays.light?.spotInnerAngle = 20
+        rays.light?.spotOuterAngle = 60
+        rays.position = SCNVector3(0, 1500, 0)
+        rays.eulerAngles = SCNVector3(-.pi / 2, 0, 0)
+        scene.rootNode.addChildNode(rays)
     }
 }
 
@@ -95,9 +152,7 @@ struct SceneKitView: UIViewRepresentable {
     let flightVM: FlightViewModel
     let onUpdate: (TimeInterval) -> Void
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onUpdate: onUpdate)
-    }
+    func makeCoordinator() -> Coordinator { Coordinator(onUpdate: onUpdate) }
 
     func makeUIView(context: Context) -> SCNView {
         let scnView = SCNView()
@@ -114,15 +169,9 @@ struct SceneKitView: UIViewRepresentable {
 
     class Coordinator: NSObject, SCNSceneRendererDelegate {
         let onUpdate: (TimeInterval) -> Void
-
-        init(onUpdate: @escaping (TimeInterval) -> Void) {
-            self.onUpdate = onUpdate
-        }
-
+        init(onUpdate: @escaping (TimeInterval) -> Void) { self.onUpdate = onUpdate }
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            DispatchQueue.main.async {
-                self.onUpdate(time)
-            }
+            DispatchQueue.main.async { self.onUpdate(time) }
         }
     }
 }
