@@ -69,15 +69,28 @@ enum Constants {
         static let projectileLifetime: TimeInterval = 3.0
     }
 
-    // MARK: - Region Names
+    // MARK: - Region Names (fallback — themes supply their own)
     static let regionNames = [
-        "구름 왕국 ☁️",
-        "무지개 계곡 🌈",
-        "반짝이 호수 ✨",
-        "바람의 언덕 🌬️",
-        "별빛 평원 ⭐",
-        "해바라기 들판 🌻",
-        "수정 동굴 💎",
-        "노을빛 해안 🌅"
+        "Cloud Kingdom",
+        "Rainbow Valley",
+        "Sparkle Lake",
+        "Windy Hills",
+        "Starlight Plains",
+        "Sunflower Fields",
+        "Crystal Caves",
+        "Sunset Beach"
     ]
+
+    // MARK: - Map Theme Colors
+    enum ThemeColors {
+        // Sky
+        static let skyPrimary   = 0x87CEEB
+        static let skySecondary = 0xFFFACD
+        // Space
+        static let spacePrimary   = 0x0D0025
+        static let spaceSecondary = 0x6A0DAD
+        // Ocean
+        static let oceanPrimary   = 0x006994
+        static let oceanSecondary = 0x40E0D0
+    }
 }
