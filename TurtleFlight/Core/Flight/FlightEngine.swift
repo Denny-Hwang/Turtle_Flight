@@ -65,7 +65,7 @@ final class FlightEngine {
         // Heading (yaw) from roll input
         let turnRate = Float(profile.turnSpeed) * Float(rollInput) * deltaTime
         state.heading += turnRate
-        if state.heading > 360 { state.heading -= 360 }
+        if state.heading >= 360 { state.heading -= 360 }
         if state.heading < 0 { state.heading += 360 }
 
         // Vertical speed from pitch input

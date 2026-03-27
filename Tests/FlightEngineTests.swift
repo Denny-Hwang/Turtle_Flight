@@ -31,6 +31,9 @@ final class FlightEngineTests: XCTestCase {
     func testBoostIncreasesSpeed() {
         engine.update(deltaTime: 0.016, rollInput: 0, pitchInput: 0, isBoosting: true, shouldAutoLevel: false)
         XCTAssertTrue(engine.state.isBoosting)
+        // Speed during boost should be boostMultiplier × defaultSpeed
+        let expectedBoostedSpeed = Constants.Flight.defaultSpeed * Constants.Flight.boostMultiplier
+        XCTAssertEqual(engine.state.speed, expectedBoostedSpeed, accuracy: 0.1)
     }
 
     func testMinAltitudeProtection() {
@@ -51,8 +54,34 @@ final class FlightEngineTests: XCTestCase {
 
     func testSensitivityUpdate() {
         engine.updateSensitivity(.expert)
-        // Expert mode has stall
-        // Speed starts at 200, which is above stall threshold
+        // Expert mode has stall; but default speed (200 km/h) is above stall threshold (100 km/h)
         XCTAssertFalse(engine.isStalling)
+
+        // Verify expert mode actually turns faster than easy
+        let easyEngine = FlightEngine(sensitivity: .easy)
+        easyEngine.update(deltaTime: 1.0, rollInput: 1.0, pitchInput: 0,
+                          isBoosting: false, shouldAutoLevel: false)
+
+        let expertEngine = FlightEngine(sensitivity: .expert)
+        expertEngine.update(deltaTime: 1.0, rollInput: 1.0, pitchInput: 0,
+                            isBoosting: false, shouldAutoLevel: false)
+        XCTAssertGreaterThan(expertEngine.state.heading, easyEngine.state.heading,
+                             "Expert mode should have faster turn rate than Easy")
+    }
+
+    func testNormalSpeedWithoutBoost() {
+        engine.update(deltaTime: 0.016, rollInput: 0, pitchInput: 0,
+                      isBoosting: false, shouldAutoLevel: false)
+        XCTAssertEqual(engine.state.speed, Constants.Flight.defaultSpeed, accuracy: 0.1)
+    }
+
+    func testHeadingStaysInRange() {
+        // Full rotation test
+        for _ in 0..<1000 {
+            engine.update(deltaTime: 0.016, rollInput: 1.0, pitchInput: 0,
+                          isBoosting: false, shouldAutoLevel: false)
+            XCTAssertGreaterThanOrEqual(engine.state.heading, 0)
+            XCTAssertLessThan(engine.state.heading, 360)
+        }
     }
 }
