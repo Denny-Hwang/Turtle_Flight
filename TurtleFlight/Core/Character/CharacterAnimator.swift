@@ -32,7 +32,7 @@ final class CharacterAnimator {
                                pitchInput: pitchInput, speed: speed)
 
         case .hamsterCopter:
-            animateHamsterCopter(vehicleNode, speed: speed)
+            animateHamsterCopter(vehicleNode, speed: speed, deltaTime: deltaTime)
 
         case .magicBroom:
             animateMagicBroom(characterNode, vehicleNode,
@@ -45,7 +45,7 @@ final class CharacterAnimator {
 
         case .earCopter:
             animateEarCopter(characterNode, vehicleNode,
-                             pitchInput: pitchInput, speed: speed)
+                             pitchInput: pitchInput, speed: speed, deltaTime: deltaTime)
 
         case .cloudSurf:
             animateCloudSurf(characterNode, vehicleNode,
@@ -62,10 +62,12 @@ final class CharacterAnimator {
             flameEmitter.scale = SCNVector3(scale, scale, scale)
         }
 
-        // Shell vibration when boosting
+        // Shell vibration when boosting (SET, not +=, to avoid drift)
         if isBoosting {
             let wobble = sin(animationTime * 30) * 0.01
-            vehicleNode.position.y += wobble
+            vehicleNode.position.y = -0.3 + wobble
+        } else {
+            vehicleNode.position.y = -0.3
         }
     }
 
@@ -89,16 +91,16 @@ final class CharacterAnimator {
         characterNode.eulerAngles.x += Float(pitchInput * 0.1)
     }
 
-    private func animateHamsterCopter(_ vehicleNode: SCNNode, speed: Float) {
-        // Propeller rotation proportional to speed
+    private func animateHamsterCopter(_ vehicleNode: SCNNode, speed: Float, deltaTime: Float) {
+        // Propeller rotation proportional to speed (use actual deltaTime, not hardcoded)
         if let propeller = vehicleNode.childNode(withName: "propeller", recursively: true) {
             let rotationSpeed = speed / 100.0 * 10.0
-            propeller.eulerAngles.y += rotationSpeed * 0.016 // ~60fps
+            propeller.eulerAngles.y += rotationSpeed * deltaTime
         }
 
         // Ball rotation
         if let ball = vehicleNode.childNode(withName: "hamsterBall", recursively: true) {
-            ball.eulerAngles.x += speed / 200.0 * 0.05
+            ball.eulerAngles.x += speed / 200.0 * deltaTime * 3.0
         }
     }
 
@@ -145,13 +147,14 @@ final class CharacterAnimator {
         _ characterNode: SCNNode,
         _ vehicleNode: SCNNode,
         pitchInput: Double,
-        speed: Float
+        speed: Float,
+        deltaTime: Float
     ) {
-        // Ears rotate like propellers
+        // Ears rotate like propellers (use actual deltaTime, not hardcoded)
         let earRotationSpeed = speed / 100.0 * 15.0
         characterNode.enumerateChildNodes { node, _ in
             if node.name == "ear" {
-                node.eulerAngles.y += earRotationSpeed * 0.016
+                node.eulerAngles.y += earRotationSpeed * deltaTime
             }
         }
 
@@ -168,9 +171,9 @@ final class CharacterAnimator {
         rollInput: Double,
         speed: Float
     ) {
-        // Cloud bobbing
+        // Cloud bobbing (SET, not +=, to avoid drift)
         let bob = sin(animationTime * 2) * 0.03
-        vehicleNode.position.y += bob
+        vehicleNode.position.y = -0.3 + bob
 
         // Surfing stance lean during turns
         characterNode.eulerAngles.z = Float(-rollInput * 0.2)

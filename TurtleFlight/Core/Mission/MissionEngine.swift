@@ -146,12 +146,15 @@ final class MissionEngine {
 
         // 3 stars: perfect run
         if let star3Time = stage.star3Time {
+            // Has time requirement: complete within time limit with no collisions
             if elapsedTime <= star3Time && collisions == 0 {
                 stars = 3
             }
         } else {
-            // Stages without time requirement
-            if collisions == 0 {
+            // No time requirement: check collision-free + all stars collected (Stage 2 condition)
+            let allStarsCollected = stage.starCountForPerfect == nil
+                || starsCollected >= (stage.starCountForPerfect ?? 0)
+            if collisions == 0 && allStarsCollected {
                 stars = 3
             }
         }

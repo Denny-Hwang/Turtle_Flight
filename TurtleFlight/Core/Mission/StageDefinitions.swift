@@ -11,6 +11,7 @@ struct StageDefinition {
     let ringRadius: Float
     let timeLimit: TimeInterval?  // nil = no limit
     let star3Time: TimeInterval?  // complete within this for 3 stars
+    let starCountForPerfect: Int? // nil = no star collection requirement
     let star3Condition: String
     let star2Condition: String
     let learningGoal: String
@@ -108,6 +109,7 @@ extension StageDefinition {
             ringRadius: 50,
             timeLimit: nil,
             star3Time: 60,
+            starCountForPerfect: nil,
             star3Condition: "60초 이내 완료",
             star2Condition: "완료",
             learningGoal: "기본 좌우/상하 조종"
@@ -122,6 +124,7 @@ extension StageDefinition {
             ringRadius: 40,
             timeLimit: 180,
             star3Time: 90,
+            starCountForPerfect: nil,
             star3Condition: "접촉 0회 + 90초 이내",
             star2Condition: "완료",
             learningGoal: "고도 유지 + 좌우 미세 조정"
@@ -136,6 +139,7 @@ extension StageDefinition {
             ringRadius: 35,
             timeLimit: 180,
             star3Time: nil,
+            starCountForPerfect: 5,  // 별 5개 전체 수집 필요
             star3Condition: "접촉 0회 + 별 5개 전체 수집",
             star2Condition: "완료",
             learningGoal: "연속 S자 비행"
@@ -150,6 +154,7 @@ extension StageDefinition {
             ringRadius: 25,
             timeLimit: 150,
             star3Time: 120,
+            starCountForPerfect: nil,
             star3Condition: "전체 통과 + 120초 이내",
             star2Condition: "완료",
             learningGoal: "급격한 피치 전환 + 부스터 타이밍"
@@ -164,6 +169,7 @@ extension StageDefinition {
             ringRadius: 15,
             timeLimit: 120,
             star3Time: 80,
+            starCountForPerfect: nil,
             star3Condition: "전체 통과 + 80초 이내 + 접촉 0회",
             star2Condition: "완료",
             learningGoal: "종합 기동"

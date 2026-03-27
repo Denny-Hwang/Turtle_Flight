@@ -11,16 +11,29 @@ final class GyroControllerTests: XCTestCase {
 
     func testSensitivityUpdate() {
         let controller = GyroController(sensitivity: .easy)
+        controller.updateSensitivity(.normal)
+        XCTAssertEqual(controller.rollInput, 0)  // Still zero without motion data
+
         controller.updateSensitivity(.expert)
-        // No crash = pass
-        XCTAssertEqual(controller.rollInput, 0) // Still zero without motion data
+        XCTAssertEqual(controller.pitchInput, 0)  // Still zero
+
+        controller.updateSensitivity(.easy)
+        XCTAssertEqual(controller.rollInput, 0)  // Cycled back
     }
 
-    func testAutoLevelCondition() {
+    func testAutoLevelInitiallyFalse() {
+        // Just created controller — shouldAutoLevel should be false
+        // because timeSinceLastInput starts at 0, which is < autoLevelDelay (2.0s)
         let controller = GyroController(sensitivity: .easy)
-        // Initially no input, time since last input should grow
-        // With easy mode, auto-level delay is 2 seconds
-        XCTAssertFalse(controller.shouldAutoLevel) // Just started
+        XCTAssertFalse(controller.shouldAutoLevel,
+                       "Auto-level should not trigger immediately on init")
+    }
+
+    func testAutoLevelDisabledForExpert() {
+        // Expert has no autoLevelDelay (nil) — shouldAutoLevel should always be false
+        let controller = GyroController(sensitivity: .expert)
+        XCTAssertFalse(controller.shouldAutoLevel,
+                       "Expert mode never auto-levels")
     }
 
     func testStallDetection() {

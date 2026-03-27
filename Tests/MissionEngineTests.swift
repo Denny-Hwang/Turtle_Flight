@@ -84,7 +84,71 @@ final class MissionEngineTests: XCTestCase {
     func testProgressText() {
         let stage = StageDefinition.allStages[0]
         engine.startStage(stage)
-        XCTAssertTrue(engine.progressText.contains("0/\(stage.ringCount)"))
+        XCTAssertTrue(engine.progressText.contains("0/\(stage.ringCount)"),
+                      "Progress text should show '0/N' at start, got: \(engine.progressText)")
+    }
+
+    func testProgressTextUpdatesAfterRingPass() {
+        let stage = StageDefinition.allStages[0]
+        engine.startStage(stage)
+        let firstRingPos = engine.rings[0].position
+        engine.update(deltaTime: 0.016, playerPosition: firstRingPos)
+        XCTAssertTrue(engine.progressText.contains("1/\(stage.ringCount)"),
+                      "Progress text should show '1/N' after passing first ring, got: \(engine.progressText)")
+    }
+
+    func testTimeExceedingLimitFailsStage() {
+        let stage = StageDefinition.allStages[1]  // Cloud Maze: 180s limit
+        engine.startStage(stage)
+
+        // Update past time limit
+        engine.update(deltaTime: Float(stage.timeLimit!) + 1.0, playerPosition: SCNVector3(0, 0, 0))
+
+        if case .failed(let reason) = engine.state {
+            XCTAssertFalse(reason.isEmpty)
+        } else {
+            XCTFail("Expected failed state after time limit exceeded")
+        }
+    }
+
+    func testRemainingTimeDecreasesOverTime() {
+        let stage = StageDefinition.allStages[1]  // Has time limit
+        engine.startStage(stage)
+
+        let initial = engine.remainingTime!
+        engine.update(deltaTime: 1.0, playerPosition: SCNVector3(999, 999, 999))
+        let afterOneSecond = engine.remainingTime!
+
+        XCTAssertLessThan(afterOneSecond, initial,
+                          "Remaining time should decrease")
+    }
+
+    func testIsTimeCriticalWhenUnder30Seconds() {
+        let stage = StageDefinition.allStages[1]  // Cloud Maze: 180s limit
+        engine.startStage(stage)
+
+        // Advance to 155 seconds (5 remaining)
+        engine.update(deltaTime: 155.0, playerPosition: SCNVector3(999, 999, 999))
+
+        if case .failed = engine.state {
+            // Stage failed before we got to check — this is fine
+        } else {
+            XCTAssertTrue(engine.isTimeCritical, "Should be time critical with <30s remaining")
+        }
+    }
+
+    func testCollisionsAndStarsAreResetOnNewStage() {
+        let stage = StageDefinition.allStages[0]
+        engine.startStage(stage)
+        engine.registerCollision()
+        engine.registerStarCollected()
+        XCTAssertEqual(engine.collisions, 1)
+        XCTAssertEqual(engine.starsCollected, 1)
+
+        // Start a new stage - counters should reset
+        engine.startStage(StageDefinition.allStages[0])
+        XCTAssertEqual(engine.collisions, 0)
+        XCTAssertEqual(engine.starsCollected, 0)
     }
 
     func testReset() {
