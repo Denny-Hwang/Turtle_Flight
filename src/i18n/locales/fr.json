@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "L'aventure aérienne des animaux qui ne peuvent pas voler" },
+  "home": { "play": "Jouer", "characters": "Personnages", "settings": "Paramètres", "freeFlightButton": "Vol Libre", "stepGoalButton": "Missions" },
+  "characters": {
+    "selectTitle": "Choisis ton personnage", "selectVehicle": "Choisis ton véhicule",
+    "turbo": { "name": "Turbo", "species": "Tortue", "vehicle": "Carapace Jet", "desc": "Une tortue qui vole grâce au jet fixé sur sa carapace" },
+    "pip": { "name": "Pip", "species": "Pingouin", "vehicle": "Planeur Ventral", "desc": "Un pingouin qui plane dans les airs sur son ventre rebondi" },
+    "nutty": { "name": "Nutty", "species": "Hamster", "vehicle": "Boule Hélicoptère", "desc": "Un hamster qui vole dans sa boule transformée en hélicoptère" },
+    "mochi": { "name": "Mochi", "species": "Chat", "vehicle": "Balai Magique", "desc": "Un chat mystérieux qui vole sur un balai magique" },
+    "bounce": { "name": "Bounce", "species": "Grenouille", "vehicle": "Corps Ballon", "desc": "Une grenouille qui se gonfle comme un ballon pour voler" },
+    "hoppy": { "name": "Hoppy", "species": "Lapin", "vehicle": "Oreilles Hélico", "desc": "Un lapin qui utilise ses oreilles comme hélices pour voler" },
+    "cloudSurf": "Surf de Nuage"
+  },
+  "flight": { "speed": "Vitesse", "altitude": "Altitude", "time": "Temps", "stars": "Étoiles", "boost": "Boost", "pause": "Pause", "resume": "Reprendre", "quit": "Quitter", "quitConfirm": "Voulez-vous vraiment quitter le vol ?" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "N", "south": "S", "east": "E", "west": "O" },
+  "mission": {
+    "title": "Missions", "stage": "Étape {{n}}",
+    "stage1": { "name": "Promenade Céleste", "desc": "Traverse 10 anneaux dans l'ordre" },
+    "stage2": { "name": "Labyrinthe de Nuages", "desc": "Navigue entre les piliers de nuages" },
+    "stage3": { "name": "Vol en Vallée", "desc": "Vol à basse altitude dans une vallée sinueuse" },
+    "stage4": { "name": "Traversée des Montagnes", "desc": "Traverse les anneaux au sommet de 7 montagnes" },
+    "stage5": { "name": "Course Aérienne", "desc": "Termine le circuit de course aérienne" },
+    "complete": "Étape terminée !", "stars1": "Ailes de Bronze", "stars2": "Ailes d'Argent", "stars3": "Ailes d'Or", "retry": "Réessayer", "next": "Suivant", "backToMenu": "Retour au menu"
+  },
+  "settings": { "title": "Paramètres", "sensitivity": "Sensibilité", "sensitivityEasy": "Facile", "sensitivityNormal": "Normal", "sensitivityExpert": "Expert", "sensitivityDescEasy": "Grande zone morte, contrôle fluide, idéal pour les débutants", "sensitivityDescNormal": "Contrôle équilibré, adapté à la plupart des joueurs", "sensitivityDescExpert": "Contrôle précis, décrochage inclus", "language": "Langue", "sound": "Son", "on": "Activé", "off": "Désactivé" },
+  "common": { "back": "Retour", "confirm": "Confirmer", "cancel": "Annuler", "loading": "Chargement..." }
+}

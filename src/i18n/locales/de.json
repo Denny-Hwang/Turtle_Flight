@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "Das Himmelsabenteuer der flugunfähigen Tiere" },
+  "home": { "play": "Spielen", "characters": "Charaktere", "settings": "Einstellungen", "freeFlightButton": "Freier Flug", "stepGoalButton": "Missionen" },
+  "characters": {
+    "selectTitle": "Wähle deinen Charakter", "selectVehicle": "Wähle dein Fahrzeug",
+    "turbo": { "name": "Turbo", "species": "Schildkröte", "vehicle": "Panzer-Jet", "desc": "Eine Schildkröte, die mit einem Jet auf dem Panzer durch die Lüfte fliegt" },
+    "pip": { "name": "Pip", "species": "Pinguin", "vehicle": "Bauch-Gleiter", "desc": "Ein Pinguin, der auf seinem runden Bauch durch die Luft gleitet" },
+    "nutty": { "name": "Nutty", "species": "Hamster", "vehicle": "Hamsterball-Kopter", "desc": "Ein Hamster, der in seinem Hamsterball-Helikopter fliegt" },
+    "mochi": { "name": "Mochi", "species": "Katze", "vehicle": "Zauberbesen", "desc": "Eine geheimnisvolle Katze, die auf einem Zauberbesen fliegt" },
+    "bounce": { "name": "Bounce", "species": "Frosch", "vehicle": "Ballon-Körper", "desc": "Ein Frosch, der sich wie ein Ballon aufbläst, um zu fliegen" },
+    "hoppy": { "name": "Hoppy", "species": "Hase", "vehicle": "Ohren-Kopter", "desc": "Ein Hase, der seine Ohren als Propeller zum Fliegen nutzt" },
+    "cloudSurf": "Wolken-Surfer"
+  },
+  "flight": { "speed": "Geschwindigkeit", "altitude": "Höhe", "time": "Zeit", "stars": "Sterne", "boost": "Boost", "pause": "Pause", "resume": "Fortsetzen", "quit": "Beenden", "quitConfirm": "Möchtest du den Flug wirklich beenden?" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "N", "south": "S", "east": "O", "west": "W" },
+  "mission": {
+    "title": "Missionen", "stage": "Stufe {{n}}",
+    "stage1": { "name": "Himmelsspaziergang", "desc": "Fliege der Reihe nach durch 10 Ringe" },
+    "stage2": { "name": "Wolkenlabyrinth", "desc": "Navigiere zwischen den Wolkensäulen" },
+    "stage3": { "name": "Talflug", "desc": "Tiefflug durch ein gewundenes Tal" },
+    "stage4": { "name": "Bergüberquerung", "desc": "Fliege durch die Ringe auf 7 Berggipfeln" },
+    "stage5": { "name": "Himmelsrennen", "desc": "Absolviere die Luftrennstrecke" },
+    "complete": "Stufe geschafft!", "stars1": "Bronzeflügel", "stars2": "Silberflügel", "stars3": "Goldflügel", "retry": "Erneut versuchen", "next": "Weiter", "backToMenu": "Zurück zum Menü"
+  },
+  "settings": { "title": "Einstellungen", "sensitivity": "Empfindlichkeit", "sensitivityEasy": "Leicht", "sensitivityNormal": "Normal", "sensitivityExpert": "Experte", "sensitivityDescEasy": "Große Totzone, sanfte Steuerung, ideal für Anfänger", "sensitivityDescNormal": "Ausgewogene Steuerung, für die meisten Spieler geeignet", "sensitivityDescExpert": "Präzise Steuerung, mit Strömungsabriss-Mechanik", "language": "Sprache", "sound": "Sound", "on": "An", "off": "Aus" },
+  "common": { "back": "Zurück", "confirm": "Bestätigen", "cancel": "Abbrechen", "loading": "Laden..." }
+}

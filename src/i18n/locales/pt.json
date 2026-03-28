@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "A aventura aérea dos animais que não podem voar" },
+  "home": { "play": "Jogar", "characters": "Personagens", "settings": "Configurações", "freeFlightButton": "Voo Livre", "stepGoalButton": "Missões" },
+  "characters": {
+    "selectTitle": "Escolha seu personagem", "selectVehicle": "Escolha seu veículo",
+    "turbo": { "name": "Turbo", "species": "Tartaruga", "vehicle": "Jato de Casco", "desc": "Uma tartaruga que voa com um jato no casco" },
+    "pip": { "name": "Pip", "species": "Pinguim", "vehicle": "Planador de Barriga", "desc": "Um pinguim que plana pelo ar na sua barriga redonda" },
+    "nutty": { "name": "Nutty", "species": "Hamster", "vehicle": "Bola Helicóptero", "desc": "Um hamster que voa na sua bola transformada em helicóptero" },
+    "mochi": { "name": "Mochi", "species": "Gato", "vehicle": "Vassoura Mágica", "desc": "Um gato misterioso que voa numa vassoura mágica" },
+    "bounce": { "name": "Bounce", "species": "Sapo", "vehicle": "Corpo Balão", "desc": "Um sapo que infla como um balão para voar" },
+    "hoppy": { "name": "Hoppy", "species": "Coelho", "vehicle": "Orelhas Helicóptero", "desc": "Um coelho que usa suas orelhas como hélices para voar" },
+    "cloudSurf": "Surfe nas Nuvens"
+  },
+  "flight": { "speed": "Velocidade", "altitude": "Altitude", "time": "Tempo", "stars": "Estrelas", "boost": "Turbo", "pause": "Pausar", "resume": "Retomar", "quit": "Sair", "quitConfirm": "Tem certeza que deseja abandonar o voo?" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "N", "south": "S", "east": "L", "west": "O" },
+  "mission": {
+    "title": "Missões", "stage": "Fase {{n}}",
+    "stage1": { "name": "Passeio no Céu", "desc": "Voe através de 10 anéis em ordem" },
+    "stage2": { "name": "Labirinto de Nuvens", "desc": "Navegue entre os pilares de nuvens" },
+    "stage3": { "name": "Voo no Vale", "desc": "Voo em baixa altitude por um vale sinuoso" },
+    "stage4": { "name": "Travessia das Montanhas", "desc": "Voe pelos anéis no topo de 7 montanhas" },
+    "stage5": { "name": "Corrida Aérea", "desc": "Complete o circuito de corrida aérea" },
+    "complete": "Fase concluída!", "stars1": "Asas de Bronze", "stars2": "Asas de Prata", "stars3": "Asas de Ouro", "retry": "Tentar novamente", "next": "Próximo", "backToMenu": "Voltar ao menu"
+  },
+  "settings": { "title": "Configurações", "sensitivity": "Sensibilidade", "sensitivityEasy": "Fácil", "sensitivityNormal": "Normal", "sensitivityExpert": "Especialista", "sensitivityDescEasy": "Zona morta grande, controle suave, ideal para iniciantes", "sensitivityDescNormal": "Controle equilibrado, adequado para a maioria", "sensitivityDescExpert": "Controle preciso, inclui mecânica de estol", "language": "Idioma", "sound": "Som", "on": "Ligado", "off": "Desligado" },
+  "common": { "back": "Voltar", "confirm": "Confirmar", "cancel": "Cancelar", "loading": "Carregando..." }
+}

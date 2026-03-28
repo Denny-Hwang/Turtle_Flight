@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "La aventura aérea de animales que no pueden volar" },
+  "home": { "play": "Jugar", "characters": "Personajes", "settings": "Ajustes", "freeFlightButton": "Vuelo Libre", "stepGoalButton": "Misiones" },
+  "characters": {
+    "selectTitle": "Elige tu personaje", "selectVehicle": "Elige tu vehículo",
+    "turbo": { "name": "Turbo", "species": "Tortuga", "vehicle": "Caparazón Jet", "desc": "Una tortuga que surca los cielos con un jet en su caparazón" },
+    "pip": { "name": "Pip", "species": "Pingüino", "vehicle": "Planeo de Panza", "desc": "Un pingüino que planea por el aire sobre su barriga" },
+    "nutty": { "name": "Nutty", "species": "Hámster", "vehicle": "Bola Helicóptero", "desc": "Un hámster que vuela en su bola convertida en helicóptero" },
+    "mochi": { "name": "Mochi", "species": "Gato", "vehicle": "Escoba Mágica", "desc": "Un gato misterioso que vuela en una escoba mágica" },
+    "bounce": { "name": "Bounce", "species": "Rana", "vehicle": "Cuerpo Globo", "desc": "Una rana que se infla como un globo para volar" },
+    "hoppy": { "name": "Hoppy", "species": "Conejo", "vehicle": "Orejas Helicóptero", "desc": "Un conejo que usa sus orejas como hélices para volar" },
+    "cloudSurf": "Tabla de Nubes"
+  },
+  "flight": { "speed": "Velocidad", "altitude": "Altitud", "time": "Tiempo", "stars": "Estrellas", "boost": "Turbo", "pause": "Pausa", "resume": "Reanudar", "quit": "Salir", "quitConfirm": "¿Seguro que quieres abandonar el vuelo?" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "N", "south": "S", "east": "E", "west": "O" },
+  "mission": {
+    "title": "Misiones", "stage": "Etapa {{n}}",
+    "stage1": { "name": "Paseo por el Cielo", "desc": "Vuela a través de 10 anillos en orden" },
+    "stage2": { "name": "Laberinto de Nubes", "desc": "Navega entre pilares de nubes" },
+    "stage3": { "name": "Vuelo por el Valle", "desc": "Vuela a baja altitud por un valle sinuoso" },
+    "stage4": { "name": "Cruce de Montañas", "desc": "Vuela a través de anillos en la cima de 7 montañas" },
+    "stage5": { "name": "Carrera Aérea", "desc": "Completa el circuito de carreras aéreas" },
+    "complete": "¡Etapa completada!", "stars1": "Alas de Bronce", "stars2": "Alas de Plata", "stars3": "Alas de Oro", "retry": "Reintentar", "next": "Siguiente", "backToMenu": "Volver al menú"
+  },
+  "settings": { "title": "Ajustes", "sensitivity": "Sensibilidad", "sensitivityEasy": "Fácil", "sensitivityNormal": "Normal", "sensitivityExpert": "Experto", "sensitivityDescEasy": "Zona muerta amplia, control suave, ideal para principiantes", "sensitivityDescNormal": "Control equilibrado, adecuado para la mayoría", "sensitivityDescExpert": "Control preciso, incluye pérdida de sustentación", "language": "Idioma", "sound": "Sonido", "on": "Activado", "off": "Desactivado" },
+  "common": { "back": "Atrás", "confirm": "Confirmar", "cancel": "Cancelar", "loading": "Cargando..." }
+}

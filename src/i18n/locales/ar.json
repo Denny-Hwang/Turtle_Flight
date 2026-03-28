@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "مغامرة السماء للحيوانات التي لا تستطيع الطيران" },
+  "home": { "play": "العب", "characters": "الشخصيات", "settings": "الإعدادات", "freeFlightButton": "طيران حر", "stepGoalButton": "المهمات" },
+  "characters": {
+    "selectTitle": "اختر شخصيتك", "selectVehicle": "اختر مركبتك",
+    "turbo": { "name": "Turbo", "species": "سلحفاة", "vehicle": "صاروخ الصدفة", "desc": "سلحفاة تطير بمحرك نفاث على صدفتها" },
+    "pip": { "name": "Pip", "species": "بطريق", "vehicle": "طائرة البطن", "desc": "بطريق ينزلق في الهواء على بطنه المستدير" },
+    "nutty": { "name": "Nutty", "species": "هامستر", "vehicle": "كرة الهامستر المروحية", "desc": "هامستر يطير في كرته المحولة إلى مروحية" },
+    "mochi": { "name": "Mochi", "species": "قطة", "vehicle": "المكنسة السحرية", "desc": "قطة غامضة تطير على مكنسة سحرية" },
+    "bounce": { "name": "Bounce", "species": "ضفدع", "vehicle": "جسم البالون", "desc": "ضفدع ينتفخ كالبالون ليطير في السماء" },
+    "hoppy": { "name": "Hoppy", "species": "أرنب", "vehicle": "مروحية الأذنين", "desc": "أرنب يستخدم أذنيه كمروحة للطيران" },
+    "cloudSurf": "ركوب السحاب"
+  },
+  "flight": { "speed": "السرعة", "altitude": "الارتفاع", "time": "الوقت", "stars": "النجوم", "boost": "تعزيز", "pause": "إيقاف مؤقت", "resume": "استئناف", "quit": "خروج", "quitConfirm": "هل أنت متأكد من مغادرة الطيران؟" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "شمال", "south": "جنوب", "east": "شرق", "west": "غرب" },
+  "mission": {
+    "title": "المهمات", "stage": "المرحلة {{n}}",
+    "stage1": { "name": "نزهة السماء", "desc": "اطر عبر 10 حلقات بالترتيب" },
+    "stage2": { "name": "متاهة الغيوم", "desc": "تنقل بين أعمدة الغيوم" },
+    "stage3": { "name": "طيران الوادي", "desc": "طيران منخفض عبر وادٍ متعرج" },
+    "stage4": { "name": "عبور الجبال", "desc": "اطر عبر الحلقات فوق 7 قمم جبلية" },
+    "stage5": { "name": "سباق السماء", "desc": "أكمل مسار السباق الجوي" },
+    "complete": "المرحلة مكتملة!", "stars1": "أجنحة برونزية", "stars2": "أجنحة فضية", "stars3": "أجنحة ذهبية", "retry": "إعادة المحاولة", "next": "التالي", "backToMenu": "العودة للقائمة"
+  },
+  "settings": { "title": "الإعدادات", "sensitivity": "الحساسية", "sensitivityEasy": "سهل", "sensitivityNormal": "عادي", "sensitivityExpert": "خبير", "sensitivityDescEasy": "منطقة ميتة كبيرة، تحكم سلس، مناسب للمبتدئين", "sensitivityDescNormal": "تحكم متوازن، مناسب لمعظم اللاعبين", "sensitivityDescExpert": "تحكم دقيق، يشمل ميكانيكية السقوط", "language": "اللغة", "sound": "الصوت", "on": "تشغيل", "off": "إيقاف" },
+  "common": { "back": "رجوع", "confirm": "تأكيد", "cancel": "إلغاء", "loading": "جارٍ التحميل..." }
+}

@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "飛べない動物たちの空の冒険" },
+  "home": { "play": "プレイ", "characters": "キャラクター", "settings": "設定", "freeFlightButton": "フリーフライト", "stepGoalButton": "ステージモード" },
+  "characters": {
+    "selectTitle": "キャラクターを選ぼう", "selectVehicle": "乗り物を選ぼう",
+    "turbo": { "name": "Turbo", "species": "カメ", "vehicle": "シェルジェット", "desc": "甲羅のジェットで空を飛ぶカメ" },
+    "pip": { "name": "Pip", "species": "ペンギン", "vehicle": "おなかグライダー", "desc": "まんまるなおなかで滑空するペンギン" },
+    "nutty": { "name": "Nutty", "species": "ハムスター", "vehicle": "ハムスターボールコプター", "desc": "ハムスターボールをヘリコプターにして飛ぶハムスター" },
+    "mochi": { "name": "Mochi", "species": "ネコ", "vehicle": "魔法のほうき", "desc": "魔法のほうきに乗って飛ぶ不思議なネコ" },
+    "bounce": { "name": "Bounce", "species": "カエル", "vehicle": "バルーンボディ", "desc": "風船のように膨らんで空を飛ぶカエル" },
+    "hoppy": { "name": "Hoppy", "species": "ウサギ", "vehicle": "イヤーコプター", "desc": "耳をプロペラにして飛ぶウサギ" },
+    "cloudSurf": "クラウドサーフ"
+  },
+  "flight": { "speed": "速度", "altitude": "高度", "time": "時間", "stars": "スター", "boost": "ブースト", "pause": "一時停止", "resume": "再開", "quit": "終了", "quitConfirm": "フライトを終了しますか？" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "北", "south": "南", "east": "東", "west": "西" },
+  "mission": {
+    "title": "ステージモード", "stage": "ステージ {{n}}",
+    "stage1": { "name": "スカイウォーク", "desc": "10個のリングを順番に飛び抜けよう" },
+    "stage2": { "name": "雲の迷路", "desc": "雲の柱の間を飛び抜けよう" },
+    "stage3": { "name": "渓谷フライト", "desc": "曲がりくねった渓谷を低空飛行しよう" },
+    "stage4": { "name": "山越え", "desc": "7つの山頂のリングを飛び抜けよう" },
+    "stage5": { "name": "スカイレース", "desc": "エアレースコースを完走しよう" },
+    "complete": "ステージクリア！", "stars1": "ブロンズウィング", "stars2": "シルバーウィング", "stars3": "ゴールドウィング", "retry": "リトライ", "next": "次へ", "backToMenu": "メニューに戻る"
+  },
+  "settings": { "title": "設定", "sensitivity": "感度", "sensitivityEasy": "イージー", "sensitivityNormal": "ノーマル", "sensitivityExpert": "エキスパート", "sensitivityDescEasy": "デッドゾーン大、滑らかな操作、初心者向け", "sensitivityDescNormal": "バランスの取れた操作、ほとんどのプレイヤー向け", "sensitivityDescExpert": "精密操作、失速あり", "language": "言語", "sound": "サウンド", "on": "オン", "off": "オフ" },
+  "common": { "back": "戻る", "confirm": "確認", "cancel": "キャンセル", "loading": "読み込み中..." }
+}

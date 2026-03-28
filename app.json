@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Turtle Flight",
+    "slug": "turtle-flight",
+    "version": "1.0.0",
+    "orientation": "landscape",
+    "icon": "./src/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#87CEEB"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ggoboogihouse.turtleflight",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSMotionUsageDescription": "Turtle Flight uses gyroscope for tilt-based flight controls.",
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationLandscapeLeft",
+          "UIInterfaceOrientationLandscapeRight"
+        ]
+      },
+      "requireFullScreen": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#87CEEB"
+      },
+      "package": "com.ggoboogihouse.turtleflight"
+    },
+    "plugins": [
+      "expo-sensors",
+      "expo-av",
+      "expo-screen-orientation",
+      "expo-localization",
+      "expo-router"
+    ]
+  }
+}
