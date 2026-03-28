@@ -251,7 +251,10 @@ struct CharacterPreviewView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {
         guard let scene = uiView.scene else { return }
         scene.rootNode.childNodes
-            .filter { $0.name != nil && CharacterType(rawValue: $0.name!) != nil }
+            .filter { node in
+                guard let name = node.name else { return false }
+                return CharacterType(rawValue: name) != nil
+            }
             .forEach { $0.removeFromParentNode() }
         let charNode = CharacterRegistry.shared.buildCharacterNode(for: character)
         charNode.runAction(.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 8)))

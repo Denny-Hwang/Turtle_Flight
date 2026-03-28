@@ -64,8 +64,9 @@ final class GyroController: ObservableObject {
         }
 
         // Get relative attitude from reference point
+        guard let ref = referenceAttitude else { return }
         let attitude = motion.attitude
-        attitude.multiply(byInverseOf: referenceAttitude!)
+        attitude.multiply(byInverseOf: ref)
 
         let rawRoll = attitude.roll
         let rawPitch = attitude.pitch

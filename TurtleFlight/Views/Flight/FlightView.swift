@@ -10,8 +10,10 @@ struct FlightView: View {
     let mapTheme: MapTheme
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @State private var scene = SCNScene()
     @State private var lastUpdateTime: TimeInterval = 0
+    @State private var showGyroAlert = false
 
     var body: some View {
         ZStack {
@@ -29,7 +31,10 @@ struct FlightView: View {
             HUDOverlay(flightVM: flightVM)
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
-                MissionHUD(missionEngine: engine, missionVM: missionVM)
+                MissionHUD(missionEngine: engine, missionVM: missionVM) {
+                    flightVM.stopFlight()
+                    dismiss()
+                }
             }
 
             ControlButtons(
@@ -44,6 +49,27 @@ struct FlightView: View {
         }
         .onAppear { setupScene() }
         .onDisappear { flightVM.stopFlight() }
+        .onChange(of: scenePhase) { newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                flightVM.gyroController.stop()
+                lastUpdateTime = 0
+            case .active:
+                if flightVM.isFlying {
+                    flightVM.gyroController.start()
+                    flightVM.calibrateGyro()
+                }
+            @unknown default:
+                break
+            }
+        }
+        .alert("자이로스코프를 사용할 수 없습니다", isPresented: $showGyroAlert) {
+            Button("확인") {
+                dismiss()
+            }
+        } message: {
+            Text("이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.")
+        }
         .statusBar(hidden: true)
     }
 
@@ -81,6 +107,11 @@ struct FlightView: View {
         }
 
         flightVM.startFlight(scene: scene, character: character, vehicle: vehicle, theme: mapTheme)
+
+        // Check gyro availability after starting flight
+        if !flightVM.gyroController.isAvailable {
+            showGyroAlert = true
+        }
 
         if flightMode == .stepGoal, let stage = missionVM.currentStage {
             flightVM.missionEngine?.startStage(stage)
@@ -168,10 +199,12 @@ struct SceneKitView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
     class Coordinator: NSObject, SCNSceneRendererDelegate {
-        let onUpdate: (TimeInterval) -> Void
+        var onUpdate: ((TimeInterval) -> Void)?
         init(onUpdate: @escaping (TimeInterval) -> Void) { self.onUpdate = onUpdate }
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            DispatchQueue.main.async { self.onUpdate(time) }
+            DispatchQueue.main.async { [weak self] in
+                self?.onUpdate?(time)
+            }
         }
     }
 }
