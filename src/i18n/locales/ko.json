@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "Turtle Flight",
+    "subtitle": "날 수 없는 동물들의 하늘 모험"
+  },
+  "home": {
+    "play": "플레이",
+    "characters": "캐릭터",
+    "settings": "설정",
+    "freeFlightButton": "자유 비행",
+    "stepGoalButton": "단계별 미션"
+  },
+  "characters": {
+    "selectTitle": "비행사를 선택하세요",
+    "selectVehicle": "탈것 선택",
+    "turbo": { "name": "Turbo", "species": "거북이", "vehicle": "등껍질 제트", "desc": "등에 제트 엔진을 달았다" },
+    "pip": { "name": "Pip", "species": "펭귄", "vehicle": "배 활공기", "desc": "배로 미끄러지며 하늘을 난다" },
+    "nutty": { "name": "Nutty", "species": "햄스터", "vehicle": "햄스터볼 헬리콥터", "desc": "햄스터볼이 헬리콥터로 변신" },
+    "mochi": { "name": "Mochi", "species": "고양이", "vehicle": "마법 빗자루", "desc": "마법 빗자루를 타고 비행" },
+    "bounce": { "name": "Bounce", "species": "개구리", "vehicle": "풍선 몸", "desc": "풍선처럼 부풀어 하늘을 난다" },
+    "hoppy": { "name": "Hoppy", "species": "토끼", "vehicle": "귀 헬리콥터", "desc": "귀를 프로펠러처럼 돌려 비행" },
+    "cloudSurf": "구름 서핑"
+  },
+  "flight": {
+    "speed": "속도",
+    "altitude": "고도",
+    "time": "시간",
+    "stars": "별",
+    "boost": "부스트",
+    "pause": "일시정지",
+    "resume": "계속하기",
+    "quit": "나가기",
+    "quitConfirm": "비행을 종료할까요?"
+  },
+  "hud": {
+    "kmh": "KM/H",
+    "m": "M",
+    "north": "북",
+    "south": "남",
+    "east": "동",
+    "west": "서"
+  },
+  "mission": {
+    "title": "단계별 미션",
+    "stage": "스테이지",
+    "stage1": { "name": "하늘 산책", "desc": "링 10개를 순서대로 통과하세요" },
+    "stage2": { "name": "구름 미로", "desc": "구름 기둥 사이를 비행하세요" },
+    "stage3": { "name": "계곡 비행", "desc": "구불구불한 계곡을 저공비행하세요" },
+    "stage4": { "name": "산맥 넘기", "desc": "7개 봉우리의 링을 통과하세요" },
+    "stage5": { "name": "스카이 레이스", "desc": "에어 레이스 코스를 완주하세요" },
+    "complete": "스테이지 클리어!",
+    "stars1": "별 1개",
+    "stars2": "별 2개",
+    "stars3": "별 3개",
+    "retry": "다시하기",
+    "next": "다음 스테이지",
+    "backToMenu": "메뉴로 돌아가기"
+  },
+  "settings": {
+    "title": "설정",
+    "sensitivity": "조종 민감도",
+    "sensitivityEasy": "쉬움",
+    "sensitivityNormal": "보통",
+    "sensitivityExpert": "전문가",
+    "sensitivityDescEasy": "어린이에게 적합 (4세+)",
+    "sensitivityDescNormal": "모두를 위한 균형 잡힌 조종",
+    "sensitivityDescExpert": "실속이 있는 리얼 비행",
+    "language": "언어",
+    "sound": "사운드",
+    "on": "켜기",
+    "off": "끄기"
+  },
+  "common": {
+    "back": "뒤로",
+    "confirm": "확인",
+    "cancel": "취소",
+    "loading": "로딩 중..."
+  }
+}

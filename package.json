@@ -1,0 +1,36 @@
+{
+  "name": "expo-app",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "55.0.10-canary-20260327-0789fbc",
+    "expo-av": "^16.0.8",
+    "expo-constants": "55.0.10-canary-20260327-0789fbc",
+    "expo-gl": "55.0.11-canary-20260327-0789fbc",
+    "expo-linking": "55.0.10-canary-20260327-0789fbc",
+    "expo-localization": "55.0.10-canary-20260327-0789fbc",
+    "expo-router": "55.0.9-canary-20260327-0789fbc",
+    "expo-screen-orientation": "55.0.10-canary-20260327-0789fbc",
+    "expo-sensors": "55.0.10-canary-20260327-0789fbc",
+    "expo-status-bar": "55.0.5-canary-20260327-0789fbc",
+    "expo-three": "^8.0.0",
+    "i18next": "^25.10.10",
+    "react": "19.2.0",
+    "react-i18next": "^17.0.0",
+    "react-native": "0.83.4",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "@types/three": "^0.183.1",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

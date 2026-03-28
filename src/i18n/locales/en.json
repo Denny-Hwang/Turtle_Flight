@@ -1,0 +1,79 @@
+{
+  "app": {
+    "title": "Turtle Flight",
+    "subtitle": "A Sky Adventure for Animals That Can't Fly"
+  },
+  "home": {
+    "play": "Play",
+    "characters": "Characters",
+    "settings": "Settings",
+    "freeFlightButton": "Free Flight",
+    "stepGoalButton": "Step Goal"
+  },
+  "characters": {
+    "selectTitle": "Choose Your Flyer",
+    "selectVehicle": "Choose Vehicle",
+    "turbo": { "name": "Turbo", "species": "Turtle", "vehicle": "Shell Jet", "desc": "A jet-powered shell strapped to his back" },
+    "pip": { "name": "Pip", "species": "Penguin", "vehicle": "Belly Glider", "desc": "Glides on his belly through the sky" },
+    "nutty": { "name": "Nutty", "species": "Hamster", "vehicle": "Hamster Ball Copter", "desc": "A hamster ball turned helicopter" },
+    "mochi": { "name": "Mochi", "species": "Cat", "vehicle": "Magic Broom", "desc": "Rides a magical broomstick" },
+    "bounce": { "name": "Bounce", "species": "Frog", "vehicle": "Balloon Body", "desc": "Inflates like a balloon to fly" },
+    "hoppy": { "name": "Hoppy", "species": "Bunny", "vehicle": "Ear Copter", "desc": "Ears spin like helicopter blades" },
+    "cloudSurf": "Cloud Surf"
+  },
+  "flight": {
+    "speed": "Speed",
+    "altitude": "Altitude",
+    "time": "Time",
+    "stars": "Stars",
+    "boost": "Boost",
+    "pause": "Pause",
+    "resume": "Resume",
+    "quit": "Quit",
+    "quitConfirm": "Quit flight?"
+  },
+  "hud": {
+    "kmh": "KM/H",
+    "m": "M",
+    "north": "N",
+    "south": "S",
+    "east": "E",
+    "west": "W"
+  },
+  "mission": {
+    "title": "Step Goal",
+    "stage": "Stage",
+    "stage1": { "name": "Sky Walk", "desc": "Fly through 10 rings in order" },
+    "stage2": { "name": "Cloud Maze", "desc": "Navigate between cloud pillars" },
+    "stage3": { "name": "Valley Flight", "desc": "Low-altitude flight through a winding valley" },
+    "stage4": { "name": "Mountain Crossing", "desc": "Fly through rings atop 7 peaks" },
+    "stage5": { "name": "Sky Race", "desc": "Complete the air race course" },
+    "complete": "Stage Complete!",
+    "stars1": "1 Star",
+    "stars2": "2 Stars",
+    "stars3": "3 Stars",
+    "retry": "Retry",
+    "next": "Next Stage",
+    "backToMenu": "Back to Menu"
+  },
+  "settings": {
+    "title": "Settings",
+    "sensitivity": "Sensitivity",
+    "sensitivityEasy": "Easy",
+    "sensitivityNormal": "Normal",
+    "sensitivityExpert": "Expert",
+    "sensitivityDescEasy": "Best for young children (4+)",
+    "sensitivityDescNormal": "Balanced for everyone",
+    "sensitivityDescExpert": "Realistic with stall mechanics",
+    "language": "Language",
+    "sound": "Sound",
+    "on": "On",
+    "off": "Off"
+  },
+  "common": {
+    "back": "Back",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  }
+}

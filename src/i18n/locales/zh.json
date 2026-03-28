@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "不会飞的动物们的天空冒险" },
+  "home": { "play": "开始游戏", "characters": "角色选择", "settings": "设置", "freeFlightButton": "自由飞行", "stepGoalButton": "闯关模式" },
+  "characters": {
+    "selectTitle": "选择角色", "selectVehicle": "选择载具",
+    "turbo": { "name": "Turbo", "species": "乌龟", "vehicle": "龟壳喷射器", "desc": "背着喷射器在天空翱翔的小乌龟" },
+    "pip": { "name": "Pip", "species": "企鹅", "vehicle": "肚皮滑翔机", "desc": "用圆滚滚的肚皮滑翔飞行的企鹅" },
+    "nutty": { "name": "Nutty", "species": "仓鼠", "vehicle": "仓鼠球直升机", "desc": "乘坐仓鼠球直升机飞上天空的仓鼠" },
+    "mochi": { "name": "Mochi", "species": "猫咪", "vehicle": "魔法扫帚", "desc": "骑着魔法扫帚飞行的神秘猫咪" },
+    "bounce": { "name": "Bounce", "species": "青蛙", "vehicle": "气球身体", "desc": "像气球一样膨胀飞上天空的青蛙" },
+    "hoppy": { "name": "Hoppy", "species": "兔子", "vehicle": "耳朵直升机", "desc": "用耳朵当螺旋桨飞行的兔子" },
+    "cloudSurf": "云朵冲浪板"
+  },
+  "flight": { "speed": "速度", "altitude": "高度", "time": "时间", "stars": "星星", "boost": "加速", "pause": "暂停", "resume": "继续", "quit": "退出", "quitConfirm": "确定要退出飞行吗？" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "北", "south": "南", "east": "东", "west": "西" },
+  "mission": {
+    "title": "闯关模式", "stage": "第{{n}}关",
+    "stage1": { "name": "天空漫步", "desc": "按顺序飞过10个圆环" },
+    "stage2": { "name": "云中迷宫", "desc": "在云柱之间穿梭飞行" },
+    "stage3": { "name": "峡谷飞行", "desc": "在蜿蜒的峡谷中低空飞行" },
+    "stage4": { "name": "翻越群山", "desc": "飞过7座山峰顶端的圆环" },
+    "stage5": { "name": "天空竞速", "desc": "完成空中竞速赛道" },
+    "complete": "关卡完成！", "stars1": "铜翼", "stars2": "银翼", "stars3": "金翼", "retry": "重试", "next": "下一关", "backToMenu": "返回菜单"
+  },
+  "settings": { "title": "设置", "sensitivity": "灵敏度", "sensitivityEasy": "简单", "sensitivityNormal": "普通", "sensitivityExpert": "专家", "sensitivityDescEasy": "大死区，平滑控制，适合初学者", "sensitivityDescNormal": "均衡操控，适合大多数玩家", "sensitivityDescExpert": "精准操控，包含失速机制", "language": "语言", "sound": "音效", "on": "开", "off": "关" },
+  "common": { "back": "返回", "confirm": "确认", "cancel": "取消", "loading": "加载中..." }
+}

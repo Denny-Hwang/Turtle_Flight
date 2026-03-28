@@ -1,0 +1,27 @@
+{
+  "app": { "title": "Turtle Flight", "subtitle": "उड़ न सकने वाले जानवरों का आसमानी साहसिक अभियान" },
+  "home": { "play": "खेलें", "characters": "पात्र", "settings": "सेटिंग्स", "freeFlightButton": "मुक्त उड़ान", "stepGoalButton": "मिशन मोड" },
+  "characters": {
+    "selectTitle": "अपना पात्र चुनें", "selectVehicle": "अपना वाहन चुनें",
+    "turbo": { "name": "Turbo", "species": "कछुआ", "vehicle": "खोल जेट", "desc": "अपने खोल पर जेट लगाकर आसमान में उड़ने वाला कछुआ" },
+    "pip": { "name": "Pip", "species": "पेंगुइन", "vehicle": "पेट ग्लाइडर", "desc": "अपने गोल-मटोल पेट पर ग्लाइड करने वाला पेंगुइन" },
+    "nutty": { "name": "Nutty", "species": "हैम्स्टर", "vehicle": "हैम्स्टर बॉल कॉप्टर", "desc": "हैम्स्टर बॉल हेलीकॉप्टर में उड़ने वाला हैम्स्टर" },
+    "mochi": { "name": "Mochi", "species": "बिल्ली", "vehicle": "जादुई झाड़ू", "desc": "जादुई झाड़ू पर उड़ने वाली रहस्यमयी बिल्ली" },
+    "bounce": { "name": "Bounce", "species": "मेंढक", "vehicle": "गुब्बारा शरीर", "desc": "गुब्बारे की तरह फूलकर उड़ने वाला मेंढक" },
+    "hoppy": { "name": "Hoppy", "species": "खरगोश", "vehicle": "कान कॉप्टर", "desc": "अपने कानों को प्रोपेलर बनाकर उड़ने वाला खरगोश" },
+    "cloudSurf": "क्लाउड सर्फ़"
+  },
+  "flight": { "speed": "गति", "altitude": "ऊँचाई", "time": "समय", "stars": "तारे", "boost": "बूस्ट", "pause": "रुकें", "resume": "जारी रखें", "quit": "छोड़ें", "quitConfirm": "क्या आप वाकई उड़ान छोड़ना चाहते हैं?" },
+  "hud": { "kmh": "KM/H", "m": "M", "north": "उत्तर", "south": "दक्षिण", "east": "पूर्व", "west": "पश्चिम" },
+  "mission": {
+    "title": "मिशन मोड", "stage": "चरण {{n}}",
+    "stage1": { "name": "आसमानी सैर", "desc": "क्रम में 10 छल्लों से गुज़रें" },
+    "stage2": { "name": "बादल भूलभुलैया", "desc": "बादल के स्तंभों के बीच से उड़ें" },
+    "stage3": { "name": "घाटी उड़ान", "desc": "घुमावदार घाटी में निचली उड़ान भरें" },
+    "stage4": { "name": "पर्वत पार", "desc": "7 चोटियों पर बने छल्लों से गुज़रें" },
+    "stage5": { "name": "आसमानी दौड़", "desc": "हवाई दौड़ का कोर्स पूरा करें" },
+    "complete": "चरण पूरा!", "stars1": "कांस्य पंख", "stars2": "रजत पंख", "stars3": "स्वर्ण पंख", "retry": "पुनः प्रयास", "next": "अगला", "backToMenu": "मेनू पर वापस"
+  },
+  "settings": { "title": "सेटिंग्स", "sensitivity": "संवेदनशीलता", "sensitivityEasy": "आसान", "sensitivityNormal": "सामान्य", "sensitivityExpert": "विशेषज्ञ", "sensitivityDescEasy": "बड़ा डेड ज़ोन, सहज नियंत्रण, शुरुआती खिलाड़ियों के लिए", "sensitivityDescNormal": "संतुलित नियंत्रण, अधिकांश खिलाड़ियों के लिए", "sensitivityDescExpert": "सटीक नियंत्रण, स्टॉल मैकेनिक शामिल", "language": "भाषा", "sound": "ध्वनि", "on": "चालू", "off": "बंद" },
+  "common": { "back": "वापस", "confirm": "पुष्टि करें", "cancel": "रद्द करें", "loading": "लोड हो रहा है..." }
+}
