@@ -3,6 +3,7 @@ import SwiftUI
 struct MissionHUD: View {
     let missionEngine: MissionEngine
     @ObservedObject var missionVM: MissionViewModel
+    var onExit: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -122,6 +123,12 @@ struct MissionHUD: View {
             }
 
             HStack(spacing: 16) {
+                Button("홈으로") {
+                    missionVM.returnToSelect()
+                    onExit?()
+                }
+                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
+
                 Button("다시 도전") {
                     missionVM.returnToSelect()
                 }
@@ -150,10 +157,18 @@ struct MissionHUD: View {
                 .font(.system(size: 14))
                 .foregroundColor(.white)
 
-            Button("다시 도전") {
-                missionVM.returnToSelect()
+            HStack(spacing: 16) {
+                Button("홈으로") {
+                    missionVM.returnToSelect()
+                    onExit?()
+                }
+                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
+
+                Button("다시 도전") {
+                    missionVM.returnToSelect()
+                }
+                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))
             }
-            .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))
         }
         .padding(32)
         .background(

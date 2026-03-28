@@ -1,5 +1,6 @@
 import Foundation
 import SceneKit
+import AVFoundation
 import Combine
 
 final class FlightViewModel: ObservableObject {
@@ -91,11 +92,19 @@ final class FlightViewModel: ObservableObject {
         // Start gyro
         gyroController.start()
         isFlying = true
+
+        // Start audio
+        let audio = AudioManager.shared
+        audio.startBGM(theme: theme.rawValue)
+        if let def = VehicleDefinition.definition(for: vehicle) {
+            audio.playVehicleSound(def.soundEffect)
+        }
     }
 
     func stopFlight() {
         gyroController.stop()
         isFlying = false
+        AudioManager.shared.stopAll()
     }
 
     /// Main update loop - called every frame from SCNSceneRendererDelegate
@@ -151,6 +160,9 @@ final class FlightViewModel: ObservableObject {
         if let pos = characterNode?.position {
             let collected = itemSystem?.checkCollection(playerPosition: pos) ?? 0
             starsCollected += collected
+            if collected > 0 {
+                AudioManager.shared.playStarCollect()
+            }
             for _ in 0..<collected {
                 missionEngine?.registerStarCollected()
             }
@@ -171,6 +183,7 @@ final class FlightViewModel: ObservableObject {
 
     func activateBoost() {
         isBoosting = true
+        AudioManager.shared.playBoost()
     }
 
     func fireItem() {

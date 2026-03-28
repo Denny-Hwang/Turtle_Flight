@@ -45,11 +45,13 @@ final class MissionViewModel: ObservableObject {
         lastResult = result
         progress.updateStageResult(result)
         missionState = .completed
+        AudioManager.shared.playStageClear()
         save()
     }
 
     func failMission(reason: String) {
         missionState = .failed(reason)
+        AudioManager.shared.playStageFail()
     }
 
     func returnToSelect() {
