@@ -1,0 +1,8 @@
+/* TurtleFlight Localizable.strings — English (en)
+   v1 release: only critical user-facing strings are seeded here.
+   Remaining hardcoded Korean strings are migrated incrementally. */
+
+// Flight - gyro availability
+"flight.gyro.unavailable.title" = "Gyroscope unavailable";
+"flight.gyro.unavailable.message" = "This device doesn't support the gyroscope sensor. Please play on a device that has one.";
+"common.ok" = "OK";

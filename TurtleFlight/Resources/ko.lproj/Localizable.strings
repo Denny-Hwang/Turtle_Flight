@@ -1,0 +1,8 @@
+/* TurtleFlight Localizable.strings — Korean (ko)
+   v1 출시 기준 critical 사용자 표시 문자열만 우선 등록.
+   나머지 한국어 하드코딩은 점진적으로 NSLocalizedString 으로 마이그레이션. */
+
+// Flight - gyro availability
+"flight.gyro.unavailable.title" = "자이로스코프를 사용할 수 없습니다";
+"flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.";
+"common.ok" = "확인";

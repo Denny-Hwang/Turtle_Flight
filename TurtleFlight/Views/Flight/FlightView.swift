@@ -21,8 +21,16 @@ struct FlightView: View {
                 scene: scene,
                 flightVM: flightVM,
                 onUpdate: { time in
-                    let delta = lastUpdateTime == 0 ? 0.016 : Float(time - lastUpdateTime)
+                    // Skip the very first frame: with no prior timestamp, any
+                    // assumed delta either stutters (too small) or pops the
+                    // camera (too large). Establish the baseline and bail.
+                    guard lastUpdateTime != 0 else {
+                        lastUpdateTime = time
+                        return
+                    }
+                    let delta = Float(time - lastUpdateTime)
                     lastUpdateTime = time
+                    // Clamp for tab-switch / debugger pause spikes.
                     flightVM.update(deltaTime: min(delta, 0.05))
                 }
             )
@@ -63,12 +71,15 @@ struct FlightView: View {
                 break
             }
         }
-        .alert("자이로스코프를 사용할 수 없습니다", isPresented: $showGyroAlert) {
-            Button("확인") {
+        .alert(
+            NSLocalizedString("flight.gyro.unavailable.title", comment: "Title for alert when gyro sensor is missing"),
+            isPresented: $showGyroAlert
+        ) {
+            Button(NSLocalizedString("common.ok", comment: "Generic OK button")) {
                 dismiss()
             }
         } message: {
-            Text("이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.")
+            Text(NSLocalizedString("flight.gyro.unavailable.message", comment: "Body for alert when gyro sensor is missing"))
         }
         .statusBar(hidden: true)
     }
