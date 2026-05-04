@@ -10,12 +10,30 @@ final class AudioManager {
     private var sfxPlayers: [String: AVAudioPlayer] = [:]
     private var activeLoopPlayer: AVAudioPlayer?
 
-    private var isMuted = false
+    /// Cached WAV blobs keyed by deterministic (kind, parameters) so we don't
+    /// re-synthesise the same 30s BGM (~1.3 MB) every time a flight starts.
+    private var wavCache: [String: Data] = [:]
+
+    /// Theme/name we last requested - so we can resume after an interruption.
+    private var lastBGMTheme: String?
+    private var lastVehicleSound: String?
+
+    private(set) var isMuted: Bool {
+        didSet {
+            UserDefaults.standard.set(isMuted, forKey: Keys.muted)
+        }
+    }
     private var bgmVolume: Float = 0.3
     private var sfxVolume: Float = 0.5
 
+    private enum Keys {
+        static let muted = "audio.muted"
+    }
+
     private init() {
+        isMuted = UserDefaults.standard.bool(forKey: Keys.muted)
         configureAudioSession()
+        registerSessionObservers()
     }
 
     // MARK: - Audio Session
@@ -30,13 +48,76 @@ final class AudioManager {
         }
     }
 
+    private func registerSessionObservers() {
+        let center = NotificationCenter.default
+        center.addObserver(
+            self,
+            selector: #selector(handleInterruption(_:)),
+            name: AVAudioSession.interruptionNotification,
+            object: nil
+        )
+        center.addObserver(
+            self,
+            selector: #selector(handleRouteChange(_:)),
+            name: AVAudioSession.routeChangeNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleInterruption(_ note: Notification) {
+        guard
+            let info = note.userInfo,
+            let typeRaw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeRaw)
+        else { return }
+
+        switch type {
+        case .began:
+            // Phone call, Siri, etc. — iOS already paused us. Just drop our refs
+            // so we resume cleanly on `.ended`.
+            bgmPlayer?.pause()
+            activeLoopPlayer?.pause()
+        case .ended:
+            // Apple recommends only resuming if the system says we should.
+            let optsRaw = info[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            let opts = AVAudioSession.InterruptionOptions(rawValue: optsRaw)
+            if opts.contains(.shouldResume), !isMuted {
+                bgmPlayer?.play()
+                activeLoopPlayer?.play()
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    @objc private func handleRouteChange(_ note: Notification) {
+        guard
+            let info = note.userInfo,
+            let reasonRaw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
+            let reason = AVAudioSession.RouteChangeReason(rawValue: reasonRaw),
+            reason == .oldDeviceUnavailable
+        else { return }
+        // User unplugged headphones / disconnected AirPods — Apple HIG says
+        // pause rather than blast the speaker.
+        bgmPlayer?.pause()
+        activeLoopPlayer?.pause()
+    }
+
     // MARK: - BGM (Procedurally Generated)
 
     func startBGM(theme: String = "sky") {
+        lastBGMTheme = theme
         guard !isMuted else { return }
         stopBGM()
 
-        let data = SynthAudio.generateBGM(theme: theme, durationSeconds: 30)
+        let key = "bgm:\(theme)"
+        let data: Data
+        if let cached = wavCache[key] {
+            data = cached
+        } else {
+            data = SynthAudio.generateBGM(theme: theme, durationSeconds: 30)
+            wavCache[key] = data
+        }
         play(data: data, volume: bgmVolume, loops: -1) { [weak self] player in
             self?.bgmPlayer = player
         }
@@ -50,10 +131,18 @@ final class AudioManager {
     // MARK: - Vehicle SFX
 
     func playVehicleSound(_ soundName: String) {
+        lastVehicleSound = soundName
         guard !isMuted else { return }
         stopVehicleLoop()
 
-        let data = SynthAudio.generateVehicleSFX(name: soundName, durationSeconds: 4)
+        let key = "vehicle:\(soundName)"
+        let data: Data
+        if let cached = wavCache[key] {
+            data = cached
+        } else {
+            data = SynthAudio.generateVehicleSFX(name: soundName, durationSeconds: 4)
+            wavCache[key] = data
+        }
         play(data: data, volume: sfxVolume * 0.4, loops: -1) { [weak self] player in
             self?.activeLoopPlayer = player
         }
@@ -107,12 +196,22 @@ final class AudioManager {
     func setMuted(_ muted: Bool) {
         isMuted = muted
         if muted {
-            bgmPlayer?.volume = 0
-            activeLoopPlayer?.volume = 0
+            bgmPlayer?.pause()
+            activeLoopPlayer?.pause()
         } else {
-            bgmPlayer?.volume = bgmVolume
-            activeLoopPlayer?.volume = sfxVolume * 0.4
+            // Re-engage what was last requested. If players exist, just resume;
+            // otherwise re-spawn them via the same code path that built the
+            // first ones (this hits the wavCache, so no re-synthesis cost).
+            if bgmPlayer != nil { bgmPlayer?.play() }
+            else if let theme = lastBGMTheme { startBGM(theme: theme) }
+
+            if activeLoopPlayer != nil { activeLoopPlayer?.play() }
+            else if let name = lastVehicleSound { playVehicleSound(name) }
         }
+    }
+
+    func toggleMute() {
+        setMuted(!isMuted)
     }
 
     func stopAll() {
@@ -376,7 +475,10 @@ enum SynthAudio {
         let dataSize = samples.count * (bitsPerSample / 8)
         let fileSize = 36 + dataSize
 
+        // Pre-size to avoid the O(N) reallocation during the per-sample append
+        // loop. 44 bytes of header + 2 bytes per sample.
         var data = Data()
+        data.reserveCapacity(44 + dataSize)
 
         // RIFF header
         data.append(contentsOf: "RIFF".utf8)
