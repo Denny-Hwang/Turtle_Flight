@@ -1,11 +1,16 @@
 import Foundation
 import Combine
+import os
+
+private let log = Logger(subsystem: "com.turtleflight.app", category: "MissionViewModel")
 
 final class MissionViewModel: ObservableObject {
     @Published var currentStageIndex: Int = 0
     @Published var missionState: MissionDisplayState = .selecting
     @Published var lastResult: StageResult?
     @Published var progress: PlayerProgress = .defaultProgress
+    /// Set when persistence fails so the UI can surface a non-blocking warning.
+    @Published var lastPersistenceError: String?
 
     enum MissionDisplayState {
         case selecting
@@ -61,15 +66,24 @@ final class MissionViewModel: ObservableObject {
     // MARK: - Persistence
 
     func save() {
-        if let data = try? JSONEncoder().encode(progress) {
+        do {
+            let data = try JSONEncoder().encode(progress)
             UserDefaults.standard.set(data, forKey: "playerProgress")
+            lastPersistenceError = nil
+        } catch {
+            log.error("Failed to encode PlayerProgress: \(error.localizedDescription, privacy: .public)")
+            lastPersistenceError = error.localizedDescription
         }
     }
 
     func load() {
-        if let data = UserDefaults.standard.data(forKey: "playerProgress"),
-           let saved = try? JSONDecoder().decode(PlayerProgress.self, from: data) {
-            progress = saved
+        guard let data = UserDefaults.standard.data(forKey: "playerProgress") else { return }
+        do {
+            progress = try JSONDecoder().decode(PlayerProgress.self, from: data)
+        } catch {
+            // Corrupt payload - keep defaults and clear it so we don't loop on the bad blob.
+            log.error("Failed to decode PlayerProgress, resetting: \(error.localizedDescription, privacy: .public)")
+            UserDefaults.standard.removeObject(forKey: "playerProgress")
         }
     }
 }
