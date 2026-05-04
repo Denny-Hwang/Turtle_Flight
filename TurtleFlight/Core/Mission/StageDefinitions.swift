@@ -16,6 +16,15 @@ struct StageDefinition {
     let star2Condition: String
     let learningGoal: String
 
+    /// Localized stage name shown in the HUD. Looks up `stage.<index>.name`
+    /// in Localizable.strings; falls back to the legacy `koreanName` if a
+    /// new stage is added without a matching entry.
+    var displayName: String {
+        let key = "stage.\(index).name"
+        let localized = NSLocalizedString(key, comment: key)
+        return localized == key ? koreanName : localized
+    }
+
     /// Generate ring positions for this stage
     func generateRings() -> [SCNVector3] {
         switch index {

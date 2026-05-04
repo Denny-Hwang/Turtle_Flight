@@ -30,7 +30,7 @@ struct HomeView: View {
                             .font(.system(size: 42, weight: .bold, design: .rounded))
                             .foregroundColor(Color(hex: Constants.Colors.panelDark))
 
-                        Text("날 수 없는 동물들의 하늘 모험")
+                        Text(L10n.t("home.subtitle"))
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(Color(hex: Constants.Colors.panelDark).opacity(0.7))
                     }
@@ -41,8 +41,8 @@ struct HomeView: View {
                     // Mode Selection
                     HStack(spacing: 20) {
                         ModeButton(
-                            title: "자유 비행",
-                            subtitle: "Free Flight",
+                            title: L10n.t("flight.mode.freePlay"),
+                            subtitle: L10n.t("flight.mode.freePlay.subtitle"),
                             icon: "cloud.sun.fill",
                             color: Color(hex: Constants.Colors.skyBlue)
                         ) {
@@ -51,7 +51,7 @@ struct HomeView: View {
                         }
 
                         ModeButton(
-                            title: "Step Goal",
+                            title: L10n.t("flight.mode.stepGoal"),
                             subtitle: "\(missionVM.progress.totalStars)/15",
                             icon: "target",
                             color: Color(hex: Constants.Colors.starGold)
@@ -63,7 +63,7 @@ struct HomeView: View {
 
                     // Sensitivity Selection
                     VStack(spacing: 12) {
-                        Text("조종 민감도")
+                        Text(L10n.t("home.sensitivity.label"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(Color(hex: Constants.Colors.panelDark).opacity(0.7))
 
@@ -85,7 +85,7 @@ struct HomeView: View {
                     // Stats
                     HStack {
                         Label(
-                            "최고기록: \(missionVM.progress.bestFreeFlightStars)",
+                            L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
                             systemImage: "star.fill"
                         )
                         .foregroundColor(Color(hex: Constants.Colors.starGold))
@@ -94,7 +94,7 @@ struct HomeView: View {
                             .foregroundColor(.gray)
 
                         Label(
-                            "비행시간 \(missionVM.progress.totalFlightTime.mmss)",
+                            L10n.format("home.stats.flightTime", missionVM.progress.totalFlightTime.mmss),
                             systemImage: "clock"
                         )
                         .foregroundColor(Color(hex: Constants.Colors.hudCyan))

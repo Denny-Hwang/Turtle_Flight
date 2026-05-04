@@ -65,7 +65,7 @@ final class MissionEngine {
 
         // Check time limit
         if let timeLimit = stage.timeLimit, elapsedTime >= timeLimit {
-            state = .failed(reason: "시간 초과!")
+            state = .failed(reason: L10n.t("mission.fail.timeout"))
             return
         }
 
@@ -214,7 +214,7 @@ final class MissionEngine {
 
     var progressText: String {
         guard let stage = currentStage else { return "" }
-        return "링 \(currentRingIndex)/\(stage.ringCount)"
+        return L10n.format("mission.progress.ringFormat", currentRingIndex, stage.ringCount)
     }
 
     var remainingTime: TimeInterval? {

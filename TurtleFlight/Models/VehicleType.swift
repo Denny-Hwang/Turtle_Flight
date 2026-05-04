@@ -13,25 +13,13 @@ enum VehicleType: String, CaseIterable, Codable {
 
     var displayName: String {
         switch self {
-        case .shellJet:      return "Shell Jet"
-        case .bellyGlider:   return "Belly Glider"
-        case .hamsterCopter: return "Hamster Ball Copter"
-        case .magicBroom:    return "Magic Broom"
-        case .balloonBody:   return "Balloon Body"
-        case .earCopter:     return "Ear Copter"
-        case .cloudSurf:     return "Cloud Surf"
-        }
-    }
-
-    var koreanName: String {
-        switch self {
-        case .shellJet:      return "등껍질 제트"
-        case .bellyGlider:   return "배 활공"
-        case .hamsterCopter: return "햄스터볼 헬리콥터"
-        case .magicBroom:    return "마법 빗자루"
-        case .balloonBody:   return "풍선 비행"
-        case .earCopter:     return "귀 헬리콥터"
-        case .cloudSurf:     return "구름 서핑"
+        case .shellJet:      return L10n.t("vehicle.shellJet")
+        case .bellyGlider:   return L10n.t("vehicle.bellyGlider")
+        case .hamsterCopter: return L10n.t("vehicle.hamsterCopter")
+        case .magicBroom:    return L10n.t("vehicle.magicBroom")
+        case .balloonBody:   return L10n.t("vehicle.balloonBody")
+        case .earCopter:     return L10n.t("vehicle.earCopter")
+        case .cloudSurf:     return L10n.t("vehicle.cloudSurf")
         }
     }
 

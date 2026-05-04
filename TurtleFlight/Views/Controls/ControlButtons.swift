@@ -14,12 +14,12 @@ struct ControlButtons: View {
 
                 HStack(spacing: 12) {
                     // Calibrate button
-                    SmallButton(icon: "scope", label: "보정") {
+                    SmallButton(icon: "scope", label: L10n.t("flight.control.calibrate")) {
                         onCalibrate()
                     }
 
                     // Exit button
-                    SmallButton(icon: "xmark", label: "종료") {
+                    SmallButton(icon: "xmark", label: L10n.t("flight.control.exit")) {
                         onExit()
                     }
                 }
@@ -34,7 +34,7 @@ struct ControlButtons: View {
                 // Boost Button (left bottom)
                 ThumbButton(
                     icon: "flame.fill",
-                    label: "부스터",
+                    label: L10n.t("flight.control.boost"),
                     color: Color(hex: Constants.Colors.boostOrange),
                     action: onBoost
                 )
@@ -45,7 +45,7 @@ struct ControlButtons: View {
                 // Fire Button (right bottom)
                 ThumbButton(
                     icon: "star.fill",
-                    label: "아이템",
+                    label: L10n.t("flight.control.item"),
                     color: Color(hex: Constants.Colors.starGold),
                     action: onFire
                 )

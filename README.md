@@ -61,10 +61,13 @@ TurtleFlight/
 │   ├── HUD/                # HUD overlay & mission HUD
 │   └── Controls/           # On-screen control buttons
 ├── Utils/                  # Constants, extensions, math helpers
-└── Resources/              # Assets, sounds, 3D models
-Tests/                      # Unit tests for core systems
+└── Resources/
+    ├── ko.lproj/           # Korean Localizable.strings
+    └── en.lproj/           # English Localizable.strings
+Tests/                      # XCTest suites for core systems (109+ cases)
 docs/
-└── SDD.md                  # Software Development Document
+├── SDD.md                  # Software Development Document
+└── VALIDATION_REPORT.md    # Pre-submission validation report
 ```
 
 ## Requirements
@@ -88,9 +91,16 @@ docs/
 
 > **Note:** Gyroscope controls require a physical device. The simulator will use fallback input.
 
+## Localization
+
+Korean (`ko`) and English (`en`) are bundled. Strings live in
+`TurtleFlight/Resources/<locale>.lproj/Localizable.strings`. The development
+region is `en` and Korean is the primary marketing locale for v1.
+
 ## Documentation
 
-See [`docs/SDD.md`](docs/SDD.md) for the full Software Development Document including architecture, roadmap, and technical specifications.
+- [`docs/SDD.md`](docs/SDD.md) — Software Development Document (architecture, roadmap, technical spec)
+- [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) — Pre-submission validation report (109+ XCTest cases, bug fixes)
 
 ## License
 

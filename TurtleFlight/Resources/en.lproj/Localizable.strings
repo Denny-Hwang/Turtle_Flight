@@ -1,8 +1,63 @@
 /* TurtleFlight Localizable.strings — English (en)
-   v1 release: only critical user-facing strings are seeded here.
-   Remaining hardcoded Korean strings are migrated incrementally. */
+   Conventions match ko.lproj/Localizable.strings. */
 
-// Flight - gyro availability
-"flight.gyro.unavailable.title" = "Gyroscope unavailable";
+// MARK: - Common
+"common.ok"         = "OK";
+"common.home"       = "Home";
+"common.retry"      = "Retry";
+"common.next"       = "Next";
+
+// MARK: - Home screen
+"home.subtitle"           = "A sky adventure for animals that can't fly";
+"home.sensitivity.label"  = "Control Sensitivity";
+"home.stats.bestStars"    = "Best: %lld";
+"home.stats.flightTime"   = "Flight time %@";
+
+// MARK: - Flight modes
+"flight.mode.freePlay"    = "Free Flight";
+"flight.mode.stepGoal"    = "Step Goal";
+"flight.mode.freePlay.subtitle" = "Open sky";
+
+// MARK: - Flight - gyro availability
+"flight.gyro.unavailable.title"   = "Gyroscope unavailable";
 "flight.gyro.unavailable.message" = "This device doesn't support the gyroscope sensor. Please play on a device that has one.";
-"common.ok" = "OK";
+
+// MARK: - Control buttons
+"flight.control.calibrate" = "Calibrate";
+"flight.control.exit"      = "Exit";
+"flight.control.boost"     = "Boost";
+"flight.control.item"      = "Item";
+
+// MARK: - Mission HUD
+"mission.stage.titleFormat"   = "Stage %lld: %@";
+"mission.collisions.format"   = "Hits: %lld";
+"mission.progress.ringFormat" = "Ring %lld/%lld";
+"mission.result.clear"        = "Stage Clear!";
+"mission.result.timeFormat"        = "Time: %@";
+"mission.result.collisionsFormat"  = "Hits: %lld";
+"mission.result.failed"       = "Mission Failed";
+"mission.fail.timeout"        = "Time's up!";
+
+// MARK: - Stage names (display)
+"stage.0.name" = "Sky Walk";
+"stage.1.name" = "Cloud Maze";
+"stage.2.name" = "Valley Run";
+"stage.3.name" = "Mountain Cross";
+"stage.4.name" = "Sky Race";
+
+// MARK: - Vehicle display names
+"vehicle.shellJet"      = "Shell Jet";
+"vehicle.bellyGlider"   = "Belly Glider";
+"vehicle.hamsterCopter" = "Hamster Ball Copter";
+"vehicle.magicBroom"    = "Magic Broom";
+"vehicle.balloonBody"   = "Balloon Body";
+"vehicle.earCopter"     = "Ear Copter";
+"vehicle.cloudSurf"     = "Cloud Surf";
+
+// MARK: - Character descriptions (shown in CharacterSelectView)
+"character.turtle.description"  = "Even a slow turtle can fly!";
+"character.penguin.description" = "Glides through the sky on his belly!";
+"character.hamster.description" = "A hamster ball takes to the skies!";
+"character.cat.description"     = "Soars on a magic broomstick!";
+"character.frog.description"    = "Floats up like a balloon!";
+"character.bunny.description"   = "Spins her ears like a propeller!";
