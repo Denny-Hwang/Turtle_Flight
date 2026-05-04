@@ -103,7 +103,10 @@ final class FlightEngine {
         state.position.y = state.altitude
         state.position.z += dz
 
-        // Update rotation (euler angles for SceneKit node)
+        // Authoritative euler for the character node.
+        // CharacterAnimator may layer additional per-vehicle motion on top
+        // of these axes (additive on .x for bellyGlider, override on .z
+        // for cloudSurf, etc.) but no longer recomputes the base bank/pitch.
         let bankAngle = -Float(rollInput) * Constants.Camera.bankingAngle * 2
         let pitchAngle = Float(pitchInput) * 0.2
         state.rotation = SCNVector3(pitchAngle, -headingRad, bankAngle)

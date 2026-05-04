@@ -64,3 +64,20 @@
 "character.cat.description"     = "마법 빗자루를 타고 하늘을!";
 "character.frog.description"    = "몸이 풍선이 되어 두둥실!";
 "character.bunny.description"   = "귀를 프로펠러처럼 돌려 이륙!";
+
+// MARK: - Accessibility (VoiceOver)
+"a11y.boost.label"     = "부스터";
+"a11y.boost.hint"      = "두 번 탭하여 잠시 가속합니다";
+"a11y.item.label"      = "아이템 발사";
+"a11y.item.hint"       = "두 번 탭하여 진행 방향으로 별을 발사합니다";
+"a11y.calibrate.label" = "자이로 보정";
+"a11y.calibrate.hint"  = "두 번 탭하여 현재 기기 자세를 중립으로 설정합니다";
+"a11y.exit.label"      = "비행 종료";
+"a11y.exit.hint"       = "두 번 탭하여 홈 화면으로 돌아갑니다";
+"a11y.mode.freePlay.hint"   = "두 번 탭하여 자유 비행을 시작합니다";
+"a11y.mode.stepGoal.hint"   = "두 번 탭하여 미션 모드를 시작합니다";
+"a11y.sensitivity.easy.label"   = "조종 민감도: 쉬움";
+"a11y.sensitivity.normal.label" = "조종 민감도: 보통";
+"a11y.sensitivity.expert.label" = "조종 민감도: 전문가";
+"a11y.sensitivity.hint"         = "두 번 탭하여 이 민감도를 선택합니다";
+

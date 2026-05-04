@@ -61,3 +61,20 @@
 "character.cat.description"     = "Soars on a magic broomstick!";
 "character.frog.description"    = "Floats up like a balloon!";
 "character.bunny.description"   = "Spins her ears like a propeller!";
+
+// MARK: - Accessibility (VoiceOver)
+"a11y.boost.label"     = "Boost";
+"a11y.boost.hint"      = "Double-tap to briefly accelerate";
+"a11y.item.label"      = "Fire item";
+"a11y.item.hint"       = "Double-tap to fire a star in the direction you are flying";
+"a11y.calibrate.label" = "Calibrate gyroscope";
+"a11y.calibrate.hint"  = "Double-tap to set the current device tilt as neutral";
+"a11y.exit.label"      = "Exit flight";
+"a11y.exit.hint"       = "Double-tap to return to the home screen";
+"a11y.mode.freePlay.hint"   = "Double-tap to start free flight";
+"a11y.mode.stepGoal.hint"   = "Double-tap to start a mission";
+"a11y.sensitivity.easy.label"   = "Control sensitivity: Easy";
+"a11y.sensitivity.normal.label" = "Control sensitivity: Normal";
+"a11y.sensitivity.expert.label" = "Control sensitivity: Expert";
+"a11y.sensitivity.hint"         = "Double-tap to select this sensitivity";
+

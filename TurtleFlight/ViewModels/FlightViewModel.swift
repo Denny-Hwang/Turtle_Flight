@@ -2,6 +2,7 @@ import Foundation
 import SceneKit
 import AVFoundation
 import Combine
+import UIKit
 
 final class FlightViewModel: ObservableObject {
     // MARK: - Published State
@@ -33,18 +34,55 @@ final class FlightViewModel: ObservableObject {
     var currentMapTheme: MapTheme = .sky
 
     // MARK: - Sensitivity
+    /// User's preferred sensitivity (persisted). When Reduce Motion is on,
+    /// the engines run with `effectiveSensitivity` clamped to .easy, but
+    /// this stored choice is preserved so the user gets it back when they
+    /// disable Reduce Motion.
     @Published var sensitivityLevel: SensitivityLevel = .easy {
         didSet {
-            gyroController.updateSensitivity(sensitivityLevel)
-            flightEngine.updateSensitivity(sensitivityLevel)
+            applyEffectiveSensitivity()
             save()
         }
     }
+
+    /// True when iOS Reduce Motion is enabled. We mirror it as @Published
+    /// so SwiftUI can show an info indicator if desired.
+    @Published private(set) var reduceMotionEnabled: Bool = false
+
+    /// What's actually fed into the gyro/flight engines.
+    var effectiveSensitivity: SensitivityLevel {
+        reduceMotionEnabled ? .easy : sensitivityLevel
+    }
+
+    private var reduceMotionObserver: NSObjectProtocol?
 
     // MARK: - Init
     init() {
         flightEngine = FlightEngine()
         gyroController = GyroController()
+        reduceMotionEnabled = UIAccessibility.isReduceMotionEnabled
+        reduceMotionObserver = NotificationCenter.default.addObserver(
+            forName: UIAccessibility.reduceMotionStatusDidChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.reduceMotionEnabled = UIAccessibility.isReduceMotionEnabled
+            self.applyEffectiveSensitivity()
+        }
+        applyEffectiveSensitivity()
+    }
+
+    deinit {
+        if let token = reduceMotionObserver {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    private func applyEffectiveSensitivity() {
+        let level = effectiveSensitivity
+        gyroController.updateSensitivity(level)
+        flightEngine.updateSensitivity(level)
     }
 
     // MARK: - Flight Control

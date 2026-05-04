@@ -17,11 +17,15 @@ struct ControlButtons: View {
                     SmallButton(icon: "scope", label: L10n.t("flight.control.calibrate")) {
                         onCalibrate()
                     }
+                    .accessibilityLabel(L10n.t("a11y.calibrate.label"))
+                    .accessibilityHint(L10n.t("a11y.calibrate.hint"))
 
                     // Exit button
                     SmallButton(icon: "xmark", label: L10n.t("flight.control.exit")) {
                         onExit()
                     }
+                    .accessibilityLabel(L10n.t("a11y.exit.label"))
+                    .accessibilityHint(L10n.t("a11y.exit.hint"))
                 }
                 .padding(.trailing, 16)
                 .padding(.top, 8)
@@ -39,6 +43,8 @@ struct ControlButtons: View {
                     action: onBoost
                 )
                 .padding(.leading, Constants.Controls.buttonPadding)
+                .accessibilityLabel(L10n.t("a11y.boost.label"))
+                .accessibilityHint(L10n.t("a11y.boost.hint"))
 
                 Spacer()
 
@@ -50,6 +56,8 @@ struct ControlButtons: View {
                     action: onFire
                 )
                 .padding(.trailing, Constants.Controls.buttonPadding)
+                .accessibilityLabel(L10n.t("a11y.item.label"))
+                .accessibilityHint(L10n.t("a11y.item.hint"))
             }
             .padding(.bottom, Constants.Controls.buttonPadding)
         }

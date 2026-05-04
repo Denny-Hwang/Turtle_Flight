@@ -49,6 +49,8 @@ struct HomeView: View {
                             selectedMode = .freePlay
                             showCharacterSelect = true
                         }
+                        .accessibilityLabel(L10n.t("flight.mode.freePlay"))
+                        .accessibilityHint(L10n.t("a11y.mode.freePlay.hint"))
 
                         ModeButton(
                             title: L10n.t("flight.mode.stepGoal"),
@@ -59,6 +61,8 @@ struct HomeView: View {
                             selectedMode = .stepGoal
                             showCharacterSelect = true
                         }
+                        .accessibilityLabel(L10n.t("flight.mode.stepGoal"))
+                        .accessibilityHint(L10n.t("a11y.mode.stepGoal.hint"))
                     }
 
                     // Sensitivity Selection
@@ -75,6 +79,9 @@ struct HomeView: View {
                                 ) {
                                     flightVM.sensitivityLevel = level
                                 }
+                                .accessibilityLabel(L10n.t("a11y.sensitivity.\(level.rawValue).label"))
+                                .accessibilityHint(L10n.t("a11y.sensitivity.hint"))
+                                .accessibilityAddTraits(flightVM.sensitivityLevel == level ? .isSelected : [])
                             }
                         }
                     }

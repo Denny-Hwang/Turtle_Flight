@@ -18,9 +18,11 @@ final class CharacterAnimator {
     ) {
         animationTime += deltaTime
 
-        // Common: Banking angle based on roll
-        characterNode.eulerAngles.z = Float(-rollInput * 0.3)
-        characterNode.eulerAngles.x = Float(pitchInput * 0.2)
+        // Note: base bank (z) and pitch (x) eulerAngles are produced by
+        // FlightEngine and applied by FlightViewModel before this method
+        // runs. Vehicle-specific animations below may modulate them
+        // additively (e.g., bellyGlider adds to .x) or override them
+        // (e.g., cloudSurf re-sets .z) on purpose.
 
         // Vehicle-specific animations
         switch vehicle {
