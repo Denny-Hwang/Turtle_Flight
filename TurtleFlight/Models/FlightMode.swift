@@ -6,8 +6,8 @@ enum FlightMode: String, CaseIterable, Codable {
 
     var displayName: String {
         switch self {
-        case .freePlay: return "자유 비행"
-        case .stepGoal: return "Step Goal"
+        case .freePlay: return L10n.t("flight.mode.freePlay")
+        case .stepGoal: return L10n.t("flight.mode.stepGoal")
         }
     }
 

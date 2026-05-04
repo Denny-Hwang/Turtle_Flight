@@ -13,7 +13,7 @@ struct MissionHUD: View {
 
                 if let stage = missionVM.currentStage {
                     VStack(spacing: 4) {
-                        Text("Stage \(stage.index + 1): \(stage.koreanName)")
+                        Text(L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
                             .font(.system(size: 13, weight: .bold))
                             .foregroundColor(.white)
 
@@ -67,7 +67,7 @@ struct MissionHUD: View {
                                 Color(hex: Constants.Colors.expertRed) :
                                 Color(hex: Constants.Colors.turtleGreen)
                             )
-                        Text("접촉 \(missionEngine.collisions)회")
+                        Text(L10n.format("mission.collisions.format", missionEngine.collisions))
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.white)
                     }
@@ -99,7 +99,7 @@ struct MissionHUD: View {
 
     private var resultOverlay: some View {
         VStack(spacing: 16) {
-            Text("Stage Clear!")
+            Text(L10n.t("mission.result.clear"))
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(Color(hex: Constants.Colors.starGold))
 
@@ -113,28 +113,28 @@ struct MissionHUD: View {
                     }
                 }
 
-                Text("시간: \(result.completionTime.mmss)")
+                Text(L10n.format("mission.result.timeFormat", result.completionTime.mmss))
                     .font(.system(size: 14))
                     .foregroundColor(.white)
 
-                Text("접촉: \(result.collisions)회")
+                Text(L10n.format("mission.result.collisionsFormat", result.collisions))
                     .font(.system(size: 14))
                     .foregroundColor(.white)
             }
 
             HStack(spacing: 16) {
-                Button("홈으로") {
+                Button(L10n.t("common.home")) {
                     missionVM.returnToSelect()
                     onExit?()
                 }
                 .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
 
-                Button("다시 도전") {
+                Button(L10n.t("common.retry")) {
                     missionVM.returnToSelect()
                 }
                 .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))
 
-                Button("다음") {
+                Button(L10n.t("common.next")) {
                     missionVM.returnToSelect()
                 }
                 .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.turtleGreen)))
@@ -149,7 +149,7 @@ struct MissionHUD: View {
 
     private func failOverlay(reason: String) -> some View {
         VStack(spacing: 16) {
-            Text("Mission Failed")
+            Text(L10n.t("mission.result.failed"))
                 .font(.system(size: 24, weight: .bold))
                 .foregroundColor(Color(hex: Constants.Colors.expertRed))
 
@@ -158,13 +158,13 @@ struct MissionHUD: View {
                 .foregroundColor(.white)
 
             HStack(spacing: 16) {
-                Button("홈으로") {
+                Button(L10n.t("common.home")) {
                     missionVM.returnToSelect()
                     onExit?()
                 }
                 .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
 
-                Button("다시 도전") {
+                Button(L10n.t("common.retry")) {
                     missionVM.returnToSelect()
                 }
                 .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))

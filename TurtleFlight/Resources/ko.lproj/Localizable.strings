@@ -1,8 +1,66 @@
 /* TurtleFlight Localizable.strings — Korean (ko)
-   v1 출시 기준 critical 사용자 표시 문자열만 우선 등록.
-   나머지 한국어 하드코딩은 점진적으로 NSLocalizedString 으로 마이그레이션. */
+   Conventions:
+     • Keys: <screen>.<element>(.<subkey>)
+     • One key per logical message; reuse via "common.*" only when phrasing
+       genuinely matches across contexts. */
 
-// Flight - gyro availability
-"flight.gyro.unavailable.title" = "자이로스코프를 사용할 수 없습니다";
+// MARK: - Common
+"common.ok"         = "확인";
+"common.home"       = "홈으로";
+"common.retry"      = "다시 도전";
+"common.next"       = "다음";
+
+// MARK: - Home screen
+"home.subtitle"           = "날 수 없는 동물들의 하늘 모험";
+"home.sensitivity.label"  = "조종 민감도";
+"home.stats.bestStars"    = "최고기록: %lld";
+"home.stats.flightTime"   = "비행시간 %@";
+
+// MARK: - Flight modes
+"flight.mode.freePlay"    = "자유 비행";
+"flight.mode.stepGoal"    = "스텝 골";
+"flight.mode.freePlay.subtitle" = "Free Flight";
+
+// MARK: - Flight - gyro availability
+"flight.gyro.unavailable.title"   = "자이로스코프를 사용할 수 없습니다";
 "flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.";
-"common.ok" = "확인";
+
+// MARK: - Control buttons
+"flight.control.calibrate" = "보정";
+"flight.control.exit"      = "종료";
+"flight.control.boost"     = "부스터";
+"flight.control.item"      = "아이템";
+
+// MARK: - Mission HUD
+"mission.stage.titleFormat"   = "Stage %lld: %@";
+"mission.collisions.format"   = "접촉 %lld회";
+"mission.progress.ringFormat" = "링 %lld/%lld";
+"mission.result.clear"        = "Stage Clear!";
+"mission.result.timeFormat"        = "시간: %@";
+"mission.result.collisionsFormat"  = "접촉: %lld회";
+"mission.result.failed"       = "Mission Failed";
+"mission.fail.timeout"        = "시간 초과!";
+
+// MARK: - Stage names (display)
+"stage.0.name" = "하늘 산책";
+"stage.1.name" = "구름 미로";
+"stage.2.name" = "계곡 비행";
+"stage.3.name" = "산맥 넘기";
+"stage.4.name" = "스카이 레이스";
+
+// MARK: - Vehicle display names
+"vehicle.shellJet"      = "등껍질 제트";
+"vehicle.bellyGlider"   = "배 활공";
+"vehicle.hamsterCopter" = "햄스터볼 헬리콥터";
+"vehicle.magicBroom"    = "마법 빗자루";
+"vehicle.balloonBody"   = "풍선 비행";
+"vehicle.earCopter"     = "귀 헬리콥터";
+"vehicle.cloudSurf"     = "구름 서핑";
+
+// MARK: - Character descriptions (shown in CharacterSelectView)
+"character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";
+"character.penguin.description" = "배로 미끄러지며 하늘을 활공!";
+"character.hamster.description" = "햄스터볼이 하늘을 난다!";
+"character.cat.description"     = "마법 빗자루를 타고 하늘을!";
+"character.frog.description"    = "몸이 풍선이 되어 두둥실!";
+"character.bunny.description"   = "귀를 프로펠러처럼 돌려 이륙!";

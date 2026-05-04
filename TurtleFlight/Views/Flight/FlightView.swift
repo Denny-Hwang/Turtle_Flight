@@ -71,15 +71,10 @@ struct FlightView: View {
                 break
             }
         }
-        .alert(
-            NSLocalizedString("flight.gyro.unavailable.title", comment: "Title for alert when gyro sensor is missing"),
-            isPresented: $showGyroAlert
-        ) {
-            Button(NSLocalizedString("common.ok", comment: "Generic OK button")) {
-                dismiss()
-            }
+        .alert(L10n.t("flight.gyro.unavailable.title"), isPresented: $showGyroAlert) {
+            Button(L10n.t("common.ok")) { dismiss() }
         } message: {
-            Text(NSLocalizedString("flight.gyro.unavailable.message", comment: "Body for alert when gyro sensor is missing"))
+            Text(L10n.t("flight.gyro.unavailable.message"))
         }
         .statusBar(hidden: true)
     }
