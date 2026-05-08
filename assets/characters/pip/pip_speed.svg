@@ -1,40 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Pip - speed expression -->
+  <!-- Pip - speed -->
   <!-- Wind lines on left -->
   <path d="M30 130 Q60 132 90 130" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
   <path d="M20 175 Q60 177 95 175" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
   <path d="M30 220 Q70 222 100 220" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
   <path d="M40 265 Q75 267 105 265" stroke="#85B7EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
-  <!-- Feet streamlined back -->
-  <ellipse cx="200" cy="365" rx="35" ry="9" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
-  <!-- Body - streamlined torpedo -->
-  <ellipse cx="200" cy="265" rx="78" ry="105" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
-  <!-- Belly -->
-  <path d="M200 185 Q150 195 145 280 Q150 345 200 350 Q250 345 255 280 Q250 195 200 185 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <!-- Flippers swept back tight -->
-  <ellipse cx="135" cy="290" rx="13" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(15 135 290)"/>
-  <ellipse cx="265" cy="290" rx="13" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-15 265 290)"/>
+  <!-- Feet streamlined -->
+  <ellipse cx="200" cy="375" rx="35" ry="9" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
+  <!-- Body torpedo -->
+  <ellipse cx="200" cy="285" rx="70" ry="90" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="200" cy="290" rx="48" ry="70" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Flippers swept back -->
+  <ellipse cx="135" cy="305" rx="13" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(15 135 305)"/>
+  <ellipse cx="265" cy="305" rx="13" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-15 265 305)"/>
   <!-- Head -->
-  <ellipse cx="200" cy="135" rx="72" ry="75" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
-  <!-- Mask -->
-  <path d="M200 95 Q160 105 155 160 Q175 188 200 190 Q225 188 245 160 Q240 105 200 95 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <!-- Mohawk swept back -->
-  <path d="M188 62 Q195 50 200 60" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M198 58 Q210 48 215 62" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M210 60 Q225 55 232 65" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- Squinted focused eyes -->
-  <ellipse cx="173" cy="135" rx="11" ry="13" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <ellipse cx="227" cy="135" rx="11" ry="13" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <ellipse cx="174" cy="135" rx="6" ry="7" fill="#0C447C"/>
-  <ellipse cx="228" cy="135" rx="6" ry="7" fill="#0C447C"/>
-  <path d="M162 128 Q173 134 184 128 L184 132 Q173 138 162 132 Z" fill="#378ADD" stroke="#0C447C" stroke-width="2"/>
-  <path d="M216 128 Q227 134 238 128 L238 132 Q227 138 216 132 Z" fill="#378ADD" stroke="#0C447C" stroke-width="2"/>
-  <circle cx="172" cy="135" r="1.5" fill="#FFFFFF"/>
-  <circle cx="226" cy="135" r="1.5" fill="#FFFFFF"/>
-  <!-- Closed beak (streamlined) -->
-  <path d="M188 175 Q200 170 212 175 Q215 188 200 192 Q185 188 188 175 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
-  <line x1="188" y1="180" x2="212" y2="180" stroke="#0C447C" stroke-width="1.5"/>
-  <!-- Wind streaks across face -->
-  <line x1="125" y1="150" x2="155" y2="150" stroke="#FFFFFF" stroke-width="2.5" opacity="0.6" stroke-linecap="round"/>
-  <line x1="115" y1="175" x2="145" y2="175" stroke="#FFFFFF" stroke-width="2" opacity="0.5" stroke-linecap="round"/>
+  <circle cx="200" cy="160" r="102" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="200" cy="178" rx="58" ry="65" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Mohawk swept -->
+  <path d="M186 65 Q195 55 200 64" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M198 60 Q210 50 215 62" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M212 62 Q225 56 230 70" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Squinted eyes with upper lid -->
+  <ellipse cx="172" cy="170" rx="18" ry="16" fill="#FFFFFF" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="228" cy="170" rx="18" ry="16" fill="#FFFFFF" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="172" cy="172" rx="11" ry="9" fill="#0C447C"/>
+  <ellipse cx="228" cy="172" rx="11" ry="9" fill="#0C447C"/>
+  <path d="M154 160 Q172 170 190 160 L190 165 Q172 175 154 165 Z" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <path d="M210 160 Q228 170 246 160 L246 165 Q228 175 210 165 Z" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <circle cx="170" cy="172" r="1.5" fill="#FFFFFF"/>
+  <circle cx="226" cy="172" r="1.5" fill="#FFFFFF"/>
+  <!-- Closed beak streamlined -->
+  <path d="M188 215 Q200 210 212 215 Q215 230 200 234 Q185 230 188 215 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="188" y1="222" x2="212" y2="222" stroke="#0C447C" stroke-width="1.5"/>
+  <!-- Wind streaks -->
+  <line x1="125" y1="165" x2="155" y2="165" stroke="#FFFFFF" stroke-width="2.5" opacity="0.6" stroke-linecap="round"/>
+  <line x1="115" y1="195" x2="145" y2="195" stroke="#FFFFFF" stroke-width="2" opacity="0.5" stroke-linecap="round"/>
 </svg>

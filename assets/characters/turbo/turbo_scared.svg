@@ -1,47 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Turbo - scared expression -->
-  <!-- Tail tucked -->
-  <path d="M310 240 Q325 240 326 250 Q325 256 310 252 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Back legs trembling -->
-  <ellipse cx="245" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="135" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
+  <!-- Turbo - scared -->
+  <!-- Feet -->
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="260" rx="95" ry="55" fill="#FAEEDA" stroke="#085041" stroke-width="2.5"/>
-  <!-- Front legs pulled in -->
-  <ellipse cx="135" cy="245" rx="20" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="265" cy="245" rx="20" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Shell - peeks up higher behind head -->
-  <path d="M105 240 Q105 130 200 122 Q295 130 295 240 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M200 145 L225 158 L225 188 L200 200 L175 188 L175 158 Z" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
-  <path d="M150 175 Q160 165 175 175" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 175 Q240 165 250 175" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <!-- Head (slightly lower) -->
-  <ellipse cx="200" cy="170" rx="76" ry="70" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Pale cheeks -->
-  <ellipse cx="148" cy="195" rx="13" ry="8" fill="#85B7EB" opacity="0.3"/>
-  <ellipse cx="252" cy="195" rx="13" ry="8" fill="#85B7EB" opacity="0.3"/>
-  <!-- Goggles askew (rotated slightly) -->
-  <g transform="rotate(-8 200 130)">
-    <path d="M125 130 Q200 115 275 130" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <ellipse cx="170" cy="135" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-    <ellipse cx="230" cy="135" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-    <line x1="192" y1="135" x2="208" y2="135" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
-    <ellipse cx="163" cy="130" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-    <ellipse cx="223" cy="130" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  </g>
-  <!-- HUGE eyes with tiny pupils -->
-  <ellipse cx="170" cy="180" rx="17" ry="22" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="230" cy="180" rx="17" ry="22" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="171" cy="178" rx="3" ry="4" fill="#085041"/>
-  <ellipse cx="231" cy="178" rx="3" ry="4" fill="#085041"/>
-  <circle cx="170" cy="176" r="1.5" fill="#FFFFFF"/>
-  <circle cx="230" cy="176" r="1.5" fill="#FFFFFF"/>
-  <!-- Worried wavy mouth -->
-  <path d="M183 215 Q190 210 197 215 Q204 220 211 215 Q218 210 217 215" stroke="#085041" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-  <!-- Sweat drop -->
-  <path d="M275 165 Q272 175 275 182 Q282 178 282 172 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
-  <ellipse cx="277" cy="170" rx="1.5" ry="2" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="200" cy="320" rx="80" ry="55" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="200" cy="328" rx="50" ry="38" fill="#FAEEDA" stroke="#085041" stroke-width="2"/>
+  <!-- Arms pulled in -->
+  <ellipse cx="135" cy="318" rx="18" ry="13" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="265" cy="318" rx="18" ry="13" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
   <!-- Scarf hanging limp -->
-  <path d="M150 230 Q200 240 250 230 Q255 250 245 258 Q200 264 155 258 Q145 250 150 230 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M250 245 Q280 250 295 270 Q285 275 270 270 Q258 265 250 258 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M160 270 Q200 280 240 270 Q243 280 235 285 Q200 290 165 285 Q157 280 160 270 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M240 280 Q255 295 252 308 Q242 305 240 290 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Shell peeks UP behind head (rises to partially cover) -->
+  <path d="M125 130 Q200 65 275 130 L275 100 Q200 40 125 100 Z" fill="#1D9E75" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M180 80 L210 95 L220 80" fill="none" stroke="#085041" stroke-width="1.5" opacity="0.6"/>
+  <!-- Head -->
+  <circle cx="200" cy="190" r="115" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- HUGE eyes (1.5x), tiny pupils -->
+  <ellipse cx="165" cy="190" rx="28" ry="34" fill="#FFFFFF" stroke="#085041" stroke-width="3"/>
+  <ellipse cx="235" cy="190" rx="28" ry="34" fill="#FFFFFF" stroke="#085041" stroke-width="3"/>
+  <ellipse cx="167" cy="188" rx="4" ry="6" fill="#085041"/>
+  <ellipse cx="237" cy="188" rx="4" ry="6" fill="#085041"/>
+  <circle cx="165" cy="186" r="1.5" fill="#FFFFFF"/>
+  <circle cx="235" cy="186" r="1.5" fill="#FFFFFF"/>
+  <!-- Glasses askew -->
+  <g transform="rotate(-8 200 188)">
+    <circle cx="165" cy="188" r="32" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+    <circle cx="235" cy="188" r="32" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+    <line x1="195" y1="188" x2="205" y2="188" stroke="#BA7517" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Worried wavy mouth -->
+  <path d="M183 248 Q190 242 197 248 Q204 254 211 248 Q218 242 222 248" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Sweat drop -->
+  <path d="M295 145 Q292 158 295 168 Q303 163 303 154 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5" stroke-linejoin="round"/>
+  <ellipse cx="298" cy="153" rx="2" ry="2.5" fill="#FFFFFF" opacity="0.8"/>
 </svg>

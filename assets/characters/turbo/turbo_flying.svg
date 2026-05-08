@@ -1,68 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Turbo - flying with rocket shell -->
-  <!-- Speed lines on left side -->
-  <path d="M30 110 Q60 112 90 110" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
-  <path d="M20 150 Q60 152 95 150" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
-  <path d="M30 195 Q70 197 100 195" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
-  <path d="M40 235 Q75 237 105 235" stroke="#85B7EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <!-- Turbo - flying with rocket shell (front-facing, vehicle integrated) -->
   <!-- Cloud wisps -->
-  <ellipse cx="60" cy="60" rx="22" ry="12" fill="#FFFFFF" opacity="0.7"/>
-  <ellipse cx="80" cy="65" rx="18" ry="9" fill="#FFFFFF" opacity="0.5"/>
-  <ellipse cx="350" cy="80" rx="20" ry="11" fill="#FFFFFF" opacity="0.6"/>
-  <!-- Flame trail (long, going down/back) -->
-  <path d="M170 320 Q180 360 200 385 Q220 360 230 320 Z" fill="#EF9F27" opacity="0.7"/>
-  <path d="M180 320 Q188 350 200 370 Q212 350 220 320 Z" fill="#E8593C" opacity="0.7"/>
-  <path d="M188 320 Q193 343 200 358 Q207 343 212 320 Z" fill="#FAC775" opacity="0.6"/>
+  <ellipse cx="55" cy="80" rx="22" ry="9" fill="#FFFFFF" opacity="0.6"/>
+  <ellipse cx="345" cy="100" rx="20" ry="8" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Speed lines on left -->
+  <path d="M25 200 Q60 202 90 200" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.65"/>
+  <path d="M30 245 Q65 247 95 245" stroke="#85B7EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+  <!-- Center main flame trail -->
+  <path d="M180 350 Q200 395 220 350 Z" fill="#EF9F27" opacity="0.7"/>
+  <path d="M188 350 Q200 380 212 350 Z" fill="#E8593C" opacity="0.7"/>
+  <path d="M193 350 Q200 370 207 350 Z" fill="#FAC775" opacity="0.6"/>
   <!-- Side booster flames -->
-  <path d="M125 295 Q130 318 138 333 Q146 318 151 295 Z" fill="#EF9F27" opacity="0.65"/>
-  <path d="M132 295 Q136 312 138 322 Q140 312 144 295 Z" fill="#E8593C" opacity="0.6"/>
-  <path d="M249 295 Q254 318 262 333 Q270 318 275 295 Z" fill="#EF9F27" opacity="0.65"/>
-  <path d="M256 295 Q260 312 262 322 Q264 312 268 295 Z" fill="#E8593C" opacity="0.6"/>
-  <!-- Side boosters (metallic gray) -->
-  <rect x="118" y="245" width="32" height="55" rx="10" fill="#888780" stroke="#5F5E5A" stroke-width="2.5"/>
-  <rect x="250" y="245" width="32" height="55" rx="10" fill="#888780" stroke="#5F5E5A" stroke-width="2.5"/>
-  <ellipse cx="134" cy="295" rx="16" ry="6" fill="#5F5E5A" stroke="#3C3F42" stroke-width="1.5"/>
-  <ellipse cx="266" cy="295" rx="16" ry="6" fill="#5F5E5A" stroke="#3C3F42" stroke-width="1.5"/>
-  <!-- Booster highlights -->
-  <line x1="124" y1="255" x2="124" y2="285" stroke="#B4B2A9" stroke-width="2" opacity="0.7" stroke-linecap="round"/>
-  <line x1="256" y1="255" x2="256" y2="285" stroke="#B4B2A9" stroke-width="2" opacity="0.7" stroke-linecap="round"/>
-  <!-- Main thruster nozzle at bottom -->
-  <path d="M175 290 L165 320 L235 320 L225 290 Z" fill="#888780" stroke="#5F5E5A" stroke-width="2.5" stroke-linejoin="round"/>
-  <ellipse cx="200" cy="320" rx="35" ry="6" fill="#3C3F42" stroke="#000000" stroke-width="1.5"/>
+  <path d="M115 340 Q125 365 135 340 Z" fill="#EF9F27" opacity="0.65"/>
+  <path d="M120 340 Q125 358 130 340 Z" fill="#E8593C" opacity="0.6"/>
+  <path d="M265 340 Q275 365 285 340 Z" fill="#EF9F27" opacity="0.65"/>
+  <path d="M270 340 Q275 358 280 340 Z" fill="#E8593C" opacity="0.6"/>
+  <!-- Side rocket boosters -->
+  <rect x="100" y="280" width="40" height="65" rx="13" fill="#888780" stroke="#5F5E5A" stroke-width="2.5"/>
+  <rect x="260" y="280" width="40" height="65" rx="13" fill="#888780" stroke="#5F5E5A" stroke-width="2.5"/>
+  <ellipse cx="120" cy="345" rx="20" ry="6" fill="#3C3F42" stroke="#000" stroke-width="1.5"/>
+  <ellipse cx="280" cy="345" rx="20" ry="6" fill="#3C3F42" stroke="#000" stroke-width="1.5"/>
+  <line x1="108" y1="290" x2="108" y2="335" stroke="#B4B2A9" stroke-width="2" opacity="0.7" stroke-linecap="round"/>
+  <line x1="268" y1="290" x2="268" y2="335" stroke="#B4B2A9" stroke-width="2" opacity="0.7" stroke-linecap="round"/>
+  <!-- Center thruster -->
+  <path d="M183 320 L177 350 L223 350 L217 320 Z" fill="#888780" stroke="#5F5E5A" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="350" rx="23" ry="5" fill="#3C3F42" stroke="#000" stroke-width="1.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="240" rx="78" ry="50" fill="#FAEEDA" stroke="#085041" stroke-width="2.5"/>
-  <!-- Arms stretched out forward -->
-  <ellipse cx="105" cy="220" rx="28" ry="13" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(-15 105 220)"/>
-  <ellipse cx="295" cy="220" rx="28" ry="13" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(15 295 220)"/>
-  <!-- Shell on back / dome -->
-  <path d="M118 230 Q118 145 200 140 Q282 145 282 230 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M200 160 L225 173 L225 200 L200 213 L175 200 L175 173 Z" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
-  <path d="M150 190 Q160 180 175 190" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 190 Q240 180 250 190" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <ellipse cx="200" cy="305" rx="80" ry="55" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="200" cy="313" rx="50" ry="38" fill="#FAEEDA" stroke="#085041" stroke-width="2"/>
+  <!-- Arms stretched out -->
+  <ellipse cx="115" cy="295" rx="22" ry="13" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" transform="rotate(-12 115 295)"/>
+  <ellipse cx="285" cy="295" rx="22" ry="13" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" transform="rotate(12 285 295)"/>
+  <!-- Shell hint behind body -->
+  <path d="M150 270 Q200 258 250 270" stroke="#1D9E75" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Scarf -->
+  <path d="M160 260 Q200 270 240 260 Q243 270 235 275 Q200 280 165 275 Q157 270 160 260 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Scarf flowing left -->
+  <path d="M160 265 Q90 263 35 290 Q55 305 110 298 Q145 292 160 282 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="140" y1="278" x2="55" y2="298" stroke="#A32D2D" stroke-width="1" opacity="0.6"/>
   <!-- Head -->
-  <ellipse cx="200" cy="150" rx="72" ry="68" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Goggles strap -->
-  <path d="M130 108 Q200 94 270 108" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- Goggles -->
-  <ellipse cx="172" cy="113" rx="21" ry="16" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <ellipse cx="228" cy="113" rx="21" ry="16" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <line x1="193" y1="113" x2="207" y2="113" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
-  <ellipse cx="166" cy="108" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  <ellipse cx="222" cy="108" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  <!-- Slightly squinted speed eyes -->
-  <ellipse cx="172" cy="158" rx="10" ry="13" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-  <ellipse cx="228" cy="158" rx="10" ry="13" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-  <ellipse cx="173" cy="159" rx="5.5" ry="8" fill="#085041"/>
-  <ellipse cx="229" cy="159" rx="5.5" ry="8" fill="#085041"/>
-  <path d="M163 152 Q172 156 181 152 L181 156 Q172 160 163 156 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2"/>
-  <path d="M219 152 Q228 156 237 152 L237 156 Q228 160 219 156 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2"/>
-  <circle cx="170" cy="160" r="1.5" fill="#FFFFFF"/>
-  <circle cx="226" cy="160" r="1.5" fill="#FFFFFF"/>
-  <!-- Confident grin -->
-  <path d="M183 192 Q200 202 217 192" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <!-- Scarf flowing left/back dramatically -->
-  <path d="M150 210 Q200 225 250 210 Q252 225 245 235 Q200 242 155 235 Q148 225 150 210 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M150 215 Q90 220 35 245 Q55 260 110 250 Q140 240 150 230 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
-  <line x1="135" y1="225" x2="50" y2="248" stroke="#A32D2D" stroke-width="1" opacity="0.6"/>
-  <line x1="125" y1="232" x2="60" y2="252" stroke="#A32D2D" stroke-width="1" opacity="0.5"/>
+  <circle cx="200" cy="170" r="115" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Cheek blush -->
+  <circle cx="120" cy="200" r="13" fill="#F0997B" opacity="0.5"/>
+  <circle cx="280" cy="200" r="13" fill="#F0997B" opacity="0.5"/>
+  <!-- Eyes (slight squint for speed) -->
+  <ellipse cx="165" cy="170" rx="20" ry="22" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="235" cy="170" rx="20" ry="22" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="167" cy="170" rx="13" ry="14" fill="#085041"/>
+  <ellipse cx="237" cy="170" rx="13" ry="14" fill="#085041"/>
+  <circle cx="161" cy="164" r="5" fill="#FFFFFF"/>
+  <circle cx="231" cy="164" r="5" fill="#FFFFFF"/>
+  <circle cx="172" cy="176" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="242" cy="176" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Glasses on face -->
+  <circle cx="165" cy="170" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <circle cx="235" cy="170" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <line x1="195" y1="170" x2="205" y2="170" stroke="#BA7517" stroke-width="3" stroke-linecap="round"/>
+  <line x1="135" y1="170" x2="125" y2="168" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="265" y1="170" x2="275" y2="168" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Smile -->
+  <path d="M188 222 Q200 230 212 222" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>

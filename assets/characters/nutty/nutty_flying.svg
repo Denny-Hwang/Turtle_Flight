@@ -1,67 +1,60 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Nutty - flying with acorn helicopter -->
-  <!-- Trailing seeds (right side) -->
+  <!-- Nutty - flying inside acorn helicopter -->
+  <!-- Trailing seeds -->
   <path d="M340 145 Q338 153 341 159 Q345 156 343 149 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
   <path d="M360 230 Q358 238 361 244 Q365 241 363 234 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
   <!-- Golden sparkles -->
   <path d="M55 180 L57 187 L64 189 L57 191 L55 198 L53 191 L46 189 L53 187 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
   <path d="M345 290 L347 297 L354 299 L347 301 L345 308 L343 301 L336 299 L343 297 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
   <!-- Stem rotor axis -->
-  <rect x="195" y="40" width="10" height="38" fill="#854F0B" stroke="#3C3F42" stroke-width="2"/>
+  <rect x="195" y="40" width="10" height="32" fill="#854F0B" stroke="#3C3F42" stroke-width="2"/>
   <!-- Rotor blades (leaf shape) -->
   <path d="M200 50 Q120 35 50 50 Q120 65 200 50 Z" fill="#97C459" stroke="#3B6D11" stroke-width="2" stroke-linejoin="round"/>
   <path d="M200 50 Q280 35 350 50 Q280 65 200 50 Z" fill="#97C459" stroke="#3B6D11" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Leaf veins -->
   <path d="M120 50 Q140 45 200 50" stroke="#3B6D11" stroke-width="1" fill="none"/>
   <path d="M280 50 Q260 45 200 50" stroke="#3B6D11" stroke-width="1" fill="none"/>
-  <!-- Rotor center -->
   <circle cx="200" cy="50" r="8" fill="#854F0B" stroke="#3C3F42" stroke-width="1.5"/>
-  <!-- Acorn cap (top) -->
-  <path d="M115 130 Q115 80 200 75 Q285 80 285 130 Q285 145 200 145 Q115 145 115 130 Z" fill="#854F0B" stroke="#3C3F42" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Cap texture lines -->
-  <line x1="135" y1="108" x2="138" y2="118" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <line x1="155" y1="100" x2="158" y2="112" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <line x1="180" y1="92" x2="182" y2="105" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <line x1="220" y1="92" x2="222" y2="105" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <line x1="245" y1="100" x2="248" y2="112" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <line x1="265" y1="108" x2="268" y2="118" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
-  <!-- Acorn body (lower) -->
-  <ellipse cx="200" cy="270" rx="110" ry="115" fill="#BA7517" stroke="#633806" stroke-width="2.5"/>
+  <!-- Acorn body (lower half - main vehicle) -->
+  <ellipse cx="200" cy="290" rx="115" ry="100" fill="#BA7517" stroke="#633806" stroke-width="2.5"/>
   <!-- Tiny windows -->
-  <circle cx="145" cy="280" r="9" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
-  <circle cx="255" cy="280" r="9" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
-  <circle cx="200" cy="335" r="11" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
-  <!-- Cockpit opening (where Nutty pokes out) -->
-  <ellipse cx="200" cy="200" rx="80" ry="35" fill="#3C3F42" stroke="#633806" stroke-width="2"/>
-  <!-- Nutty's head/upper body poking out -->
-  <ellipse cx="200" cy="180" rx="68" ry="65" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <circle cx="140" cy="305" r="9" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
+  <circle cx="260" cy="305" r="9" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
+  <circle cx="200" cy="355" r="11" fill="#FAC775" stroke="#633806" stroke-width="1.5"/>
+  <!-- Acorn cap (rim - dark brown) -->
+  <path d="M105 195 Q105 145 200 138 Q295 145 295 195 Q295 215 200 215 Q105 215 105 195 Z" fill="#854F0B" stroke="#3C3F42" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Cap texture lines -->
+  <line x1="135" y1="170" x2="138" y2="183" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <line x1="160" y1="160" x2="163" y2="175" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <line x1="190" y1="152" x2="192" y2="167" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <line x1="210" y1="152" x2="212" y2="167" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <line x1="240" y1="160" x2="243" y2="175" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <line x1="265" y1="170" x2="268" y2="183" stroke="#3C3F42" stroke-width="1" opacity="0.6"/>
+  <!-- Nutty head poking out from acorn cap top -->
+  <circle cx="200" cy="170" r="68" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
   <!-- Ears -->
-  <ellipse cx="155" cy="135" rx="16" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="245" cy="135" rx="16" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="155" cy="138" rx="8" ry="8" fill="#F5C4B3"/>
-  <ellipse cx="245" cy="138" rx="8" ry="8" fill="#F5C4B3"/>
-  <!-- Cheeks asymmetric -->
-  <ellipse cx="160" cy="200" rx="20" ry="22" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="240" cy="200" rx="26" ry="28" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="162" cy="205" rx="6" ry="4" fill="#F0997B" opacity="0.4"/>
-  <ellipse cx="244" cy="205" rx="9" ry="6" fill="#F0997B" opacity="0.4"/>
+  <circle cx="155" cy="125" r="15" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <circle cx="245" cy="125" r="15" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <circle cx="155" cy="128" r="8" fill="#F5C4B3"/>
+  <circle cx="245" cy="128" r="8" fill="#F5C4B3"/>
+  <!-- Asymmetric cheeks -->
+  <ellipse cx="160" cy="195" rx="20" ry="22" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="240" cy="195" rx="26" ry="28" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="162" cy="200" rx="6" ry="4" fill="#F0997B" opacity="0.5"/>
+  <ellipse cx="244" cy="200" rx="9" ry="6" fill="#F0997B" opacity="0.5"/>
   <!-- Asymmetric eyes -->
-  <ellipse cx="180" cy="180" rx="9" ry="11" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-  <ellipse cx="222" cy="180" rx="11" ry="14" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-  <ellipse cx="181" cy="178" rx="5" ry="6.5" fill="#633806"/>
-  <ellipse cx="223" cy="177" rx="6.5" ry="8.5" fill="#633806"/>
-  <circle cx="178" cy="175" r="2.2" fill="#FFFFFF"/>
-  <circle cx="220" cy="173" r="2.7" fill="#FFFFFF"/>
+  <ellipse cx="180" cy="170" rx="13" ry="15" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="222" cy="170" rx="16" ry="19" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="181" cy="168" rx="8" ry="10" fill="#633806"/>
+  <ellipse cx="223" cy="168" rx="10" ry="12" fill="#633806"/>
+  <circle cx="178" cy="164" r="3" fill="#FFFFFF"/>
+  <circle cx="220" cy="163" r="3.5" fill="#FFFFFF"/>
+  <circle cx="183" cy="172" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="226" cy="172" r="1.7" fill="#FFFFFF" opacity="0.5"/>
   <!-- Nose -->
   <ellipse cx="200" cy="200" rx="5" ry="4" fill="#D85A30" stroke="#633806" stroke-width="1.3"/>
-  <!-- Excited grin -->
-  <path d="M185 215 Q200 228 215 215" stroke="#633806" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Cheeky grin -->
+  <path d="M183 215 Q200 228 217 215" stroke="#633806" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   <!-- Paws gripping rim -->
-  <ellipse cx="135" cy="225" rx="14" ry="11" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="265" cy="225" rx="14" ry="11" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <!-- Whiskers -->
-  <line x1="135" y1="200" x2="158" y2="205" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="130" y1="210" x2="158" y2="212" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="240" y1="205" x2="265" y2="200" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="240" y1="212" x2="270" y2="210" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <ellipse cx="135" cy="218" rx="14" ry="11" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="265" cy="218" rx="14" ry="11" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
 </svg>

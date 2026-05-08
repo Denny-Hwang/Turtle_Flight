@@ -1,41 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Pip - joy expression -->
-  <!-- Sparkles -->
-  <path d="M65 95 L68 105 L78 108 L68 111 L65 121 L62 111 L52 108 L62 105 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <!-- Pip - joy -->
+  <path d="M65 95 L67 103 L75 105 L67 107 L65 115 L63 107 L55 105 L63 103 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
   <path d="M335 90 L337 98 L345 100 L337 102 L335 110 L333 102 L325 100 L333 98 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
   <path d="M345 200 L347 207 L354 209 L347 211 L345 218 L343 211 L336 209 L343 207 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
   <!-- Feet -->
-  <ellipse cx="170" cy="365" rx="22" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
-  <ellipse cx="230" cy="365" rx="22" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="270" rx="85" ry="100" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
-  <!-- White belly -->
-  <path d="M200 195 Q145 200 140 280 Q145 345 200 350 Q255 345 260 280 Q255 200 200 195 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <!-- Flippers raised -->
-  <ellipse cx="105" cy="240" rx="16" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-40 105 240)"/>
-  <ellipse cx="295" cy="240" rx="16" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(40 295 240)"/>
+  <ellipse cx="200" cy="290" rx="80" ry="80" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="200" cy="295" rx="55" ry="65" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Flippers spread wide -->
+  <ellipse cx="100" cy="245" rx="14" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-50 100 245)"/>
+  <ellipse cx="300" cy="245" rx="14" ry="38" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(50 300 245)"/>
   <!-- Head -->
-  <ellipse cx="200" cy="140" rx="78" ry="80" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
-  <!-- White mask -->
-  <path d="M200 100 Q155 110 150 165 Q170 195 200 197 Q230 195 250 165 Q245 110 200 100 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <circle cx="200" cy="170" r="105" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="200" cy="185" rx="62" ry="68" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
   <!-- Mohawk -->
-  <path d="M188 70 Q190 55 195 65" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M198 65 Q200 48 205 62" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M208 65 Q212 55 215 70" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M188 75 Q190 60 195 72" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M198 70 Q200 55 205 68" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M208 72 Q212 62 215 75" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
   <!-- Crescent eyes -->
-  <path d="M160 138 Q173 125 186 138" stroke="#0C447C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M214 138 Q227 125 240 138" stroke="#0C447C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M155 175 Q172 158 189 175" stroke="#0C447C" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M211 175 Q228 158 245 175" stroke="#0C447C" stroke-width="4" fill="none" stroke-linecap="round"/>
   <!-- Joy tears -->
-  <path d="M160 145 Q156 152 159 158 Q165 155 165 150 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round"/>
-  <path d="M240 145 Q244 152 241 158 Q235 155 235 150 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round"/>
-  <!-- Blush -->
-  <ellipse cx="150" cy="172" rx="14" ry="9" fill="#F0997B" opacity="0.55"/>
-  <ellipse cx="250" cy="172" rx="14" ry="9" fill="#F0997B" opacity="0.55"/>
+  <path d="M153 182 Q149 192 152 200 Q160 196 159 188 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M247 182 Q251 192 248 200 Q240 196 241 188 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- Warm blush -->
+  <ellipse cx="135" cy="215" rx="14" ry="10" fill="#F0997B" opacity="0.65"/>
+  <ellipse cx="265" cy="215" rx="14" ry="10" fill="#F0997B" opacity="0.65"/>
   <!-- Wide open beak -->
-  <path d="M173 175 Q200 165 227 175 Q230 205 200 213 Q170 205 173 175 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
-  <ellipse cx="200" cy="195" rx="16" ry="9" fill="#D85A30"/>
-  <path d="M173 175 Q200 180 227 175" stroke="#0C447C" stroke-width="2" fill="none"/>
-  <!-- Mini sparkles -->
-  <circle cx="115" cy="120" r="3" fill="#FAC775"/>
-  <circle cx="285" cy="120" r="3" fill="#FAC775"/>
+  <path d="M178 215 Q200 208 222 215 Q224 245 200 252 Q176 245 178 215 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="232" rx="14" ry="8" fill="#D85A30"/>
+  <path d="M178 215 Q200 220 222 215" stroke="#0C447C" stroke-width="2" fill="none"/>
 </svg>

@@ -1,49 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Turbo - joy expression -->
-  <!-- Sparkle stars -->
-  <path d="M75 90 L78 100 L88 103 L78 106 L75 116 L72 106 L62 103 L72 100 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <path d="M325 80 L327 88 L335 90 L327 92 L325 100 L323 92 L315 90 L323 88 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <path d="M340 200 L342 207 L349 209 L342 211 L340 218 L338 211 L331 209 L338 207 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <!-- Tail -->
-  <path d="M310 240 Q330 235 332 250 Q330 260 310 255 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Back legs -->
-  <ellipse cx="245" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="135" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
+  <!-- Turbo - joy -->
+  <!-- Sparkles -->
+  <path d="M70 110 L73 120 L83 123 L73 126 L70 136 L67 126 L57 123 L67 120 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M335 100 L337 108 L345 110 L337 112 L335 120 L333 112 L325 110 L333 108 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M345 220 L347 227 L354 229 L347 231 L345 238 L343 231 L336 229 L343 227 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <!-- Feet -->
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="260" rx="95" ry="55" fill="#FAEEDA" stroke="#085041" stroke-width="2.5"/>
-  <!-- Front legs raised in joy -->
-  <ellipse cx="115" cy="220" rx="20" ry="22" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(-30 115 220)"/>
-  <ellipse cx="285" cy="220" rx="20" ry="22" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(30 285 220)"/>
-  <!-- Shell -->
-  <path d="M110 240 Q110 150 200 145 Q290 150 290 240 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M200 165 L225 178 L225 205 L200 218 L175 205 L175 178 Z" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
-  <path d="M150 195 Q160 185 175 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 195 Q240 185 250 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M150 220 Q165 215 175 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 220 Q240 215 250 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <ellipse cx="200" cy="320" rx="80" ry="55" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="200" cy="328" rx="50" ry="38" fill="#FAEEDA" stroke="#085041" stroke-width="2"/>
+  <!-- Arms raised in joy -->
+  <ellipse cx="115" cy="295" rx="18" ry="14" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" transform="rotate(-25 115 295)"/>
+  <ellipse cx="285" cy="295" rx="18" ry="14" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" transform="rotate(25 285 295)"/>
+  <!-- Scarf flutter up -->
+  <path d="M160 270 Q200 280 240 270 Q243 280 235 285 Q200 290 165 285 Q157 280 160 270 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M240 270 Q260 250 280 245 Q278 260 265 270 Q255 275 245 275 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
   <!-- Head -->
-  <ellipse cx="200" cy="155" rx="78" ry="72" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Warm cheek blush -->
-  <ellipse cx="148" cy="180" rx="16" ry="10" fill="#F0997B" opacity="0.55"/>
-  <ellipse cx="252" cy="180" rx="16" ry="10" fill="#F0997B" opacity="0.55"/>
-  <!-- Goggles strap -->
-  <path d="M125 110 Q200 95 275 110" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- Goggles -->
-  <ellipse cx="170" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <ellipse cx="230" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <line x1="192" y1="115" x2="208" y2="115" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
-  <ellipse cx="163" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  <ellipse cx="223" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="200" cy="180" r="115" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Warm blush -->
+  <circle cx="120" cy="210" r="15" fill="#F0997B" opacity="0.6"/>
+  <circle cx="280" cy="210" r="15" fill="#F0997B" opacity="0.6"/>
   <!-- Crescent eyes (joy) -->
-  <path d="M158 162 Q170 152 182 162" stroke="#085041" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M218 162 Q230 152 242 162" stroke="#085041" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- Big smile -->
-  <path d="M180 192 Q200 215 220 192" stroke="#085041" stroke-width="2.5" fill="#FAEEDA" stroke-linecap="round"/>
-  <path d="M180 192 Q200 215 220 192" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <!-- Scarf -->
-  <path d="M150 215 Q200 228 250 215 Q255 235 245 245 Q200 252 155 245 Q145 235 150 215 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M250 225 Q300 230 335 250 Q325 265 290 260 Q265 255 250 245 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Mini sparkles -->
-  <circle cx="105" cy="155" r="3" fill="#FAC775"/>
-  <circle cx="295" cy="155" r="3" fill="#FAC775"/>
+  <path d="M148 178 Q165 162 182 178" stroke="#085041" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M218 178 Q235 162 252 178" stroke="#085041" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Glasses still visible -->
+  <circle cx="165" cy="180" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <circle cx="235" cy="180" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <line x1="195" y1="180" x2="205" y2="180" stroke="#BA7517" stroke-width="3" stroke-linecap="round"/>
+  <line x1="135" y1="180" x2="125" y2="178" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="265" y1="180" x2="275" y2="178" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Big open smile -->
+  <path d="M178 232 Q200 258 222 232" stroke="#085041" stroke-width="2.5" fill="#FAEEDA" stroke-linejoin="round"/>
+  <path d="M178 232 Q200 258 222 232" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>
