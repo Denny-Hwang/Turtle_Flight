@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Bounce - speed expression (still grinning!) -->
+  <!-- Wind lines on left -->
+  <path d="M30 130 Q60 132 90 130" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M20 175 Q60 177 95 175" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M30 220 Q70 222 100 220" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M40 265 Q75 267 105 265" stroke="#85B7EB" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <!-- Back legs swept -->
+  <path d="M85 280 Q60 250 75 220 Q95 200 125 220 Q135 245 130 285 Q115 305 95 305 Q80 295 85 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M315 280 Q340 250 325 220 Q305 200 275 220 Q265 245 270 285 Q285 305 305 305 Q320 295 315 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M85 305 Q70 320 90 335 Q100 325 110 335 Q120 325 125 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M315 305 Q330 320 310 335 Q300 325 290 335 Q280 325 275 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="220" rx="125" ry="115" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="200" cy="260" rx="85" ry="65" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
+  <!-- Spots flattened (smaller) -->
+  <ellipse cx="135" cy="170" rx="11" ry="6" fill="#639922" opacity="0.35"/>
+  <ellipse cx="265" cy="170" rx="13" ry="7" fill="#639922" opacity="0.35"/>
+  <ellipse cx="200" cy="135" rx="10" ry="5" fill="#639922" opacity="0.35"/>
+  <!-- Front hands -->
+  <path d="M105 235 Q85 240 90 260 Q100 255 110 265 Q115 250 110 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M295 235 Q315 240 310 260 Q300 255 290 265 Q285 250 290 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Eye bumps -->
+  <ellipse cx="155" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="245" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Eyes squinted with upper lids -->
+  <ellipse cx="155" cy="118" rx="22" ry="20" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="245" cy="118" rx="22" ry="20" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="155" cy="120" rx="13" ry="11" fill="#27500A"/>
+  <ellipse cx="245" cy="120" rx="13" ry="11" fill="#27500A"/>
+  <!-- Upper lid overlay -->
+  <path d="M133 105 Q155 117 177 105 L177 113 Q155 125 133 113 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <path d="M223 105 Q245 117 267 105 L267 113 Q245 125 223 113 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <circle cx="153" cy="120" r="2" fill="#FFFFFF"/>
+  <circle cx="243" cy="120" r="2" fill="#FFFFFF"/>
+  <!-- Blush -->
+  <ellipse cx="120" cy="220" rx="14" ry="9" fill="#F0997B" opacity="0.5"/>
+  <ellipse cx="280" cy="220" rx="14" ry="9" fill="#F0997B" opacity="0.5"/>
+  <!-- STILL GRINNING -->
+  <path d="M85 215 Q200 295 315 215" stroke="#27500A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M85 215 Q200 285 315 215" fill="#27500A" opacity="0.15"/>
+  <!-- Tongue peek -->
+  <path d="M260 260 Q280 268 285 280 Q270 280 258 270 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- Wind streaks across face -->
+  <line x1="105" y1="120" x2="125" y2="120" stroke="#FFFFFF" stroke-width="2.5" opacity="0.6" stroke-linecap="round"/>
+  <line x1="105" y1="170" x2="125" y2="170" stroke="#FFFFFF" stroke-width="2" opacity="0.5" stroke-linecap="round"/>
+  <!-- Nostrils -->
+  <ellipse cx="190" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="210" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+</svg>

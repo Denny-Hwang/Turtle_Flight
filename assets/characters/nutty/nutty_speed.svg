@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Nutty - speed expression -->
+  <!-- Wind lines on left -->
+  <path d="M30 130 Q60 132 90 130" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M20 175 Q60 177 95 175" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M30 220 Q70 222 100 220" stroke="#85B7EB" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Seeds flying behind -->
+  <path d="M325 145 Q323 153 326 159 Q330 156 328 149 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M345 200 Q343 208 346 214 Q350 211 348 204 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M355 285 Q353 293 356 299 Q360 296 358 289 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Tail -->
+  <circle cx="320" cy="265" r="14" fill="#FAEEDA" stroke="#633806" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="265" rx="115" ry="100" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="200" cy="285" rx="60" ry="55" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" opacity="0.9"/>
+  <!-- Limbs -->
+  <ellipse cx="105" cy="285" rx="20" ry="18" fill="#EF9F27" stroke="#633806" stroke-width="2.5" transform="rotate(-25 105 285)"/>
+  <ellipse cx="295" cy="285" rx="20" ry="18" fill="#EF9F27" stroke="#633806" stroke-width="2.5" transform="rotate(25 295 285)"/>
+  <ellipse cx="170" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="230" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="155" rx="100" ry="92" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <!-- Ears -->
+  <ellipse cx="135" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="265" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="135" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
+  <ellipse cx="265" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
+  <!-- Cheeks FLATTENED from wind - asymmetric -->
+  <ellipse cx="135" cy="195" rx="32" ry="22" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="265" cy="195" rx="42" ry="28" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="138" cy="200" rx="9" ry="5" fill="#F0997B" opacity="0.4"/>
+  <ellipse cx="270" cy="200" rx="13" ry="7" fill="#F0997B" opacity="0.4"/>
+  <!-- Squinted eyes - asymmetric still -->
+  <ellipse cx="170" cy="155" rx="11" ry="10" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="232" cy="155" rx="13" ry="12" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="171" cy="156" rx="6" ry="6" fill="#633806"/>
+  <ellipse cx="233" cy="156" rx="7.5" ry="7" fill="#633806"/>
+  <path d="M159 150 Q170 156 181 150 L181 154 Q170 160 159 154 Z" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
+  <path d="M219 150 Q232 157 245 150 L245 154 Q232 161 219 154 Z" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
+  <circle cx="168" cy="155" r="1.5" fill="#FFFFFF"/>
+  <circle cx="230" cy="155" r="1.7" fill="#FFFFFF"/>
+  <!-- Pink nose -->
+  <ellipse cx="200" cy="180" rx="6" ry="5" fill="#D85A30" stroke="#633806" stroke-width="1.5"/>
+  <!-- Excited grin still -->
+  <path d="M180 200 Q200 218 220 200" stroke="#633806" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="200" y1="187" x2="200" y2="200" stroke="#633806" stroke-width="1.5"/>
+  <!-- Whiskers swept back -->
+  <line x1="105" y1="195" x2="135" y2="200" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="100" y1="208" x2="135" y2="208" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="105" y1="220" x2="135" y2="215" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="200" x2="295" y2="195" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="208" x2="305" y2="206" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="215" x2="295" y2="220" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+</svg>

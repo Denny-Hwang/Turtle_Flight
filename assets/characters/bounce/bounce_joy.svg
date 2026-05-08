@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Bounce - joy expression -->
+  <!-- Sparkles -->
+  <path d="M70 80 L72 88 L80 90 L72 92 L70 100 L68 92 L60 90 L68 88 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M335 90 L337 98 L345 100 L337 102 L335 110 L333 102 L325 100 L333 98 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M50 175 L52 181 L58 183 L52 185 L50 191 L48 185 L42 183 L48 181 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <!-- Back legs -->
+  <path d="M85 280 Q60 250 75 220 Q95 200 125 220 Q135 245 130 285 Q115 305 95 305 Q80 295 85 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M315 280 Q340 250 325 220 Q305 200 275 220 Q265 245 270 285 Q285 305 305 305 Q320 295 315 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M85 305 Q70 320 90 335 Q100 325 110 335 Q120 325 125 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M315 305 Q330 320 310 335 Q300 325 290 335 Q280 325 275 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="220" rx="125" ry="115" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="200" cy="260" rx="85" ry="65" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
+  <circle cx="135" cy="170" r="9" fill="#639922" opacity="0.35"/>
+  <circle cx="265" cy="170" r="11" fill="#639922" opacity="0.35"/>
+  <circle cx="200" cy="135" r="8" fill="#639922" opacity="0.35"/>
+  <!-- Front hands raised -->
+  <path d="M95 215 Q70 215 75 235 Q85 235 95 245 Q105 230 105 215 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M305 215 Q330 215 325 235 Q315 235 305 245 Q295 230 295 215 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Eye bumps -->
+  <ellipse cx="155" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="245" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- PURE crescent eyes (closed in joy) -->
+  <path d="M138 115 Q155 100 172 115" stroke="#27500A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M228 115 Q245 100 262 115" stroke="#27500A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Blush -->
+  <ellipse cx="115" cy="225" rx="15" ry="10" fill="#F0997B" opacity="0.6"/>
+  <ellipse cx="285" cy="225" rx="15" ry="10" fill="#F0997B" opacity="0.6"/>
+  <!-- Mouth opens even wider -->
+  <path d="M75 215 Q200 320 325 215" stroke="#27500A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M75 215 Q200 315 325 215" fill="#27500A" opacity="0.2"/>
+  <!-- Tongue fully out -->
+  <path d="M180 280 Q200 320 220 280 Q220 320 200 330 Q180 320 180 280 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="200" y1="290" x2="200" y2="320" stroke="#A32D2D" stroke-width="1.5"/>
+  <!-- Nostrils -->
+  <ellipse cx="190" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="210" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+</svg>

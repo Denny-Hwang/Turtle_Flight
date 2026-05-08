@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Bounce icon -->
+  <circle cx="100" cy="100" r="92" fill="#EAF3DE" stroke="#97C459" stroke-width="5"/>
+  <defs>
+    <clipPath id="bounceCircle">
+      <circle cx="100" cy="100" r="88"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#bounceCircle)">
+    <!-- Body merged -->
+    <ellipse cx="100" cy="115" rx="78" ry="70" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+    <ellipse cx="100" cy="140" rx="55" ry="42" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
+    <!-- Spots -->
+    <circle cx="55" cy="85" r="6" fill="#639922" opacity="0.35"/>
+    <circle cx="145" cy="85" r="7" fill="#639922" opacity="0.35"/>
+    <!-- Bulging eye bumps above frame -->
+    <ellipse cx="65" cy="55" rx="26" ry="30" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+    <ellipse cx="135" cy="55" rx="26" ry="30" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+    <!-- Eyes -->
+    <ellipse cx="65" cy="55" rx="16" ry="20" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+    <ellipse cx="135" cy="55" rx="16" ry="20" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+    <ellipse cx="65" cy="55" rx="10" ry="12" fill="#27500A"/>
+    <ellipse cx="135" cy="55" rx="10" ry="12" fill="#27500A"/>
+    <circle cx="62" cy="51" r="3.5" fill="#FFFFFF"/>
+    <circle cx="132" cy="51" r="3.5" fill="#FFFFFF"/>
+    <circle cx="68" cy="58" r="2" fill="#FFFFFF" opacity="0.5"/>
+    <circle cx="138" cy="58" r="2" fill="#FFFFFF" opacity="0.5"/>
+    <!-- Blush -->
+    <ellipse cx="40" cy="120" rx="11" ry="7" fill="#F0997B" opacity="0.5"/>
+    <ellipse cx="160" cy="120" rx="11" ry="7" fill="#F0997B" opacity="0.5"/>
+    <!-- ENORMOUS grin -->
+    <path d="M30 110 Q100 175 170 110" stroke="#27500A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M30 110 Q100 168 170 110" fill="#27500A" opacity="0.15"/>
+    <!-- Tongue peek -->
+    <path d="M140 145 Q155 152 158 162 Q145 162 138 152 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- Nostrils -->
+    <ellipse cx="93" cy="92" rx="2" ry="2.5" fill="#27500A"/>
+    <ellipse cx="107" cy="92" rx="2" ry="2.5" fill="#27500A"/>
+  </g>
+</svg>
