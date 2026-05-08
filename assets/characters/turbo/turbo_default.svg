@@ -1,52 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Turbo the Turtle - default expression -->
-  <!-- Tail -->
-  <path d="M310 240 Q330 235 332 250 Q330 260 310 255 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Back legs -->
-  <ellipse cx="245" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <ellipse cx="135" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Body / belly -->
-  <ellipse cx="200" cy="260" rx="95" ry="55" fill="#FAEEDA" stroke="#085041" stroke-width="2.5"/>
-  <!-- Front legs -->
-  <ellipse cx="125" cy="235" rx="22" ry="20" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(-15 125 235)"/>
-  <ellipse cx="275" cy="235" rx="22" ry="20" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(15 275 235)"/>
-  <!-- Shell dome -->
-  <path d="M110 240 Q110 150 200 145 Q290 150 290 240 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Shell hex pattern -->
-  <path d="M200 165 L225 178 L225 205 L200 218 L175 205 L175 178 Z" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
-  <path d="M150 195 Q160 185 175 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 195 Q240 185 250 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M150 220 Q165 215 175 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <path d="M225 220 Q240 215 250 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
-  <!-- Head -->
-  <ellipse cx="200" cy="155" rx="78" ry="72" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-  <!-- Cheek shading subtle -->
-  <ellipse cx="148" cy="175" rx="14" ry="9" fill="#5DCAA5" opacity="0.35"/>
-  <ellipse cx="252" cy="175" rx="14" ry="9" fill="#5DCAA5" opacity="0.35"/>
-  <!-- Goggles strap -->
-  <path d="M125 110 Q200 95 275 110" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <!-- Goggles lenses -->
-  <ellipse cx="170" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <ellipse cx="230" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
-  <!-- Goggle bridge -->
-  <line x1="192" y1="115" x2="208" y2="115" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- Goggle highlights -->
-  <ellipse cx="163" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  <ellipse cx="223" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
-  <!-- Eyes -->
-  <ellipse cx="170" cy="160" rx="11" ry="15" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-  <ellipse cx="230" cy="160" rx="11" ry="15" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-  <ellipse cx="171" cy="156" rx="6" ry="9" fill="#085041"/>
-  <ellipse cx="231" cy="156" rx="6" ry="9" fill="#085041"/>
-  <circle cx="168" cy="152" r="2.5" fill="#FFFFFF"/>
-  <circle cx="228" cy="152" r="2.5" fill="#FFFFFF"/>
-  <circle cx="173" cy="160" r="1.5" fill="#FFFFFF" opacity="0.5"/>
-  <circle cx="233" cy="160" r="1.5" fill="#FFFFFF" opacity="0.5"/>
-  <!-- Mouth - confident smile -->
-  <path d="M188 195 Q200 203 212 195" stroke="#085041" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <!-- Scarf around neck -->
-  <path d="M150 215 Q200 228 250 215 Q255 235 245 245 Q200 252 155 245 Q145 235 150 215 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Scarf flowing tail -->
-  <path d="M250 225 Q300 230 335 250 Q325 265 290 260 Q265 255 250 245 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
-  <line x1="265" y1="240" x2="320" y2="252" stroke="#A32D2D" stroke-width="1" opacity="0.6"/>
+  <!-- Turbo - default (front-facing, big head, glasses on face) -->
+  <!-- Feet -->
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="320" rx="80" ry="55" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Cream belly -->
+  <ellipse cx="200" cy="328" rx="50" ry="38" fill="#FAEEDA" stroke="#085041" stroke-width="2"/>
+  <!-- Stub arms -->
+  <ellipse cx="125" cy="315" rx="20" ry="14" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="275" cy="315" rx="20" ry="14" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Shell back hint (visible behind body silhouette) -->
+  <path d="M150 280 Q200 268 250 280" stroke="#1D9E75" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Red scarf around neck -->
+  <path d="M160 270 Q200 280 240 270 Q243 280 235 285 Q200 290 165 285 Q157 280 160 270 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M240 275 Q260 278 270 290 Q260 295 245 290 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Head (BIG round) -->
+  <circle cx="200" cy="180" r="115" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+  <!-- Cheek blush -->
+  <circle cx="120" cy="210" r="13" fill="#F0997B" opacity="0.45"/>
+  <circle cx="280" cy="210" r="13" fill="#F0997B" opacity="0.45"/>
+  <!-- Eyes (big oval) -->
+  <ellipse cx="165" cy="180" rx="20" ry="24" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="235" cy="180" rx="20" ry="24" fill="#FFFFFF" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="167" cy="178" rx="13" ry="16" fill="#085041"/>
+  <ellipse cx="237" cy="178" rx="13" ry="16" fill="#085041"/>
+  <!-- Sparkles -->
+  <circle cx="161" cy="172" r="5" fill="#FFFFFF"/>
+  <circle cx="231" cy="172" r="5" fill="#FFFFFF"/>
+  <circle cx="172" cy="186" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="242" cy="186" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Round brass glasses ON FACE (over eyes) -->
+  <circle cx="165" cy="180" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <circle cx="235" cy="180" r="30" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="3"/>
+  <line x1="195" y1="180" x2="205" y2="180" stroke="#BA7517" stroke-width="3" stroke-linecap="round"/>
+  <!-- Tiny brass earpiece arms -->
+  <line x1="135" y1="180" x2="125" y2="178" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="265" y1="180" x2="275" y2="178" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M188 235 Q200 244 212 235" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>

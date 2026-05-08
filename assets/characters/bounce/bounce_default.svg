@@ -1,46 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Bounce the Frog - default expression -->
-  <!-- Back legs (powerful, bent) -->
-  <path d="M85 280 Q60 250 75 220 Q95 200 125 220 Q135 245 130 285 Q115 305 95 305 Q80 295 85 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M315 280 Q340 250 325 220 Q305 200 275 220 Q265 245 270 285 Q285 305 305 305 Q320 295 315 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Webbed back feet -->
-  <path d="M85 305 Q70 320 90 335 Q100 325 110 335 Q120 325 125 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M315 305 Q330 320 310 335 Q300 325 290 335 Q280 325 275 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Body / head merged (wide flat) -->
-  <ellipse cx="200" cy="220" rx="125" ry="115" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Bounce default (front facing, eye bumps on top, enormous grin) -->
+  <!-- Back legs / feet at sides -->
+  <ellipse cx="115" cy="345" rx="38" ry="22" fill="#639922" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="285" cy="345" rx="38" ry="22" fill="#639922" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Webbed toe lines -->
+  <path d="M85 350 Q90 360 95 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <path d="M105 350 Q110 362 115 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <path d="M125 350 Q130 362 135 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <path d="M265 350 Q270 362 275 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <path d="M285 350 Q290 362 295 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <path d="M305 350 Q310 360 315 350" stroke="#27500A" stroke-width="1.5" fill="none"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="280" rx="100" ry="80" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
   <!-- Belly -->
-  <ellipse cx="200" cy="260" rx="85" ry="65" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
-  <!-- Belly lines -->
-  <path d="M150 240 Q200 250 250 240" stroke="#639922" stroke-width="1" fill="none" opacity="0.5"/>
-  <path d="M155 270 Q200 278 245 270" stroke="#639922" stroke-width="1" fill="none" opacity="0.5"/>
-  <!-- Dark green spots on back -->
-  <circle cx="135" cy="170" r="9" fill="#639922" opacity="0.35"/>
-  <circle cx="265" cy="170" r="11" fill="#639922" opacity="0.35"/>
-  <circle cx="200" cy="135" r="8" fill="#639922" opacity="0.35"/>
-  <!-- Webbed front hands -->
-  <path d="M105 235 Q85 240 90 260 Q100 255 110 265 Q115 250 110 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M295 235 Q315 240 310 260 Q300 255 290 265 Q285 250 290 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Bulging frog eye bumps (top of head) -->
-  <ellipse cx="155" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
-  <ellipse cx="245" cy="115" rx="35" ry="40" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="200" cy="290" rx="65" ry="55" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
+  <!-- Front arms -->
+  <ellipse cx="125" cy="285" rx="20" ry="14" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="275" cy="285" rx="20" ry="14" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Spots on back (above belly) -->
+  <circle cx="155" cy="240" r="7" fill="#639922" opacity="0.4"/>
+  <circle cx="245" cy="240" r="7" fill="#639922" opacity="0.4"/>
+  <!-- Head (wide, merges with body) -->
+  <ellipse cx="200" cy="180" rx="115" ry="105" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Eye bumps on TOP of head -->
+  <ellipse cx="155" cy="105" rx="38" ry="42" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="245" cy="105" rx="38" ry="42" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
   <!-- HUGE eyes -->
-  <ellipse cx="155" cy="115" rx="22" ry="26" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
-  <ellipse cx="245" cy="115" rx="22" ry="26" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
-  <ellipse cx="155" cy="115" rx="13" ry="16" fill="#27500A"/>
-  <ellipse cx="245" cy="115" rx="13" ry="16" fill="#27500A"/>
-  <circle cx="151" cy="110" r="4.5" fill="#FFFFFF"/>
-  <circle cx="241" cy="110" r="4.5" fill="#FFFFFF"/>
-  <circle cx="158" cy="118" r="2.5" fill="#FFFFFF" opacity="0.5"/>
-  <circle cx="248" cy="118" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <ellipse cx="155" cy="105" rx="25" ry="30" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="245" cy="105" rx="25" ry="30" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="155" cy="105" rx="14" ry="18" fill="#27500A"/>
+  <ellipse cx="245" cy="105" rx="14" ry="18" fill="#27500A"/>
+  <circle cx="150" cy="100" r="5" fill="#FFFFFF"/>
+  <circle cx="240" cy="100" r="5" fill="#FFFFFF"/>
+  <circle cx="159" cy="110" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="249" cy="110" r="2.5" fill="#FFFFFF" opacity="0.5"/>
   <!-- Blush -->
-  <ellipse cx="120" cy="220" rx="14" ry="9" fill="#F0997B" opacity="0.5"/>
-  <ellipse cx="280" cy="220" rx="14" ry="9" fill="#F0997B" opacity="0.5"/>
-  <!-- ENORMOUS grin -->
-  <path d="M85 215 Q200 295 315 215" stroke="#27500A" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M85 215 Q200 285 315 215" fill="#27500A" opacity="0.15"/>
+  <ellipse cx="115" cy="195" rx="14" ry="10" fill="#F0997B" opacity="0.5"/>
+  <ellipse cx="285" cy="195" rx="14" ry="10" fill="#F0997B" opacity="0.5"/>
+  <!-- ENORMOUS GRIN (cheek to cheek) -->
+  <path d="M95 195 Q200 280 305 195" stroke="#27500A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M95 195 Q200 270 305 195" fill="#27500A" opacity="0.15"/>
   <!-- Tongue peek (right side) -->
-  <path d="M260 260 Q280 268 285 280 Q270 280 258 270 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M250 240 Q270 248 275 260 Q258 260 245 250 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round"/>
   <!-- Nostrils -->
-  <ellipse cx="190" cy="180" rx="2.5" ry="3" fill="#27500A"/>
-  <ellipse cx="210" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="190" cy="170" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="210" cy="170" rx="2.5" ry="3" fill="#27500A"/>
 </svg>

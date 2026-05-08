@@ -8,29 +8,31 @@
   </defs>
   <g clip-path="url(#nuttyCircle)">
     <!-- Head -->
-    <ellipse cx="100" cy="105" rx="78" ry="72" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+    <circle cx="100" cy="105" r="78" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
     <!-- Ears -->
-    <ellipse cx="55" cy="50" rx="16" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
-    <ellipse cx="145" cy="50" rx="16" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
-    <ellipse cx="55" cy="52" rx="8" ry="8" fill="#F5C4B3"/>
-    <ellipse cx="145" cy="52" rx="8" ry="8" fill="#F5C4B3"/>
+    <circle cx="55" cy="50" r="14" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
+    <circle cx="145" cy="50" r="14" fill="#EF9F27" stroke="#633806" stroke-width="2"/>
+    <circle cx="55" cy="52" r="7" fill="#F5C4B3"/>
+    <circle cx="145" cy="52" r="7" fill="#F5C4B3"/>
     <!-- Asymmetric cheeks -->
-    <ellipse cx="55" cy="135" rx="20" ry="23" fill="#FAC775" stroke="#633806" stroke-width="2"/>
+    <ellipse cx="55" cy="135" rx="20" ry="22" fill="#FAC775" stroke="#633806" stroke-width="2"/>
     <ellipse cx="145" cy="135" rx="27" ry="30" fill="#FAC775" stroke="#633806" stroke-width="2"/>
-    <ellipse cx="58" cy="138" rx="6" ry="4" fill="#F0997B" opacity="0.4"/>
-    <ellipse cx="148" cy="138" rx="9" ry="6" fill="#F0997B" opacity="0.4"/>
+    <ellipse cx="58" cy="138" rx="6" ry="4" fill="#F0997B" opacity="0.5"/>
+    <ellipse cx="148" cy="138" rx="9" ry="6" fill="#F0997B" opacity="0.5"/>
     <!-- Asymmetric eyes -->
-    <ellipse cx="80" cy="105" rx="8" ry="11" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-    <ellipse cx="120" cy="105" rx="10" ry="13" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-    <ellipse cx="80" cy="103" rx="4.5" ry="6.5" fill="#633806"/>
-    <ellipse cx="120" cy="102" rx="6" ry="8" fill="#633806"/>
-    <circle cx="78" cy="100" r="2" fill="#FFFFFF"/>
-    <circle cx="118" cy="98" r="2.5" fill="#FFFFFF"/>
+    <ellipse cx="80" cy="105" rx="12" ry="15" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+    <ellipse cx="120" cy="105" rx="14" ry="17" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
+    <ellipse cx="80" cy="103" rx="7.5" ry="10" fill="#633806"/>
+    <ellipse cx="120" cy="103" rx="9" ry="11" fill="#633806"/>
+    <circle cx="78" cy="100" r="3" fill="#FFFFFF"/>
+    <circle cx="118" cy="99" r="3.5" fill="#FFFFFF"/>
+    <circle cx="83" cy="105" r="1.5" fill="#FFFFFF" opacity="0.5"/>
+    <circle cx="123" cy="106" r="1.8" fill="#FFFFFF" opacity="0.5"/>
     <!-- Nose -->
-    <ellipse cx="100" cy="125" rx="5" ry="4" fill="#D85A30" stroke="#633806" stroke-width="1.3"/>
+    <ellipse cx="100" cy="135" rx="5" ry="4" fill="#D85A30" stroke="#633806" stroke-width="1.3"/>
     <!-- Cheeky grin -->
-    <path d="M85 142 Q100 155 115 142" stroke="#633806" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <line x1="100" y1="130" x2="100" y2="142" stroke="#633806" stroke-width="1.3"/>
+    <path d="M85 152 Q100 165 115 152" stroke="#633806" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <line x1="100" y1="140" x2="100" y2="152" stroke="#633806" stroke-width="1.3"/>
     <!-- Whiskers -->
     <line x1="35" y1="138" x2="55" y2="140" stroke="#633806" stroke-width="0.8" opacity="0.35" stroke-linecap="round"/>
     <line x1="32" y1="146" x2="55" y2="146" stroke="#633806" stroke-width="0.8" opacity="0.35" stroke-linecap="round"/>

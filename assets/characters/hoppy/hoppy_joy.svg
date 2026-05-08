@@ -1,62 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Hoppy - joy expression (BOTH ears perk up) -->
-  <!-- Sparkles -->
-  <path d="M75 95 L77 103 L85 105 L77 107 L75 115 L73 107 L65 105 L73 103 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <path d="M325 90 L327 98 L335 100 L327 102 L325 110 L323 102 L315 100 L323 98 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <path d="M345 200 L347 207 L354 209 L347 211 L345 218 L343 211 L336 209 L343 207 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
-  <!-- Tail -->
-  <circle cx="305" cy="280" r="13" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
-  <circle cx="295" cy="290" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
-  <circle cx="313" cy="290" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
+  <!-- Hoppy joy (BOTH ears perk up straight) -->
+  <path d="M70 130 L72 138 L80 140 L72 142 L70 150 L68 142 L60 140 L68 138 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M335 130 L337 138 L345 140 L337 142 L335 150 L333 142 L325 140 L333 138 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <!-- Cotton tail -->
+  <circle cx="305" cy="305" r="14" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
+  <circle cx="295" cy="315" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
+  <circle cx="313" cy="315" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
   <!-- Hind feet -->
-  <ellipse cx="155" cy="345" rx="28" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
-  <ellipse cx="245" cy="345" rx="28" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="280" rx="85" ry="80" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
-  <path d="M200 240 Q170 230 165 260 Q165 285 200 305 Q235 285 235 260 Q230 230 200 240 Z" fill="#FFFFFF" stroke="#F5C4B3" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Paws raised in joy -->
-  <ellipse cx="125" cy="260" rx="20" ry="18" fill="#F0997B" stroke="#712B13" stroke-width="2.5" transform="rotate(-25 125 260)"/>
-  <ellipse cx="275" cy="260" rx="20" ry="18" fill="#F0997B" stroke="#712B13" stroke-width="2.5" transform="rotate(25 275 260)"/>
+  <ellipse cx="200" cy="305" rx="80" ry="70" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <path d="M200 270 Q180 258 175 280 Q175 295 200 312 Q225 295 225 280 Q220 258 200 270 Z" fill="#FFFFFF" stroke="#F5C4B3" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Paws raised -->
+  <ellipse cx="125" cy="280" rx="18" ry="16" fill="#F0997B" stroke="#712B13" stroke-width="2.5" transform="rotate(-25 125 280)"/>
+  <ellipse cx="275" cy="280" rx="18" ry="16" fill="#F0997B" stroke="#712B13" stroke-width="2.5" transform="rotate(25 275 280)"/>
   <!-- BOTH ears upright -->
-  <ellipse cx="155" cy="80" rx="16" ry="55" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
-  <ellipse cx="155" cy="85" rx="9" ry="42" fill="#F5C4B3"/>
-  <ellipse cx="245" cy="80" rx="16" ry="55" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
-  <ellipse cx="245" cy="85" rx="9" ry="42" fill="#F5C4B3"/>
+  <ellipse cx="160" cy="80" rx="16" ry="62" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="160" cy="85" rx="9" ry="48" fill="#F5C4B3"/>
+  <ellipse cx="240" cy="80" rx="16" ry="62" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="240" cy="85" rx="9" ry="48" fill="#F5C4B3"/>
+  <!-- Flower -->
+  <ellipse cx="138" cy="40" rx="7" ry="9" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <ellipse cx="129" cy="48" rx="8" ry="6" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <ellipse cx="147" cy="48" rx="8" ry="6" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <ellipse cx="138" cy="58" rx="7" ry="6" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <circle cx="138" cy="50" r="5" fill="#EF9F27" stroke="#BA7517" stroke-width="1"/>
+  <circle cx="138" cy="50" r="2" fill="#FAC775"/>
   <!-- Head -->
-  <ellipse cx="200" cy="160" rx="92" ry="85" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
-  <!-- Fluffy cheeks -->
-  <circle cx="120" cy="190" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
-  <circle cx="280" cy="190" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
-  <!-- Flower (kept on left ear) -->
-  <ellipse cx="135" cy="42" rx="8" ry="10" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
-  <ellipse cx="125" cy="50" rx="9" ry="7" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
-  <ellipse cx="145" cy="50" rx="9" ry="7" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
-  <ellipse cx="130" cy="62" rx="8" ry="7" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
-  <ellipse cx="140" cy="62" rx="8" ry="7" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
-  <circle cx="135" cy="55" r="5" fill="#EF9F27" stroke="#BA7517" stroke-width="1"/>
-  <circle cx="135" cy="55" r="2" fill="#FAC775"/>
+  <circle cx="200" cy="180" r="100" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <!-- Cheek tufts -->
+  <circle cx="115" cy="215" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
+  <circle cx="285" cy="215" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
   <!-- Eyes sparkle bigger -->
-  <ellipse cx="170" cy="160" rx="12" ry="16" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
-  <ellipse cx="230" cy="160" rx="12" ry="16" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
-  <ellipse cx="170" cy="160" rx="7" ry="10" fill="#712B13"/>
-  <ellipse cx="230" cy="160" rx="7" ry="10" fill="#712B13"/>
-  <circle cx="166" cy="156" r="4" fill="#FFFFFF"/>
-  <circle cx="226" cy="156" r="4" fill="#FFFFFF"/>
-  <circle cx="173" cy="164" r="2" fill="#FFFFFF" opacity="0.7"/>
-  <circle cx="233" cy="164" r="2" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="170" cy="180" rx="20" ry="26" fill="#FFFFFF" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="230" cy="180" rx="20" ry="26" fill="#FFFFFF" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="170" cy="180" rx="13" ry="17" fill="#712B13"/>
+  <ellipse cx="230" cy="180" rx="13" ry="17" fill="#712B13"/>
+  <circle cx="165" cy="174" r="6" fill="#FFFFFF"/>
+  <circle cx="225" cy="174" r="6" fill="#FFFFFF"/>
+  <circle cx="175" cy="186" r="3" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="235" cy="186" r="3" fill="#FFFFFF" opacity="0.7"/>
   <!-- Extra highlight dots -->
-  <circle cx="175" cy="153" r="1.3" fill="#FFFFFF"/>
-  <circle cx="235" cy="153" r="1.3" fill="#FFFFFF"/>
-  <circle cx="158" cy="158" r="1" fill="#FFFFFF"/>
-  <circle cx="218" cy="158" r="1" fill="#FFFFFF"/>
+  <circle cx="178" cy="170" r="1.5" fill="#FFFFFF"/>
+  <circle cx="238" cy="170" r="1.5" fill="#FFFFFF"/>
+  <circle cx="158" cy="184" r="1" fill="#FFFFFF"/>
+  <circle cx="218" cy="184" r="1" fill="#FFFFFF"/>
   <!-- Warm blush -->
-  <ellipse cx="135" cy="200" rx="15" ry="10" fill="#ED93B1" opacity="0.55"/>
-  <ellipse cx="265" cy="200" rx="15" ry="10" fill="#ED93B1" opacity="0.55"/>
+  <ellipse cx="135" cy="220" rx="15" ry="11" fill="#ED93B1" opacity="0.65"/>
+  <ellipse cx="265" cy="220" rx="15" ry="11" fill="#ED93B1" opacity="0.65"/>
   <!-- Nose -->
-  <path d="M195 188 Q200 184 205 188 Q205 196 200 199 Q195 196 195 188 Z" fill="#D85A30" stroke="#712B13" stroke-width="1.5" stroke-linejoin="round"/>
-  <ellipse cx="198" cy="190" rx="2" ry="1.5" fill="#F0997B" opacity="0.6"/>
+  <path d="M193 215 Q200 210 207 215 Q207 224 200 227 Q193 224 193 215 Z" fill="#D85A30" stroke="#712B13" stroke-width="1.5" stroke-linejoin="round"/>
   <!-- Wider "3" mouth -->
-  <path d="M200 205 Q186 215 192 222 Q200 217 200 222 Q200 217 208 222 Q214 215 200 205" stroke="#712B13" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M200 232 Q186 242 192 250 Q200 246 200 250 Q200 246 208 250 Q214 242 200 232" stroke="#712B13" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   <!-- Bigger smile line -->
-  <path d="M183 230 Q200 238 217 230" stroke="#712B13" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M183 258 Q200 266 217 258" stroke="#712B13" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.7"/>
 </svg>

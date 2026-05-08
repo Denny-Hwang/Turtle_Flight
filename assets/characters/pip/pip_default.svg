@@ -1,47 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Pip the Penguin - default expression -->
+  <!-- Pip default -->
   <!-- Feet -->
-  <ellipse cx="170" cy="365" rx="22" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
-  <ellipse cx="230" cy="365" rx="22" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
-  <line x1="155" y1="368" x2="160" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="170" y1="370" x2="170" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="185" y1="368" x2="180" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="215" y1="368" x2="220" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="230" y1="370" x2="230" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="245" y1="368" x2="240" y2="362" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Body oval (sky blue tuxedo back) -->
-  <ellipse cx="200" cy="270" rx="85" ry="100" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5"/>
+  <line x1="160" y1="372" x2="158" y2="365" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="170" y1="374" x2="170" y2="366" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="180" y1="372" x2="182" y2="365" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="220" y1="372" x2="218" y2="365" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="230" y1="374" x2="230" y2="366" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="240" y1="372" x2="242" y2="365" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="290" rx="80" ry="80" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
   <!-- White tuxedo belly -->
-  <path d="M200 195 Q145 200 140 280 Q145 345 200 350 Q255 345 260 280 Q255 200 200 195 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <!-- Tuxedo collar V -->
-  <path d="M165 200 Q200 220 235 200" fill="none" stroke="#185FA5" stroke-width="2" opacity="0.7"/>
-  <!-- Flippers raised slightly -->
-  <ellipse cx="115" cy="270" rx="18" ry="40" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-15 115 270)"/>
-  <ellipse cx="285" cy="270" rx="18" ry="40" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(15 285 270)"/>
+  <ellipse cx="200" cy="295" rx="55" ry="65" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Flippers (light gray sleeves at sides, raised slightly) -->
+  <ellipse cx="115" cy="280" rx="16" ry="40" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-15 115 280)"/>
+  <ellipse cx="285" cy="280" rx="16" ry="40" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(15 285 280)"/>
   <!-- Head -->
-  <ellipse cx="200" cy="140" rx="78" ry="80" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <circle cx="200" cy="170" r="105" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
   <!-- White face mask -->
-  <path d="M200 100 Q155 110 150 165 Q170 195 200 197 Q230 195 250 165 Q245 110 200 100 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <ellipse cx="200" cy="185" rx="62" ry="68" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
   <!-- Mohawk tuft -->
-  <path d="M188 70 Q190 55 195 65" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M198 65 Q200 48 205 62" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M208 65 Q212 55 215 70" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <!-- Wide eager eyes looking up -->
-  <ellipse cx="173" cy="138" rx="13" ry="17" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <ellipse cx="227" cy="138" rx="13" ry="17" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
-  <ellipse cx="173" cy="132" rx="7" ry="10" fill="#0C447C"/>
-  <ellipse cx="227" cy="132" rx="7" ry="10" fill="#0C447C"/>
-  <circle cx="170" cy="128" r="3" fill="#FFFFFF"/>
-  <circle cx="224" cy="128" r="3" fill="#FFFFFF"/>
-  <circle cx="176" cy="135" r="1.8" fill="#FFFFFF" opacity="0.5"/>
-  <circle cx="230" cy="135" r="1.8" fill="#FFFFFF" opacity="0.5"/>
+  <path d="M188 75 Q190 60 195 72" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M198 70 Q200 55 205 68" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M208 72 Q212 62 215 75" stroke="#185FA5" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <ellipse cx="172" cy="175" rx="20" ry="24" fill="#FFFFFF" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="228" cy="175" rx="20" ry="24" fill="#FFFFFF" stroke="#0C447C" stroke-width="2.5"/>
+  <ellipse cx="172" cy="172" rx="13" ry="16" fill="#0C447C"/>
+  <ellipse cx="228" cy="172" rx="13" ry="16" fill="#0C447C"/>
+  <circle cx="167" cy="167" r="5" fill="#FFFFFF"/>
+  <circle cx="223" cy="167" r="5" fill="#FFFFFF"/>
+  <circle cx="178" cy="178" r="2.5" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="234" cy="178" r="2.5" fill="#FFFFFF" opacity="0.5"/>
   <!-- Blush -->
-  <ellipse cx="155" cy="170" rx="13" ry="8" fill="#F0997B" opacity="0.4"/>
-  <ellipse cx="245" cy="170" rx="13" ry="8" fill="#F0997B" opacity="0.4"/>
-  <!-- Beak open mid-cheer (orange interior visible) -->
-  <path d="M180 175 Q200 168 220 175 Q220 195 200 200 Q180 195 180 175 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Beak inner / open mouth -->
-  <ellipse cx="200" cy="187" rx="11" ry="6" fill="#D85A30"/>
-  <!-- Beak top line -->
-  <path d="M180 175 Q200 178 220 175" stroke="#0C447C" stroke-width="2" fill="none"/>
+  <ellipse cx="135" cy="215" rx="13" ry="9" fill="#F0997B" opacity="0.55"/>
+  <ellipse cx="265" cy="215" rx="13" ry="9" fill="#F0997B" opacity="0.55"/>
+  <!-- Beak open mid-cheer -->
+  <path d="M186 220 Q200 213 214 220 Q214 240 200 244 Q186 240 186 220 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="232" rx="9" ry="5" fill="#D85A30"/>
+  <path d="M186 220 Q200 224 214 220" stroke="#0C447C" stroke-width="2" fill="none"/>
 </svg>

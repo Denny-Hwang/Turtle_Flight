@@ -1,38 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <!-- Turbo icon - circular frame -->
+  <!-- Turbo icon -->
   <circle cx="100" cy="100" r="92" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="5"/>
-  <!-- Clip head to circle -->
   <defs>
     <clipPath id="turboCircle">
       <circle cx="100" cy="100" r="88"/>
     </clipPath>
   </defs>
   <g clip-path="url(#turboCircle)">
-    <!-- Shell peek -->
-    <path d="M40 110 Q40 50 100 45 Q160 50 160 110 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2"/>
-    <path d="M100 60 L118 70 L118 88 L100 98 L82 88 L82 70 Z" fill="none" stroke="#1D9E75" stroke-width="1.2" opacity="0.7"/>
     <!-- Head -->
-    <ellipse cx="100" cy="105" rx="62" ry="58" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
-    <!-- Goggles strap -->
-    <path d="M55 75 Q100 65 145 75" stroke="#5F5E5A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- Goggles -->
-    <ellipse cx="80" cy="78" rx="16" ry="13" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2"/>
-    <ellipse cx="120" cy="78" rx="16" ry="13" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2"/>
-    <line x1="96" y1="78" x2="104" y2="78" stroke="#BA7517" stroke-width="2"/>
-    <ellipse cx="76" cy="74" rx="4.5" ry="2" fill="#FFFFFF" opacity="0.7"/>
-    <ellipse cx="116" cy="74" rx="4.5" ry="2" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="100" cy="100" r="78" fill="#5DCAA5" stroke="#085041" stroke-width="2.5"/>
+    <!-- Blush -->
+    <circle cx="42" cy="115" r="9" fill="#F0997B" opacity="0.5"/>
+    <circle cx="158" cy="115" r="9" fill="#F0997B" opacity="0.5"/>
     <!-- Eyes -->
-    <ellipse cx="80" cy="115" rx="8" ry="11" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-    <ellipse cx="120" cy="115" rx="8" ry="11" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
-    <ellipse cx="81" cy="111" rx="4.5" ry="6.5" fill="#085041"/>
-    <ellipse cx="121" cy="111" rx="4.5" ry="6.5" fill="#085041"/>
-    <circle cx="78" cy="108" r="1.8" fill="#FFFFFF"/>
-    <circle cx="118" cy="108" r="1.8" fill="#FFFFFF"/>
-    <circle cx="83" cy="115" r="1" fill="#FFFFFF" opacity="0.5"/>
-    <circle cx="123" cy="115" r="1" fill="#FFFFFF" opacity="0.5"/>
+    <ellipse cx="78" cy="100" rx="14" ry="17" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
+    <ellipse cx="122" cy="100" rx="14" ry="17" fill="#FFFFFF" stroke="#085041" stroke-width="2"/>
+    <ellipse cx="80" cy="98" rx="9" ry="11" fill="#085041"/>
+    <ellipse cx="124" cy="98" rx="9" ry="11" fill="#085041"/>
+    <circle cx="76" cy="94" r="3.5" fill="#FFFFFF"/>
+    <circle cx="120" cy="94" r="3.5" fill="#FFFFFF"/>
+    <circle cx="83" cy="103" r="1.8" fill="#FFFFFF" opacity="0.5"/>
+    <circle cx="127" cy="103" r="1.8" fill="#FFFFFF" opacity="0.5"/>
+    <!-- Glasses on face -->
+    <circle cx="78" cy="100" r="22" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="2.5"/>
+    <circle cx="122" cy="100" r="22" fill="#E6F1FB" fill-opacity="0.18" stroke="#BA7517" stroke-width="2.5"/>
+    <line x1="100" y1="100" x2="100" y2="100" stroke="#BA7517" stroke-width="2.5"/>
+    <line x1="92" y1="100" x2="108" y2="100" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="56" y1="100" x2="50" y2="98" stroke="#BA7517" stroke-width="2" stroke-linecap="round"/>
+    <line x1="144" y1="100" x2="150" y2="98" stroke="#BA7517" stroke-width="2" stroke-linecap="round"/>
     <!-- Smile -->
-    <path d="M90 145 Q100 152 110 145" stroke="#085041" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M88 140 Q100 150 112 140" stroke="#085041" stroke-width="2" fill="none" stroke-linecap="round"/>
     <!-- Scarf hint -->
-    <path d="M65 165 Q100 175 135 165 Q138 180 130 188 Q100 192 70 188 Q62 180 65 165 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M55 178 Q100 188 145 178 Q148 192 138 198 Q100 202 62 198 Q52 192 55 178 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
   </g>
 </svg>

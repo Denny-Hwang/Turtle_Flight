@@ -1,49 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Nutty the Hamster - default expression -->
-  <!-- Tail (round fluffy) -->
-  <circle cx="320" cy="265" r="14" fill="#FAEEDA" stroke="#633806" stroke-width="2.5"/>
-  <!-- Body (potato shape) -->
-  <ellipse cx="200" cy="265" rx="115" ry="100" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <!-- Belly stripe (lighter) -->
-  <ellipse cx="200" cy="285" rx="60" ry="55" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" opacity="0.9"/>
-  <!-- Tiny limbs -->
-  <ellipse cx="115" cy="290" rx="22" ry="18" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="285" cy="290" rx="22" ry="18" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <!-- Feet peek -->
-  <ellipse cx="170" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
-  <ellipse cx="230" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
-  <!-- Head (large round) -->
-  <ellipse cx="200" cy="155" rx="100" ry="92" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <!-- Nutty default -->
+  <!-- Tail (round fluffball) -->
+  <circle cx="310" cy="290" r="14" fill="#FAEEDA" stroke="#633806" stroke-width="2.5"/>
+  <!-- Feet -->
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <!-- Body (round potato) -->
+  <ellipse cx="200" cy="305" rx="90" ry="70" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <!-- Belly stripe -->
+  <ellipse cx="200" cy="320" rx="55" ry="50" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" opacity="0.95"/>
+  <!-- Stub arms -->
+  <ellipse cx="120" cy="305" rx="20" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="280" cy="305" rx="20" ry="14" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <!-- Head -->
+  <circle cx="200" cy="180" r="115" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
   <!-- Ears -->
-  <ellipse cx="135" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="265" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="135" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
-  <ellipse cx="265" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
-  <!-- Cheek stuffing - LEFT smaller, RIGHT bigger (asymmetric) -->
-  <ellipse cx="135" cy="195" rx="28" ry="32" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
-  <ellipse cx="265" cy="195" rx="38" ry="42" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
-  <!-- Cheek shading -->
-  <ellipse cx="138" cy="200" rx="9" ry="6" fill="#F0997B" opacity="0.4"/>
-  <ellipse cx="270" cy="200" rx="13" ry="9" fill="#F0997B" opacity="0.4"/>
-  <!-- Eyes - RIGHT bigger than LEFT (asymmetric mischief) -->
-  <ellipse cx="170" cy="155" rx="11" ry="14" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-  <ellipse cx="232" cy="155" rx="13" ry="17" fill="#FFFFFF" stroke="#633806" stroke-width="2"/>
-  <ellipse cx="171" cy="152" rx="6" ry="8" fill="#633806"/>
-  <ellipse cx="233" cy="151" rx="7.5" ry="10" fill="#633806"/>
-  <circle cx="168" cy="148" r="2.5" fill="#FFFFFF"/>
-  <circle cx="230" cy="147" r="3" fill="#FFFFFF"/>
-  <circle cx="173" cy="155" r="1.4" fill="#FFFFFF" opacity="0.5"/>
-  <circle cx="236" cy="155" r="1.7" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="135" cy="100" r="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <circle cx="265" cy="100" r="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <circle cx="135" cy="103" r="11" fill="#F5C4B3"/>
+  <circle cx="265" cy="103" r="11" fill="#F5C4B3"/>
+  <!-- Asymmetric cheeks (right bigger) -->
+  <ellipse cx="135" cy="220" rx="28" ry="32" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="265" cy="220" rx="36" ry="40" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="138" cy="225" rx="9" ry="6" fill="#F0997B" opacity="0.5"/>
+  <ellipse cx="270" cy="225" rx="13" ry="9" fill="#F0997B" opacity="0.5"/>
+  <!-- Eyes - asymmetric (right bigger = mischief) -->
+  <ellipse cx="170" cy="180" rx="18" ry="22" fill="#FFFFFF" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="232" cy="180" rx="22" ry="26" fill="#FFFFFF" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="172" cy="178" rx="11" ry="14" fill="#633806"/>
+  <ellipse cx="234" cy="177" rx="14" ry="17" fill="#633806"/>
+  <circle cx="167" cy="173" r="4.5" fill="#FFFFFF"/>
+  <circle cx="229" cy="172" r="5" fill="#FFFFFF"/>
+  <circle cx="176" cy="183" r="2.2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="240" cy="184" r="2.5" fill="#FFFFFF" opacity="0.5"/>
   <!-- Pink nose -->
-  <ellipse cx="200" cy="180" rx="6" ry="5" fill="#D85A30" stroke="#633806" stroke-width="1.5"/>
+  <ellipse cx="200" cy="225" rx="6" ry="5" fill="#D85A30" stroke="#633806" stroke-width="1.5"/>
   <!-- Cheeky grin -->
-  <path d="M180 200 Q200 215 220 200" stroke="#633806" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <line x1="200" y1="187" x2="200" y2="200" stroke="#633806" stroke-width="1.5"/>
-  <!-- Whiskers - 3 per side -->
-  <line x1="105" y1="195" x2="135" y2="200" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="100" y1="208" x2="135" y2="208" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="105" y1="220" x2="135" y2="215" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="265" y1="200" x2="295" y2="195" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="265" y1="208" x2="300" y2="208" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
-  <line x1="265" y1="215" x2="295" y2="220" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <path d="M180 245 Q200 260 220 245" stroke="#633806" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="200" y1="232" x2="200" y2="245" stroke="#633806" stroke-width="1.5"/>
+  <!-- Whiskers -->
+  <line x1="100" y1="220" x2="135" y2="225" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="95" y1="232" x2="135" y2="232" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="100" y1="244" x2="135" y2="240" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="225" x2="300" y2="220" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="232" x2="305" y2="232" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="265" y1="240" x2="300" y2="244" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
 </svg>

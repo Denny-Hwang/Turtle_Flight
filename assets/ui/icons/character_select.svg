@@ -1,123 +1,125 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 280" fill="none">
-  <!-- Character selection layout reference - 3x2 grid -->
-  <!-- Background hint (transparent overall, decorative grid only for reference) -->
+  <!-- Character selection: 6 character icons, 3x2 grid -->
 
-  <!-- Row 1 -->
-  <!-- Turbo (top-left) -->
-  <g transform="translate(60 60)">
-    <circle cx="50" cy="50" r="48" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="3"/>
-    <ellipse cx="50" cy="55" rx="32" ry="30" fill="#A8E6CF" stroke="#085041" stroke-width="1.5"/>
-    <path d="M28 32 Q50 24 72 32" stroke="#5F5E5A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <ellipse cx="40" cy="35" rx="9" ry="7" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="1.3"/>
-    <ellipse cx="60" cy="35" rx="9" ry="7" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="1.3"/>
-    <ellipse cx="40" cy="58" rx="4" ry="6" fill="#FFFFFF" stroke="#085041" stroke-width="1.2"/>
-    <ellipse cx="60" cy="58" rx="4" ry="6" fill="#FFFFFF" stroke="#085041" stroke-width="1.2"/>
-    <ellipse cx="40" cy="56" rx="2.5" ry="4" fill="#085041"/>
-    <ellipse cx="60" cy="56" rx="2.5" ry="4" fill="#085041"/>
-    <path d="M44 73 Q50 78 56 73" stroke="#085041" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#085041">Turbo</text>
+  <!-- Turbo top-left -->
+  <g transform="translate(60 50)">
+    <circle cx="50" cy="50" r="46" fill="#E1F5EE" stroke="#5DCAA5" stroke-width="3"/>
+    <circle cx="50" cy="50" r="38" fill="#5DCAA5" stroke="#085041" stroke-width="1.5"/>
+    <ellipse cx="40" cy="50" rx="7" ry="9" fill="#FFFFFF" stroke="#085041" stroke-width="1"/>
+    <ellipse cx="60" cy="50" rx="7" ry="9" fill="#FFFFFF" stroke="#085041" stroke-width="1"/>
+    <ellipse cx="40" cy="49" rx="4.5" ry="6" fill="#085041"/>
+    <ellipse cx="60" cy="49" rx="4.5" ry="6" fill="#085041"/>
+    <circle cx="38" cy="46" r="1.8" fill="#FFFFFF"/>
+    <circle cx="58" cy="46" r="1.8" fill="#FFFFFF"/>
+    <circle cx="40" cy="50" r="11" fill="none" stroke="#BA7517" stroke-width="1.5"/>
+    <circle cx="60" cy="50" r="11" fill="none" stroke="#BA7517" stroke-width="1.5"/>
+    <line x1="49" y1="50" x2="51" y2="50" stroke="#BA7517" stroke-width="1.5"/>
+    <path d="M44 70 Q50 75 56 70" stroke="#085041" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#085041">Turbo</text>
   </g>
 
-  <!-- Pip (top-mid) -->
-  <g transform="translate(290 60)">
-    <circle cx="50" cy="50" r="48" fill="#E6F1FB" stroke="#378ADD" stroke-width="3"/>
-    <ellipse cx="50" cy="55" rx="32" ry="33" fill="#378ADD" stroke="#0C447C" stroke-width="1.5"/>
-    <path d="M50 35 Q35 40 33 65 Q42 78 50 79 Q58 78 67 65 Q65 40 50 35 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="1.2"/>
-    <path d="M45 22 Q46 16 49 21" stroke="#185FA5" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+  <!-- Pip top-mid -->
+  <g transform="translate(290 50)">
+    <circle cx="50" cy="50" r="46" fill="#E6F1FB" stroke="#378ADD" stroke-width="3"/>
+    <circle cx="50" cy="50" r="38" fill="#378ADD" stroke="#0C447C" stroke-width="1.5"/>
+    <ellipse cx="50" cy="55" rx="22" ry="26" fill="#FFFFFF" stroke="#0C447C" stroke-width="1.2"/>
+    <path d="M46 22 Q47 16 50 21" stroke="#185FA5" stroke-width="1.7" fill="none" stroke-linecap="round"/>
     <path d="M50 20 Q51 14 54 19" stroke="#185FA5" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-    <path d="M55 22 Q58 17 60 24" stroke="#185FA5" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-    <ellipse cx="42" cy="55" rx="4" ry="6" fill="#FFFFFF" stroke="#0C447C" stroke-width="1.2"/>
-    <ellipse cx="58" cy="55" rx="4" ry="6" fill="#FFFFFF" stroke="#0C447C" stroke-width="1.2"/>
-    <ellipse cx="42" cy="53" rx="2.3" ry="3.5" fill="#0C447C"/>
-    <ellipse cx="58" cy="53" rx="2.3" ry="3.5" fill="#0C447C"/>
-    <path d="M44 70 Q50 64 56 70 Q56 78 50 80 Q44 78 44 70 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="1.3"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0C447C">Pip</text>
+    <path d="M55 22 Q57 16 59 22" stroke="#185FA5" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="42" cy="50" rx="6" ry="8" fill="#FFFFFF" stroke="#0C447C" stroke-width="1"/>
+    <ellipse cx="58" cy="50" rx="6" ry="8" fill="#FFFFFF" stroke="#0C447C" stroke-width="1"/>
+    <ellipse cx="42" cy="49" rx="3.8" ry="5.5" fill="#0C447C"/>
+    <ellipse cx="58" cy="49" rx="3.8" ry="5.5" fill="#0C447C"/>
+    <circle cx="40" cy="46" r="1.5" fill="#FFFFFF"/>
+    <circle cx="56" cy="46" r="1.5" fill="#FFFFFF"/>
+    <path d="M44 65 Q50 60 56 65 Q56 75 50 78 Q44 75 44 65 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="1.2"/>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#0C447C">Pip</text>
   </g>
 
-  <!-- Nutty (top-right) -->
-  <g transform="translate(520 60)">
-    <circle cx="50" cy="50" r="48" fill="#FAEEDA" stroke="#EF9F27" stroke-width="3"/>
-    <ellipse cx="50" cy="55" rx="40" ry="36" fill="#EF9F27" stroke="#633806" stroke-width="1.5"/>
-    <ellipse cx="27" cy="25" rx="8" ry="7" fill="#EF9F27" stroke="#633806" stroke-width="1.3"/>
-    <ellipse cx="73" cy="25" rx="8" ry="7" fill="#EF9F27" stroke="#633806" stroke-width="1.3"/>
-    <ellipse cx="27" cy="26" rx="4" ry="4" fill="#F5C4B3"/>
-    <ellipse cx="73" cy="26" rx="4" ry="4" fill="#F5C4B3"/>
-    <ellipse cx="28" cy="68" rx="11" ry="13" fill="#FAC775" stroke="#633806" stroke-width="1.3"/>
-    <ellipse cx="72" cy="68" rx="14" ry="16" fill="#FAC775" stroke="#633806" stroke-width="1.3"/>
-    <ellipse cx="40" cy="55" rx="4" ry="5.5" fill="#FFFFFF" stroke="#633806" stroke-width="1.2"/>
-    <ellipse cx="60" cy="55" rx="5" ry="6.5" fill="#FFFFFF" stroke="#633806" stroke-width="1.2"/>
-    <ellipse cx="40" cy="53" rx="2.5" ry="3.5" fill="#633806"/>
-    <ellipse cx="60" cy="52" rx="3" ry="4" fill="#633806"/>
-    <ellipse cx="50" cy="64" rx="2.5" ry="2" fill="#D85A30" stroke="#633806" stroke-width="0.8"/>
+  <!-- Nutty top-right -->
+  <g transform="translate(520 50)">
+    <circle cx="50" cy="50" r="46" fill="#FAEEDA" stroke="#EF9F27" stroke-width="3"/>
+    <circle cx="50" cy="55" r="38" fill="#EF9F27" stroke="#633806" stroke-width="1.5"/>
+    <circle cx="27" cy="22" r="7" fill="#EF9F27" stroke="#633806" stroke-width="1.2"/>
+    <circle cx="73" cy="22" r="7" fill="#EF9F27" stroke="#633806" stroke-width="1.2"/>
+    <circle cx="27" cy="23" r="3.5" fill="#F5C4B3"/>
+    <circle cx="73" cy="23" r="3.5" fill="#F5C4B3"/>
+    <ellipse cx="27" cy="65" rx="10" ry="11" fill="#FAC775" stroke="#633806" stroke-width="1.2"/>
+    <ellipse cx="73" cy="65" rx="13" ry="15" fill="#FAC775" stroke="#633806" stroke-width="1.2"/>
+    <ellipse cx="40" cy="50" rx="6" ry="7.5" fill="#FFFFFF" stroke="#633806" stroke-width="1"/>
+    <ellipse cx="60" cy="50" rx="7" ry="9" fill="#FFFFFF" stroke="#633806" stroke-width="1"/>
+    <ellipse cx="40" cy="49" rx="3.8" ry="5" fill="#633806"/>
+    <ellipse cx="60" cy="48" rx="4.5" ry="6" fill="#633806"/>
+    <circle cx="38" cy="46" r="1.5" fill="#FFFFFF"/>
+    <circle cx="58" cy="45" r="1.7" fill="#FFFFFF"/>
+    <ellipse cx="50" cy="62" rx="2.5" ry="2" fill="#D85A30" stroke="#633806" stroke-width="0.8"/>
     <path d="M43 73 Q50 80 57 73" stroke="#633806" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#633806">Nutty</text>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#633806">Nutty</text>
   </g>
 
-  <!-- Row 2 -->
-  <!-- Mochi (bottom-left) -->
-  <g transform="translate(60 175)">
-    <circle cx="50" cy="50" r="48" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="3"/>
-    <ellipse cx="50" cy="55" rx="36" ry="34" fill="#CECBF6" stroke="#3C3489" stroke-width="1.5"/>
-    <path d="M25 27 Q23 12 33 16 Q38 25 33 35 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.3" stroke-linejoin="round"/>
-    <path d="M75 27 Q77 12 67 16 Q62 25 67 35 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.3" stroke-linejoin="round"/>
-    <path d="M25 17 Q24 12 30 14 Q32 19 29 23 Z" fill="#534AB7" stroke="#3C3489" stroke-width="0.8"/>
-    <path d="M75 17 Q76 12 70 14 Q68 19 71 23 Z" fill="#534AB7" stroke="#3C3489" stroke-width="0.8"/>
-    <path d="M50 30 L52 35 L57 36 L53 39 L54 44 L50 41 L46 44 L47 39 L43 36 L48 35 Z" fill="#7F77DD" opacity="0.45"/>
-    <ellipse cx="40" cy="55" rx="4" ry="6" fill="#FFFFFF" stroke="#3C3489" stroke-width="1.2"/>
-    <ellipse cx="60" cy="55" rx="4" ry="6" fill="#FFFFFF" stroke="#3C3489" stroke-width="1.2"/>
-    <path d="M36 51 Q40 53 44 51 Q44 48 40 48 Q36 48 36 51 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1"/>
-    <path d="M56 51 Q60 53 64 51 Q64 48 60 48 Q56 48 56 51 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1"/>
-    <ellipse cx="40" cy="55" rx="2.3" ry="3.3" fill="#3C3489"/>
-    <ellipse cx="60" cy="55" rx="2.3" ry="3.3" fill="#3C3489"/>
+  <!-- Mochi bot-left -->
+  <g transform="translate(60 165)">
+    <circle cx="50" cy="50" r="46" fill="#EEEDFE" stroke="#AFA9EC" stroke-width="3"/>
+    <circle cx="50" cy="55" r="36" fill="#CECBF6" stroke="#3C3489" stroke-width="1.5"/>
+    <path d="M25 25 Q23 8 33 14 Q40 25 33 38 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M75 25 Q77 8 67 14 Q60 25 67 38 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M25 15 Q24 9 30 12 Q32 18 29 22 Z" fill="#534AB7" stroke="#3C3489" stroke-width="0.8"/>
+    <path d="M75 15 Q76 9 70 12 Q68 18 71 22 Z" fill="#534AB7" stroke="#3C3489" stroke-width="0.8"/>
+    <path d="M50 28 L52 33 L57 34 L53 37 L54 42 L50 39 L46 42 L47 37 L43 34 L48 33 Z" fill="#7F77DD" opacity="0.45"/>
+    <ellipse cx="40" cy="55" rx="6" ry="8" fill="#FFFFFF" stroke="#3C3489" stroke-width="1"/>
+    <ellipse cx="60" cy="55" rx="6" ry="8" fill="#FFFFFF" stroke="#3C3489" stroke-width="1"/>
+    <path d="M34 51 Q40 53 46 51 Q46 47 40 47 Q34 47 34 51 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1"/>
+    <path d="M54 51 Q60 53 66 51 Q66 47 60 47 Q54 47 54 51 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1"/>
+    <ellipse cx="40" cy="56" rx="3.5" ry="4.5" fill="#3C3489"/>
+    <ellipse cx="60" cy="56" rx="3.5" ry="4.5" fill="#3C3489"/>
     <path d="M46 71 Q49 75 50 73 Q51 75 54 71" stroke="#3C3489" stroke-width="1.2" fill="none" stroke-linecap="round"/>
     <path d="M30 84 Q50 90 70 84 Q69 88 50 90 Q31 88 30 84 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1"/>
     <circle cx="50" cy="89" r="3.5" fill="#EF9F27" stroke="#BA7517" stroke-width="0.8"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#3C3489">Mochi</text>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#3C3489">Mochi</text>
   </g>
 
-  <!-- Bounce (bottom-mid) -->
-  <g transform="translate(290 175)">
-    <circle cx="50" cy="50" r="48" fill="#EAF3DE" stroke="#97C459" stroke-width="3"/>
-    <ellipse cx="50" cy="60" rx="40" ry="34" fill="#97C459" stroke="#27500A" stroke-width="1.5"/>
-    <ellipse cx="50" cy="70" rx="28" ry="22" fill="#C0DD97" opacity="0.95"/>
-    <ellipse cx="33" cy="30" rx="13" ry="15" fill="#97C459" stroke="#27500A" stroke-width="1.3"/>
-    <ellipse cx="67" cy="30" rx="13" ry="15" fill="#97C459" stroke="#27500A" stroke-width="1.3"/>
-    <ellipse cx="33" cy="30" rx="8" ry="10" fill="#FFFFFF" stroke="#27500A" stroke-width="1.3"/>
-    <ellipse cx="67" cy="30" rx="8" ry="10" fill="#FFFFFF" stroke="#27500A" stroke-width="1.3"/>
-    <ellipse cx="33" cy="30" rx="5" ry="6" fill="#27500A"/>
-    <ellipse cx="67" cy="30" rx="5" ry="6" fill="#27500A"/>
-    <circle cx="32" cy="28" r="1.7" fill="#FFFFFF"/>
-    <circle cx="66" cy="28" r="1.7" fill="#FFFFFF"/>
-    <path d="M15 56 Q50 90 85 56" stroke="#27500A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M15 56 Q50 88 85 56" fill="#27500A" opacity="0.15"/>
+  <!-- Bounce bot-mid -->
+  <g transform="translate(290 165)">
+    <circle cx="50" cy="50" r="46" fill="#EAF3DE" stroke="#97C459" stroke-width="3"/>
+    <ellipse cx="50" cy="63" rx="36" ry="30" fill="#97C459" stroke="#27500A" stroke-width="1.5"/>
+    <ellipse cx="50" cy="70" rx="26" ry="20" fill="#C0DD97" opacity="0.95"/>
+    <ellipse cx="33" cy="28" rx="13" ry="15" fill="#97C459" stroke="#27500A" stroke-width="1.2"/>
+    <ellipse cx="67" cy="28" rx="13" ry="15" fill="#97C459" stroke="#27500A" stroke-width="1.2"/>
+    <ellipse cx="33" cy="28" rx="8" ry="10" fill="#FFFFFF" stroke="#27500A" stroke-width="1.2"/>
+    <ellipse cx="67" cy="28" rx="8" ry="10" fill="#FFFFFF" stroke="#27500A" stroke-width="1.2"/>
+    <ellipse cx="33" cy="28" rx="5" ry="6" fill="#27500A"/>
+    <ellipse cx="67" cy="28" rx="5" ry="6" fill="#27500A"/>
+    <circle cx="32" cy="26" r="1.7" fill="#FFFFFF"/>
+    <circle cx="66" cy="26" r="1.7" fill="#FFFFFF"/>
+    <path d="M15 56 Q50 88 85 56" stroke="#27500A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
     <path d="M70 75 Q78 80 80 86 Q72 86 67 80 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="0.8" stroke-linejoin="round"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#27500A">Bounce</text>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#27500A">Bounce</text>
   </g>
 
-  <!-- Hoppy (bottom-right) -->
-  <g transform="translate(520 175)">
-    <circle cx="50" cy="50" r="48" fill="#FAECE7" stroke="#F0997B" stroke-width="3"/>
-    <ellipse cx="33" cy="20" rx="6" ry="22" fill="#F0997B" stroke="#712B13" stroke-width="1.3"/>
-    <ellipse cx="33" cy="22" rx="3" ry="16" fill="#F5C4B3"/>
-    <g transform="rotate(28 67 20)">
-      <ellipse cx="67" cy="20" rx="6" ry="22" fill="#F0997B" stroke="#712B13" stroke-width="1.3"/>
-      <ellipse cx="67" cy="22" rx="3" ry="16" fill="#F5C4B3"/>
+  <!-- Hoppy bot-right -->
+  <g transform="translate(520 165)">
+    <circle cx="50" cy="50" r="46" fill="#FAECE7" stroke="#F0997B" stroke-width="3"/>
+    <ellipse cx="35" cy="10" rx="6" ry="22" fill="#F0997B" stroke="#712B13" stroke-width="1.2"/>
+    <ellipse cx="35" cy="12" rx="3" ry="16" fill="#F5C4B3"/>
+    <g transform="rotate(15 65 10)">
+      <ellipse cx="65" cy="10" rx="6" ry="22" fill="#F0997B" stroke="#712B13" stroke-width="1.2"/>
+      <ellipse cx="65" cy="12" rx="3" ry="16" fill="#F5C4B3"/>
     </g>
-    <ellipse cx="25" cy="9" rx="3" ry="4" fill="#ED93B1" stroke="#A32D2D" stroke-width="0.5"/>
-    <ellipse cx="22" cy="13" rx="3.5" ry="2.5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="0.5"/>
-    <ellipse cx="28" cy="13" rx="3.5" ry="2.5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="0.5"/>
-    <circle cx="25" cy="14" r="1.8" fill="#EF9F27" stroke="#BA7517" stroke-width="0.5"/>
-    <ellipse cx="50" cy="60" rx="36" ry="32" fill="#F0997B" stroke="#712B13" stroke-width="1.5"/>
-    <circle cx="22" cy="72" r="6" fill="#FAECE7" stroke="#712B13" stroke-width="1"/>
-    <circle cx="78" cy="72" r="6" fill="#FAECE7" stroke="#712B13" stroke-width="1"/>
-    <ellipse cx="40" cy="58" rx="4" ry="6" fill="#FFFFFF" stroke="#712B13" stroke-width="1.2"/>
-    <ellipse cx="60" cy="58" rx="4" ry="6" fill="#FFFFFF" stroke="#712B13" stroke-width="1.2"/>
-    <ellipse cx="40" cy="61" rx="2.5" ry="3.5" fill="#712B13"/>
-    <ellipse cx="60" cy="61" rx="2.5" ry="3.5" fill="#712B13"/>
-    <circle cx="39" cy="59" r="1.2" fill="#FFFFFF"/>
-    <circle cx="59" cy="59" r="1.2" fill="#FFFFFF"/>
-    <path d="M47 70 Q50 68 53 70 Q53 73 50 74 Q47 73 47 70 Z" fill="#D85A30" stroke="#712B13" stroke-width="0.8"/>
-    <path d="M50 76 Q46 80 48 83 Q50 81 50 83 Q50 81 52 83 Q54 80 50 76" stroke="#712B13" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <text x="50" y="125" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#712B13">Hoppy</text>
+    <ellipse cx="25" cy="-2" rx="3" ry="4" fill="#ED93B1" stroke="#A32D2D" stroke-width="0.5"/>
+    <ellipse cx="22" cy="2" rx="3.5" ry="2.5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="0.5"/>
+    <ellipse cx="28" cy="2" rx="3.5" ry="2.5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="0.5"/>
+    <circle cx="25" cy="3" r="1.8" fill="#EF9F27" stroke="#BA7517" stroke-width="0.5"/>
+    <circle cx="50" cy="60" r="33" fill="#F0997B" stroke="#712B13" stroke-width="1.5"/>
+    <circle cx="22" cy="72" r="6" fill="#FAECE7" stroke="#712B13" stroke-width="0.8"/>
+    <circle cx="78" cy="72" r="6" fill="#FAECE7" stroke="#712B13" stroke-width="0.8"/>
+    <ellipse cx="40" cy="58" rx="6" ry="8" fill="#FFFFFF" stroke="#712B13" stroke-width="1"/>
+    <ellipse cx="60" cy="58" rx="6" ry="8" fill="#FFFFFF" stroke="#712B13" stroke-width="1"/>
+    <ellipse cx="40" cy="60" rx="3.8" ry="5" fill="#712B13"/>
+    <ellipse cx="60" cy="60" rx="3.8" ry="5" fill="#712B13"/>
+    <circle cx="38" cy="58" r="1.7" fill="#FFFFFF"/>
+    <circle cx="58" cy="58" r="1.7" fill="#FFFFFF"/>
+    <path d="M47 70 Q50 67 53 70 Q53 74 50 75 Q47 74 47 70 Z" fill="#D85A30" stroke="#712B13" stroke-width="0.8"/>
+    <path d="M50 78 Q44 84 47 88 Q50 85 50 88 Q50 85 53 88 Q56 84 50 78" stroke="#712B13" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <text x="50" y="115" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="bold" fill="#712B13">Hoppy</text>
   </g>
 </svg>

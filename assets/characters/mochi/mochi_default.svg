@@ -1,71 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Mochi the Cat - default expression -->
-  <!-- Tail (long S-curve, dark tip) -->
-  <path d="M295 280 Q335 270 340 230 Q335 200 305 195 Q280 195 270 215" stroke="#3C3489" stroke-width="20" fill="none" stroke-linecap="round"/>
-  <path d="M295 280 Q335 270 340 230 Q335 200 305 195 Q280 195 270 215" stroke="#CECBF6" stroke-width="14" fill="none" stroke-linecap="round"/>
-  <ellipse cx="305" cy="195" rx="11" ry="9" fill="#534AB7"/>
-  <!-- Hind legs -->
-  <ellipse cx="155" cy="320" rx="22" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
-  <ellipse cx="245" cy="320" rx="22" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Mochi default (front-facing, half-lidded, bell collar) -->
+  <!-- Tail (S-curve to right side, dark tip) -->
+  <path d="M280 320 Q330 320 340 280 Q335 240 305 240 Q285 245 280 265" stroke="#3C3489" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <path d="M280 320 Q330 320 340 280 Q335 240 305 240 Q285 245 280 265" stroke="#CECBF6" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <ellipse cx="305" cy="240" rx="11" ry="9" fill="#534AB7"/>
+  <!-- Hind feet (tucked) -->
+  <ellipse cx="170" cy="370" rx="22" ry="11" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="230" cy="370" rx="22" ry="11" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
   <!-- Body (slimmer) -->
-  <ellipse cx="200" cy="265" rx="78" ry="80" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="200" cy="305" rx="70" ry="65" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
   <!-- Front paws -->
-  <ellipse cx="160" cy="300" rx="22" ry="18" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
-  <ellipse cx="240" cy="300" rx="22" ry="18" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
-  <!-- Paw beans -->
-  <circle cx="155" cy="305" r="3" fill="#ED93B1"/>
-  <circle cx="165" cy="305" r="3" fill="#ED93B1"/>
-  <circle cx="160" cy="313" r="4" fill="#ED93B1"/>
-  <circle cx="235" cy="305" r="3" fill="#ED93B1"/>
-  <circle cx="245" cy="305" r="3" fill="#ED93B1"/>
-  <circle cx="240" cy="313" r="4" fill="#ED93B1"/>
-  <!-- Belly lighter -->
-  <ellipse cx="200" cy="280" rx="50" ry="55" fill="#EEEDFE" opacity="0.7"/>
+  <ellipse cx="155" cy="335" rx="20" ry="16" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="245" cy="335" rx="20" ry="16" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <circle cx="150" cy="338" r="2.5" fill="#ED93B1"/>
+  <circle cx="160" cy="338" r="2.5" fill="#ED93B1"/>
+  <circle cx="155" cy="345" r="3" fill="#ED93B1"/>
+  <circle cx="240" cy="338" r="2.5" fill="#ED93B1"/>
+  <circle cx="250" cy="338" r="2.5" fill="#ED93B1"/>
+  <circle cx="245" cy="345" r="3" fill="#ED93B1"/>
   <!-- Head -->
-  <ellipse cx="200" cy="155" rx="92" ry="85" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <circle cx="200" cy="180" r="105" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
   <!-- Pointed ears -->
-  <path d="M125 95 Q120 50 145 60 Q160 80 145 110 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M275 95 Q280 50 255 60 Q240 80 255 110 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
-  <!-- Dark purple ear tips -->
-  <path d="M125 70 Q123 55 140 60 Q145 70 138 80 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M275 70 Q277 55 260 60 Q255 70 262 80 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M125 110 Q120 65 145 75 Q160 95 145 125 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M275 110 Q280 65 255 75 Q240 95 255 125 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Dark ear tips -->
+  <path d="M125 85 Q123 70 140 75 Q145 85 138 95 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M275 85 Q277 70 260 75 Q255 85 262 95 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
   <!-- Pink inner ears -->
-  <path d="M132 90 Q132 70 145 78 Q150 95 138 105 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
-  <path d="M268 90 Q268 70 255 78 Q250 95 262 105 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
-  <!-- Star marking on forehead -->
-  <path d="M200 95 L205 105 L216 107 L207 115 L209 126 L200 120 L191 126 L193 115 L184 107 L195 105 Z" fill="#7F77DD" opacity="0.45"/>
-  <!-- Half-lidded eyes (upper lid covers top 30%) -->
-  <ellipse cx="170" cy="160" rx="12" ry="15" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
-  <ellipse cx="230" cy="160" rx="12" ry="15" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
-  <!-- Half-lid overlay (upper 30%) -->
-  <path d="M158 152 Q170 158 182 152 Q182 145 170 145 Q158 145 158 152 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M218 152 Q230 158 242 152 Q242 145 230 145 Q218 145 218 152 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M132 105 Q132 85 145 93 Q150 110 138 120 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M268 105 Q268 85 255 93 Q250 110 262 120 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Star marking -->
+  <path d="M200 115 L205 125 L216 127 L207 135 L209 146 L200 140 L191 146 L193 135 L184 127 L195 125 Z" fill="#7F77DD" opacity="0.45"/>
+  <!-- Half-lidded eyes -->
+  <ellipse cx="170" cy="185" rx="20" ry="24" fill="#FFFFFF" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="230" cy="185" rx="20" ry="24" fill="#FFFFFF" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Half-lid (top 30%) -->
+  <path d="M150 178 Q170 188 190 178 Q190 168 170 168 Q150 168 150 178 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M210 178 Q230 188 250 178 Q250 168 230 168 Q210 168 210 178 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
   <!-- Pupils -->
-  <ellipse cx="170" cy="160" rx="6" ry="9" fill="#3C3489"/>
-  <ellipse cx="230" cy="160" rx="6" ry="9" fill="#3C3489"/>
+  <ellipse cx="170" cy="187" rx="11" ry="14" fill="#3C3489"/>
+  <ellipse cx="230" cy="187" rx="11" ry="14" fill="#3C3489"/>
   <!-- Vertical pupil hint -->
-  <ellipse cx="170" cy="160" rx="2" ry="7" fill="#26215C"/>
-  <ellipse cx="230" cy="160" rx="2" ry="7" fill="#26215C"/>
-  <circle cx="167" cy="156" r="2.5" fill="#FFFFFF"/>
-  <circle cx="227" cy="156" r="2.5" fill="#FFFFFF"/>
-  <circle cx="172" cy="163" r="1.4" fill="#FFFFFF" opacity="0.5"/>
-  <circle cx="232" cy="163" r="1.4" fill="#FFFFFF" opacity="0.5"/>
-  <!-- Nose -->
-  <path d="M195 188 Q200 185 205 188 Q205 195 200 197 Q195 195 195 188 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <ellipse cx="170" cy="187" rx="3" ry="11" fill="#26215C"/>
+  <ellipse cx="230" cy="187" rx="3" ry="11" fill="#26215C"/>
+  <circle cx="166" cy="183" r="4" fill="#FFFFFF"/>
+  <circle cx="226" cy="183" r="4" fill="#FFFFFF"/>
+  <circle cx="174" cy="192" r="2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="234" cy="192" r="2" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Pink nose -->
+  <path d="M193 215 Q200 211 207 215 Q207 223 200 226 Q193 223 193 215 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
   <!-- Omega mouth -->
-  <path d="M183 205 Q190 215 200 207 Q210 215 217 205" stroke="#3C3489" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M180 235 Q190 245 200 237 Q210 245 220 235" stroke="#3C3489" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   <!-- Whiskers -->
-  <line x1="115" y1="190" x2="155" y2="195" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="115" y1="205" x2="155" y2="205" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="245" y1="195" x2="285" y2="190" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="245" y1="205" x2="285" y2="205" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="105" y1="215" x2="148" y2="220" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="105" y1="232" x2="148" y2="232" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="252" y1="220" x2="295" y2="215" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="252" y1="232" x2="295" y2="232" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
   <!-- Bell collar -->
-  <path d="M138 230 Q200 250 262 230 Q260 240 200 245 Q140 240 138 230 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Bow loops -->
-  <path d="M165 232 Q145 222 150 240 Q160 245 170 235 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M235 232 Q255 222 250 240 Q240 245 230 235 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Bell -->
-  <circle cx="200" cy="248" r="11" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
-  <line x1="200" y1="240" x2="200" y2="255" stroke="#BA7517" stroke-width="1.5"/>
-  <circle cx="200" cy="259" r="2" fill="#BA7517"/>
+  <path d="M138 265 Q200 285 262 265 Q260 275 200 280 Q140 275 138 265 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M165 267 Q145 257 150 275 Q160 280 170 270 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M235 267 Q255 257 250 275 Q240 280 230 270 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="200" cy="282" r="11" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+  <line x1="200" y1="275" x2="200" y2="290" stroke="#BA7517" stroke-width="1.5"/>
+  <circle cx="200" cy="293" r="2" fill="#BA7517"/>
 </svg>

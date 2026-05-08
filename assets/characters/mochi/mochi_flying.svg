@@ -1,91 +1,85 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Mochi - flying with cushion balloon -->
-  <!-- Sparkle stars trail -->
+  <!-- Mochi - flying with cushion balloon (HUGE balloon above, cat below) -->
+  <!-- Sparkle stars -->
   <path d="M50 230 L52 237 L59 239 L52 241 L50 248 L48 241 L41 239 L48 237 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="1" opacity="0.9"/>
-  <path d="M40 280 L42 286 L48 288 L42 290 L40 296 L38 290 L32 288 L38 286 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="1" opacity="0.7"/>
-  <path d="M55 330 L56 335 L61 336 L56 337 L55 342 L54 337 L49 336 L54 335 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="1" opacity="0.5"/>
-  <!-- Lavender flame above -->
-  <path d="M195 50 Q200 30 205 50 Q210 65 200 75 Q190 65 195 50 Z" fill="#7F77DD" opacity="0.7"/>
-  <path d="M198 55 Q200 42 202 55 Q205 65 200 70 Q195 65 198 55 Z" fill="#AFA9EC" opacity="0.7"/>
-  <!-- Balloon body -->
-  <ellipse cx="200" cy="135" rx="125" ry="105" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
-  <!-- Balloon panel lines -->
-  <path d="M125 100 Q200 90 275 100" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M115 145 Q200 140 285 145" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M125 185 Q200 195 275 185" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <!-- Paw-print pattern -->
+  <path d="M50 290 L52 296 L58 298 L52 300 L50 306 L48 300 L42 298 L48 296 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="1" opacity="0.7"/>
+  <path d="M58 340 L59 345 L64 346 L59 347 L58 352 L57 347 L52 346 L57 345 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="1" opacity="0.5"/>
+  <!-- Lavender flame above balloon -->
+  <path d="M195 38 Q200 18 205 38 Q210 50 200 60 Q190 50 195 38 Z" fill="#7F77DD" opacity="0.7"/>
+  <path d="M198 42 Q200 30 202 42 Q205 50 200 55 Q195 50 198 42 Z" fill="#AFA9EC" opacity="0.7"/>
+  <!-- HUGE balloon (top half) -->
+  <ellipse cx="200" cy="160" rx="135" ry="120" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Vertical panel lines -->
+  <path d="M200 60 Q205 160 200 270" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <path d="M150 75 Q145 160 155 265" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M250 75 Q255 160 245 265" stroke="#AFA9EC" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- Subtle paw prints -->
   <g opacity="0.2">
-    <circle cx="155" cy="115" r="6" fill="#7F77DD"/>
-    <circle cx="148" cy="105" r="2.5" fill="#7F77DD"/>
-    <circle cx="155" cy="100" r="2.5" fill="#7F77DD"/>
-    <circle cx="162" cy="105" r="2.5" fill="#7F77DD"/>
-    <circle cx="245" cy="115" r="6" fill="#7F77DD"/>
-    <circle cx="238" cy="105" r="2.5" fill="#7F77DD"/>
-    <circle cx="245" cy="100" r="2.5" fill="#7F77DD"/>
-    <circle cx="252" cy="105" r="2.5" fill="#7F77DD"/>
-    <circle cx="200" cy="160" r="6" fill="#7F77DD"/>
-    <circle cx="193" cy="150" r="2.5" fill="#7F77DD"/>
-    <circle cx="200" cy="145" r="2.5" fill="#7F77DD"/>
-    <circle cx="207" cy="150" r="2.5" fill="#7F77DD"/>
+    <circle cx="155" cy="135" r="6" fill="#7F77DD"/>
+    <circle cx="148" cy="125" r="2.5" fill="#7F77DD"/>
+    <circle cx="155" cy="120" r="2.5" fill="#7F77DD"/>
+    <circle cx="162" cy="125" r="2.5" fill="#7F77DD"/>
+    <circle cx="245" cy="135" r="6" fill="#7F77DD"/>
+    <circle cx="238" cy="125" r="2.5" fill="#7F77DD"/>
+    <circle cx="245" cy="120" r="2.5" fill="#7F77DD"/>
+    <circle cx="252" cy="125" r="2.5" fill="#7F77DD"/>
+    <circle cx="200" cy="180" r="6" fill="#7F77DD"/>
+    <circle cx="193" cy="170" r="2.5" fill="#7F77DD"/>
+    <circle cx="200" cy="165" r="2.5" fill="#7F77DD"/>
+    <circle cx="207" cy="170" r="2.5" fill="#7F77DD"/>
   </g>
   <!-- Bottom band -->
-  <path d="M85 220 Q200 245 315 220 Q300 240 200 250 Q100 240 85 220 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M85 245 Q200 270 315 245 Q300 265 200 275 Q100 265 85 245 Z" fill="#AFA9EC" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
   <!-- Ropes -->
-  <path d="M115 245 Q120 270 145 290" stroke="#7F77DD" stroke-width="2" fill="none"/>
-  <path d="M285 245 Q280 270 255 290" stroke="#7F77DD" stroke-width="2" fill="none"/>
-  <path d="M170 250 Q170 275 175 290" stroke="#7F77DD" stroke-width="2" fill="none"/>
-  <path d="M230 250 Q230 275 225 290" stroke="#7F77DD" stroke-width="2" fill="none"/>
+  <path d="M115 268 Q120 285 145 305" stroke="#7F77DD" stroke-width="2" fill="none"/>
+  <path d="M285 268 Q280 285 255 305" stroke="#7F77DD" stroke-width="2" fill="none"/>
+  <path d="M170 272 Q170 290 175 305" stroke="#7F77DD" stroke-width="2" fill="none"/>
+  <path d="M230 272 Q230 290 225 305" stroke="#7F77DD" stroke-width="2" fill="none"/>
   <!-- Plush basket -->
-  <ellipse cx="200" cy="305" rx="80" ry="35" fill="#AFA9EC" stroke="#3C3489" stroke-width="2.5"/>
-  <ellipse cx="200" cy="300" rx="78" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
+  <ellipse cx="200" cy="320" rx="78" ry="32" fill="#AFA9EC" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="200" cy="315" rx="76" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
   <!-- Stitch lines -->
-  <line x1="140" y1="310" x2="146" y2="312" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="155" y1="313" x2="161" y2="315" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="170" y1="316" x2="176" y2="318" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="190" y1="318" x2="196" y2="320" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="210" y1="318" x2="216" y2="320" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="230" y1="316" x2="236" y2="318" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="245" y1="313" x2="251" y2="315" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <line x1="260" y1="310" x2="266" y2="312" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-  <!-- Mochi lounging - head -->
-  <ellipse cx="200" cy="270" rx="55" ry="48" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <line x1="148" y1="325" x2="153" y2="327" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="165" y1="328" x2="170" y2="330" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="190" y1="332" x2="195" y2="334" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="210" y1="332" x2="215" y2="334" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="230" y1="328" x2="235" y2="330" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="247" y1="325" x2="252" y2="327" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <!-- Mochi head poking out -->
+  <circle cx="200" cy="285" r="48" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
   <!-- Ears -->
-  <path d="M155 235 Q150 215 168 220 Q172 235 165 245 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M245 235 Q250 215 232 220 Q228 235 235 245 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M155 222 Q153 215 165 220 Q165 225 162 230 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
-  <path d="M245 222 Q247 215 235 220 Q235 225 238 230 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M165 255 Q160 230 178 240 Q183 252 175 265 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M235 255 Q240 230 222 240 Q217 252 225 265 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M165 245 Q163 235 175 240 Q175 247 170 252 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M235 245 Q237 235 225 240 Q225 247 230 252 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
   <!-- Star -->
-  <path d="M200 240 L203 247 L210 248 L204 253 L206 261 L200 257 L194 261 L196 253 L190 248 L197 247 Z" fill="#7F77DD" opacity="0.5"/>
+  <path d="M200 252 L203 259 L210 260 L204 265 L206 273 L200 269 L194 273 L196 265 L190 260 L197 259 Z" fill="#7F77DD" opacity="0.5"/>
   <!-- Half-lidded eyes -->
-  <ellipse cx="180" cy="270" rx="9" ry="11" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
-  <ellipse cx="220" cy="270" rx="9" ry="11" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
-  <path d="M171 264 Q180 268 189 264 Q189 259 180 259 Q171 259 171 264 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M211 264 Q220 268 229 264 Q229 259 220 259 Q211 259 211 264 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
-  <ellipse cx="180" cy="271" rx="5" ry="7" fill="#3C3489"/>
-  <ellipse cx="220" cy="271" rx="5" ry="7" fill="#3C3489"/>
-  <ellipse cx="180" cy="271" rx="1.5" ry="5" fill="#26215C"/>
-  <ellipse cx="220" cy="271" rx="1.5" ry="5" fill="#26215C"/>
-  <circle cx="178" cy="269" r="2" fill="#FFFFFF"/>
-  <circle cx="218" cy="269" r="2" fill="#FFFFFF"/>
+  <ellipse cx="183 " cy="285" rx="11" ry="13" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
+  <ellipse cx="217" cy="285" rx="11" ry="13" fill="#FFFFFF" stroke="#3C3489" stroke-width="2"/>
+  <path d="M173 280 Q183 285 193 280 Q193 274 183 274 Q173 274 173 280 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M207 280 Q217 285 227 280 Q227 274 217 274 Q207 274 207 280 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="1.8" stroke-linejoin="round"/>
+  <ellipse cx="183" cy="288" rx="6" ry="8" fill="#3C3489"/>
+  <ellipse cx="217" cy="288" rx="6" ry="8" fill="#3C3489"/>
+  <ellipse cx="183" cy="288" rx="2" ry="6" fill="#26215C"/>
+  <ellipse cx="217" cy="288" rx="2" ry="6" fill="#26215C"/>
+  <circle cx="180" cy="285" r="2.5" fill="#FFFFFF"/>
+  <circle cx="214" cy="285" r="2.5" fill="#FFFFFF"/>
   <!-- Nose -->
-  <path d="M196 290 Q200 288 204 290 Q204 295 200 297 Q196 295 196 290 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M196 305 Q200 302 204 305 Q204 311 200 313 Q196 311 196 305 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1.3" stroke-linejoin="round"/>
   <!-- Omega mouth -->
-  <path d="M188 305 Q193 312 200 307 Q207 312 212 305" stroke="#3C3489" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <!-- Paws draped over edge with beans -->
-  <ellipse cx="135" cy="320" rx="16" ry="11" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
-  <ellipse cx="265" cy="320" rx="16" ry="11" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
-  <circle cx="130" cy="322" r="2.5" fill="#ED93B1"/>
-  <circle cx="138" cy="322" r="2.5" fill="#ED93B1"/>
-  <circle cx="135" cy="328" r="3" fill="#ED93B1"/>
-  <circle cx="262" cy="322" r="2.5" fill="#ED93B1"/>
-  <circle cx="270" cy="322" r="2.5" fill="#ED93B1"/>
-  <circle cx="265" cy="328" r="3" fill="#ED93B1"/>
-  <!-- Tail curling out -->
-  <path d="M275 330 Q310 340 320 330 Q325 320 312 320" stroke="#3C3489" stroke-width="14" fill="none" stroke-linecap="round"/>
-  <path d="M275 330 Q310 340 320 330 Q325 320 312 320" stroke="#CECBF6" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <ellipse cx="312" cy="320" rx="8" ry="6" fill="#534AB7"/>
-  <!-- Bell collar -->
-  <path d="M158 320 Q200 333 242 320 Q240 326 200 330 Q160 326 158 320 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
-  <circle cx="200" cy="333" r="8" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-  <line x1="200" y1="328" x2="200" y2="338" stroke="#BA7517" stroke-width="1.2"/>
+  <path d="M188 322 Q193 329 200 324 Q207 329 212 322" stroke="#3C3489" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- Paws on basket edge -->
+  <ellipse cx="135" cy="320" rx="14" ry="10" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
+  <ellipse cx="265" cy="320" rx="14" ry="10" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
+  <circle cx="130" cy="322" r="2" fill="#ED93B1"/>
+  <circle cx="138" cy="322" r="2" fill="#ED93B1"/>
+  <circle cx="135" cy="328" r="2.5" fill="#ED93B1"/>
+  <circle cx="262" cy="322" r="2" fill="#ED93B1"/>
+  <circle cx="270" cy="322" r="2" fill="#ED93B1"/>
+  <circle cx="265" cy="328" r="2.5" fill="#ED93B1"/>
+  <!-- Tail curls out right -->
+  <path d="M275 335 Q310 345 325 330 Q330 318 315 318" stroke="#3C3489" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M275 335 Q310 345 325 330 Q330 318 315 318" stroke="#CECBF6" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <ellipse cx="315" cy="318" rx="8" ry="6" fill="#534AB7"/>
 </svg>

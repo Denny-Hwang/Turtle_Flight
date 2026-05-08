@@ -1,37 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
-  <!-- Bounce - scared (eyes bulge to comical size) -->
-  <!-- Back legs -->
-  <path d="M85 280 Q60 250 75 220 Q95 200 125 220 Q135 245 130 285 Q115 305 95 305 Q80 295 85 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M315 280 Q340 250 325 220 Q305 200 275 220 Q265 245 270 285 Q285 305 305 305 Q320 295 315 280 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M85 305 Q70 320 90 335 Q100 325 110 335 Q120 325 125 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M315 305 Q330 320 310 335 Q300 325 290 335 Q280 325 275 305 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Bounce - scared (eyes 2x size, "O" mouth) -->
+  <ellipse cx="115" cy="345" rx="38" ry="22" fill="#639922" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="285" cy="345" rx="38" ry="22" fill="#639922" stroke="#27500A" stroke-width="2.5"/>
   <!-- Body -->
-  <ellipse cx="200" cy="220" rx="125" ry="115" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
-  <ellipse cx="200" cy="260" rx="85" ry="65" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
-  <circle cx="135" cy="170" r="9" fill="#639922" opacity="0.35"/>
-  <circle cx="265" cy="170" r="11" fill="#639922" opacity="0.35"/>
-  <circle cx="200" cy="135" r="8" fill="#639922" opacity="0.35"/>
-  <!-- Front hands trembling -->
-  <path d="M105 235 Q85 240 90 260 Q100 255 110 265 Q115 250 110 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M295 235 Q315 240 310 260 Q300 255 290 265 Q285 250 290 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
-  <!-- Eye bumps -->
-  <ellipse cx="135" cy="100" rx="50" ry="58" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
-  <ellipse cx="265" cy="100" rx="50" ry="58" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
-  <!-- COMICAL 2x size eyes -->
-  <ellipse cx="135" cy="100" rx="38" ry="48" fill="#FFFFFF" stroke="#27500A" stroke-width="3"/>
-  <ellipse cx="265" cy="100" rx="38" ry="48" fill="#FFFFFF" stroke="#27500A" stroke-width="3"/>
+  <ellipse cx="200" cy="280" rx="100" ry="80" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="200" cy="290" rx="65" ry="55" fill="#C0DD97" stroke="#639922" stroke-width="1.5" opacity="0.95"/>
+  <!-- Arms trembling -->
+  <ellipse cx="125" cy="295" rx="18" ry="14" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="275" cy="295" rx="18" ry="14" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="180" rx="115" ry="105" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Eye bumps - bigger -->
+  <ellipse cx="135" cy="95" rx="50" ry="55" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="265" cy="95" rx="50" ry="55" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- 2x size eyes -->
+  <ellipse cx="135" cy="95" rx="38" ry="46" fill="#FFFFFF" stroke="#27500A" stroke-width="3"/>
+  <ellipse cx="265" cy="95" rx="38" ry="46" fill="#FFFFFF" stroke="#27500A" stroke-width="3"/>
   <!-- Tiny dot pupils -->
-  <ellipse cx="135" cy="98" rx="5" ry="6" fill="#27500A"/>
-  <ellipse cx="265" cy="98" rx="5" ry="6" fill="#27500A"/>
-  <circle cx="133" cy="96" r="1.4" fill="#FFFFFF"/>
-  <circle cx="263" cy="96" r="1.4" fill="#FFFFFF"/>
+  <ellipse cx="135" cy="93" rx="5" ry="6" fill="#27500A"/>
+  <ellipse cx="265" cy="93" rx="5" ry="6" fill="#27500A"/>
+  <circle cx="133" cy="91" r="1.4" fill="#FFFFFF"/>
+  <circle cx="263" cy="91" r="1.4" fill="#FFFFFF"/>
   <!-- "O" mouth -->
-  <ellipse cx="200" cy="230" rx="22" ry="28" fill="#27500A" stroke="#185FA5" stroke-width="2"/>
-  <ellipse cx="200" cy="232" rx="14" ry="18" fill="#A32D2D"/>
+  <ellipse cx="200" cy="215" rx="22" ry="28" fill="#27500A" stroke="#185FA5" stroke-width="2"/>
+  <ellipse cx="200" cy="217" rx="14" ry="18" fill="#A32D2D"/>
   <!-- Sweat drop -->
-  <path d="M310 75 Q307 88 310 96 Q317 92 317 84 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
-  <ellipse cx="312" cy="84" rx="1.5" ry="2" fill="#FFFFFF" opacity="0.8"/>
+  <path d="M315 105 Q312 118 315 128 Q323 123 323 114 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5" stroke-linejoin="round"/>
+  <ellipse cx="318" cy="113" rx="2" ry="2.5" fill="#FFFFFF" opacity="0.8"/>
   <!-- Nostrils -->
-  <ellipse cx="190" cy="195" rx="2.5" ry="3" fill="#27500A"/>
-  <ellipse cx="210" cy="195" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="190" cy="180" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="210" cy="180" rx="2.5" ry="3" fill="#27500A"/>
 </svg>
