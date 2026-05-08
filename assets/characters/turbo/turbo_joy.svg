@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Turbo - joy expression -->
+  <!-- Sparkle stars -->
+  <path d="M75 90 L78 100 L88 103 L78 106 L75 116 L72 106 L62 103 L72 100 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M325 80 L327 88 L335 90 L327 92 L325 100 L323 92 L315 90 L323 88 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <path d="M340 200 L342 207 L349 209 L342 211 L340 218 L338 211 L331 209 L338 207 Z" fill="#FAC775" stroke="#BA7517" stroke-width="1"/>
+  <!-- Tail -->
+  <path d="M310 240 Q330 235 332 250 Q330 260 310 255 Z" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Back legs -->
+  <ellipse cx="245" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
+  <ellipse cx="135" cy="295" rx="22" ry="18" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="260" rx="95" ry="55" fill="#FAEEDA" stroke="#085041" stroke-width="2.5"/>
+  <!-- Front legs raised in joy -->
+  <ellipse cx="115" cy="220" rx="20" ry="22" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(-30 115 220)"/>
+  <ellipse cx="285" cy="220" rx="20" ry="22" fill="#A8E6CF" stroke="#085041" stroke-width="2.5" transform="rotate(30 285 220)"/>
+  <!-- Shell -->
+  <path d="M110 240 Q110 150 200 145 Q290 150 290 240 Z" fill="#5DCAA5" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M200 165 L225 178 L225 205 L200 218 L175 205 L175 178 Z" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linejoin="round" opacity="0.7"/>
+  <path d="M150 195 Q160 185 175 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M225 195 Q240 185 250 195" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M150 220 Q165 215 175 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M225 220 Q240 215 250 220" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="155" rx="78" ry="72" fill="#A8E6CF" stroke="#085041" stroke-width="2.5"/>
+  <!-- Warm cheek blush -->
+  <ellipse cx="148" cy="180" rx="16" ry="10" fill="#F0997B" opacity="0.55"/>
+  <ellipse cx="252" cy="180" rx="16" ry="10" fill="#F0997B" opacity="0.55"/>
+  <!-- Goggles strap -->
+  <path d="M125 110 Q200 95 275 110" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Goggles -->
+  <ellipse cx="170" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
+  <ellipse cx="230" cy="115" rx="22" ry="17" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="2.5"/>
+  <line x1="192" y1="115" x2="208" y2="115" stroke="#BA7517" stroke-width="2.5" stroke-linecap="round"/>
+  <ellipse cx="163" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="223" cy="110" rx="6" ry="3" fill="#FFFFFF" opacity="0.7"/>
+  <!-- Crescent eyes (joy) -->
+  <path d="M158 162 Q170 152 182 162" stroke="#085041" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M218 162 Q230 152 242 162" stroke="#085041" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Big smile -->
+  <path d="M180 192 Q200 215 220 192" stroke="#085041" stroke-width="2.5" fill="#FAEEDA" stroke-linecap="round"/>
+  <path d="M180 192 Q200 215 220 192" stroke="#085041" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Scarf -->
+  <path d="M150 215 Q200 228 250 215 Q255 235 245 245 Q200 252 155 245 Q145 235 150 215 Z" fill="#E24B4A" stroke="#085041" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M250 225 Q300 230 335 250 Q325 265 290 260 Q265 255 250 245 Z" fill="#E24B4A" stroke="#085041" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Mini sparkles -->
+  <circle cx="105" cy="155" r="3" fill="#FAC775"/>
+  <circle cx="295" cy="155" r="3" fill="#FAC775"/>
+</svg>

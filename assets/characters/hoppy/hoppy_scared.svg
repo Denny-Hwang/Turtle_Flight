@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Hoppy - scared (BOTH ears flat against back) -->
+  <!-- Tail -->
+  <circle cx="305" cy="280" r="13" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
+  <circle cx="295" cy="290" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
+  <circle cx="313" cy="290" r="9" fill="#FFFFFF" stroke="#712B13" stroke-width="1.8"/>
+  <!-- Hind feet -->
+  <ellipse cx="155" cy="345" rx="28" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="245" cy="345" rx="28" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="280" rx="85" ry="80" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <path d="M200 240 Q170 230 165 260 Q165 285 200 305 Q235 285 235 260 Q230 230 200 240 Z" fill="#FFFFFF" stroke="#F5C4B3" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Paws clasped tight -->
+  <ellipse cx="180" cy="320" rx="20" ry="16" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="220" cy="320" rx="20" ry="16" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <line x1="200" y1="318" x2="200" y2="335" stroke="#712B13" stroke-width="1.2"/>
+  <!-- BOTH ears flat horizontal -->
+  <ellipse cx="100" cy="155" rx="50" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="105" cy="155" rx="38" ry="9" fill="#F5C4B3"/>
+  <ellipse cx="300" cy="155" rx="50" ry="14" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="295" cy="155" rx="38" ry="9" fill="#F5C4B3"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="160" rx="92" ry="85" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <!-- Fluffy cheeks -->
+  <circle cx="120" cy="190" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
+  <circle cx="280" cy="190" r="14" fill="#FAECE7" stroke="#712B13" stroke-width="2"/>
+  <!-- Worried eyebrows (50% opacity) -->
+  <path d="M155 130 Q170 120 180 130" stroke="#712B13" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <path d="M220 130 Q230 120 245 130" stroke="#712B13" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <!-- Huge teary eyes -->
+  <ellipse cx="170" cy="165" rx="15" ry="20" fill="#FFFFFF" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="230" cy="165" rx="15" ry="20" fill="#FFFFFF" stroke="#712B13" stroke-width="2.5"/>
+  <ellipse cx="170" cy="167" rx="8" ry="11" fill="#712B13"/>
+  <ellipse cx="230" cy="167" rx="8" ry="11" fill="#712B13"/>
+  <circle cx="167" cy="163" r="3" fill="#FFFFFF"/>
+  <circle cx="227" cy="163" r="3" fill="#FFFFFF"/>
+  <circle cx="173" cy="170" r="1.7" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="233" cy="170" r="1.7" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Tear dots below eyes -->
+  <circle cx="170" cy="195" r="3" fill="#85B7EB" stroke="#185FA5" stroke-width="0.8"/>
+  <circle cx="230" cy="195" r="3" fill="#85B7EB" stroke="#185FA5" stroke-width="0.8"/>
+  <ellipse cx="169" cy="194" rx="1" ry="1.2" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="229" cy="194" rx="1" ry="1.2" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Pink nose -->
+  <path d="M195 188 Q200 184 205 188 Q205 196 200 199 Q195 196 195 188 Z" fill="#D85A30" stroke="#712B13" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Trembling wavy mouth -->
+  <path d="M180 218 Q188 213 195 218 Q202 223 209 218 Q216 213 220 218" stroke="#712B13" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Sweat drop -->
+  <path d="M275 110 Q272 122 275 130 Q282 126 282 118 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="277" cy="118" rx="1.5" ry="2" fill="#FFFFFF" opacity="0.8"/>
+</svg>

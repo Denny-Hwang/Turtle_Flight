@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Bounce - flying with lily pad glider -->
+  <!-- Water droplet trail -->
+  <path d="M50 250 Q47 262 50 270 Q57 266 57 258 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round" opacity="0.9"/>
+  <circle cx="55" cy="262" r="1.2" fill="#FFFFFF" opacity="0.8"/>
+  <path d="M30 295 Q28 305 30 311 Q35 308 35 302 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round" opacity="0.7"/>
+  <path d="M55 340 Q53 348 55 352 Q60 350 60 346 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round" opacity="0.5"/>
+  <path d="M85 290 Q83 298 85 303 Q90 301 90 296 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1" stroke-linejoin="round" opacity="0.6"/>
+  <!-- Lily pad (oversized, curled wings) -->
+  <path d="M70 230 Q40 200 70 165 Q120 135 200 145 L200 175 Q280 135 330 165 Q360 200 330 230 Q300 245 250 240 Q230 240 220 235 L195 250 Q230 245 250 250 Q310 250 340 240 Q300 280 200 285 Q100 280 60 240 Q90 250 150 250 Q170 245 205 250 L180 235 Q170 240 150 240 Q100 245 70 230 Z" fill="#97C459" stroke="#27500A" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- V-notch -->
+  <path d="M180 235 L200 175 L220 235 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Leaf veins -->
+  <path d="M200 175 Q150 200 80 215" stroke="#C0DD97" stroke-width="2.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <path d="M200 175 Q250 200 320 215" stroke="#C0DD97" stroke-width="2.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <path d="M200 175 Q170 215 130 245" stroke="#C0DD97" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+  <path d="M200 175 Q230 215 270 245" stroke="#C0DD97" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+  <!-- Lotus flower at front -->
+  <ellipse cx="195" cy="105" rx="32" ry="14" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="95" rx="28" ry="14" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round"/>
+  <ellipse cx="205" cy="105" rx="32" ry="14" fill="#ED93B1" stroke="#A32D2D" stroke-width="1.8" stroke-linejoin="round" opacity="0.85"/>
+  <ellipse cx="200" cy="115" rx="22" ry="11" fill="#F0997B" stroke="#A32D2D" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="200" cy="105" r="9" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+  <circle cx="200" cy="105" r="4" fill="#FAC775"/>
+  <!-- Glow around lotus -->
+  <circle cx="200" cy="105" r="40" fill="#FAC775" opacity="0.15"/>
+  <!-- Bounce sitting on top, cross-legged -->
+  <ellipse cx="200" cy="240" rx="80" ry="55" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="200" cy="260" rx="55" ry="35" fill="#C0DD97" stroke="#639922" stroke-width="1.2" opacity="0.95"/>
+  <!-- Spots -->
+  <circle cx="160" cy="210" r="6" fill="#639922" opacity="0.35"/>
+  <circle cx="240" cy="210" r="7" fill="#639922" opacity="0.35"/>
+  <!-- Front legs/arms up in excitement -->
+  <path d="M125 220 Q105 195 100 175 Q108 175 120 195 Q135 215 135 230 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M275 220 Q295 195 300 175 Q292 175 280 195 Q265 215 265 230 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Back legs tucked, webbed feet peek -->
+  <ellipse cx="155" cy="290" rx="24" ry="13" fill="#639922" stroke="#27500A" stroke-width="2"/>
+  <ellipse cx="245" cy="290" rx="24" ry="13" fill="#639922" stroke="#27500A" stroke-width="2"/>
+  <!-- Eye bumps -->
+  <ellipse cx="170" cy="180" rx="28" ry="32" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="230" cy="180" rx="28" ry="32" fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Excited big eyes -->
+  <ellipse cx="170" cy="180" rx="18" ry="22" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="230" cy="180" rx="18" ry="22" fill="#FFFFFF" stroke="#27500A" stroke-width="2.5"/>
+  <ellipse cx="170" cy="180" rx="11" ry="14" fill="#27500A"/>
+  <ellipse cx="230" cy="180" rx="11" ry="14" fill="#27500A"/>
+  <circle cx="167" cy="176" r="3.5" fill="#FFFFFF"/>
+  <circle cx="227" cy="176" r="3.5" fill="#FFFFFF"/>
+  <circle cx="172" cy="184" r="2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="232" cy="184" r="2" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Blush -->
+  <ellipse cx="135" cy="248" rx="13" ry="8" fill="#F0997B" opacity="0.55"/>
+  <ellipse cx="265" cy="248" rx="13" ry="8" fill="#F0997B" opacity="0.55"/>
+  <!-- HUGE GRIN -->
+  <path d="M120 245 Q200 305 280 245" stroke="#27500A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M120 245 Q200 295 280 245" fill="#27500A" opacity="0.15"/>
+  <!-- Tongue peek -->
+  <path d="M245 268 Q260 275 263 285 Q252 285 243 277 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Nostrils -->
+  <ellipse cx="195" cy="220" rx="2.5" ry="3" fill="#27500A"/>
+  <ellipse cx="205" cy="220" rx="2.5" ry="3" fill="#27500A"/>
+</svg>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Mochi - scared FULL PANIC -->
+  <!-- Tail (poofed up) -->
+  <path d="M295 280 Q340 250 350 200 Q345 165 305 170 Q275 175 270 215" stroke="#3C3489" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M295 280 Q340 250 350 200 Q345 165 305 170 Q275 175 270 215" stroke="#CECBF6" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <ellipse cx="305" cy="170" rx="12" ry="10" fill="#534AB7"/>
+  <!-- Hind legs -->
+  <ellipse cx="155" cy="320" rx="22" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="245" cy="320" rx="22" ry="20" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="265" rx="78" ry="80" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Front paws with claws extended -->
+  <ellipse cx="160" cy="300" rx="22" ry="18" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="240" cy="300" rx="22" ry="18" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Claws (3 lines each) -->
+  <path d="M145 290 L140 282" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <path d="M155 287 L153 278" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <path d="M165 287 L165 278" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <path d="M255 290 L260 282" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <path d="M245 287 L247 278" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <path d="M235 287 L235 278" stroke="#3C3489" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="155" cy="305" r="3" fill="#ED93B1"/>
+  <circle cx="165" cy="305" r="3" fill="#ED93B1"/>
+  <circle cx="160" cy="313" r="4" fill="#ED93B1"/>
+  <circle cx="235" cy="305" r="3" fill="#ED93B1"/>
+  <circle cx="245" cy="305" r="3" fill="#ED93B1"/>
+  <circle cx="240" cy="313" r="4" fill="#ED93B1"/>
+  <ellipse cx="200" cy="280" rx="50" ry="55" fill="#EEEDFE" opacity="0.7"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="155" rx="92" ry="85" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Ears -->
+  <path d="M125 95 Q120 50 145 60 Q160 80 145 110 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M275 95 Q280 50 255 60 Q240 80 255 110 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M125 70 Q123 55 140 60 Q145 70 138 80 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M275 70 Q277 55 260 60 Q255 70 262 80 Z" fill="#534AB7" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M132 90 Q132 70 145 78 Q150 95 138 105 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M268 90 Q268 70 255 78 Q250 95 262 105 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Fur spike tufts -->
+  <path d="M180 80 L175 60 L185 75 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M200 75 L200 55 L205 75 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M220 80 L225 60 L215 75 Z" fill="#CECBF6" stroke="#3C3489" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Star -->
+  <path d="M200 95 L205 105 L216 107 L207 115 L209 126 L200 120 L191 126 L193 115 L184 107 L195 105 Z" fill="#7F77DD" opacity="0.45"/>
+  <!-- HUGE round eyes (NO half-lid) with tiny pupils -->
+  <ellipse cx="170" cy="160" rx="20" ry="25" fill="#FFFFFF" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="230" cy="160" rx="20" ry="25" fill="#FFFFFF" stroke="#3C3489" stroke-width="2.5"/>
+  <ellipse cx="170" cy="158" rx="3" ry="5" fill="#3C3489"/>
+  <ellipse cx="230" cy="158" rx="3" ry="5" fill="#3C3489"/>
+  <ellipse cx="170" cy="158" rx="1" ry="3.5" fill="#26215C"/>
+  <ellipse cx="230" cy="158" rx="1" ry="3.5" fill="#26215C"/>
+  <circle cx="168" cy="155" r="1.4" fill="#FFFFFF"/>
+  <circle cx="228" cy="155" r="1.4" fill="#FFFFFF"/>
+  <!-- Nose -->
+  <path d="M195 188 Q200 185 205 188 Q205 195 200 197 Q195 195 195 188 Z" fill="#ED93B1" stroke="#3C3489" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Open scream mouth -->
+  <ellipse cx="200" cy="215" rx="13" ry="10" fill="#26215C" stroke="#3C3489" stroke-width="2"/>
+  <ellipse cx="200" cy="217" rx="6" ry="4" fill="#A32D2D"/>
+  <!-- Whiskers (drooping) -->
+  <line x1="115" y1="195" x2="150" y2="200" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="115" y1="208" x2="150" y2="210" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="250" y1="200" x2="285" y2="195" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <line x1="250" y1="210" x2="285" y2="208" stroke="#3C3489" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
+  <!-- Sweat drop -->
+  <path d="M275 130 Q272 142 275 150 Q282 146 282 138 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="277" cy="138" rx="1.5" ry="2" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Bell collar -->
+  <path d="M138 235 Q200 255 262 235 Q260 245 200 250 Q140 245 138 235 Z" fill="#E24B4A" stroke="#A32D2D" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="200" cy="253" r="11" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+  <line x1="200" y1="245" x2="200" y2="260" stroke="#BA7517" stroke-width="1.5"/>
+  <circle cx="200" cy="264" r="2" fill="#BA7517"/>
+</svg>

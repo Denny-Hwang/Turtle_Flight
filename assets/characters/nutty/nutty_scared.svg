@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Nutty - scared expression -->
+  <!-- Falling seeds -->
+  <path d="M75 240 Q73 248 76 254 Q80 251 78 244 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M85 270 Q83 278 86 284 Q90 281 88 274 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M325 250 Q323 258 326 264 Q330 261 328 254 Z" fill="#97C459" stroke="#3B6D11" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Tail -->
+  <circle cx="320" cy="265" r="14" fill="#FAEEDA" stroke="#633806" stroke-width="2.5"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="265" rx="115" ry="100" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="200" cy="285" rx="60" ry="55" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" opacity="0.9"/>
+  <!-- Limbs (slightly raised in fear) -->
+  <ellipse cx="115" cy="265" rx="20" ry="22" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="285" cy="265" rx="20" ry="22" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="170" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
+  <ellipse cx="230" cy="358" rx="20" ry="9" fill="#FAC775" stroke="#633806" stroke-width="2"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="155" rx="100" ry="92" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <!-- Ears -->
+  <ellipse cx="135" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="265" cy="85" rx="22" ry="20" fill="#EF9F27" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="135" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
+  <ellipse cx="265" cy="88" rx="11" ry="11" fill="#F5C4B3"/>
+  <!-- DEFLATED cheeks - half size, still asymmetric -->
+  <ellipse cx="145" cy="200" rx="14" ry="16" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <ellipse cx="255" cy="200" rx="19" ry="21" fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <!-- Spiral eyes (drawn as spiral paths) -->
+  <path d="M170 155 Q165 150 170 145 Q177 145 178 152 Q177 160 169 160 Q160 159 160 150 Q160 142 172 141" stroke="#633806" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M232 155 Q227 150 232 145 Q239 145 240 152 Q239 160 231 160 Q222 159 222 150 Q222 142 234 141" stroke="#633806" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Pink nose -->
+  <ellipse cx="200" cy="180" rx="6" ry="5" fill="#D85A30" stroke="#633806" stroke-width="1.5"/>
+  <!-- Wobbly mouth -->
+  <path d="M180 205 Q188 200 195 205 Q202 210 209 205 Q216 200 220 205" stroke="#633806" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- Whiskers drooping -->
+  <line x1="115" y1="200" x2="143" y2="205" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="110" y1="212" x2="143" y2="213" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="115" y1="222" x2="143" y2="218" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="257" y1="205" x2="285" y2="200" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="257" y1="213" x2="290" y2="212" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <line x1="257" y1="218" x2="285" y2="222" stroke="#633806" stroke-width="1" opacity="0.35" stroke-linecap="round"/>
+  <!-- Sweat drop -->
+  <path d="M110 130 Q107 142 110 150 Q117 146 117 138 Z" fill="#85B7EB" stroke="#185FA5" stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="112" cy="138" rx="1.5" ry="2" fill="#FFFFFF" opacity="0.8"/>
+</svg>

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+  <!-- Turtle Flight app icon -->
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="200" fill="#85B7EB"/>
+  <!-- Sky gradient layers (lighter at top) -->
+  <rect x="0" y="0" width="1024" height="512" rx="200" fill="#B5D4F4" opacity="0.5"/>
+  <rect x="0" y="0" width="1024" height="256" rx="200" fill="#E6F1FB" opacity="0.4"/>
+  <!-- Soft cloud hints -->
+  <ellipse cx="180" cy="220" rx="110" ry="40" fill="#FFFFFF" opacity="0.15"/>
+  <ellipse cx="240" cy="240" rx="80" ry="30" fill="#FFFFFF" opacity="0.12"/>
+  <ellipse cx="850" cy="300" rx="120" ry="42" fill="#FFFFFF" opacity="0.13"/>
+  <ellipse cx="900" cy="320" rx="80" ry="28" fill="#FFFFFF" opacity="0.10"/>
+  <ellipse cx="500" cy="180" rx="90" ry="32" fill="#FFFFFF" opacity="0.10"/>
+  <!-- Sparkle stars -->
+  <path d="M150 400 L155 420 L175 425 L155 430 L150 450 L145 430 L125 425 L145 420 Z" fill="#FFFFFF" opacity="0.22"/>
+  <path d="M870 480 L874 495 L889 499 L874 503 L870 518 L866 503 L851 499 L866 495 Z" fill="#FFFFFF" opacity="0.20"/>
+  <path d="M250 600 L253 612 L265 615 L253 618 L250 630 L247 618 L235 615 L247 612 Z" fill="#FFFFFF" opacity="0.18"/>
+  <path d="M780 750 L783 762 L795 765 L783 768 L780 780 L777 768 L765 765 L777 762 Z" fill="#FFFFFF" opacity="0.20"/>
+  <path d="M450 880 L452 890 L462 892 L452 894 L450 904 L448 894 L438 892 L448 890 Z" fill="#FFFFFF" opacity="0.22"/>
+  <!-- Flame trail below Turbo -->
+  <path d="M380 820 Q420 920 512 980 Q604 920 644 820 Z" fill="#EF9F27" opacity="0.6"/>
+  <path d="M420 820 Q450 900 512 950 Q574 900 604 820 Z" fill="#E8593C" opacity="0.6"/>
+  <path d="M460 820 Q480 880 512 920 Q544 880 564 820 Z" fill="#FAC775" opacity="0.55"/>
+  <!-- Side booster flames -->
+  <path d="M290 760 Q300 820 320 850 Q340 820 350 760 Z" fill="#EF9F27" opacity="0.55"/>
+  <path d="M674 760 Q684 820 704 850 Q724 820 734 760 Z" fill="#EF9F27" opacity="0.55"/>
+  <!-- Side boosters (metallic gray) -->
+  <rect x="275" y="620" width="80" height="150" rx="22" fill="#888780" stroke="#5F5E5A" stroke-width="6"/>
+  <rect x="669" y="620" width="80" height="150" rx="22" fill="#888780" stroke="#5F5E5A" stroke-width="6"/>
+  <ellipse cx="315" cy="765" rx="40" ry="14" fill="#5F5E5A" stroke="#3C3F42" stroke-width="3"/>
+  <ellipse cx="709" cy="765" rx="40" ry="14" fill="#5F5E5A" stroke="#3C3F42" stroke-width="3"/>
+  <line x1="290" y1="640" x2="290" y2="740" stroke="#B4B2A9" stroke-width="5" opacity="0.7" stroke-linecap="round"/>
+  <line x1="684" y1="640" x2="684" y2="740" stroke="#B4B2A9" stroke-width="5" opacity="0.7" stroke-linecap="round"/>
+  <!-- Main thruster nozzle -->
+  <path d="M442 760 L420 820 L604 820 L582 760 Z" fill="#888780" stroke="#5F5E5A" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="512" cy="820" rx="92" ry="16" fill="#3C3F42" stroke="#000000" stroke-width="4"/>
+  <!-- Body -->
+  <ellipse cx="512" cy="600" rx="200" ry="130" fill="#FAEEDA" stroke="#085041" stroke-width="6"/>
+  <!-- Arms stretched out -->
+  <ellipse cx="270" cy="555" rx="72" ry="34" fill="#A8E6CF" stroke="#085041" stroke-width="6" transform="rotate(-15 270 555)"/>
+  <ellipse cx="754" cy="555" rx="72" ry="34" fill="#A8E6CF" stroke="#085041" stroke-width="6" transform="rotate(15 754 555)"/>
+  <!-- Shell -->
+  <path d="M295 575 Q295 360 512 350 Q729 360 729 575 Z" fill="#5DCAA5" stroke="#085041" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M512 405 L575 437 L575 504 L512 537 L449 504 L449 437 Z" fill="none" stroke="#1D9E75" stroke-width="4" stroke-linejoin="round" opacity="0.7"/>
+  <path d="M380 480 Q410 455 449 480" fill="none" stroke="#1D9E75" stroke-width="3" stroke-linecap="round"/>
+  <path d="M575 480 Q615 455 645 480" fill="none" stroke="#1D9E75" stroke-width="3" stroke-linecap="round"/>
+  <path d="M380 540 Q420 525 449 540" fill="none" stroke="#1D9E75" stroke-width="3" stroke-linecap="round"/>
+  <path d="M575 540 Q615 525 645 540" fill="none" stroke="#1D9E75" stroke-width="3" stroke-linecap="round"/>
+  <!-- Head -->
+  <ellipse cx="512" cy="385" rx="190" ry="180" fill="#A8E6CF" stroke="#085041" stroke-width="6"/>
+  <!-- Goggles strap -->
+  <path d="M325 280 Q512 245 699 280" stroke="#5F5E5A" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Goggles -->
+  <ellipse cx="437" cy="290" rx="58" ry="44" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="6"/>
+  <ellipse cx="587" cy="290" rx="58" ry="44" fill="#E6F1FB" fill-opacity="0.7" stroke="#BA7517" stroke-width="6"/>
+  <line x1="495" y1="290" x2="529" y2="290" stroke="#BA7517" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="421" cy="277" rx="16" ry="8" fill="#FFFFFF" opacity="0.8"/>
+  <ellipse cx="571" cy="277" rx="16" ry="8" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Eyes (warm default) -->
+  <ellipse cx="437" cy="400" rx="28" ry="38" fill="#FFFFFF" stroke="#085041" stroke-width="5"/>
+  <ellipse cx="587" cy="400" rx="28" ry="38" fill="#FFFFFF" stroke="#085041" stroke-width="5"/>
+  <ellipse cx="439" cy="390" rx="15" ry="22" fill="#085041"/>
+  <ellipse cx="589" cy="390" rx="15" ry="22" fill="#085041"/>
+  <circle cx="432" cy="380" r="6" fill="#FFFFFF"/>
+  <circle cx="582" cy="380" r="6" fill="#FFFFFF"/>
+  <circle cx="442" cy="400" r="4" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="592" cy="400" r="4" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Smile -->
+  <path d="M470 490 Q512 510 554 490" stroke="#085041" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Cheek blush -->
+  <ellipse cx="370" cy="440" rx="34" ry="22" fill="#F0997B" opacity="0.45"/>
+  <ellipse cx="654" cy="440" rx="34" ry="22" fill="#F0997B" opacity="0.45"/>
+  <!-- Scarf around neck -->
+  <path d="M385 545 Q512 575 639 545 Q650 595 625 615 Q512 635 399 615 Q374 595 385 545 Z" fill="#E24B4A" stroke="#085041" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Scarf flowing left -->
+  <path d="M385 555 Q260 545 130 605 Q175 645 290 625 Q360 605 385 590 Z" fill="#E24B4A" stroke="#085041" stroke-width="5" stroke-linejoin="round"/>
+  <line x1="345" y1="595" x2="160" y2="620" stroke="#A32D2D" stroke-width="2.5" opacity="0.6"/>
+  <line x1="320" y1="610" x2="180" y2="635" stroke="#A32D2D" stroke-width="2.5" opacity="0.5"/>
+</svg>

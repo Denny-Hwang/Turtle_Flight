@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Hoppy - flying with carrot jet -->
+  <!-- Heart-shape exhaust trail -->
+  <path d="M55 220 Q50 215 50 222 Q50 230 60 235 Q70 230 70 222 Q70 215 65 220 Q60 218 55 220 Z" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round" opacity="0.85"/>
+  <path d="M40 270 Q37 266 37 271 Q37 277 44 280 Q51 277 51 271 Q51 266 47 270 Q43 268 40 270 Z" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round" opacity="0.7"/>
+  <path d="M30 320 Q28 317 28 321 Q28 326 33 328 Q38 326 38 321 Q38 317 35 320 Q32 318 30 320 Z" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round" opacity="0.5"/>
+  <!-- Leafy tail fins (back) -->
+  <path d="M85 80 Q60 60 75 110 Q105 95 110 110 Z" fill="#97C459" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M115 65 Q90 50 100 95 Q120 80 130 95 Z" fill="#639922" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M135 75 Q115 60 125 100 Q140 88 150 100 Z" fill="#C0DD97" stroke="#27500A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Carrot body -->
+  <path d="M125 150 Q145 100 200 90 Q255 100 280 150 Q310 250 320 320 Q310 360 250 365 Q200 365 150 360 Q120 350 110 320 Q115 250 125 150 Z" fill="#EF9F27" stroke="#712B13" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Darker tip -->
+  <path d="M310 320 Q325 350 320 370 Q310 365 305 350 Z" fill="#BA7517" stroke="#712B13" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M115 330 Q105 350 105 365 Q115 358 120 345 Z" fill="#BA7517" stroke="#712B13" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Carrot ring grooves -->
+  <path d="M127 175 Q200 165 277 175" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M130 220 Q200 213 273 220" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M125 265 Q200 258 280 265" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M120 305 Q200 298 285 305" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <!-- Cockpit window -->
+  <ellipse cx="200" cy="220" rx="62" ry="55" fill="#FAC775" stroke="#712B13" stroke-width="2.5"/>
+  <line x1="170" y1="200" x2="180" y2="195" stroke="#FFFFFF" stroke-width="2.5" opacity="0.7" stroke-linecap="round"/>
+  <!-- Hoppy inside cockpit -->
+  <!-- Both ears stream behind -->
+  <path d="M150 200 Q120 175 65 175 Q55 195 80 205 Q120 215 155 215 Z" fill="#F0997B" stroke="#712B13" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M155 210 Q130 195 90 195 Q85 205 100 210 Q140 220 160 220 Z" fill="#F5C4B3" opacity="0.7"/>
+  <path d="M250 200 Q280 175 335 175 Q345 195 320 205 Q280 215 245 215 Z" fill="#F0997B" stroke="#712B13" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M245 210 Q270 195 310 195 Q315 205 300 210 Q260 220 240 220 Z" fill="#F5C4B3" opacity="0.7"/>
+  <!-- Flower on streaming ear -->
+  <ellipse cx="78" cy="180" rx="6" ry="8" fill="#ED93B1" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <ellipse cx="70" cy="187" rx="7" ry="5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <ellipse cx="86" cy="187" rx="7" ry="5" fill="#F5C4B3" stroke="#A32D2D" stroke-width="1" stroke-linejoin="round"/>
+  <circle cx="78" cy="190" r="3.5" fill="#EF9F27" stroke="#BA7517" stroke-width="1"/>
+  <circle cx="78" cy="190" r="1.5" fill="#FAC775"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="220" rx="50" ry="48" fill="#F0997B" stroke="#712B13" stroke-width="2.5"/>
+  <!-- Fluffy cheeks -->
+  <circle cx="156" cy="237" r="9" fill="#FAECE7" stroke="#712B13" stroke-width="1.5"/>
+  <circle cx="244" cy="237" r="9" fill="#FAECE7" stroke="#712B13" stroke-width="1.5"/>
+  <!-- BRAVE eyebrows (60%) -->
+  <path d="M173 200 Q183 196 190 200" stroke="#712B13" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M210 200 Q217 196 227 200" stroke="#712B13" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Determined eyes -->
+  <ellipse cx="180" cy="218" rx="9" ry="11" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
+  <ellipse cx="220" cy="218" rx="9" ry="11" fill="#FFFFFF" stroke="#712B13" stroke-width="2"/>
+  <ellipse cx="180" cy="218" rx="5" ry="6.5" fill="#712B13"/>
+  <ellipse cx="220" cy="218" rx="5" ry="6.5" fill="#712B13"/>
+  <circle cx="178" cy="215" r="2.2" fill="#FFFFFF"/>
+  <circle cx="218" cy="215" r="2.2" fill="#FFFFFF"/>
+  <circle cx="182" cy="221" r="1.2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="222" cy="221" r="1.2" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Pink nose -->
+  <path d="M196 238 Q200 235 204 238 Q204 244 200 246 Q196 244 196 238 Z" fill="#D85A30" stroke="#712B13" stroke-width="1.3" stroke-linejoin="round"/>
+  <!-- Confident bigger "3" mouth -->
+  <path d="M200 250 Q188 258 195 264 Q200 260 200 264 Q200 260 205 264 Q212 258 200 250" stroke="#712B13" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Paws gripping cockpit edge -->
+  <ellipse cx="146" cy="270" rx="10" ry="8" fill="#F0997B" stroke="#712B13" stroke-width="2"/>
+  <ellipse cx="254" cy="270" rx="10" ry="8" fill="#F0997B" stroke="#712B13" stroke-width="2"/>
+</svg>

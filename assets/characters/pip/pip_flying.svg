@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Pip - flying with propeller backpack -->
+  <!-- Cloud wisps -->
+  <ellipse cx="65" cy="80" rx="22" ry="11" fill="#FFFFFF" opacity="0.7"/>
+  <ellipse cx="345" cy="100" rx="20" ry="10" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Propeller blades (above) -->
+  <ellipse cx="200" cy="55" rx="115" ry="14" fill="#B4B2A9" stroke="#5F5E5A" stroke-width="2" opacity="0.65"/>
+  <ellipse cx="200" cy="55" rx="115" ry="6" fill="#FFFFFF" opacity="0.4"/>
+  <!-- Center cap brass -->
+  <circle cx="200" cy="55" r="14" fill="#BA7517" stroke="#633806" stroke-width="2"/>
+  <circle cx="200" cy="55" r="7" fill="#FAC775" stroke="#BA7517" stroke-width="1.5"/>
+  <!-- Backpack rod -->
+  <rect x="195" y="65" width="10" height="40" fill="#5F5E5A" stroke="#3C3F42" stroke-width="2"/>
+  <!-- Trail blue exhaust below -->
+  <circle cx="200" cy="385" r="6" fill="#85B7EB" opacity="0.6"/>
+  <circle cx="180" cy="378" r="5" fill="#85B7EB" opacity="0.5"/>
+  <circle cx="220" cy="378" r="5" fill="#85B7EB" opacity="0.5"/>
+  <circle cx="165" cy="370" r="4" fill="#85B7EB" opacity="0.4"/>
+  <circle cx="235" cy="370" r="4" fill="#85B7EB" opacity="0.4"/>
+  <circle cx="195" cy="362" r="3" fill="#85B7EB" opacity="0.3"/>
+  <!-- Feet dangling -->
+  <ellipse cx="170" cy="345" rx="20" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" transform="rotate(15 170 345)"/>
+  <ellipse cx="230" cy="345" rx="20" ry="10" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" transform="rotate(-15 230 345)"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="245" rx="80" ry="90" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <!-- White belly -->
+  <path d="M200 175 Q150 185 145 250 Q150 315 200 320 Q250 315 255 250 Q250 185 200 175 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Backpack body behind -->
+  <rect x="170" y="195" width="60" height="70" rx="14" fill="#888780" stroke="#5F5E5A" stroke-width="2.5"/>
+  <!-- Brass rivets -->
+  <circle cx="180" cy="208" r="3" fill="#BA7517" stroke="#633806" stroke-width="0.8"/>
+  <circle cx="220" cy="208" r="3" fill="#BA7517" stroke="#633806" stroke-width="0.8"/>
+  <circle cx="180" cy="252" r="3" fill="#BA7517" stroke="#633806" stroke-width="0.8"/>
+  <circle cx="220" cy="252" r="3" fill="#BA7517" stroke="#633806" stroke-width="0.8"/>
+  <!-- Chest straps -->
+  <path d="M165 200 Q180 215 200 220 Q220 215 235 200" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M170 245 Q185 252 200 254 Q215 252 230 245" stroke="#5F5E5A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Flippers spread wide -->
+  <ellipse cx="100" cy="240" rx="14" ry="42" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(-50 100 240)"/>
+  <ellipse cx="300" cy="240" rx="14" ry="42" fill="#185FA5" stroke="#0C447C" stroke-width="2.5" transform="rotate(50 300 240)"/>
+  <!-- Head -->
+  <ellipse cx="200" cy="135" rx="72" ry="74" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <!-- Mask -->
+  <path d="M200 100 Q160 110 155 160 Q175 188 200 190 Q225 188 245 160 Q240 110 200 100 Z" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <!-- Mohawk -->
+  <path d="M188 80 Q190 68 195 78" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M198 75 Q200 62 205 73" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M208 78 Q212 70 215 80" stroke="#185FA5" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Excited eyes -->
+  <ellipse cx="173" cy="135" rx="12" ry="15" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <ellipse cx="227" cy="135" rx="12" ry="15" fill="#FFFFFF" stroke="#0C447C" stroke-width="2"/>
+  <ellipse cx="173" cy="131" rx="6.5" ry="9" fill="#0C447C"/>
+  <ellipse cx="227" cy="131" rx="6.5" ry="9" fill="#0C447C"/>
+  <circle cx="170" cy="128" r="2.8" fill="#FFFFFF"/>
+  <circle cx="224" cy="128" r="2.8" fill="#FFFFFF"/>
+  <circle cx="176" cy="134" r="1.6" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="230" cy="134" r="1.6" fill="#FFFFFF" opacity="0.5"/>
+  <!-- Blush -->
+  <ellipse cx="155" cy="170" rx="13" ry="8" fill="#F0997B" opacity="0.45"/>
+  <ellipse cx="245" cy="170" rx="13" ry="8" fill="#F0997B" opacity="0.45"/>
+  <!-- Open beak -->
+  <path d="M180 175 Q200 168 220 175 Q220 195 200 200 Q180 195 180 175 Z" fill="#EF9F27" stroke="#0C447C" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="200" cy="187" rx="11" ry="6" fill="#D85A30"/>
+  <path d="M180 175 Q200 178 220 175" stroke="#0C447C" stroke-width="2" fill="none"/>
+</svg>
