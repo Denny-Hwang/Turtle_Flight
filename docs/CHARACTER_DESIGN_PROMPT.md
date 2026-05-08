@@ -1,7 +1,9 @@
 # Turtle Flight — Character Asset Generation Prompt for Claude Code
 
 ## Project Context
-Turtle Flight is a gyroscope-based iOS flight adventure game built with **Expo + React Native + Three.js**. The game features 6 animal characters that cannot fly, each with a unique flight vehicle. This prompt generates all character SVG assets needed for the game.
+Turtle Flight is a gyroscope-based iOS flight adventure game built natively with **Swift 5.9+, SwiftUI + UIKit, SceneKit, CoreMotion, AVFoundation** (iOS 16.0+, landscape only). The game features 6 animal characters that cannot fly, each with a unique flight vehicle. This prompt generates all character vector + raster assets needed for the game.
+
+> Note: An earlier draft of this document targeted Expo + React Native + Three.js. That stack was rolled back (see `CLAUDE.md`); all integration guidance below is for native iOS only. Do not reintroduce RN dependencies.
 
 Bundle ID: `com.ggoboogihouse.turtleflight`
 Target: All ages (4+ rating), young child as baseline for easiest control level.
@@ -345,7 +347,7 @@ The App Store icon (1024 × 1024px) should feature:
 - Goggles on forehead catching light
 - Warm, inviting expression (default or joy)
 - No text — icon only
-- Export as PNG 1024×1024
+- Export as PNG 1024×1024 (sRGB, no alpha — App Store icons must be opaque) into `Assets.xcassets/AppIcon.appiconset/`
 
 ---
 
@@ -357,16 +359,58 @@ For App Store screenshots (2868 × 1320px landscape), characters should be shown
 
 ---
 
-## Technical Notes for Three.js Integration
-These SVGs will be used in two ways:
-1. **2D UI elements**: Character selection, menus, HUD — use SVGs directly via `react-native-svg`
-2. **3D game models**: The flying poses will be converted to textured planes or sprite sheets for Three.js rendering
+## Technical Notes for Native iOS Integration
 
-For Three.js sprites:
-- Export additional PNG versions at 512×512 resolution
-- Include transparency (PNG-32)
-- Characters face camera (billboard sprites)
-- Consider sprite sheet format: 4 expressions in a 2×2 grid (1024×1024 total)
+These assets are consumed by both the 2D UI layer (SwiftUI / UIKit) and the 3D flight scene (SceneKit). Author the source of truth as SVG, then export the iOS-ready formats below.
+
+### 1. 2D UI elements (SwiftUI / UIKit)
+Used in: character selection, main menu, HUD, pause/results screens, App Store metadata.
+
+- **Asset Catalog**: drop into `TurtleFlight/Assets.xcassets/Characters/{name}.imageset/`.
+- **Preferred format**: **PDF (Single Scale, Preserve Vector Data)** exported from the SVG. SwiftUI's `Image("turbo_icon")` will render crisply at any size with no @1x/@2x/@3x bloat.
+- **Fallback format**: PNG @1x / @2x / @3x if a particular asset has rendering artifacts as PDF (e.g. complex gradients in flame trails). Sizes: 200×200 / 400×400 / 600×600 for icons, 400×400 / 800×800 / 1200×1200 for full-body poses.
+- **Color space**: sRGB. Embed an sRGB profile in PNG exports.
+- **Trim**: keep the documented viewBox padding — do not auto-trim transparent margins, the centered anchor matters for layout math.
+- **Dark mode**: not required for v1 (game runs in its own themed UI), but if added later, supply an "Any Appearance" + "Dark Appearance" pair in the imageset.
+
+### 2. 3D flight scene (SceneKit)
+The in-flight character + vehicle is rendered as a billboarded textured plane (`SCNBillboardConstraint` on a `SCNPlane`), not a 3D mesh. This keeps the chibi 2D art style intact and matches the 80MB app size budget.
+
+- **Source pose**: `{name}_flying.svg` (character + vehicle, in-flight).
+- **Texture export**: PNG-32 with premultiplied alpha, 1024×1024 (power-of-two for mipmaps). Provide an additional 512×512 LOD for older devices.
+- **Color space**: sRGB. SceneKit interprets `diffuse.contents` as sRGB by default.
+- **Sprite sheet (expression atlas)**: pack the 4 expression states into a single 2048×2048 atlas in a 2×2 grid (each cell 1024×1024), in this fixed order:
+  - top-left: default
+  - top-right: joy
+  - bottom-left: scared
+  - bottom-right: speed
+  Drive the active expression by animating `diffuse.contentsTransform` (UV offset). Filename: `{name}_atlas.png`.
+- **Trail effects** (rocket flame, propeller sparkles, water droplets, heart puffs): export as separate PNGs and emit through `SCNParticleSystem`, not baked into the character texture.
+- **Filtering**: `magnificationFilter = .linear`, `minificationFilter = .linear`, `mipFilter = .linear`. Set `wrapS = wrapT = .clamp` to avoid bleeding between atlas cells.
+
+### 3. Source-of-truth SVG hygiene
+- Keep the master `.svg` in `assets/characters/{name}/` (outside the Xcode project) and treat it as the editable source. Generated PDFs/PNGs in `Assets.xcassets/` are build artifacts — regenerate, don't hand-edit.
+- Use a deterministic export script (e.g. `rsvg-convert` or `cairosvg` in a Makefile / SPM build phase) so all 6 characters produce identical metadata.
+- No external font or stylesheet references — all styles must be inlined attributes (already required above).
+
+### 4. Suggested Xcode layout
+```
+TurtleFlight/
+├── Assets.xcassets/
+│   ├── AppIcon.appiconset/                 # 1024×1024 + all required sizes
+│   └── Characters/
+│       ├── turbo_icon.imageset/            # PDF, vector
+│       ├── turbo_silhouette.imageset/      # PDF, vector
+│       ├── turbo_vehicle_only.imageset/    # PDF, vector
+│       ├── turbo_atlas.imageset/           # PNG @1x/@2x (1024 / 2048) — used as SceneKit texture
+│       └── … (repeat for pip, nutty, mochi, bounce, hoppy)
+└── Resources/Particles/                    # .scnp particle systems for trails
+```
+
+### 5. Performance budget reminders
+- App size target < 80 MB → prefer PDF/vector for UI, only ship raster atlases for the in-flight pose.
+- Memory target < 250 MB RAM → only the currently selected character's atlas should be resident; release others on character switch.
+- 60 FPS on iPhone 12+ → keep each atlas to a single `SCNMaterial` and avoid per-frame texture rebinding.
 
 ---
 
