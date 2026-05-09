@@ -12,25 +12,25 @@ struct MissionHUD: View {
                 Spacer()
 
                 if let stage = missionVM.currentStage {
-                    VStack(spacing: 4) {
+                    VStack(spacing: Theme.Spacing.xs) {
                         Text(L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundColor(.white)
+                            .font(Theme.Typography.label)
+                            .foregroundColor(Theme.Color.textOnDark)
 
                         if let remaining = missionEngine.remainingTime {
                             Text(remaining.mmss)
                                 .font(.system(size: 18, weight: .bold, design: .monospaced))
-                                .foregroundColor(missionEngine.isTimeCritical ?
-                                    Color(hex: Constants.Colors.expertRed) :
-                                    Color.white
+                                .foregroundColor(missionEngine.isTimeCritical
+                                    ? Theme.Color.expertRed
+                                    : Theme.Color.textOnDark
                                 )
                         }
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
+                    .padding(.horizontal, Theme.Spacing.l)
+                    .padding(.vertical, Theme.Spacing.s)
                     .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(hex: Constants.Colors.panelDark).opacity(0.8))
+                        RoundedRectangle(cornerRadius: Theme.Radius.s + 2)
+                            .fill(Theme.Color.surfaceOverlayStrong)
                     )
                 }
 
@@ -44,41 +44,41 @@ struct MissionHUD: View {
             HStack {
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 8) {
+                VStack(alignment: .trailing, spacing: Theme.Spacing.s) {
                     // Ring progress
-                    HStack(spacing: 4) {
+                    HStack(spacing: Theme.Spacing.xs) {
                         Image(systemName: "circle.dashed")
-                            .foregroundColor(Color(hex: Constants.Colors.hudCyan))
+                            .foregroundColor(Theme.Color.hudCyan)
                         Text(missionEngine.progressText)
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundColor(.white)
+                            .font(Theme.Typography.hudGaugeSmall)
+                            .foregroundColor(Theme.Color.textOnDark)
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, Theme.Spacing.s + 2)
+                    .padding(.vertical, Theme.Spacing.s - 2)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(hex: Constants.Colors.panelDark).opacity(0.7))
+                        RoundedRectangle(cornerRadius: Theme.Radius.s)
+                            .fill(Theme.Color.surfaceOverlay)
                     )
 
                     // Collision counter
-                    HStack(spacing: 4) {
+                    HStack(spacing: Theme.Spacing.xs) {
                         Image(systemName: "exclamationmark.triangle")
-                            .foregroundColor(missionEngine.collisions > 0 ?
-                                Color(hex: Constants.Colors.expertRed) :
-                                Color(hex: Constants.Colors.easyGreen)
+                            .foregroundColor(missionEngine.collisions > 0
+                                ? Theme.Color.expertRed
+                                : Theme.Color.easyGreen
                             )
                         Text(L10n.format("mission.collisions.format", missionEngine.collisions))
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.white)
+                            .font(Theme.Typography.caption)
+                            .foregroundColor(Theme.Color.textOnDark)
                     }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, Theme.Spacing.s + 2)
+                    .padding(.vertical, Theme.Spacing.xs)
                     .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color(hex: Constants.Colors.panelDark).opacity(0.6))
+                        RoundedRectangle(cornerRadius: Theme.Radius.xs)
+                            .fill(Theme.Color.surfaceOverlaySubtle)
                     )
                 }
-                .padding(.trailing, 16)
+                .padding(.trailing, Theme.Spacing.l)
             }
 
             Spacer()
@@ -98,82 +98,82 @@ struct MissionHUD: View {
     // MARK: - Result Overlay
 
     private var resultOverlay: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Theme.Spacing.l) {
             Text(L10n.t("mission.result.clear"))
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(Color(hex: Constants.Colors.starGold))
+                .font(Theme.Typography.displayMedium)
+                .foregroundColor(Theme.Color.starGold)
 
             if let result = missionVM.lastResult {
                 // Stars
-                HStack(spacing: 8) {
+                HStack(spacing: Theme.Spacing.s) {
                     ForEach(0..<3, id: \.self) { i in
                         Image(systemName: i < result.stars ? "star.fill" : "star")
                             .font(.system(size: 32))
-                            .foregroundColor(Color(hex: Constants.Colors.starGold))
+                            .foregroundColor(Theme.Color.starGold)
                     }
                 }
 
                 Text(L10n.format("mission.result.timeFormat", result.completionTime.mmss))
-                    .font(.system(size: 14))
-                    .foregroundColor(.white)
+                    .font(Theme.Typography.bodyLarge)
+                    .foregroundColor(Theme.Color.textOnDark)
 
                 Text(L10n.format("mission.result.collisionsFormat", result.collisions))
-                    .font(.system(size: 14))
-                    .foregroundColor(.white)
+                    .font(Theme.Typography.bodyLarge)
+                    .foregroundColor(Theme.Color.textOnDark)
             }
 
-            HStack(spacing: 16) {
+            HStack(spacing: Theme.Spacing.l) {
                 Button(L10n.t("common.home")) {
                     missionVM.returnToSelect()
                     onExit?()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
+                .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
 
                 Button(L10n.t("common.retry")) {
                     missionVM.returnToSelect()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))
+                .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
 
                 Button(L10n.t("common.next")) {
                     missionVM.returnToSelect()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.easyGreen)))
+                .buttonStyle(MissionButtonStyle(color: Theme.Color.easyGreen))
             }
         }
-        .padding(32)
+        .padding(Theme.Spacing.xxl)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(hex: Constants.Colors.panelDark).opacity(0.9))
+            RoundedRectangle(cornerRadius: Theme.Radius.xl)
+                .fill(Theme.Color.surfacePanel)
         )
     }
 
     private func failOverlay(reason: String) -> some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Theme.Spacing.l) {
             Text(L10n.t("mission.result.failed"))
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color(hex: Constants.Colors.expertRed))
+                .font(Theme.Typography.titleLarge)
+                .foregroundColor(Theme.Color.expertRed)
 
             Text(reason)
-                .font(.system(size: 14))
-                .foregroundColor(.white)
+                .font(Theme.Typography.bodyLarge)
+                .foregroundColor(Theme.Color.textOnDark)
 
-            HStack(spacing: 16) {
+            HStack(spacing: Theme.Spacing.l) {
                 Button(L10n.t("common.home")) {
                     missionVM.returnToSelect()
                     onExit?()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.panelDark)))
+                .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
 
                 Button(L10n.t("common.retry")) {
                     missionVM.returnToSelect()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.boostOrange)))
+                .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
             }
         }
-        .padding(32)
+        .padding(Theme.Spacing.xxl)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(hex: Constants.Colors.panelDark).opacity(0.9))
+            RoundedRectangle(cornerRadius: Theme.Radius.xl)
+                .fill(Theme.Color.surfacePanel)
         )
     }
 }
@@ -183,12 +183,12 @@ struct MissionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 16, weight: .bold))
-            .foregroundColor(.white)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
+            .font(Theme.Typography.button)
+            .foregroundColor(Theme.Color.textOnDark)
+            .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, Theme.Spacing.m)
             .background(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: Theme.Radius.s + 2)
                     .fill(color)
             )
             .scaleEffect(configuration.isPressed ? 0.95 : 1)
