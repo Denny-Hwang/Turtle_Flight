@@ -1,6 +1,9 @@
 import Foundation
 import SwiftUI
 import SceneKit
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - Double Extensions
 extension Double {
@@ -89,6 +92,23 @@ extension Color {
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
     }
 }
+
+#if canImport(UIKit)
+extension UIColor {
+    /// Same convention as `Color(hex:)` so SwiftUI and UIKit/SceneKit
+    /// surfaces share a single palette source. SceneKit APIs like
+    /// `SCNParticleSystem.particleColor` only accept UIColor, so this
+    /// is the bridge.
+    convenience init(hex: Int, alpha: CGFloat = 1.0) {
+        self.init(
+            red:   CGFloat((hex >> 16) & 0xFF) / 255.0,
+            green: CGFloat((hex >> 8)  & 0xFF) / 255.0,
+            blue:  CGFloat( hex        & 0xFF) / 255.0,
+            alpha: alpha
+        )
+    }
+}
+#endif
 
 // MARK: - TimeInterval Formatting
 extension TimeInterval {

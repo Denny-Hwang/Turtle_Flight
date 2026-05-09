@@ -210,4 +210,22 @@ extension CharacterAnimator {
         mat.diffuse.contentsTransform = target
         SCNTransaction.commit()
     }
+
+    /// Multiplier applied to a trail's birth rate while the player is
+    /// boosting. Tuned so the trail visibly thickens without overwhelming
+    /// the screen on long boosts.
+    static let trailBoostBirthRateMultiplier: CGFloat = 2.5
+
+    /// Modulate a trail particle system's emission rate based on boost
+    /// state. The base birth rate is per-vehicle (see
+    /// `CharacterRegistry.trailParameters`); this method just multiplies it.
+    func setTrailBoosting(_ system: SCNParticleSystem,
+                          boosting: Bool,
+                          baseBirthRate: CGFloat) {
+        let target = boosting
+            ? baseBirthRate * Self.trailBoostBirthRateMultiplier
+            : baseBirthRate
+        guard system.birthRate != target else { return }
+        system.birthRate = target
+    }
 }

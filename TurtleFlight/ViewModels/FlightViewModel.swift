@@ -44,6 +44,18 @@ final class FlightViewModel: ObservableObject {
     /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
     private var expressionLatch = ExpressionLatch()
 
+    // MARK: - Trail emitter
+    /// Empty SCNNode that sits ~1.2 world units behind the character along
+    /// its heading; the per-vehicle trail particle system is attached here.
+    /// Lives in scene root (not as a child of the billboard) so its world
+    /// position is independent of the billboard's camera-facing constraint.
+    private var trailEmitterNode: SCNNode?
+    private var trailParticleSystem: SCNParticleSystem?
+    /// Captured at startFlight from the per-vehicle TrailParameters; used
+    /// each frame to decide the boost-modulated birth rate without
+    /// re-fetching the parameter table.
+    private var baseTrailBirthRate: CGFloat = 0
+
     // MARK: - Character Info
     var currentCharacter: CharacterType = .turtle
     var currentVehicle: VehicleType = .shellJet
@@ -123,6 +135,17 @@ final class FlightViewModel: ObservableObject {
         self.lastDisplayedExpression = .default
         self.expressionLatch.reset()
 
+        // Build per-vehicle trail emitter and attach to scene root (not the
+        // billboard) so its world position can track behind the heading.
+        let trailNode = SCNNode()
+        let trailSystem = registry.buildTrailParticleSystem(for: vehicle)
+        trailNode.addParticleSystem(trailSystem)
+        trailNode.position = charNode.position
+        scene.rootNode.addChildNode(trailNode)
+        self.trailEmitterNode = trailNode
+        self.trailParticleSystem = trailSystem
+        self.baseTrailBirthRate = CharacterRegistry.trailParameters(for: vehicle).baseBirthRate
+
         // Setup camera
         let camera = SCNNode()
         camera.camera = SCNCamera()
@@ -158,6 +181,13 @@ final class FlightViewModel: ObservableObject {
         gyroController.stop()
         isFlying = false
         AudioManager.shared.stopAll()
+        // Detach the trail so a stopped flight doesn't keep an emitter
+        // alive in the scene tree (FlightView typically rebuilds the scene
+        // anyway, but explicit cleanup keeps memory predictable on retry).
+        trailEmitterNode?.removeFromParentNode()
+        trailEmitterNode = nil
+        trailParticleSystem = nil
+        baseTrailBirthRate = 0
     }
 
     /// Main update loop - called every frame from SCNSceneRendererDelegate
@@ -187,6 +217,33 @@ final class FlightViewModel: ObservableObject {
         // on it would be a no-op. Bank/pitch feedback comes through the
         // chase-camera framing instead.
         characterNode?.position = flightState.position
+
+        // Trail emitter sits behind the character in heading direction, so
+        // particles drift away naturally as the world moves underneath. The
+        // back-offset matches the ~1.2 unit gap that reads as "tail" without
+        // overlapping the billboard sprite.
+        if let trailNode = trailEmitterNode {
+            let h = Double(flightState.heading).rad
+            let backOffset: Float = 1.2
+            trailNode.position = SCNVector3(
+                flightState.position.x - sin(Float(h)) * backOffset,
+                flightState.position.y - 0.4,
+                flightState.position.z + cos(Float(h)) * backOffset
+            )
+            // Rotate the emitter so its local +Z (the emittingDirection)
+            // aligns with the world-space "behind heading" vector
+            // (-sin h, 0, +cos h). A Y-rotation of -h achieves that.
+            // Particles then streak rearward, drifting away from the
+            // character as it flies on.
+            trailNode.eulerAngles.y = -Float(h)
+        }
+        if let trail = trailParticleSystem {
+            characterAnimator.setTrailBoosting(
+                trail,
+                boosting: flightState.isBoosting,
+                baseBirthRate: baseTrailBirthRate
+            )
+        }
 
         // Drive the atlas expression cell from flight state. Priority is
         // resolved by ExpressionLatch (see Core/Character/ExpressionLatch.swift):

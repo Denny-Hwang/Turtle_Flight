@@ -1,5 +1,8 @@
 import Foundation
 import SceneKit
+#if canImport(UIKit)
+import UIKit
+#endif
 
 final class CharacterRegistry {
     static let shared = CharacterRegistry()
@@ -572,5 +575,151 @@ extension CharacterRegistry {
         t.m41 = Float(cell.col) * s
         t.m42 = Float(cell.row) * s
         return t
+    }
+}
+
+// MARK: - Per-vehicle trail particle systems
+//
+// Per docs/CHARACTER_DESIGN_PROMPT.md each character has a uniquely styled
+// trail (rocket flame, blue exhaust sparkles, golden seeds, lavender stars,
+// water droplets, heart puffs, cloud puffs). The spec calls for separate
+// PNG textures emitted via SCNParticleSystem; this initial pass uses
+// SceneKit's built-in spark texture tinted per-vehicle, which gives clear
+// color/size differentiation today and accepts custom particleImage PNGs
+// in a follow-up PR without rewriting any of the wiring below.
+
+/// Tunable parameters for a single trail emitter. Stored separately so the
+/// resolver can consult `boostMultiplier` without inspecting SCN state.
+struct TrailParameters {
+    let color: UIColor
+    let particleSize: CGFloat
+    let particleSizeVariation: CGFloat
+    let baseBirthRate: CGFloat       // particles per second at idle speed
+    let lifeSpan: CGFloat            // seconds
+    let velocity: CGFloat            // emit speed (scene units / sec)
+    let velocityVariation: CGFloat
+    let spreadingAngle: CGFloat      // degrees
+    let blendMode: SCNBlendMode
+}
+
+extension CharacterRegistry {
+
+    /// Build a per-vehicle trail emitter. The system is fully configured
+    /// (color, size, life, velocity, spread, blend) — caller just attaches
+    /// it to a positioned node behind the character each frame.
+    func buildTrailParticleSystem(for vehicle: VehicleType) -> SCNParticleSystem {
+        let params = Self.trailParameters(for: vehicle)
+        let p = SCNParticleSystem()
+        p.loops = true
+        p.emissionDuration = 1
+        // Emit "back along local +Z"; FlightViewModel orients the emitter
+        // node so its +Z points away from the character's heading.
+        p.emittingDirection = SCNVector3(0, 0, 1)
+        p.spreadingAngle = params.spreadingAngle
+        p.particleAngularVelocity = 60
+        p.particleAngularVelocityVariation = 30
+        p.blendMode = params.blendMode
+        p.isLightingEnabled = false
+        p.particleColor = params.color
+        p.particleSize = params.particleSize
+        p.particleSizeVariation = params.particleSizeVariation
+        p.birthRate = params.baseBirthRate
+        p.particleLifeSpan = params.lifeSpan
+        p.particleVelocity = params.velocity
+        p.particleVelocityVariation = params.velocityVariation
+        return p
+    }
+
+    /// Per-vehicle parameter table — public for tests and so the boost
+    /// modulator (CharacterAnimator.setTrailBoosting) can read the base
+    /// birth rate without retaining a reference to the SCNParticleSystem.
+    static func trailParameters(for vehicle: VehicleType) -> TrailParameters {
+        switch vehicle {
+        case .shellJet:        // 🐢 Turbo — bright rocket flame
+            return TrailParameters(
+                color:                 UIColor(hex: 0xEF9F27),
+                particleSize:          0.45,
+                particleSizeVariation: 0.15,
+                baseBirthRate:         60,
+                lifeSpan:              0.45,
+                velocity:              6,
+                velocityVariation:     1.5,
+                spreadingAngle:        14,
+                blendMode:             .additive
+            )
+        case .bellyGlider:     // 🐧 Pip — sky-blue exhaust sparkles
+            return TrailParameters(
+                color:                 UIColor(hex: 0x85B7EB),
+                particleSize:          0.18,
+                particleSizeVariation: 0.06,
+                baseBirthRate:         18,
+                lifeSpan:              0.6,
+                velocity:              3,
+                velocityVariation:     0.6,
+                spreadingAngle:        18,
+                blendMode:             .additive
+            )
+        case .hamsterCopter:   // 🐹 Nutty — golden sparkles + seed feel
+            return TrailParameters(
+                color:                 UIColor(hex: 0xFAC775),
+                particleSize:          0.22,
+                particleSizeVariation: 0.08,
+                baseBirthRate:         22,
+                lifeSpan:              0.8,
+                velocity:              2,
+                velocityVariation:     0.7,
+                spreadingAngle:        22,
+                blendMode:             .additive
+            )
+        case .cushionBalloon:  // 🐱 Mochi — lavender sparkle stars
+            return TrailParameters(
+                color:                 UIColor(hex: 0xAFA9EC),
+                particleSize:          0.18,
+                particleSizeVariation: 0.06,
+                baseBirthRate:         12,
+                lifeSpan:              1.0,
+                velocity:              1.5,
+                velocityVariation:     0.4,
+                spreadingAngle:        24,
+                blendMode:             .additive
+            )
+        case .balloonBody:     // 🐸 Bounce — water droplets (the lily pad's
+                               //              wake — the design reference)
+            return TrailParameters(
+                color:                 UIColor(hex: 0x85B7EB),
+                particleSize:          0.20,
+                particleSizeVariation: 0.06,
+                baseBirthRate:         16,
+                lifeSpan:              0.7,
+                velocity:              2.2,
+                velocityVariation:     0.6,
+                spreadingAngle:        20,
+                blendMode:             .alpha
+            )
+        case .carrotJet:       // 🐰 Hoppy — peach heart-puff trail
+            return TrailParameters(
+                color:                 UIColor(hex: 0xF5C4B3),
+                particleSize:          0.30,
+                particleSizeVariation: 0.10,
+                baseBirthRate:         14,
+                lifeSpan:              0.7,
+                velocity:              4,
+                velocityVariation:     0.8,
+                spreadingAngle:        16,
+                blendMode:             .alpha
+            )
+        case .cloudSurf:       // ☁️ shared — soft white cloud puffs
+            return TrailParameters(
+                color:                 UIColor.white,
+                particleSize:          0.70,
+                particleSizeVariation: 0.20,
+                baseBirthRate:         9,
+                lifeSpan:              1.5,
+                velocity:              1.0,
+                velocityVariation:     0.4,
+                spreadingAngle:        26,
+                blendMode:             .alpha
+            )
+        }
     }
 }
