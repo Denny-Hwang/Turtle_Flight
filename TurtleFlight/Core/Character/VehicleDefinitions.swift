@@ -35,12 +35,12 @@ struct VehicleDefinition {
             soundEffect: "copter_spin"
         ),
         VehicleDefinition(
-            type: .magicBroom,
+            type: .cushionBalloon,
             ownerCharacter: .cat,
-            displayName: "Magic Broom",
-            koreanName: "마법 빗자루",
-            boostEffect: "빗자루 위에 앉아 비행, 꼬리 휘날림",
-            soundEffect: "magic_swoosh"
+            displayName: "Cushion Hot Air Balloon",
+            koreanName: "쿠션 열기구",
+            boostEffect: "고양이 침대 모양 바구니에 누워 부유, 라벤더 화염으로 가속",
+            soundEffect: "balloon_hiss"
         ),
         VehicleDefinition(
             type: .balloonBody,
@@ -51,12 +51,12 @@ struct VehicleDefinition {
             soundEffect: "balloon_inflate"
         ),
         VehicleDefinition(
-            type: .earCopter,
+            type: .carrotJet,
             ownerCharacter: .bunny,
-            displayName: "Ear Copter",
-            koreanName: "귀 헬리콥터",
-            boostEffect: "긴 귀가 프로펠러처럼 회전, 점프하듯 상승",
-            soundEffect: "ear_whirl"
+            displayName: "Carrot Jet",
+            koreanName: "당근 제트",
+            boostEffect: "당근 제트기로 가속, 잎사귀 꼬리 핀, 하트 모양 배기",
+            soundEffect: "jet_whoosh_soft"
         ),
         VehicleDefinition(
             type: .cloudSurf,

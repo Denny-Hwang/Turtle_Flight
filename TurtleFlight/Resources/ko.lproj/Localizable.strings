@@ -49,21 +49,21 @@
 "stage.4.name" = "스카이 레이스";
 
 // MARK: - Vehicle display names
-"vehicle.shellJet"      = "등껍질 제트";
-"vehicle.bellyGlider"   = "배 활공";
-"vehicle.hamsterCopter" = "햄스터볼 헬리콥터";
-"vehicle.magicBroom"    = "마법 빗자루";
-"vehicle.balloonBody"   = "풍선 비행";
-"vehicle.earCopter"     = "귀 헬리콥터";
-"vehicle.cloudSurf"     = "구름 서핑";
+"vehicle.shellJet"        = "등껍질 제트";
+"vehicle.bellyGlider"     = "배 활공";
+"vehicle.hamsterCopter"   = "햄스터볼 헬리콥터";
+"vehicle.cushionBalloon"  = "쿠션 열기구";
+"vehicle.balloonBody"     = "풍선 비행";
+"vehicle.carrotJet"       = "당근 제트";
+"vehicle.cloudSurf"       = "구름 서핑";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";
 "character.penguin.description" = "배로 미끄러지며 하늘을 활공!";
 "character.hamster.description" = "햄스터볼이 하늘을 난다!";
-"character.cat.description"     = "마법 빗자루를 타고 하늘을!";
+"character.cat.description"     = "쿠션 열기구를 타고 우아하게 부유!";
 "character.frog.description"    = "몸이 풍선이 되어 두둥실!";
-"character.bunny.description"   = "귀를 프로펠러처럼 돌려 이륙!";
+"character.bunny.description"   = "당근 제트로 살포시 하늘 위로!";
 
 // MARK: - Accessibility (VoiceOver)
 "a11y.boost.label"     = "부스터";
