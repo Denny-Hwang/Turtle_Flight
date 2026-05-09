@@ -82,6 +82,16 @@
 "characterSelect.section.map"      = "맵 선택";
 "characterSelect.section.vehicle"  = "탈것";
 
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "스테이지 선택";
+"stageSelect.progress.format"        = "%lld / %lld 별";
+"stageSelect.objective.format"       = "★★★ 조건: %@";
+"stageSelect.locked.body"            = "이전 스테이지를 클리어하면 잠금이 풀려요.";
+"stageSelect.card.hint.unlocked"     = "두 번 탭하여 이 스테이지로 이동합니다";
+"stageSelect.card.hint.locked"       = "이전 스테이지를 먼저 클리어해야 합니다";
+"stageSelect.card.label.unlocked"    = "스테이지 %lld, %@, 별 %lld개 획득";
+"stageSelect.card.label.locked"      = "스테이지 %lld, 잠겨 있음";
+
 // MARK: - Onboarding (first-run gyro tutorial)
 "onboarding.skip"              = "건너뛰기";
 "onboarding.next"              = "다음";
