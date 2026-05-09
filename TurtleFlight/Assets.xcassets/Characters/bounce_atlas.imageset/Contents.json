@@ -1,0 +1,4 @@
+{
+  "images" : [ { "filename" : "bounce_atlas.png", "idiom" : "universal", "scale" : "2x" } ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

@@ -1,0 +1,4 @@
+{
+  "images" : [ { "filename" : "hoppy_atlas.png", "idiom" : "universal", "scale" : "2x" } ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}
