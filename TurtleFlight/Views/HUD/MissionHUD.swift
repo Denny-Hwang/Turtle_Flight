@@ -1,9 +1,14 @@
 import SwiftUI
 
+/// Mission-specific HUD chrome: stage-title pill + remaining-time badge
+/// at the top, ring progress + collision counter on the right.
+///
+/// The result/fail overlays previously rendered inline here have moved
+/// to the full-screen `StageResultView` owned by FlightView. MissionHUD
+/// is now purely the in-flight chrome.
 struct MissionHUD: View {
     let missionEngine: MissionEngine
     @ObservedObject var missionVM: MissionViewModel
-    var onExit: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -82,138 +87,10 @@ struct MissionHUD: View {
             }
 
             Spacer()
-
-            // Result overlay
-            if case .completed = missionVM.missionState {
-                resultOverlay
-            }
-
-            if case .failed(let reason) = missionVM.missionState {
-                failOverlay(reason: reason)
-            }
         }
-        .allowsHitTesting(missionVM.missionState != .playing)
-    }
-
-    // MARK: - Result Overlay
-
-    private var resultOverlay: some View {
-        VStack(spacing: Theme.Spacing.l) {
-            Text(L10n.t("mission.result.clear"))
-                .font(Theme.Typography.displayMedium)
-                .foregroundColor(Theme.Color.starGold)
-
-            if let result = missionVM.lastResult {
-                // Stars
-                HStack(spacing: Theme.Spacing.s) {
-                    ForEach(0..<3, id: \.self) { i in
-                        Image(systemName: i < result.stars ? "star.fill" : "star")
-                            .font(.system(size: 32))
-                            .foregroundColor(Theme.Color.starGold)
-                    }
-                }
-
-                Text(L10n.format("mission.result.timeFormat", result.completionTime.mmss))
-                    .font(Theme.Typography.bodyLarge)
-                    .foregroundColor(Theme.Color.textOnDark)
-
-                Text(L10n.format("mission.result.collisionsFormat", result.collisions))
-                    .font(Theme.Typography.bodyLarge)
-                    .foregroundColor(Theme.Color.textOnDark)
-            }
-
-            HStack(spacing: Theme.Spacing.l) {
-                Button(L10n.t("common.home")) {
-                    missionVM.returnToSelect()
-                    onExit?()
-                }
-                .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
-
-                Button(L10n.t("common.retry")) {
-                    restartCurrentStage()
-                }
-                .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
-
-                if missionVM.hasNextStage {
-                    Button(L10n.t("common.next")) {
-                        advanceToNextStage()
-                    }
-                    .buttonStyle(MissionButtonStyle(color: Theme.Color.easyGreen))
-                }
-            }
-        }
-        .padding(Theme.Spacing.xxl)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                .fill(Theme.Color.surfacePanel)
-        )
-    }
-
-    private func failOverlay(reason: String) -> some View {
-        VStack(spacing: Theme.Spacing.l) {
-            Text(L10n.t("mission.result.failed"))
-                .font(Theme.Typography.titleLarge)
-                .foregroundColor(Theme.Color.expertRed)
-
-            Text(reason)
-                .font(Theme.Typography.bodyLarge)
-                .foregroundColor(Theme.Color.textOnDark)
-
-            HStack(spacing: Theme.Spacing.l) {
-                Button(L10n.t("common.home")) {
-                    missionVM.returnToSelect()
-                    onExit?()
-                }
-                .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
-
-                Button(L10n.t("common.retry")) {
-                    restartCurrentStage()
-                }
-                .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
-            }
-        }
-        .padding(Theme.Spacing.xxl)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                .fill(Theme.Color.surfacePanel)
-        )
-    }
-}
-
-    // MARK: - Stage transitions
-    //
-    // Both Retry and Next stay in-flight: we restart the MissionEngine
-    // (which clears prior rings and resets timer/collisions) and flip
-    // missionVM back into `.playing`. The character keeps flying — only
-    // the objective layer changes underneath them.
-
-    private func restartCurrentStage() {
-        guard let stage = missionVM.currentStage else { return }
-        missionEngine.startStage(stage)
-        missionVM.startMission()
-    }
-
-    private func advanceToNextStage() {
-        guard missionVM.advanceToNextStage(),
-              let stage = missionVM.currentStage else { return }
-        missionEngine.startStage(stage)
-        missionVM.startMission()
-    }
-}
-
-struct MissionButtonStyle: ButtonStyle {
-    let color: Color
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(Theme.Typography.button)
-            .foregroundColor(Theme.Color.textOnDark)
-            .padding(.horizontal, Theme.Spacing.xl)
-            .padding(.vertical, Theme.Spacing.m)
-            .background(
-                RoundedRectangle(cornerRadius: Theme.Radius.s + 2)
-                    .fill(color)
-            )
-            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+        // The HUD is purely informational; touches always pass through to
+        // the SceneKit scene. Modal overlays (StageResultView, PauseView)
+        // are siblings, not children, of this view.
+        .allowsHitTesting(false)
     }
 }

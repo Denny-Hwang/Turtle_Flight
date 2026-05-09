@@ -79,6 +79,19 @@
 "characterSelect.section.map"      = "Select Map";
 "characterSelect.section.vehicle"  = "Vehicle";
 
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "%lld stars earned";
+"mission.result.starsCollectedFormat" = "Stars %lld of %lld";
+"mission.result.firstClear"        = "First Clear!";
+"mission.result.newBest"           = "New Best!";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "Flight Complete";
+"freeFlight.result.subtitle"       = "Here's your run summary.";
+"freeFlight.result.flightTime"     = "Flight time";
+"freeFlight.result.stars"          = "Stars collected";
+"freeFlight.result.again"          = "Fly Again";
+
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Pick a Stage";
 "stageSelect.progress.format"        = "%lld / %lld stars";
