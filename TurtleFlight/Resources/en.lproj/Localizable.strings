@@ -79,6 +79,16 @@
 "characterSelect.section.map"      = "Select Map";
 "characterSelect.section.vehicle"  = "Vehicle";
 
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "Pick a Stage";
+"stageSelect.progress.format"        = "%lld / %lld stars";
+"stageSelect.objective.format"       = "★★★ goal: %@";
+"stageSelect.locked.body"            = "Clear the previous stage to unlock this one.";
+"stageSelect.card.hint.unlocked"     = "Double-tap to choose this stage";
+"stageSelect.card.hint.locked"       = "Clear the previous stage first";
+"stageSelect.card.label.unlocked"    = "Stage %lld, %@, %lld stars earned";
+"stageSelect.card.label.locked"      = "Stage %lld, locked";
+
 // MARK: - Onboarding (first-run gyro tutorial)
 "onboarding.skip"              = "Skip";
 "onboarding.next"              = "Next";
