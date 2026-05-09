@@ -27,9 +27,24 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "보정";
+"flight.control.pause"     = "일시정지";
 "flight.control.exit"      = "종료";
 "flight.control.boost"     = "부스터";
 "flight.control.item"      = "아이템";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "잠시 멈춤";
+"flight.pause.subtitle"       = "준비되면 다시 시작할 수 있어요.";
+"flight.pause.resume"         = "이어서 비행";
+"flight.pause.resume.hint"    = "두 번 탭하여 비행을 이어갑니다";
+"flight.pause.restart"        = "다시 시작";
+"flight.pause.restart.hint"   = "두 번 탭하여 처음부터 다시 시작합니다";
+"flight.pause.quit"           = "종료";
+"flight.pause.quit.hint"      = "두 번 탭하여 비행을 종료하고 홈으로 갑니다";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "일시정지";
+"a11y.pause.hint"             = "두 번 탭하여 비행을 잠시 멈춥니다";
 
 // MARK: - Mission HUD
 "mission.stage.titleFormat"   = "Stage %lld: %@";

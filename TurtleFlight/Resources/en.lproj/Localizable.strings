@@ -24,9 +24,24 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrate";
+"flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Exit";
 "flight.control.boost"     = "Boost";
 "flight.control.item"      = "Item";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "Paused";
+"flight.pause.subtitle"       = "Take a breath. Resume whenever you're ready.";
+"flight.pause.resume"         = "Resume";
+"flight.pause.resume.hint"    = "Double-tap to keep flying";
+"flight.pause.restart"        = "Restart";
+"flight.pause.restart.hint"   = "Double-tap to start the flight over from the beginning";
+"flight.pause.quit"           = "Quit";
+"flight.pause.quit.hint"      = "Double-tap to end the flight and return home";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "Pause";
+"a11y.pause.hint"             = "Double-tap to pause the flight";
 
 // MARK: - Mission HUD
 "mission.stage.titleFormat"   = "Stage %lld: %@";

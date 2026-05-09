@@ -4,11 +4,12 @@ struct ControlButtons: View {
     let onBoost: () -> Void
     let onFire: () -> Void
     let onCalibrate: () -> Void
+    let onPause: () -> Void
     let onExit: () -> Void
 
     var body: some View {
         VStack {
-            // Top-right: Exit + Calibrate
+            // Top-right: Calibrate + Pause + Exit
             HStack {
                 Spacer()
 
@@ -19,6 +20,13 @@ struct ControlButtons: View {
                     }
                     .accessibilityLabel(L10n.t("a11y.calibrate.label"))
                     .accessibilityHint(L10n.t("a11y.calibrate.hint"))
+
+                    // Pause button
+                    SmallButton(icon: "pause.fill", label: L10n.t("flight.control.pause")) {
+                        onPause()
+                    }
+                    .accessibilityLabel(L10n.t("a11y.pause.label"))
+                    .accessibilityHint(L10n.t("a11y.pause.hint"))
 
                     // Exit button
                     SmallButton(icon: "xmark", label: L10n.t("flight.control.exit")) {
