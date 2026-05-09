@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Bounce silhouette: wide flat head with bulging eyes + powerful legs -->
+  <!-- Body (head/body merged, very wide) -->
+  <ellipse cx="200" cy="240" rx="148" ry="120" fill="#27500A"/>
+  <!-- Bulging eyes on top (signature - largest of all 6) -->
+  <circle cx="148" cy="115" r="42" fill="#27500A"/>
+  <circle cx="252" cy="115" r="42" fill="#27500A"/>
+  <!-- Powerful bent back legs (ready-to-jump pose) -->
+  <ellipse cx="100" cy="335" rx="32" ry="22" fill="#27500A"/>
+  <ellipse cx="300" cy="335" rx="32" ry="22" fill="#27500A"/>
+  <!-- Webbed front hands -->
+  <ellipse cx="80" cy="245" rx="22" ry="14" fill="#27500A"/>
+  <ellipse cx="320" cy="245" rx="22" ry="14" fill="#27500A"/>
+</svg>

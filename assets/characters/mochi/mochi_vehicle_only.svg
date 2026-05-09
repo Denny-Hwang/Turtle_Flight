@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Mochi vehicle: Cushion Hot Air Balloon (cat-bed basket + lavender envelope) -->
+  <!-- Balloon envelope (smooth rounded) -->
+  <ellipse cx="100" cy="70" rx="58" ry="62" fill="#CECBF6" stroke="#3C3489" stroke-width="2.5"/>
+  <!-- Panel lines -->
+  <path d="M100 8 Q70 70 100 132" stroke="#7F77DD" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <path d="M100 8 Q130 70 100 132" stroke="#7F77DD" stroke-width="1.5" fill="none" opacity="0.6"/>
+  <!-- Subtle paw-print pattern -->
+  <circle cx="78" cy="55" r="3" fill="#7F77DD" opacity="0.35"/>
+  <circle cx="74" cy="48" r="1.8" fill="#7F77DD" opacity="0.35"/>
+  <circle cx="83" cy="48" r="1.8" fill="#7F77DD" opacity="0.35"/>
+  <circle cx="125" cy="80" r="3" fill="#7F77DD" opacity="0.35"/>
+  <circle cx="121" cy="73" r="1.8" fill="#7F77DD" opacity="0.35"/>
+  <circle cx="130" cy="73" r="1.8" fill="#7F77DD" opacity="0.35"/>
+  <!-- Highlight -->
+  <ellipse cx="78" cy="40" rx="14" ry="20" fill="#FFFFFF" opacity="0.45"/>
+  <!-- Ropes from balloon to basket -->
+  <line x1="55" y1="125" x2="48" y2="155" stroke="#7F77DD" stroke-width="1.8"/>
+  <line x1="80" y1="132" x2="78" y2="155" stroke="#7F77DD" stroke-width="1.8"/>
+  <line x1="120" y1="132" x2="122" y2="155" stroke="#7F77DD" stroke-width="1.8"/>
+  <line x1="145" y1="125" x2="152" y2="155" stroke="#7F77DD" stroke-width="1.8"/>
+  <!-- Cushion-basket (cat-bed shape with plush edge) -->
+  <ellipse cx="100" cy="170" rx="56" ry="14" fill="#AFA9EC" stroke="#3C3489" stroke-width="2"/>
+  <ellipse cx="100" cy="158" rx="56" ry="9" fill="#CECBF6" stroke="#3C3489" stroke-width="2"/>
+  <!-- Plush stitch lines -->
+  <line x1="60" y1="170" x2="65" y2="178" stroke="#3C3489" stroke-width="1" opacity="0.6"/>
+  <line x1="80" y1="172" x2="85" y2="180" stroke="#3C3489" stroke-width="1" opacity="0.6"/>
+  <line x1="115" y1="180" x2="120" y2="172" stroke="#3C3489" stroke-width="1" opacity="0.6"/>
+  <line x1="135" y1="178" x2="140" y2="170" stroke="#3C3489" stroke-width="1" opacity="0.6"/>
+  <!-- Lavender flame heating -->
+  <path d="M92 145 Q100 132 108 145 Q104 152 100 152 Q96 152 92 145 Z"
+        fill="#AFA9EC" stroke="#7F77DD" stroke-width="1.5"/>
+  <!-- Sparkle stars trailing -->
+  <path d="M178 95 L180 90 L182 95 L186 96 L182 99 L180 104 L178 99 L174 96 Z"
+        fill="#AFA9EC" opacity="0.7"/>
+  <path d="M22 105 L24 100 L26 105 L30 106 L26 109 L24 114 L22 109 L18 106 Z"
+        fill="#AFA9EC" opacity="0.7"/>
+</svg>

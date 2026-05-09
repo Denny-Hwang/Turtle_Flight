@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Nutty vehicle: Acorn Helicopter -->
+  <!-- Leaf rotor (3 leaves) -->
+  <ellipse cx="100" cy="35" rx="60" ry="9" fill="#97C459" stroke="#3B6D11" stroke-width="1.8"/>
+  <line x1="45" y1="35" x2="155" y2="35" stroke="#3B6D11" stroke-width="1" opacity="0.6"/>
+  <line x1="60" y1="32" x2="60" y2="38" stroke="#3B6D11" stroke-width="1" opacity="0.6"/>
+  <line x1="140" y1="32" x2="140" y2="38" stroke="#3B6D11" stroke-width="1" opacity="0.6"/>
+  <!-- Stem (rotor axis) -->
+  <rect x="97" y="38" width="6" height="20" fill="#854F0B" stroke="#633806" stroke-width="1.5"/>
+  <!-- Acorn cap (cockpit rim, dark brown, ridged) -->
+  <path d="M48 70 Q100 40 152 70 L155 95 L45 95 Z"
+        fill="#854F0B" stroke="#633806" stroke-width="2.5"/>
+  <line x1="60" y1="78" x2="60" y2="92" stroke="#633806" stroke-width="1.2" opacity="0.7"/>
+  <line x1="80" y1="74" x2="80" y2="93" stroke="#633806" stroke-width="1.2" opacity="0.7"/>
+  <line x1="100" y1="72" x2="100" y2="94" stroke="#633806" stroke-width="1.2" opacity="0.7"/>
+  <line x1="120" y1="74" x2="120" y2="93" stroke="#633806" stroke-width="1.2" opacity="0.7"/>
+  <line x1="140" y1="78" x2="140" y2="92" stroke="#633806" stroke-width="1.2" opacity="0.7"/>
+  <!-- Acorn body (lower) -->
+  <path d="M45 95 Q40 165 100 175 Q160 165 155 95 Z"
+        fill="#FAC775" stroke="#633806" stroke-width="2.5"/>
+  <!-- Tiny windows -->
+  <circle cx="80" cy="125" r="9" fill="#85B7EB" stroke="#633806" stroke-width="1.5"/>
+  <circle cx="120" cy="125" r="9" fill="#85B7EB" stroke="#633806" stroke-width="1.5"/>
+  <circle cx="78" cy="122" r="2" fill="#FFFFFF"/>
+  <circle cx="118" cy="122" r="2" fill="#FFFFFF"/>
+  <!-- Sparkle trail -->
+  <circle cx="100" cy="188" r="3" fill="#FAC775" opacity="0.7"/>
+  <circle cx="115" cy="183" r="2" fill="#EF9F27" opacity="0.6"/>
+  <circle cx="85" cy="185" r="2" fill="#EF9F27" opacity="0.6"/>
+</svg>

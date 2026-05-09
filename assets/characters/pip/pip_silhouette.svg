@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Pip silhouette: compact penguin with mohawk + flippers up + propeller hint -->
+  <!-- Propeller blades (signature) -->
+  <ellipse cx="200" cy="48" rx="80" ry="9" fill="#0C447C"/>
+  <line x1="200" y1="48" x2="200" y2="78" stroke="#0C447C" stroke-width="6"/>
+  <!-- Body (oval) -->
+  <ellipse cx="200" cy="225" rx="92" ry="115" fill="#0C447C"/>
+  <!-- Mohawk tuft -->
+  <path d="M180 90 Q200 64 220 90 Z" fill="#0C447C"/>
+  <!-- Flippers (up, excited pose) -->
+  <ellipse cx="100" cy="195" rx="20" ry="50" fill="#0C447C" transform="rotate(-25 100 195)"/>
+  <ellipse cx="300" cy="195" rx="20" ry="50" fill="#0C447C" transform="rotate(25 300 195)"/>
+  <!-- Beak -->
+  <path d="M188 175 L212 175 L200 195 Z" fill="#0C447C"/>
+  <!-- Feet -->
+  <ellipse cx="170" cy="345" rx="22" ry="10" fill="#0C447C"/>
+  <ellipse cx="230" cy="345" rx="22" ry="10" fill="#0C447C"/>
+</svg>

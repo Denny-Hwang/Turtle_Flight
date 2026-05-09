@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Nutty silhouette: round body with asymmetric cheeks + tiny ears -->
+  <!-- Body (potato-round) -->
+  <circle cx="200" cy="220" r="135" fill="#633806"/>
+  <!-- Asymmetric cheeks (right bigger than left, signature) -->
+  <ellipse cx="115" cy="240" rx="32" ry="38" fill="#633806"/>
+  <ellipse cx="285" cy="245" rx="42" ry="48" fill="#633806"/>
+  <!-- Ears (small) -->
+  <circle cx="155" cy="105" r="22" fill="#633806"/>
+  <circle cx="245" cy="105" r="22" fill="#633806"/>
+  <!-- Tiny tail (round fluffball) -->
+  <circle cx="335" cy="305" r="14" fill="#633806"/>
+</svg>

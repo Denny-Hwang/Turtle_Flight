@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Bounce vehicle: Lily Pad Glider (oversized lily pad + lotus headlight) -->
+  <!-- Lily pad (curled edges, V-notch) -->
+  <path d="M100 65
+           Q175 70 178 110
+           Q175 145 130 158
+           Q115 156 110 145
+           L100 130
+           L90 145
+           Q85 156 70 158
+           Q25 145 22 110
+           Q25 70 100 65 Z"
+        fill="#97C459" stroke="#27500A" stroke-width="2.5"/>
+  <!-- Veins -->
+  <line x1="100" y1="80" x2="100" y2="130" stroke="#639922" stroke-width="2" opacity="0.6"/>
+  <line x1="100" y1="100" x2="60" y2="110" stroke="#639922" stroke-width="1.5" opacity="0.6"/>
+  <line x1="100" y1="100" x2="140" y2="110" stroke="#639922" stroke-width="1.5" opacity="0.6"/>
+  <line x1="100" y1="115" x2="55" y2="135" stroke="#639922" stroke-width="1.5" opacity="0.5"/>
+  <line x1="100" y1="115" x2="145" y2="135" stroke="#639922" stroke-width="1.5" opacity="0.5"/>
+  <!-- Glow on veins -->
+  <line x1="100" y1="80" x2="100" y2="130" stroke="#C0DD97" stroke-width="0.8" opacity="0.9"/>
+  <!-- Lotus flower headlight (front) -->
+  <ellipse cx="100" cy="50" rx="22" ry="14" fill="#F5C4B3" stroke="#27500A" stroke-width="1.8"/>
+  <ellipse cx="100" cy="48" rx="14" ry="9" fill="#ED93B1" stroke="#27500A" stroke-width="1.5"/>
+  <circle cx="100" cy="48" r="5" fill="#EF9F27"/>
+  <circle cx="98" cy="46" r="1.5" fill="#FFFFFF"/>
+  <!-- Petal hints -->
+  <path d="M82 48 Q72 38 80 30 Q90 36 88 46 Z" fill="#F5C4B3" stroke="#27500A" stroke-width="1.5"/>
+  <path d="M118 48 Q128 38 120 30 Q110 36 112 46 Z" fill="#F5C4B3" stroke="#27500A" stroke-width="1.5"/>
+  <!-- Water droplet trail -->
+  <ellipse cx="60" cy="178" rx="4" ry="6" fill="#85B7EB" opacity="0.65"/>
+  <ellipse cx="140" cy="178" rx="4" ry="6" fill="#85B7EB" opacity="0.65"/>
+  <ellipse cx="100" cy="185" rx="3" ry="5" fill="#85B7EB" opacity="0.5"/>
+</svg>
