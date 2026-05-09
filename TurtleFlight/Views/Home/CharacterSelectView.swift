@@ -15,43 +15,43 @@ struct CharacterSelectView: View {
             themeBackground
                 .ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            VStack(spacing: Theme.Spacing.l) {
                 // Header
                 HStack {
                     Button(action: { dismiss() }) {
                         Image(systemName: "chevron.left")
                             .font(.title2)
-                            .foregroundColor(.white)
+                            .foregroundColor(Theme.Color.textOnDark)
                     }
                     Spacer()
                     Text(L10n.t("characterSelect.title"))
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .font(Theme.Typography.titleSmall)
+                        .foregroundColor(Theme.Color.textOnDark)
                     Spacer()
                     Button(action: startFlight) {
                         Text(L10n.t("characterSelect.fly"))
-                            .font(.system(size: 16, weight: .heavy))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
+                            .font(Theme.Typography.button)
+                            .foregroundColor(Theme.Color.textOnDark)
+                            .padding(.horizontal, Theme.Spacing.xl - 4)
+                            .padding(.vertical, Theme.Spacing.s + 2)
                             .background(
-                                RoundedRectangle(cornerRadius: 12)
+                                RoundedRectangle(cornerRadius: Theme.Radius.m)
                                     .fill(themeAccentColor)
                                     .shadow(color: themeAccentColor.opacity(0.5), radius: 6, y: 3)
                             )
                     }
                 }
                 .padding(.horizontal)
-                .padding(.top, 8)
+                .padding(.top, Theme.Spacing.s)
 
                 // ── MAP THEME SELECTION ──
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.s) {
                     Label(L10n.t("characterSelect.section.map"), systemImage: "map.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.85))
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textOnDark.opacity(0.85))
                         .padding(.horizontal)
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: Theme.Spacing.m - 2) {
                         ForEach(MapTheme.allCases, id: \.self) { theme in
                             MapThemeCard(
                                 theme: theme,
@@ -66,23 +66,23 @@ struct CharacterSelectView: View {
                     .padding(.horizontal)
                 }
 
-                Divider().background(Color.white.opacity(0.3))
+                Divider().background(Theme.Color.textOnDark.opacity(0.3))
 
                 // ── CHARACTER PREVIEW ──
-                VStack(spacing: 6) {
+                VStack(spacing: Theme.Spacing.xs + 2) {
                     CharacterPreviewView(character: characterVM.selectedCharacter)
                         .frame(height: 160)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.l))
                         .shadow(radius: 8)
 
                     Text("\(characterVM.currentConfig.emoji)  \(characterVM.currentConfig.name)")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .font(Theme.Typography.title)
+                        .foregroundColor(Theme.Color.textOnDark)
                 }
 
                 // ── CHARACTER GRID ──
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: Theme.Spacing.m - 2) {
                         ForEach(CharacterType.allCases, id: \.self) { character in
                             CharacterTile(
                                 character: character,
@@ -96,13 +96,13 @@ struct CharacterSelectView: View {
                 }
 
                 // ── VEHICLE SELECTION ──
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs + 2) {
                     Label(L10n.t("characterSelect.section.vehicle"), systemImage: "wind")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.85))
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textOnDark.opacity(0.85))
                         .padding(.horizontal)
 
-                    HStack(spacing: 10) {
+                    HStack(spacing: Theme.Spacing.m - 2) {
                         ForEach(characterVM.availableVehicles, id: \.self) { vehicle in
                             VehicleTile(
                                 vehicle: vehicle,
@@ -117,8 +117,8 @@ struct CharacterSelectView: View {
 
                 // Description
                 Text(characterVM.currentConfig.description)
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundColor(.white.opacity(0.7))
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textOnDarkMuted)
                     .italic()
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
@@ -142,31 +142,15 @@ struct CharacterSelectView: View {
     // MARK: - Helpers
 
     private var themeBackground: some View {
-        switch characterVM.selectedMapTheme {
-        case .sky:
-            return LinearGradient(
-                colors: [Color(hex: 0x87CEEB), Color(hex: 0xFFFDE7)],
-                startPoint: .top, endPoint: .bottom
-            ).eraseToAnyView()
-        case .space:
-            return LinearGradient(
-                colors: [Color(hex: 0x0D0025), Color(hex: 0x2A0A4A)],
-                startPoint: .top, endPoint: .bottom
-            ).eraseToAnyView()
-        case .ocean:
-            return LinearGradient(
-                colors: [Color(hex: 0x006994), Color(hex: 0x40E0D0)],
-                startPoint: .top, endPoint: .bottom
-            ).eraseToAnyView()
-        }
+        LinearGradient(
+            colors: characterVM.selectedMapTheme.uiGradient,
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     private var themeAccentColor: Color {
-        switch characterVM.selectedMapTheme {
-        case .sky:   return Color(hex: Constants.Colors.easyGreen)
-        case .space: return Color(hex: 0x7B2FBE)
-        case .ocean: return Color(hex: 0x0077B6)
-        }
+        characterVM.selectedMapTheme.uiAccent
     }
 
     private func startFlight() {
@@ -184,41 +168,33 @@ struct MapThemeCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: Theme.Spacing.xs + 2) {
                 Text(theme.emoji)
                     .font(.system(size: 28))
                 Text(theme.displayName)
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.75))
+                    .font(Theme.Typography.labelSmall)
+                    .foregroundColor(isSelected ? Theme.Color.textOnDark : Theme.Color.textOnDark.opacity(0.75))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                 Text(theme.subtitle)
-                    .font(.system(size: 9, weight: .medium))
-                    .foregroundColor(isSelected ? .white.opacity(0.9) : .white.opacity(0.5))
+                    .font(Theme.Typography.microLabel)
+                    .foregroundColor(isSelected ? Theme.Color.textOnDark.opacity(0.9) : Theme.Color.textOnDarkFaint)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, Theme.Spacing.m)
             .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? cardAccent.opacity(0.85) : Color.white.opacity(0.12))
+                RoundedRectangle(cornerRadius: Theme.Radius.l - 2)
+                    .fill(isSelected ? theme.uiCardAccent.opacity(0.85) : Theme.Color.textOnDark.opacity(0.12))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(isSelected ? Color.white.opacity(0.8) : Color.clear, lineWidth: 2)
+                        RoundedRectangle(cornerRadius: Theme.Radius.l - 2)
+                            .stroke(isSelected ? Theme.Color.textOnDark.opacity(0.8) : Color.clear, lineWidth: 2)
                     )
-                    .shadow(color: isSelected ? cardAccent.opacity(0.5) : .clear, radius: 8, y: 4)
+                    .shadow(color: isSelected ? theme.uiCardAccent.opacity(0.5) : .clear, radius: 8, y: 4)
             )
         }
         .scaleEffect(isSelected ? 1.05 : 1.0)
-    }
-
-    private var cardAccent: Color {
-        switch theme {
-        case .sky:   return Color(hex: 0x29B6F6)
-        case .space: return Color(hex: 0x7B2FBE)
-        case .ocean: return Color(hex: 0x0077B6)
-        }
     }
 }
 
@@ -238,7 +214,7 @@ struct CharacterPreviewView: View {
             .resizable()
             .interpolation(.high)
             .aspectRatio(contentMode: .fit)
-            .padding(8)
+            .padding(Theme.Spacing.s)
             .offset(y: bob)
             .rotationEffect(.degrees(lean))
             .accessibilityLabel(character.config.name)
@@ -268,22 +244,22 @@ struct CharacterTile: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 2) {
+            VStack(spacing: Theme.Spacing.xxs) {
                 Image("\(character.assetPrefix)_icon")
                     .resizable()
                     .interpolation(.high)
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 44, height: 44)
                 Text(character.config.name)
-                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .font(Theme.Typography.tileLabel)
             }
             .frame(width: 64, height: 72)
             .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isSelected ? Color.white : Color.white.opacity(0.2))
+                RoundedRectangle(cornerRadius: Theme.Radius.l - 2)
+                    .fill(isSelected ? Theme.Color.surfaceSelected : Theme.Color.surfaceMuted)
                     .shadow(radius: isSelected ? 5 : 1)
             )
-            .foregroundColor(isSelected ? Color(hex: Constants.Colors.panelDark) : .white)
+            .foregroundColor(isSelected ? Theme.Color.textPrimary : Theme.Color.textOnDark)
             .scaleEffect(isSelected ? 1.08 : 1.0)
         }
         .animation(.spring(response: 0.25), value: isSelected)
@@ -297,11 +273,11 @@ struct VehicleTile: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: Theme.Spacing.xs) {
                 vehicleArtwork
                     .frame(height: 40)
                 Text(vehicle.displayName)
-                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .font(Theme.Typography.tileLabel)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                 Text(vehicle.isShared ? L10n.t("vehicle.tag.shared") : L10n.t("vehicle.tag.unique"))
@@ -309,13 +285,13 @@ struct VehicleTile: View {
                     .opacity(0.7)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, Theme.Spacing.s + 2)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color(hex: Constants.Colors.boostOrange) : Color.white.opacity(0.2))
+                RoundedRectangle(cornerRadius: Theme.Radius.m)
+                    .fill(isSelected ? Theme.Color.boostOrange : Theme.Color.surfaceMuted)
                     .shadow(radius: isSelected ? 4 : 1)
             )
-            .foregroundColor(.white)
+            .foregroundColor(Theme.Color.textOnDark)
         }
     }
 
