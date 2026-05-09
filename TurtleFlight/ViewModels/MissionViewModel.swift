@@ -8,6 +8,12 @@ final class MissionViewModel: ObservableObject {
     @Published var currentStageIndex: Int = 0
     @Published var missionState: MissionDisplayState = .selecting
     @Published var lastResult: StageResult?
+    /// Snapshot of the stage's best score *before* `lastResult` was merged
+    /// into `progress`. StageResultView's "New Best!" / "First Clear!"
+    /// badge logic compares against this; reading from
+    /// `progress.stageResults` after the merge would always return the
+    /// just-completed result and the badge would never fire.
+    @Published var priorBestForLastResult: StageResult?
     @Published var progress: PlayerProgress = .defaultProgress
     /// Set when persistence fails so the UI can surface a non-blocking warning.
     @Published var lastPersistenceError: String?
@@ -42,11 +48,31 @@ final class MissionViewModel: ObservableObject {
         currentStageIndex = index
     }
 
+    /// True iff there's a stage after the current one. The MissionHUD uses
+    /// this to decide whether to render the "Next" button on the
+    /// stage-clear overlay.
+    var hasNextStage: Bool {
+        currentStageIndex + 1 < stages.count
+    }
+
+    /// Advance to the next stage if one exists. Returns true on success so
+    /// the caller can decide whether to fall through to a "campaign clear"
+    /// flow vs. spinning up the next mission.
+    @discardableResult
+    func advanceToNextStage() -> Bool {
+        guard hasNextStage else { return false }
+        currentStageIndex += 1
+        return true
+    }
+
     func startMission() {
         missionState = .playing
     }
 
     func completeMission(result: StageResult) {
+        // Capture prior best BEFORE merging the new result — drives the
+        // "New Best!" badge in StageResultView.
+        priorBestForLastResult = progress.stageResults[result.stageIndex]
         lastResult = result
         progress.updateStageResult(result)
         missionState = .completed

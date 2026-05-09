@@ -24,9 +24,24 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrate";
+"flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Exit";
 "flight.control.boost"     = "Boost";
 "flight.control.item"      = "Item";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "Paused";
+"flight.pause.subtitle"       = "Take a breath. Resume whenever you're ready.";
+"flight.pause.resume"         = "Resume";
+"flight.pause.resume.hint"    = "Double-tap to keep flying";
+"flight.pause.restart"        = "Restart";
+"flight.pause.restart.hint"   = "Double-tap to start the flight over from the beginning";
+"flight.pause.quit"           = "Quit";
+"flight.pause.quit.hint"      = "Double-tap to end the flight and return home";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "Pause";
+"a11y.pause.hint"             = "Double-tap to pause the flight";
 
 // MARK: - Mission HUD
 "mission.stage.titleFormat"   = "Stage %lld: %@";
@@ -63,6 +78,42 @@
 "characterSelect.fly"              = "FLY!";
 "characterSelect.section.map"      = "Select Map";
 "characterSelect.section.vehicle"  = "Vehicle";
+
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "%lld stars earned";
+"mission.result.starsCollectedFormat" = "Stars %lld of %lld";
+"mission.result.firstClear"        = "First Clear!";
+"mission.result.newBest"           = "New Best!";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "Flight Complete";
+"freeFlight.result.subtitle"       = "Here's your run summary.";
+"freeFlight.result.flightTime"     = "Flight time";
+"freeFlight.result.stars"          = "Stars collected";
+"freeFlight.result.again"          = "Fly Again";
+
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "Pick a Stage";
+"stageSelect.progress.format"        = "%lld / %lld stars";
+"stageSelect.objective.format"       = "★★★ goal: %@";
+"stageSelect.locked.body"            = "Clear the previous stage to unlock this one.";
+"stageSelect.card.hint.unlocked"     = "Double-tap to choose this stage";
+"stageSelect.card.hint.locked"       = "Clear the previous stage first";
+"stageSelect.card.label.unlocked"    = "Stage %lld, %@, %lld stars earned";
+"stageSelect.card.label.locked"      = "Stage %lld, locked";
+
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "Skip";
+"onboarding.next"              = "Next";
+"onboarding.start"             = "Get Started";
+"onboarding.cta.hint"          = "Double-tap to advance to the next step";
+"onboarding.page.label"        = "Page %lld of %lld";
+"onboarding.welcome.title"     = "Welcome to Turtle Flight";
+"onboarding.welcome.body"      = "A gyro flight adventure for animals that can't fly. Pick a friend and take to the skies together.";
+"onboarding.calibrate.title"   = "Hold your device flat";
+"onboarding.calibrate.body"    = "Hold the device in a comfortable pose, then tap Calibrate to make that your neutral. You can recalibrate anytime.";
+"onboarding.tilt.title"        = "Tilt to steer";
+"onboarding.tilt.body"         = "Tilt left/right to turn, lift or lower the top to climb or dive. Small smooth motions feel best.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Even a slow turtle can fly!";
