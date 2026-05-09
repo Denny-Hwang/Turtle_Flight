@@ -33,8 +33,6 @@
 	<dict>
 		<key>UIColorName</key>
 		<string>LaunchScreenBackground</string>
-		<key>UIImageName</key>
-		<string></string>
 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
