@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import UIKit
 
 enum MapTheme: String, CaseIterable, Codable {
@@ -80,6 +81,41 @@ enum MapTheme: String, CaseIterable, Codable {
         case .sky:   return 800
         case .space: return 400
         case .ocean: return 600
+        }
+    }
+
+    // MARK: - SwiftUI palette
+    //
+    // Used by CharacterSelectView for the screen background gradient and the
+    // theme-specific accent (FLY! button + selected tile background). Pulled
+    // into the model so adding a new map is a single-file change instead of a
+    // shotgun edit across views.
+
+    /// Two-stop background gradient for the selection screen.
+    var uiGradient: [Color] {
+        switch self {
+        case .sky:   return [Color(hex: 0x87CEEB), Color(hex: 0xFFFDE7)]
+        case .space: return [Color(hex: 0x0D0025), Color(hex: 0x2A0A4A)]
+        case .ocean: return [Color(hex: 0x006994), Color(hex: 0x40E0D0)]
+        }
+    }
+
+    /// Primary accent (FLY! button, selected map-theme card fill).
+    var uiAccent: Color {
+        switch self {
+        case .sky:   return Color(hex: Constants.Colors.easyGreen)
+        case .space: return Color(hex: 0x7B2FBE)
+        case .ocean: return Color(hex: 0x0077B6)
+        }
+    }
+
+    /// Distinct hue for the map card itself (so the card and the FLY! button
+    /// don't look identical on the sky theme).
+    var uiCardAccent: Color {
+        switch self {
+        case .sky:   return Color(hex: 0x29B6F6)
+        case .space: return Color(hex: 0x7B2FBE)
+        case .ocean: return Color(hex: 0x0077B6)
         }
     }
 
