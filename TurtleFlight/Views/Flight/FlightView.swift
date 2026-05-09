@@ -49,24 +49,57 @@ struct FlightView: View {
                 onBoost:     { flightVM.activateBoost() },
                 onFire:      { flightVM.fireItem() },
                 onCalibrate: { flightVM.calibrateGyro() },
+                onPause:     { flightVM.pauseFlight() },
                 onExit: {
                     flightVM.stopFlight()
                     dismiss()
                 }
             )
+
+            // Pause modal — driven by flightVM.isPaused so both the
+            // explicit Pause button and the scene-phase auto-pause
+            // surface the same UI.
+            if flightVM.isPaused {
+                PauseView(
+                    onResume:  { flightVM.resumeFlight() },
+                    onRestart: {
+                        flightVM.restartFlight()
+                        // For Step Goal, also restart the current stage's
+                        // rings + timer so retry-from-pause matches the
+                        // result-overlay Retry semantics.
+                        if flightMode == .stepGoal,
+                           let stage = missionVM.currentStage {
+                            flightVM.missionEngine?.startStage(stage)
+                            missionVM.startMission()
+                        }
+                    },
+                    onQuit: {
+                        flightVM.stopFlight()
+                        dismiss()
+                    }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            }
         }
+        .animation(.easeInOut(duration: 0.18), value: flightVM.isPaused)
         .onAppear { setupScene() }
         .onDisappear { flightVM.stopFlight() }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
-                flightVM.gyroController.stop()
+                // Auto-pause when iOS takes the foreground (call, Siri,
+                // app switcher). The user has to explicitly Resume on
+                // return — no surprise mid-flight on reactivation.
+                if flightVM.isFlying {
+                    flightVM.pauseFlight()
+                }
                 lastUpdateTime = 0
             case .active:
-                if flightVM.isFlying {
-                    flightVM.gyroController.start()
-                    flightVM.calibrateGyro()
-                }
+                // Stay paused — user must tap Resume. If the user never
+                // paused (e.g. control center swipe-up), we still wait for
+                // their explicit Resume because pauseFlight() above
+                // already flipped isPaused.
+                break
             @unknown default:
                 break
             }
