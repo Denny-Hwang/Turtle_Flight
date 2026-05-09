@@ -24,9 +24,21 @@ final class FlightViewModel: ObservableObject {
     var missionEngine: MissionEngine?
 
     // MARK: - Scene Nodes
+    /// In-flight billboard: a single SCNPlane textured with the character's
+    /// expression atlas (see `CharacterRegistry.buildInflightBillboard`).
+    /// Replaces the previous (charNode + vehNode) primitive pair.
     var characterNode: SCNNode?
+    /// Retained `nil` for the in-flight scene because the vehicle is baked
+    /// into the atlas. Selection-screen vehicle previews use a separate path
+    /// (`Image("…_vehicle_only")`). Kept as a stored property for backwards
+    /// compatibility with code paths that probed it; new code should not
+    /// rely on it being non-nil during flight.
     var vehicleNode: SCNNode?
     var cameraNode: SCNNode?
+
+    /// Last-applied expression — used to skip redundant per-frame UV
+    /// transitions when the boost/idle state hasn't actually flipped.
+    private var currentExpression: CharacterExpression = .default
 
     // MARK: - Character Info
     var currentCharacter: CharacterType = .turtle
@@ -92,21 +104,19 @@ final class FlightViewModel: ObservableObject {
         currentVehicle = vehicle
         currentMapTheme = theme
 
-        // Build character and vehicle nodes
+        // Build the atlas-textured billboard. Vehicle is baked into the
+        // flying-pose art, so a single billboard subsumes both per spec
+        // (docs/CHARACTER_DESIGN_PROMPT.md §Technical Notes / 2).
         let registry = CharacterRegistry.shared
-        let charNode = registry.buildCharacterNode(for: character)
-        let vehNode = registry.buildVehicleNode(for: vehicle)
-
-        // Position vehicle relative to character
-        vehNode.position = SCNVector3(0, -0.3, 0)
-        charNode.addChildNode(vehNode)
+        let charNode = registry.buildInflightBillboard(for: character)
 
         // Place in scene
         charNode.position = SCNVector3(0, 500, 0)
         scene.rootNode.addChildNode(charNode)
 
         self.characterNode = charNode
-        self.vehicleNode = vehNode
+        self.vehicleNode = nil
+        self.currentExpression = .default
 
         // Setup camera
         let camera = SCNNode()
@@ -167,23 +177,22 @@ final class FlightViewModel: ObservableObject {
         flightTime = flightState.flightTime
         self.isBoosting = flightState.isBoosting
 
-        // Update character position and rotation
+        // Update character position. Rotation is intentionally NOT applied
+        // here: the billboard plane always faces the camera, so eulerAngles
+        // on it would be a no-op. Bank/pitch feedback comes through the
+        // chase-camera framing instead.
         characterNode?.position = flightState.position
-        characterNode?.eulerAngles = flightState.rotation
 
-        // Animate character + vehicle
-        if let charNode = characterNode, let vehNode = vehicleNode {
-            characterAnimator.applyFlightPose(
-                to: charNode,
-                vehicleNode: vehNode,
-                rollInput: gyroController.rollInput,
-                pitchInput: gyroController.pitchInput,
-                speed: speed,
-                isBoosting: flightState.isBoosting,
-                character: currentCharacter,
-                vehicle: currentVehicle,
-                deltaTime: deltaTime
-            )
+        // Drive the atlas expression cell from flight state. Boosting →
+        // wind-streaked "speed" pose; otherwise the default standing/sitting
+        // pose. Future PRs add `joy` (stage clear) and `scared` (proximity
+        // collision) wiring.
+        if let charNode = characterNode {
+            let target: CharacterExpression = flightState.isBoosting ? .speed : .default
+            if target != currentExpression {
+                characterAnimator.setExpression(target, on: charNode)
+                currentExpression = target
+            }
         }
 
         // Update camera (3rd person follow)
