@@ -46,21 +46,21 @@
 "stage.4.name" = "Sky Race";
 
 // MARK: - Vehicle display names
-"vehicle.shellJet"      = "Shell Jet";
-"vehicle.bellyGlider"   = "Belly Glider";
-"vehicle.hamsterCopter" = "Hamster Ball Copter";
-"vehicle.magicBroom"    = "Magic Broom";
-"vehicle.balloonBody"   = "Balloon Body";
-"vehicle.earCopter"     = "Ear Copter";
-"vehicle.cloudSurf"     = "Cloud Surf";
+"vehicle.shellJet"        = "Shell Jet";
+"vehicle.bellyGlider"     = "Belly Glider";
+"vehicle.hamsterCopter"   = "Hamster Ball Copter";
+"vehicle.cushionBalloon"  = "Cushion Hot Air Balloon";
+"vehicle.balloonBody"     = "Balloon Body";
+"vehicle.carrotJet"       = "Carrot Jet";
+"vehicle.cloudSurf"       = "Cloud Surf";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Even a slow turtle can fly!";
 "character.penguin.description" = "Glides through the sky on his belly!";
 "character.hamster.description" = "A hamster ball takes to the skies!";
-"character.cat.description"     = "Soars on a magic broomstick!";
+"character.cat.description"     = "Drifts elegantly in a cushion balloon!";
 "character.frog.description"    = "Floats up like a balloon!";
-"character.bunny.description"   = "Spins her ears like a propeller!";
+"character.bunny.description"   = "Zooms skyward in a tiny carrot jet!";
 
 // MARK: - Accessibility (VoiceOver)
 "a11y.boost.label"     = "Boost";

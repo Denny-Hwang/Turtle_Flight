@@ -49,10 +49,10 @@ enum CharacterType: String, CaseIterable, Codable {
                 name: "Mochi",
                 emoji: "🐱",
                 modelName: "mochi_cat",
-                defaultVehicle: .magicBroom,
-                availableVehicles: [.magicBroom, .cloudSurf],
+                defaultVehicle: .cushionBalloon,
+                availableVehicles: [.cushionBalloon, .cloudSurf],
                 description: L10n.t("character.cat.description"),
-                personality: "도도하지만 무서움 많은. 마녀 모자"
+                personality: "도도한 츤데레. 별 표시 + 방울 목걸이"
             )
         case .frog:
             return CharacterConfig(
@@ -71,10 +71,10 @@ enum CharacterType: String, CaseIterable, Codable {
                 name: "Hoppy",
                 emoji: "🐰",
                 modelName: "hoppy_bunny",
-                defaultVehicle: .earCopter,
-                availableVehicles: [.earCopter, .cloudSurf],
+                defaultVehicle: .carrotJet,
+                availableVehicles: [.carrotJet, .cloudSurf],
                 description: L10n.t("character.bunny.description"),
-                personality: "활발하고 용감한. 빨간 비행 고글+스카프"
+                personality: "수줍지만 모험심 많은. 한쪽 귀에 꽃, 한쪽 귀가 살짝 처짐"
             )
         }
     }
