@@ -82,6 +82,19 @@
 "characterSelect.section.map"      = "맵 선택";
 "characterSelect.section.vehicle"  = "탈것";
 
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "★ %lld 개 획득";
+"mission.result.starsCollectedFormat" = "별 %lld / %lld";
+"mission.result.firstClear"        = "첫 클리어!";
+"mission.result.newBest"           = "신기록!";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "비행 종료";
+"freeFlight.result.subtitle"       = "오늘의 비행 기록이에요.";
+"freeFlight.result.flightTime"     = "비행 시간";
+"freeFlight.result.stars"          = "별 수집";
+"freeFlight.result.again"          = "다시 비행";
+
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "스테이지 선택";
 "stageSelect.progress.format"        = "%lld / %lld 별";
