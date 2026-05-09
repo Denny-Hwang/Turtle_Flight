@@ -64,6 +64,19 @@
 "characterSelect.section.map"      = "Select Map";
 "characterSelect.section.vehicle"  = "Vehicle";
 
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "Skip";
+"onboarding.next"              = "Next";
+"onboarding.start"             = "Get Started";
+"onboarding.cta.hint"          = "Double-tap to advance to the next step";
+"onboarding.page.label"        = "Page %lld of %lld";
+"onboarding.welcome.title"     = "Welcome to Turtle Flight";
+"onboarding.welcome.body"      = "A gyro flight adventure for animals that can't fly. Pick a friend and take to the skies together.";
+"onboarding.calibrate.title"   = "Hold your device flat";
+"onboarding.calibrate.body"    = "Hold the device in a comfortable pose, then tap Calibrate to make that your neutral. You can recalibrate anytime.";
+"onboarding.tilt.title"        = "Tilt to steer";
+"onboarding.tilt.body"         = "Tilt left/right to turn, lift or lower the top to climb or dive. Small smooth motions feel best.";
+
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Even a slow turtle can fly!";
 "character.penguin.description" = "Glides through the sky on his belly!";

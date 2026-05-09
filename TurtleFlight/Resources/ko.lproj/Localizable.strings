@@ -67,6 +67,19 @@
 "characterSelect.section.map"      = "맵 선택";
 "characterSelect.section.vehicle"  = "탈것";
 
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "건너뛰기";
+"onboarding.next"              = "다음";
+"onboarding.start"             = "시작하기";
+"onboarding.cta.hint"          = "두 번 탭하여 다음 단계로 이동합니다";
+"onboarding.page.label"        = "%lld / %lld 페이지";
+"onboarding.welcome.title"     = "Turtle Flight에 오신 걸 환영해요";
+"onboarding.welcome.body"      = "날 수 없는 동물들이 하늘을 누비는 자이로 비행 모험. 친구를 골라 함께 떠나봐요.";
+"onboarding.calibrate.title"   = "기기를 평평하게 잡아주세요";
+"onboarding.calibrate.body"    = "편안한 자세로 기기를 잡고 보정 버튼을 누르면 그 자세가 중립이 됩니다. 언제든 다시 보정할 수 있어요.";
+"onboarding.tilt.title"        = "기울여서 조종해요";
+"onboarding.tilt.body"         = "왼쪽/오른쪽으로 기울이면 좌우 회전, 위쪽을 들거나 내리면 상승/하강이에요. 부드럽고 짧게 움직여요.";
+
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";
 "character.penguin.description" = "배로 미끄러지며 하늘을 활공!";

@@ -7,6 +7,11 @@ struct HomeView: View {
 
     @State private var selectedMode: FlightMode?
     @State private var showCharacterSelect = false
+    /// Drives the first-run onboarding fullScreenCover. Initialised lazily
+    /// from persisted state in `.onAppear` so the cover lifecycle plays
+    /// nicely with NavigationStack (true → cover dismisses cleanly when
+    /// flipped back to false).
+    @State private var showOnboarding = false
 
     var body: some View {
         NavigationStack {
@@ -119,10 +124,17 @@ struct HomeView: View {
                 )
             }
         }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(onFinish: { showOnboarding = false })
+        }
         .onAppear {
             characterVM.load()
             flightVM.load()
             missionVM.load()
+            // Show onboarding on first launch only.
+            if !OnboardingState.load().completed {
+                showOnboarding = true
+            }
         }
     }
 }
