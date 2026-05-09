@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Turbo silhouette: solid outline color, recognizable from shape alone -->
+  <!-- Shell dome behind body -->
+  <ellipse cx="200" cy="285" rx="100" ry="68" fill="#085041"/>
+  <!-- Side rocket boosters -->
+  <rect x="100" y="265" width="38" height="62" rx="13" fill="#085041"/>
+  <rect x="262" y="265" width="38" height="62" rx="13" fill="#085041"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="295" rx="78" ry="52" fill="#085041"/>
+  <!-- Arms -->
+  <ellipse cx="115" cy="290" rx="22" ry="13" fill="#085041"/>
+  <ellipse cx="285" cy="290" rx="22" ry="13" fill="#085041"/>
+  <!-- Scarf trailing left (signature element preserved in silhouette) -->
+  <path d="M160 260 Q90 263 35 290 Q55 305 110 298 Q145 292 160 282 Z" fill="#085041"/>
+  <!-- Head -->
+  <circle cx="200" cy="170" r="112" fill="#085041"/>
+  <!-- Goggle hint on forehead -->
+  <ellipse cx="165" cy="115" rx="18" ry="12" fill="#085041"/>
+  <ellipse cx="235" cy="115" rx="18" ry="12" fill="#085041"/>
+  <line x1="183" y1="115" x2="217" y2="115" stroke="#085041" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Hoppy vehicle: Carrot Jet (carrot body + leafy fins + cockpit window + heart trail) -->
+  <!-- Leafy tail fins (multi-layered) -->
+  <path d="M155 60 Q175 35 165 75 Q160 80 155 78 Z"
+        fill="#97C459" stroke="#27500A" stroke-width="1.8"/>
+  <path d="M168 80 Q190 70 182 100 Q175 105 170 100 Z"
+        fill="#97C459" stroke="#27500A" stroke-width="1.8"/>
+  <path d="M165 105 Q188 110 180 130 Q170 132 165 125 Z"
+        fill="#639922" stroke="#27500A" stroke-width="1.8"/>
+  <!-- Carrot body (orange-to-green gradient simulated with two shapes) -->
+  <path d="M165 90
+           Q170 100 165 130
+           L40 152
+           Q15 142 22 120
+           L165 90 Z"
+        fill="#EF9F27" stroke="#712B13" stroke-width="2.5"/>
+  <!-- Darker tip/nose at front -->
+  <path d="M22 120
+           L15 122
+           L8 130
+           L18 138
+           L22 142
+           Z"
+        fill="#BA7517" stroke="#712B13" stroke-width="2"/>
+  <!-- Carrot ring grooves -->
+  <path d="M55 122 Q68 125 65 138" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <path d="M85 118 Q98 121 95 134" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <path d="M115 113 Q128 116 125 129" stroke="#BA7517" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <!-- Cockpit window -->
+  <ellipse cx="105" cy="115" rx="22" ry="13" fill="#FAC775" stroke="#712B13" stroke-width="2"/>
+  <line x1="92" y1="110" x2="100" y2="108" stroke="#FFFFFF" stroke-width="2" opacity="0.8" stroke-linecap="round"/>
+  <!-- Heart-shaped exhaust trail -->
+  <path d="M180 175
+           Q175 167 170 170
+           Q168 175 175 180
+           Q182 175 180 170
+           Q177 167 180 175 Z"
+        fill="#F5C4B3" opacity="0.85"/>
+  <path d="M155 185
+           Q151 179 147 181
+           Q146 185 151 188
+           Q156 185 155 181 Z"
+        fill="#F5C4B3" opacity="0.6"/>
+</svg>

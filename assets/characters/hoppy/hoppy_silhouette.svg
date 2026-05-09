@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Hoppy silhouette: tallest of all 6 (long ears) + asymmetric droopy ear -->
+  <!-- Left ear (upright) -->
+  <rect x="155" y="20" width="30" height="120" rx="15" fill="#712B13"/>
+  <!-- Right ear (droops) -->
+  <path d="M215 30 Q260 60 270 110 Q255 130 232 122 Q218 100 218 70 Z" fill="#712B13"/>
+  <!-- Flower behind left ear (signature) -->
+  <circle cx="138" cy="50" r="14" fill="#712B13"/>
+  <!-- Head -->
+  <circle cx="200" cy="180" r="92" fill="#712B13"/>
+  <!-- Fluffy cheek tufts -->
+  <circle cx="120" cy="200" r="22" fill="#712B13"/>
+  <circle cx="280" cy="200" r="22" fill="#712B13"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="285" rx="80" ry="65" fill="#712B13"/>
+  <!-- Paws clasped together (shy pose) -->
+  <ellipse cx="200" cy="335" rx="28" ry="16" fill="#712B13"/>
+  <!-- Cotton ball tail (right side) -->
+  <circle cx="280" cy="305" r="18" fill="#712B13"/>
+</svg>

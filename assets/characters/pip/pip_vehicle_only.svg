@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Pip vehicle: Propeller Backpack -->
+  <!-- Propeller blades — leaf/paddle shaped -->
+  <ellipse cx="100" cy="48" rx="68" ry="8" fill="#B4B2A9" stroke="#5F5E5A" stroke-width="1.5"/>
+  <ellipse cx="38" cy="48" rx="14" ry="6" fill="#85B7EB" opacity="0.6"/>
+  <ellipse cx="162" cy="48" rx="14" ry="6" fill="#85B7EB" opacity="0.6"/>
+  <!-- Center cap (brass) -->
+  <circle cx="100" cy="48" r="9" fill="#BA7517" stroke="#5F5E5A" stroke-width="1.5"/>
+  <circle cx="100" cy="48" r="3" fill="#FAC775"/>
+  <!-- Drive shaft to backpack -->
+  <rect x="96" y="50" width="8" height="35" fill="#888780" stroke="#5F5E5A" stroke-width="1.5"/>
+  <!-- Backpack body -->
+  <rect x="55" y="80" width="90" height="90" rx="14" fill="#378ADD" stroke="#0C447C" stroke-width="2.5"/>
+  <!-- Brass rivets -->
+  <circle cx="65" cy="92" r="3" fill="#BA7517"/>
+  <circle cx="135" cy="92" r="3" fill="#BA7517"/>
+  <circle cx="65" cy="158" r="3" fill="#BA7517"/>
+  <circle cx="135" cy="158" r="3" fill="#BA7517"/>
+  <!-- Front gauge / dial -->
+  <circle cx="100" cy="125" r="20" fill="#185FA5" stroke="#0C447C" stroke-width="2"/>
+  <circle cx="100" cy="125" r="14" fill="#FAC775"/>
+  <line x1="100" y1="125" x2="108" y2="115" stroke="#0C447C" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Chest straps -->
+  <path d="M50 95 Q40 130 50 165" stroke="#5F5E5A" stroke-width="3" fill="none"/>
+  <path d="M150 95 Q160 130 150 165" stroke="#5F5E5A" stroke-width="3" fill="none"/>
+  <!-- Exhaust sparkles trail -->
+  <circle cx="100" cy="180" r="4" fill="#85B7EB" opacity="0.7"/>
+  <circle cx="80" cy="190" r="3" fill="#85B7EB" opacity="0.5"/>
+  <circle cx="120" cy="188" r="3" fill="#85B7EB" opacity="0.5"/>
+</svg>

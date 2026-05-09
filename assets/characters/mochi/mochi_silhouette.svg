@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Mochi silhouette: elegant cat with pointed ears + S-curve tail -->
+  <!-- Tail (S-curve to right, signature flourish) -->
+  <path d="M280 320 Q335 320 345 280 Q340 235 305 235 Q280 240 275 265"
+        stroke="#3C3489" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="240" rx="90" ry="115" fill="#3C3489"/>
+  <!-- Head -->
+  <circle cx="200" cy="135" r="105" fill="#3C3489"/>
+  <!-- Pointed ears (signature) -->
+  <path d="M125 80 L150 35 L175 90 Z" fill="#3C3489"/>
+  <path d="M225 90 L250 35 L275 80 Z" fill="#3C3489"/>
+  <!-- Front paws draped (visible silhouette element) -->
+  <ellipse cx="155" cy="350" rx="22" ry="14" fill="#3C3489"/>
+  <ellipse cx="245" cy="350" rx="22" ry="14" fill="#3C3489"/>
+</svg>

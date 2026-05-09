@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Turbo vehicle: Rocket Shell (boosters + thruster + flame trail) -->
+  <!-- Flame trail (gradient mint -> orange) -->
+  <path d="M85 175 Q100 198 115 175 Z" fill="#EF9F27" opacity="0.85"/>
+  <path d="M92 175 Q100 192 108 175 Z" fill="#E8593C" opacity="0.85"/>
+  <path d="M97 175 Q100 187 103 175 Z" fill="#FAC775"/>
+  <!-- Side booster flames -->
+  <path d="M40 160 Q47 178 54 160 Z" fill="#EF9F27" opacity="0.7"/>
+  <path d="M146 160 Q153 178 160 160 Z" fill="#EF9F27" opacity="0.7"/>
+  <!-- Shell dome (the vehicle body) — segmented hex pattern -->
+  <ellipse cx="100" cy="100" rx="78" ry="52" fill="#1D9E75" stroke="#085041" stroke-width="3"/>
+  <path d="M100 50 L60 75 L60 125 L100 150 L140 125 L140 75 Z"
+        fill="none" stroke="#085041" stroke-width="2" opacity="0.6"/>
+  <line x1="100" y1="50" x2="100" y2="150" stroke="#085041" stroke-width="1.8" opacity="0.5"/>
+  <!-- Highlight on shell -->
+  <ellipse cx="80" cy="78" rx="20" ry="10" fill="#5DCAA5" opacity="0.85"/>
+  <!-- Side rocket boosters -->
+  <rect x="32" y="105" width="22" height="50" rx="9" fill="#888780" stroke="#5F5E5A" stroke-width="2"/>
+  <rect x="146" y="105" width="22" height="50" rx="9" fill="#888780" stroke="#5F5E5A" stroke-width="2"/>
+  <ellipse cx="43" cy="155" rx="11" ry="3" fill="#3C3F42"/>
+  <ellipse cx="157" cy="155" rx="11" ry="3" fill="#3C3F42"/>
+  <!-- Center thruster -->
+  <path d="M88 145 L82 175 L118 175 L112 145 Z"
+        fill="#888780" stroke="#5F5E5A" stroke-width="2" stroke-linejoin="round"/>
+  <ellipse cx="100" cy="175" rx="18" ry="3.5" fill="#3C3F42"/>
+</svg>
