@@ -11,7 +11,10 @@ enum Constants {
     // MARK: - Colors (Hex)
     enum Colors {
         static let skyBlue = 0x87CEEB
-        static let turtleGreen = 0x2ECC71
+        // Turbo brand mint — matches docs/CHARACTER_DESIGN_PROMPT.md (Turbo primary)
+        static let turboMint = 0x5DCAA5
+        // Generic positive / Easy-difficulty / safe-state green (NOT Turbo's brand)
+        static let easyGreen = 0x2ECC71
         static let boostOrange = 0xFF6B35
         static let starGold = 0xFFD700
         static let hudCyan = 0x7FDBFF

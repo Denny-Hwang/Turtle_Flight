@@ -108,7 +108,7 @@ struct HUDOverlay: View {
 
     private var sensitivityColor: Color {
         switch flightVM.sensitivityLevel {
-        case .easy:   return Color(hex: Constants.Colors.turtleGreen)
+        case .easy:   return Color(hex: Constants.Colors.easyGreen)
         case .normal: return Color(hex: Constants.Colors.normalYellow)
         case .expert: return Color(hex: Constants.Colors.expertRed)
         }

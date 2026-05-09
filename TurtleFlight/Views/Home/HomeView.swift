@@ -165,7 +165,7 @@ struct SensitivityButton: View {
 
     private var color: Color {
         switch level {
-        case .easy:   return Color(hex: Constants.Colors.turtleGreen)
+        case .easy:   return Color(hex: Constants.Colors.easyGreen)
         case .normal: return Color(hex: Constants.Colors.normalYellow)
         case .expert: return Color(hex: Constants.Colors.expertRed)
         }

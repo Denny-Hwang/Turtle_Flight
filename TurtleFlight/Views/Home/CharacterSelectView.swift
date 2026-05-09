@@ -1,5 +1,4 @@
 import SwiftUI
-import SceneKit
 
 struct CharacterSelectView: View {
     @ObservedObject var characterVM: CharacterViewModel
@@ -25,12 +24,12 @@ struct CharacterSelectView: View {
                             .foregroundColor(.white)
                     }
                     Spacer()
-                    Text("Choose Your Adventure")
+                    Text(L10n.t("characterSelect.title"))
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                     Spacer()
                     Button(action: startFlight) {
-                        Text("FLY!")
+                        Text(L10n.t("characterSelect.fly"))
                             .font(.system(size: 16, weight: .heavy))
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
@@ -47,7 +46,7 @@ struct CharacterSelectView: View {
 
                 // ── MAP THEME SELECTION ──
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Select Map", systemImage: "map.fill")
+                    Label(L10n.t("characterSelect.section.map"), systemImage: "map.fill")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(.white.opacity(0.85))
                         .padding(.horizontal)
@@ -98,7 +97,7 @@ struct CharacterSelectView: View {
 
                 // ── VEHICLE SELECTION ──
                 VStack(alignment: .leading, spacing: 6) {
-                    Label("Vehicle", systemImage: "wind")
+                    Label(L10n.t("characterSelect.section.vehicle"), systemImage: "wind")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(.white.opacity(0.85))
                         .padding(.horizontal)
@@ -164,7 +163,7 @@ struct CharacterSelectView: View {
 
     private var themeAccentColor: Color {
         switch characterVM.selectedMapTheme {
-        case .sky:   return Color(hex: Constants.Colors.turtleGreen)
+        case .sky:   return Color(hex: Constants.Colors.easyGreen)
         case .space: return Color(hex: 0x7B2FBE)
         case .ocean: return Color(hex: 0x0077B6)
         }
@@ -223,42 +222,40 @@ struct MapThemeCard: View {
     }
 }
 
-// MARK: - Character Preview (SceneKit)
+// MARK: - Character Preview
 
-struct CharacterPreviewView: UIViewRepresentable {
+/// Hero portrait for the selection screen. Renders the canonical
+/// `{name}_default.imageset` (vector PDF) with a gentle floating wiggle so the
+/// character feels alive without pretending to be 3D — the chibi 2D art style
+/// is the design direction (`docs/CHARACTER_DESIGN_PROMPT.md`).
+struct CharacterPreviewView: View {
     let character: CharacterType
+    @State private var bob: CGFloat = 0
+    @State private var lean: Double = 0
 
-    func makeUIView(context: Context) -> SCNView {
-        let scnView = SCNView()
-        scnView.backgroundColor = .clear
-        scnView.allowsCameraControl = true
-        scnView.autoenablesDefaultLighting = true
-
-        let scene = SCNScene()
-        let charNode = CharacterRegistry.shared.buildCharacterNode(for: character)
-        scene.rootNode.addChildNode(charNode)
-
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(0, 0.5, 3)
-        scene.rootNode.addChildNode(cameraNode)
-
-        charNode.runAction(.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 8)))
-        scnView.scene = scene
-        return scnView
-    }
-
-    func updateUIView(_ uiView: SCNView, context: Context) {
-        guard let scene = uiView.scene else { return }
-        scene.rootNode.childNodes
-            .filter { node in
-                guard let name = node.name else { return false }
-                return CharacterType(rawValue: name) != nil
+    var body: some View {
+        Image("\(character.assetPrefix)_default")
+            .resizable()
+            .interpolation(.high)
+            .aspectRatio(contentMode: .fit)
+            .padding(8)
+            .offset(y: bob)
+            .rotationEffect(.degrees(lean))
+            .accessibilityLabel(character.config.name)
+            .onAppear {
+                // Reset state when the selected character changes — onAppear
+                // doesn't fire on re-render, so the .id() below ties the
+                // animation lifecycle to the character identity.
+                bob = 0
+                lean = 0
+                withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) {
+                    bob = -8
+                }
+                withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
+                    lean = 3
+                }
             }
-            .forEach { $0.removeFromParentNode() }
-        let charNode = CharacterRegistry.shared.buildCharacterNode(for: character)
-        charNode.runAction(.repeatForever(.rotateBy(x: 0, y: .pi * 2, z: 0, duration: 8)))
-        scene.rootNode.addChildNode(charNode)
+            .id(character)
     }
 }
 
@@ -271,9 +268,12 @@ struct CharacterTile: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Text(character.config.emoji)
-                    .font(.system(size: 30))
+            VStack(spacing: 2) {
+                Image("\(character.assetPrefix)_icon")
+                    .resizable()
+                    .interpolation(.high)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 44, height: 44)
                 Text(character.config.name)
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
             }
@@ -298,13 +298,13 @@ struct VehicleTile: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
-                Text(vehicle.icon)
-                    .font(.system(size: 22))
+                vehicleArtwork
+                    .frame(height: 40)
                 Text(vehicle.displayName)
                     .font(.system(size: 10, weight: .medium, design: .rounded))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-                Text(vehicle.isShared ? "Shared" : "Unique")
+                Text(vehicle.isShared ? L10n.t("vehicle.tag.shared") : L10n.t("vehicle.tag.unique"))
                     .font(.system(size: 8))
                     .opacity(0.7)
             }
@@ -316,6 +316,20 @@ struct VehicleTile: View {
                     .shadow(radius: isSelected ? 4 : 1)
             )
             .foregroundColor(.white)
+        }
+    }
+
+    @ViewBuilder
+    private var vehicleArtwork: some View {
+        if let asset = vehicle.vehicleOnlyAssetName {
+            Image(asset)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+        } else {
+            // Cloud Surf has no per-character vehicle art; fall back to emoji.
+            Text(vehicle.icon)
+                .font(.system(size: 28))
         }
     }
 }
