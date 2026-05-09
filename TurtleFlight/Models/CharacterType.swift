@@ -8,6 +8,19 @@ enum CharacterType: String, CaseIterable, Codable {
     case frog
     case bunny
 
+    /// Asset-name prefix used by every imageset in `Assets.xcassets/Characters/`.
+    /// e.g. `.turtle.assetPrefix == "turbo"` → `Image("turbo_icon")`.
+    var assetPrefix: String {
+        switch self {
+        case .turtle:  return "turbo"
+        case .penguin: return "pip"
+        case .hamster: return "nutty"
+        case .cat:     return "mochi"
+        case .frog:    return "bounce"
+        case .bunny:   return "hoppy"
+        }
+    }
+
     var config: CharacterConfig {
         switch self {
         case .turtle:

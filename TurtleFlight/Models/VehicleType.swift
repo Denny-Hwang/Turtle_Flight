@@ -38,4 +38,20 @@ enum VehicleType: String, CaseIterable, Codable {
     var isShared: Bool {
         self == .cloudSurf
     }
+
+    /// Imageset name for the vehicle-only artwork in
+    /// `Assets.xcassets/Characters/{name}_vehicle_only.imageset`.
+    /// Each character-owned vehicle has its own asset; the shared Cloud Surf
+    /// has no per-character asset, so callers fall back to the emoji `icon`.
+    var vehicleOnlyAssetName: String? {
+        switch self {
+        case .shellJet:        return "turbo_vehicle_only"
+        case .bellyGlider:     return "pip_vehicle_only"
+        case .hamsterCopter:   return "nutty_vehicle_only"
+        case .cushionBalloon:  return "mochi_vehicle_only"
+        case .balloonBody:     return "bounce_vehicle_only"
+        case .carrotJet:       return "hoppy_vehicle_only"
+        case .cloudSurf:       return nil
+        }
+    }
 }
