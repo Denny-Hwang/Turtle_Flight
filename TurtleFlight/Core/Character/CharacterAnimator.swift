@@ -189,3 +189,25 @@ final class CharacterAnimator {
         }
     }
 }
+
+// MARK: - Atlas billboard expression switching
+
+extension CharacterAnimator {
+    /// Animate the billboard's UV offset to switch which expression cell of
+    /// the 2×2 atlas is shown. The transition is short (~0.18s) so it reads
+    /// as a snap rather than a fade — matches a chibi-style art beat.
+    ///
+    /// Caller is responsible for tracking the *current* expression to avoid
+    /// re-issuing the same transition every frame; SCNTransaction itself
+    /// will collapse identical animations but the per-frame churn is wasteful.
+    func setExpression(_ expression: CharacterExpression,
+                       on billboardNode: SCNNode,
+                       duration: TimeInterval = 0.18) {
+        guard let mat = billboardNode.geometry?.firstMaterial else { return }
+        let target = CharacterRegistry.uvTransform(forCell: expression.atlasCell)
+        SCNTransaction.begin()
+        SCNTransaction.animationDuration = duration
+        mat.diffuse.contentsTransform = target
+        SCNTransaction.commit()
+    }
+}

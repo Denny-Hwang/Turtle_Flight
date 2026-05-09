@@ -473,3 +473,104 @@ final class CharacterRegistry {
         #endif
     }
 }
+
+// MARK: - In-flight Billboard (atlas-textured SCNPlane)
+//
+// Per docs/CHARACTER_DESIGN_PROMPT.md §Technical Notes / 2:
+//   The in-flight character + vehicle is rendered as a billboarded textured
+//   plane (SCNBillboardConstraint on a SCNPlane), not a 3D mesh. This keeps
+//   the chibi 2D art style intact and matches the 80MB app size budget.
+//
+// The atlas (`{name}_atlas` imageset, 2048×2048) is laid out in a 2×2 grid:
+//   ┌──────────────┬──────────────┐
+//   │  default     │  joy         │  ← row 1 (top)
+//   ├──────────────┼──────────────┤
+//   │  scared      │  speed       │  ← row 0 (bottom)
+//   └──────────────┴──────────────┘
+//   col 0 (left)     col 1 (right)
+//
+// Switching expression = animating diffuse.contentsTransform's UV offset
+// between cells. See `CharacterAnimator.setExpression(_:on:)`.
+
+/// One of the four expression frames packed into a character's atlas image.
+enum CharacterExpression: String, CaseIterable {
+    case `default`
+    case joy
+    case scared
+    case speed
+
+    /// Cell coordinates in the 2×2 atlas. col 0 = left half, col 1 = right;
+    /// row 0 = bottom half (scared/speed), row 1 = top half (default/joy).
+    var atlasCell: (col: Int, row: Int) {
+        switch self {
+        case .default: return (0, 1)
+        case .joy:     return (1, 1)
+        case .scared:  return (0, 0)
+        case .speed:   return (1, 0)
+        }
+    }
+}
+
+extension CharacterRegistry {
+
+    /// Build the in-flight character node — a billboarded SCNPlane textured
+    /// with the character's expression atlas. The flying-pose art already
+    /// integrates the vehicle, so this single node replaces the previous
+    /// (charNode + vehNode) primitive pair for in-flight rendering.
+    ///
+    /// `size` is the world-space side length of the square plane.
+    func buildInflightBillboard(for character: CharacterType,
+                                size: CGFloat = 2.0) -> SCNNode {
+        let plane = SCNPlane(width: size, height: size)
+        let mat = plane.firstMaterial ?? SCNMaterial()
+
+        let atlasName = "\(character.assetPrefix)_atlas"
+        #if canImport(UIKit)
+        if let img = UIImage(named: atlasName) {
+            mat.diffuse.contents = img
+        } else {
+            // Asset missing — surface visually so it's caught in QA, not
+            // silently invisible.
+            mat.diffuse.contents = UIColor.magenta
+        }
+        #endif
+
+        // Crop to the default expression cell on first display.
+        mat.diffuse.contentsTransform = Self.uvTransform(forCell: CharacterExpression.default.atlasCell)
+        // Clamp prevents bleeding between adjacent atlas cells (per spec).
+        mat.diffuse.wrapS = .clamp
+        mat.diffuse.wrapT = .clamp
+        mat.diffuse.magnificationFilter = .linear
+        mat.diffuse.minificationFilter = .linear
+        mat.diffuse.mipFilter = .linear
+        // 2D chibi art — ignore scene lighting so it reads as flat illustration.
+        mat.lightingModel = .constant
+        mat.isDoubleSided = true
+        plane.firstMaterial = mat
+
+        let node = SCNNode(geometry: plane)
+        node.name = character.rawValue
+        // Always face the active camera. Position/heading on a parent node
+        // still drives where the character appears in the world; the plane
+        // itself just keeps facing us.
+        node.constraints = [SCNBillboardConstraint()]
+        node.castsShadow = false
+        return node
+    }
+
+    /// UV transform that crops the texture to one cell of a 2×2 atlas.
+    /// Applied to `material.diffuse.contentsTransform`.
+    ///
+    /// Direct matrix construction (rather than `SCNMatrix4Translate(scale,…)`)
+    /// avoids the post-scale ordering footgun where the translate value
+    /// gets divided by the scale factor.
+    static func uvTransform(forCell cell: (col: Int, row: Int)) -> SCNMatrix4 {
+        let s: Float = 0.5
+        var t = SCNMatrix4Identity
+        t.m11 = s
+        t.m22 = s
+        t.m41 = Float(cell.col) * s
+        t.m42 = Float(cell.row) * s
+        return t
+    }
+}
