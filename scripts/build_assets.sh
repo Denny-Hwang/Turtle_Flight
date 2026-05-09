@@ -134,8 +134,16 @@ JSON
     [ -f "$src" ] || { echo "  ! atlas: missing $src — atlas will be skipped"; continue 2; }
     svg_to_png "$src" "$tmp/${frame}.png" "$ATLAS_CELL_PX"
   done
+  # Support ImageMagick 7 (`magick montage …`) or 6 (`montage …`)
   if command -v magick >/dev/null 2>&1; then
-    magick montage \
+    montage_cmd=(magick montage)
+  elif command -v montage >/dev/null 2>&1; then
+    montage_cmd=(montage)
+  else
+    montage_cmd=()
+  fi
+  if [ "${#montage_cmd[@]}" -gt 0 ]; then
+    "${montage_cmd[@]}" \
       "$tmp/default.png" "$tmp/joy.png" \
       "$tmp/scared.png"  "$tmp/speed.png" \
       -tile 2x2 -geometry "${ATLAS_CELL_PX}x${ATLAS_CELL_PX}+0+0" \
@@ -165,6 +173,10 @@ if [ -f "$APPICON_SVG" ]; then
     magick "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
            -colorspace sRGB \
            "$APPICON_OUT_DIR/AppIcon-1024.png"
+  elif command -v convert >/dev/null 2>&1; then
+    convert "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
+            -colorspace sRGB \
+            "$APPICON_OUT_DIR/AppIcon-1024.png"
   else
     # Fallback: rsvg renders against transparent; copy as-is and warn.
     cp "$tmp_alpha" "$APPICON_OUT_DIR/AppIcon-1024.png"
