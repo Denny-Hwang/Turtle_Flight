@@ -14,8 +14,8 @@ struct HomeView: View {
                 // Sky gradient background
                 LinearGradient(
                     colors: [
-                        Color(hex: Constants.Colors.skyBlue),
-                        Color(hex: Constants.Colors.skyBlue).opacity(0.6),
+                        Theme.Color.brandSky,
+                        Theme.Color.brandSky.opacity(0.6),
                         Color.white.opacity(0.3)
                     ],
                     startPoint: .top,
@@ -23,28 +23,28 @@ struct HomeView: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 30) {
+                VStack(spacing: Theme.Spacing.xxl) {
                     // Title
-                    VStack(spacing: 8) {
+                    VStack(spacing: Theme.Spacing.s) {
                         Text("Turtle Flight")
-                            .font(.system(size: 42, weight: .bold, design: .rounded))
-                            .foregroundColor(Color(hex: Constants.Colors.panelDark))
+                            .font(Theme.Typography.displayLarge)
+                            .foregroundColor(Theme.Color.textPrimary)
 
                         Text(L10n.t("home.subtitle"))
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(hex: Constants.Colors.panelDark).opacity(0.7))
+                            .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
                     }
-                    .padding(.top, 40)
+                    .padding(.top, Theme.Spacing.xxxl)
 
                     Spacer()
 
                     // Mode Selection
-                    HStack(spacing: 20) {
+                    HStack(spacing: Theme.Spacing.xl) {
                         ModeButton(
                             title: L10n.t("flight.mode.freePlay"),
                             subtitle: L10n.t("flight.mode.freePlay.subtitle"),
                             icon: "cloud.sun.fill",
-                            color: Color(hex: Constants.Colors.skyBlue)
+                            color: Theme.Color.brandSky
                         ) {
                             selectedMode = .freePlay
                             showCharacterSelect = true
@@ -56,7 +56,7 @@ struct HomeView: View {
                             title: L10n.t("flight.mode.stepGoal"),
                             subtitle: "\(missionVM.progress.totalStars)/15",
                             icon: "target",
-                            color: Color(hex: Constants.Colors.starGold)
+                            color: Theme.Color.starGold
                         ) {
                             selectedMode = .stepGoal
                             showCharacterSelect = true
@@ -66,12 +66,12 @@ struct HomeView: View {
                     }
 
                     // Sensitivity Selection
-                    VStack(spacing: 12) {
+                    VStack(spacing: Theme.Spacing.m) {
                         Text(L10n.t("home.sensitivity.label"))
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(hex: Constants.Colors.panelDark).opacity(0.7))
+                            .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
 
-                        HStack(spacing: 12) {
+                        HStack(spacing: Theme.Spacing.m) {
                             ForEach(SensitivityLevel.allCases, id: \.self) { level in
                                 SensitivityButton(
                                     level: level,
@@ -85,7 +85,7 @@ struct HomeView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, Theme.Spacing.xxxl)
 
                     Spacer()
 
@@ -95,7 +95,7 @@ struct HomeView: View {
                             L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
                             systemImage: "star.fill"
                         )
-                        .foregroundColor(Color(hex: Constants.Colors.starGold))
+                        .foregroundColor(Theme.Color.starGold)
 
                         Text("|")
                             .foregroundColor(.gray)
@@ -104,10 +104,10 @@ struct HomeView: View {
                             L10n.format("home.stats.flightTime", missionVM.progress.totalFlightTime.mmss),
                             systemImage: "clock"
                         )
-                        .foregroundColor(Color(hex: Constants.Colors.hudCyan))
+                        .foregroundColor(Theme.Color.hudCyan)
                     }
-                    .font(.system(size: 13))
-                    .padding(.bottom, 30)
+                    .font(Theme.Typography.label)
+                    .padding(.bottom, Theme.Spacing.xxl)
                 }
             }
             .navigationDestination(isPresented: $showCharacterSelect) {
@@ -138,19 +138,19 @@ struct ModeButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: Theme.Spacing.s) {
                 Image(systemName: icon)
                     .font(.system(size: 28))
                 Text(title)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(Theme.Typography.button)
                 Text(subtitle)
-                    .font(.system(size: 12))
+                    .font(Theme.Typography.caption)
                     .opacity(0.7)
             }
-            .foregroundColor(.white)
+            .foregroundColor(Theme.Color.textOnDark)
             .frame(width: 140, height: 120)
             .background(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: Theme.Radius.l)
                     .fill(color)
                     .shadow(color: color.opacity(0.4), radius: 8, y: 4)
             )
@@ -165,27 +165,27 @@ struct SensitivityButton: View {
 
     private var color: Color {
         switch level {
-        case .easy:   return Color(hex: Constants.Colors.easyGreen)
-        case .normal: return Color(hex: Constants.Colors.normalYellow)
-        case .expert: return Color(hex: Constants.Colors.expertRed)
+        case .easy:   return Theme.Color.easyGreen
+        case .normal: return Theme.Color.normalYellow
+        case .expert: return Theme.Color.expertRed
         }
     }
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: Theme.Spacing.xs) {
                 Text(level.emoji)
                     .font(.system(size: 20))
                 Text(level.displayName)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(Theme.Typography.caption)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: Theme.Radius.s)
                     .fill(isSelected ? color : Color.gray.opacity(0.2))
             )
-            .foregroundColor(isSelected ? .white : Color(hex: Constants.Colors.panelDark))
+            .foregroundColor(isSelected ? Theme.Color.textOnDark : Theme.Color.textPrimary)
         }
     }
 }

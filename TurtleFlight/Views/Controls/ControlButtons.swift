@@ -12,7 +12,7 @@ struct ControlButtons: View {
             HStack {
                 Spacer()
 
-                HStack(spacing: 12) {
+                HStack(spacing: Theme.Spacing.m) {
                     // Calibrate button
                     SmallButton(icon: "scope", label: L10n.t("flight.control.calibrate")) {
                         onCalibrate()
@@ -27,8 +27,8 @@ struct ControlButtons: View {
                     .accessibilityLabel(L10n.t("a11y.exit.label"))
                     .accessibilityHint(L10n.t("a11y.exit.hint"))
                 }
-                .padding(.trailing, 16)
-                .padding(.top, 8)
+                .padding(.trailing, Theme.Spacing.l)
+                .padding(.top, Theme.Spacing.s)
             }
 
             Spacer()
@@ -39,7 +39,7 @@ struct ControlButtons: View {
                 ThumbButton(
                     icon: "flame.fill",
                     label: L10n.t("flight.control.boost"),
-                    color: Color(hex: Constants.Colors.boostOrange),
+                    color: Theme.Color.boostOrange,
                     action: onBoost
                 )
                 .padding(.leading, Constants.Controls.buttonPadding)
@@ -52,7 +52,7 @@ struct ControlButtons: View {
                 ThumbButton(
                     icon: "star.fill",
                     label: L10n.t("flight.control.item"),
-                    color: Color(hex: Constants.Colors.starGold),
+                    color: Theme.Color.starGold,
                     action: onFire
                 )
                 .padding(.trailing, Constants.Controls.buttonPadding)
@@ -81,13 +81,13 @@ struct ThumbButton: View {
             impact.impactOccurred()
             action()
         }) {
-            VStack(spacing: 4) {
+            VStack(spacing: Theme.Spacing.xs) {
                 Image(systemName: icon)
                     .font(.system(size: 24, weight: .bold))
                 Text(label)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(Theme.Typography.tileLabel)
             }
-            .foregroundColor(.white)
+            .foregroundColor(Theme.Color.textOnDark)
             .frame(width: Constants.Controls.buttonSize, height: Constants.Controls.buttonSize)
             .background(
                 Circle()
@@ -113,17 +113,17 @@ struct SmallButton: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 2) {
+            VStack(spacing: Theme.Spacing.xxs) {
                 Image(systemName: icon)
                     .font(.system(size: 14))
                 Text(label)
                     .font(.system(size: 9))
             }
-            .foregroundColor(.white)
+            .foregroundColor(Theme.Color.textOnDark)
             .frame(width: 44, height: 44)
             .background(
                 Circle()
-                    .fill(Color(hex: Constants.Colors.panelDark).opacity(0.6))
+                    .fill(Theme.Color.surfaceOverlay)
             )
         }
     }
