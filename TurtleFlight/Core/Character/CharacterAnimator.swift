@@ -36,17 +36,17 @@ final class CharacterAnimator {
         case .hamsterCopter:
             animateHamsterCopter(vehicleNode, speed: speed, deltaTime: deltaTime)
 
-        case .magicBroom:
-            animateMagicBroom(characterNode, vehicleNode,
-                              rollInput: rollInput, speed: speed)
+        case .cushionBalloon:
+            animateCushionBalloon(characterNode, vehicleNode,
+                                  rollInput: rollInput, speed: speed)
 
         case .balloonBody:
             animateBalloonBody(characterNode, vehicleNode,
                                altitude: characterNode.position.y,
                                isBoosting: isBoosting)
 
-        case .earCopter:
-            animateEarCopter(characterNode, vehicleNode,
+        case .carrotJet:
+            animateCarrotJet(characterNode, vehicleNode,
                              pitchInput: pitchInput, speed: speed, deltaTime: deltaTime)
 
         case .cloudSurf:
@@ -106,17 +106,17 @@ final class CharacterAnimator {
         }
     }
 
-    private func animateMagicBroom(
+    private func animateCushionBalloon(
         _ characterNode: SCNNode,
         _ vehicleNode: SCNNode,
         rollInput: Double,
         speed: Float
     ) {
-        // Tail/scarf wind physics - sway with speed
-        let swayAmount = sin(animationTime * 4) * 0.05 * (speed / 200.0)
+        // Balloon sways gently with speed (basket lags ever so slightly)
+        let swayAmount = sin(animationTime * 2.5) * 0.04 * (speed / 200.0)
         vehicleNode.eulerAngles.z = swayAmount
 
-        // Cat ears flatten on sharp turns
+        // Cat ears tip/flatten on sharp turns (cone-shaped ear nodes)
         if abs(rollInput) > 0.7 {
             characterNode.childNodes.filter { $0.geometry is SCNCone }.forEach { ear in
                 ear.eulerAngles.x = Float(rollInput) * 0.3
@@ -145,24 +145,23 @@ final class CharacterAnimator {
         }
     }
 
-    private func animateEarCopter(
+    private func animateCarrotJet(
         _ characterNode: SCNNode,
         _ vehicleNode: SCNNode,
         pitchInput: Double,
         speed: Float,
         deltaTime: Float
     ) {
-        // Ears rotate like propellers (use actual deltaTime, not hardcoded)
-        let earRotationSpeed = speed / 100.0 * 15.0
+        // Hoppy's ears stream backward like ribbons at speed (use deltaTime, not hardcoded)
+        let earSway = sin(animationTime * (4.0 + speed / 80.0)) * 0.18
         characterNode.enumerateChildNodes { node, _ in
             if node.name == "ear" {
-                node.eulerAngles.y += earRotationSpeed * deltaTime
+                node.eulerAngles.x = earSway
             }
         }
 
-        // Jump pose when ascending, ears fold when descending
+        // Subtle nose-up bob when ascending — bunny "jump" feel
         if pitchInput > 0.3 {
-            // Ascending - jump pose
             characterNode.position.y += sin(animationTime * 5) * 0.02
         }
     }

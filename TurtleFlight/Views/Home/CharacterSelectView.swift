@@ -164,7 +164,7 @@ struct CharacterSelectView: View {
 
     private var themeAccentColor: Color {
         switch characterVM.selectedMapTheme {
-        case .sky:   return Color(hex: Constants.Colors.turtleGreen)
+        case .sky:   return Color(hex: Constants.Colors.easyGreen)
         case .space: return Color(hex: 0x7B2FBE)
         case .ocean: return Color(hex: 0x0077B6)
         }

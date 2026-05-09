@@ -65,7 +65,7 @@ struct MissionHUD: View {
                         Image(systemName: "exclamationmark.triangle")
                             .foregroundColor(missionEngine.collisions > 0 ?
                                 Color(hex: Constants.Colors.expertRed) :
-                                Color(hex: Constants.Colors.turtleGreen)
+                                Color(hex: Constants.Colors.easyGreen)
                             )
                         Text(L10n.format("mission.collisions.format", missionEngine.collisions))
                             .font(.system(size: 12, weight: .medium))
@@ -137,7 +137,7 @@ struct MissionHUD: View {
                 Button(L10n.t("common.next")) {
                     missionVM.returnToSelect()
                 }
-                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.turtleGreen)))
+                .buttonStyle(MissionButtonStyle(color: Color(hex: Constants.Colors.easyGreen)))
             }
         }
         .padding(32)

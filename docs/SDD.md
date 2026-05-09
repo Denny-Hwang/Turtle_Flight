@@ -151,9 +151,9 @@ TurtleFlight/
 | 1 | 🐢 거북이 Turbo | 등껍질이 제트로 변신 | Shell Jet | 앱 마스코트. 느리지만 꿋꿋한. 고글 착용 |
 | 2 | 🐧 펭귄 Pip | 배로 미끄러지듯 활공 | Belly Glider | 통통하고 명랑. 스카프 휘날림 |
 | 3 | 🐹 햄스터 Nutty | 햄스터볼이 프로펠러로 변환 | Hamster Ball Copter | 호기심 왕. 볼이 빵빵하게 부풀어 있음 |
-| 4 | 🐱 고양이 Mochi | 마법 빗자루를 타고 비행 | Magic Broom | 도도하지만 무서움 많은. 마녀 모자 |
+| 4 | 🐱 고양이 Mochi | 쿠션 열기구로 우아하게 부유 | Cushion Hot Air Balloon | 도도한 츤데레, 별 표시 + 방울 목걸이 |
 | 5 | 🐸 개구리 Bounce | 몸이 풍선처럼 부풀어 비행 | Balloon Body | 느긋한 성격. 볼이 부풀면 표정 변화 |
-| 6 | 🐰 토끼 Hoppy | 귀를 프로펠러처럼 돌려 비행 | Ear Copter | 활발하고 용감한. 빨간 비행 고글+스카프 |
+| 6 | 🐰 토끼 Hoppy | 당근 모양 제트기로 비행 | Carrot Jet | 수줍지만 모험심 많은. 한쪽 귀에 꽃, 한쪽 귀가 살짝 처짐 |
 
 #### 3.1.2 캐릭터 + 탈것 선택 시스템
 
@@ -162,9 +162,9 @@ TurtleFlight/
 | Shell Jet | 🐢 Turbo | 등껍질에서 화염 분사 |
 | Belly Glider | 🐧 Pip | 배로 미끄러지며 활공 |
 | Hamster Ball Copter | 🐹 Nutty | 공이 회전하며 프로펠러 역할 |
-| Magic Broom | 🐱 Mochi | 빗자루 위에 앉아 비행 |
+| Cushion Hot Air Balloon | 🐱 Mochi | 고양이 침대 모양 바구니에 우아하게 누워 부유 |
 | Balloon Body | 🐸 Bounce | 몸이 부풀어 떠오름 |
-| Ear Copter | 🐰 Hoppy | 긴 귀가 프로펠러처럼 회전 |
+| Carrot Jet | 🐰 Hoppy | 당근 제트기, 잎사귀 꼬리 핀, 하트 배기 트레일 |
 | Cloud Surf | ALL | 구름 서핑보드에 서서 비행 |
 
 ### 3.2 Gyroscope Control System
@@ -243,7 +243,8 @@ TurtleFlight/
 | Element | Hex | Usage |
 |---------|-----|-------|
 | Sky Blue | #87CEEB | 하늘 배경 |
-| Turtle Green | #2ECC71 | 마스코트 컬러, Easy |
+| Turbo Mint | #5DCAA5 | Turbo (마스코트) 브랜드 컬러 — `CHARACTER_DESIGN_PROMPT.md` 와 정합 |
+| Easy Green | #2ECC71 | Easy 난이도 / 긍정 상태 표시 |
 | Boost Orange | #FF6B35 | 부스터 버튼, 화염 |
 | Star Gold | #FFD700 | 아이템 버튼, 별 |
 | HUD Cyan | #7FDBFF | HUD 텍스트 |

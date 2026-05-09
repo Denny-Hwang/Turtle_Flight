@@ -46,12 +46,12 @@ final class CharacterRegistry {
             rootNode.addChildNode(buildBellyGlider())
         case .hamsterCopter:
             rootNode.addChildNode(buildHamsterCopter())
-        case .magicBroom:
-            rootNode.addChildNode(buildMagicBroom())
+        case .cushionBalloon:
+            rootNode.addChildNode(buildCushionBalloon())
         case .balloonBody:
             rootNode.addChildNode(buildBalloonBody())
-        case .earCopter:
-            rootNode.addChildNode(buildEarCopter())
+        case .carrotJet:
+            rootNode.addChildNode(buildCarrotJet())
         case .cloudSurf:
             rootNode.addChildNode(buildCloudSurf())
         }
@@ -61,33 +61,41 @@ final class CharacterRegistry {
 
     // MARK: - Character Builders (Low-Poly Geometric)
 
+    // Palette references trace back to docs/CHARACTER_DESIGN_PROMPT.md.
+
     private func buildTurtle() -> SCNNode {
         let node = SCNNode()
 
-        // Body (flattened sphere)
+        // Body (flattened sphere) — Turbo primary mint
         let body = SCNNode(geometry: SCNSphere(radius: 0.5))
         body.scale = SCNVector3(1.2, 0.6, 1.0)
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2ECC71)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x5DCAA5)
         node.addChildNode(body)
 
         // Head
         let head = SCNNode(geometry: SCNSphere(radius: 0.2))
         head.position = SCNVector3(0, 0.15, -0.6)
-        head.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x27AE60)
+        head.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x1D9E75)
         node.addChildNode(head)
 
-        // Goggles (small torus on head)
+        // Aviator goggles (brass frame)
         let goggle = SCNNode(geometry: SCNTorus(ringRadius: 0.12, pipeRadius: 0.03))
         goggle.position = SCNVector3(0, 0.25, -0.65)
         goggle.eulerAngles.x = .pi / 2
-        goggle.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF39C12)
+        goggle.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xBA7517)
         node.addChildNode(goggle)
+
+        // Red aviator scarf (Turbo signature)
+        let scarf = SCNNode(geometry: SCNTorus(ringRadius: 0.22, pipeRadius: 0.04))
+        scarf.position = SCNVector3(0, 0.05, -0.45)
+        scarf.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xE24B4A)
+        node.addChildNode(scarf)
 
         // Legs (4 small cylinders)
         for (x, z) in [(-0.3, -0.2), (0.3, -0.2), (-0.3, 0.2), (0.3, 0.2)] as [(Float, Float)] {
             let leg = SCNNode(geometry: SCNCylinder(radius: 0.08, height: 0.2))
             leg.position = SCNVector3(x, -0.3, z)
-            leg.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x27AE60)
+            leg.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x1D9E75)
             node.addChildNode(leg)
         }
 
@@ -97,29 +105,29 @@ final class CharacterRegistry {
     private func buildPenguin() -> SCNNode {
         let node = SCNNode()
 
-        // Body
+        // Body — sky-blue tuxedo (NOT black, per design spec)
         let body = SCNNode(geometry: SCNCapsule(capRadius: 0.3, height: 0.8))
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2C3E50)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x378ADD)
         node.addChildNode(body)
 
-        // Belly (white front)
+        // White belly (classic tuxedo shape)
         let belly = SCNNode(geometry: SCNSphere(radius: 0.25))
         belly.position = SCNVector3(0, -0.05, -0.15)
         belly.scale = SCNVector3(0.8, 1.0, 0.5)
-        belly.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xECF0F1)
+        belly.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFFFFF)
         node.addChildNode(belly)
 
-        // Scarf
-        let scarf = SCNNode(geometry: SCNTorus(ringRadius: 0.25, pipeRadius: 0.04))
-        scarf.position = SCNVector3(0, 0.2, 0)
-        scarf.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xE74C3C)
-        node.addChildNode(scarf)
+        // Mohawk tuft (darker feathers)
+        let mohawk = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: 0.05, height: 0.1))
+        mohawk.position = SCNVector3(0, 0.5, -0.05)
+        mohawk.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x185FA5)
+        node.addChildNode(mohawk)
 
-        // Beak
+        // Beak — orange
         let beak = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: 0.06, height: 0.12))
         beak.position = SCNVector3(0, 0.25, -0.3)
         beak.eulerAngles.x = -.pi / 2
-        beak.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF39C12)
+        beak.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xEF9F27)
         node.addChildNode(beak)
 
         return node
@@ -128,24 +136,27 @@ final class CharacterRegistry {
     private func buildHamster() -> SCNNode {
         let node = SCNNode()
 
-        // Body (round)
+        // Body — Nutty primary orange fur
         let body = SCNNode(geometry: SCNSphere(radius: 0.35))
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF0C27F)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xEF9F27)
         node.addChildNode(body)
 
-        // Cheeks (puffed)
-        for x: Float in [-0.2, 0.2] {
-            let cheek = SCNNode(geometry: SCNSphere(radius: 0.15))
-            cheek.position = SCNVector3(x, 0.05, -0.25)
-            cheek.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFB88C)
-            node.addChildNode(cheek)
-        }
+        // ASYMMETRIC cheeks: right cheek noticeably bigger (more stuffed)
+        let cheekL = SCNNode(geometry: SCNSphere(radius: 0.13))
+        cheekL.position = SCNVector3(-0.2, 0.05, -0.25)
+        cheekL.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFAC775)
+        node.addChildNode(cheekL)
 
-        // Ears
+        let cheekR = SCNNode(geometry: SCNSphere(radius: 0.17))
+        cheekR.position = SCNVector3(0.22, 0.04, -0.25)
+        cheekR.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFAC775)
+        node.addChildNode(cheekR)
+
+        // Ears with pink inner
         for x: Float in [-0.2, 0.2] {
             let ear = SCNNode(geometry: SCNSphere(radius: 0.08))
             ear.position = SCNVector3(x, 0.35, 0)
-            ear.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFB88C)
+            ear.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xBA7517)
             node.addChildNode(ear)
         }
 
@@ -155,37 +166,41 @@ final class CharacterRegistry {
     private func buildCat() -> SCNNode {
         let node = SCNNode()
 
-        // Body
+        // Body — Mochi lavender fur (NOT gray)
         let body = SCNNode(geometry: SCNCapsule(capRadius: 0.25, height: 0.7))
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x95A5A6)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xCECBF6)
         node.addChildNode(body)
 
-        // Witch hat (cone)
-        let hat = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: 0.2, height: 0.4))
-        hat.position = SCNVector3(0, 0.55, 0)
-        hat.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2C3E50)
-        node.addChildNode(hat)
-
-        // Hat brim
-        let brim = SCNNode(geometry: SCNCylinder(radius: 0.25, height: 0.03))
-        brim.position = SCNVector3(0, 0.38, 0)
-        brim.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2C3E50)
-        node.addChildNode(brim)
-
-        // Ears (triangular - use cones)
+        // Pointed ears with dark purple tips
         for x: Float in [-0.15, 0.15] {
             let ear = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: 0.06, height: 0.15))
             ear.position = SCNVector3(x, 0.4, 0)
-            ear.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x95A5A6)
+            ear.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x534AB7)
             node.addChildNode(ear)
         }
 
-        // Tail
-        let tail = SCNNode(geometry: SCNCapsule(capRadius: 0.03, height: 0.4))
+        // Bell collar — red ribbon + gold bell (Mochi signature)
+        let collar = SCNNode(geometry: SCNTorus(ringRadius: 0.22, pipeRadius: 0.025))
+        collar.position = SCNVector3(0, 0.18, 0)
+        collar.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xE24B4A)
+        node.addChildNode(collar)
+
+        let bell = SCNNode(geometry: SCNSphere(radius: 0.04))
+        bell.position = SCNVector3(0, 0.13, -0.22)
+        bell.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xEF9F27)
+        node.addChildNode(bell)
+
+        // Long S-curve tail with darker tip
+        let tail = SCNNode(geometry: SCNCapsule(capRadius: 0.03, height: 0.45))
         tail.position = SCNVector3(0, -0.1, 0.35)
         tail.eulerAngles.x = .pi / 4
-        tail.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x95A5A6)
+        tail.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xCECBF6)
         node.addChildNode(tail)
+
+        let tailTip = SCNNode(geometry: SCNSphere(radius: 0.04))
+        tailTip.position = SCNVector3(0, 0.08, 0.55)
+        tailTip.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x534AB7)
+        node.addChildNode(tailTip)
 
         return node
     }
@@ -193,30 +208,30 @@ final class CharacterRegistry {
     private func buildFrog() -> SCNNode {
         let node = SCNNode()
 
-        // Body (sphere, will inflate for balloon effect)
+        // Body — Bounce primary lime (distinct from Turbo's mint)
         let body = SCNNode(geometry: SCNSphere(radius: 0.4))
         body.name = "frogBody"
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2ECC71)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x97C459)
         node.addChildNode(body)
 
-        // Eyes (two big spheres on top)
+        // Bulging eyes (largest of all 6 characters per spec)
         for x: Float in [-0.18, 0.18] {
-            let eye = SCNNode(geometry: SCNSphere(radius: 0.12))
-            eye.position = SCNVector3(x, 0.35, -0.15)
-            eye.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xECF0F1)
+            let eye = SCNNode(geometry: SCNSphere(radius: 0.13))
+            eye.position = SCNVector3(x, 0.36, -0.15)
+            eye.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFFFFF)
             node.addChildNode(eye)
 
             let pupil = SCNNode(geometry: SCNSphere(radius: 0.06))
-            pupil.position = SCNVector3(x, 0.35, -0.25)
-            pupil.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x2C3E50)
+            pupil.position = SCNVector3(x, 0.36, -0.26)
+            pupil.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x27500A)
             node.addChildNode(pupil)
         }
 
-        // Legs (short, stubby)
+        // Legs — darker green spots
         for (x, z) in [(-0.25, 0.15), (0.25, 0.15)] as [(Float, Float)] {
             let leg = SCNNode(geometry: SCNCapsule(capRadius: 0.06, height: 0.25))
             leg.position = SCNVector3(x, -0.3, z)
-            leg.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x27AE60)
+            leg.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x639922)
             node.addChildNode(leg)
         }
 
@@ -226,34 +241,41 @@ final class CharacterRegistry {
     private func buildBunny() -> SCNNode {
         let node = SCNNode()
 
-        // Body
+        // Body — Hoppy primary peach fur (NOT white)
         let body = SCNNode(geometry: SCNCapsule(capRadius: 0.25, height: 0.6))
-        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xECF0F1)
+        body.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF0997B)
         node.addChildNode(body)
 
-        // Long ears (will be propellers)
-        for x: Float in [-0.1, 0.1] {
-            let ear = SCNNode(geometry: SCNCapsule(capRadius: 0.04, height: 0.5))
-            ear.name = "ear"
-            ear.position = SCNVector3(x, 0.55, 0)
-            ear.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFB8B8)
-            node.addChildNode(ear)
-        }
+        // ASYMMETRIC ears: left upright, right droops (Hoppy signature)
+        let earL = SCNNode(geometry: SCNCapsule(capRadius: 0.04, height: 0.5))
+        earL.name = "ear"
+        earL.position = SCNVector3(-0.1, 0.55, 0)
+        earL.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF0997B)
+        node.addChildNode(earL)
 
-        // Flight goggles (red)
-        let goggle = SCNNode(geometry: SCNTorus(ringRadius: 0.15, pipeRadius: 0.03))
-        goggle.position = SCNVector3(0, 0.2, -0.15)
-        goggle.eulerAngles.x = .pi / 2
-        goggle.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xE74C3C)
-        node.addChildNode(goggle)
+        let earR = SCNNode(geometry: SCNCapsule(capRadius: 0.04, height: 0.5))
+        earR.name = "ear"
+        earR.position = SCNVector3(0.12, 0.5, 0.05)
+        earR.eulerAngles.z = -0.35     // droop
+        earR.eulerAngles.x = 0.15      // tilt forward
+        earR.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF0997B)
+        node.addChildNode(earR)
 
-        // Scarf (red)
-        let scarf = SCNNode(geometry: SCNTorus(ringRadius: 0.2, pipeRadius: 0.035))
-        scarf.position = SCNVector3(0, 0.1, 0)
-        scarf.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xE74C3C)
-        node.addChildNode(scarf)
+        // White heart-shaped chest patch
+        let chest = SCNNode(geometry: SCNSphere(radius: 0.12))
+        chest.position = SCNVector3(0, 0.05, -0.2)
+        chest.scale = SCNVector3(1.0, 1.1, 0.4)
+        chest.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF5C4B3)
+        node.addChildNode(chest)
 
-        // Cotton tail
+        // Flower behind left ear (Hoppy signature accessory)
+        let flower = SCNNode(geometry: SCNSphere(radius: 0.045))
+        flower.position = SCNVector3(-0.16, 0.78, 0.02)
+        flower.scale = SCNVector3(1.0, 0.4, 1.0)
+        flower.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xED93B1)
+        node.addChildNode(flower)
+
+        // Cotton ball tail
         let tail = SCNNode(geometry: SCNSphere(radius: 0.08))
         tail.position = SCNVector3(0, -0.15, 0.25)
         tail.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xFFFFFF)
@@ -322,22 +344,41 @@ final class CharacterRegistry {
         return node
     }
 
-    private func buildMagicBroom() -> SCNNode {
+    private func buildCushionBalloon() -> SCNNode {
         let node = SCNNode()
 
-        // Broomstick
-        let stick = SCNNode(geometry: SCNCylinder(radius: 0.03, height: 1.5))
-        stick.eulerAngles.z = .pi / 2
-        stick.position = SCNVector3(0, -0.3, 0)
-        stick.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x8B4513)
-        node.addChildNode(stick)
+        // Cushion-basket (cat-bed-shaped, plush lavender)
+        let basket = SCNNode(geometry: SCNCylinder(radius: 0.45, height: 0.18))
+        basket.position = SCNVector3(0, -0.4, 0)
+        basket.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xAFA9EC)
+        node.addChildNode(basket)
 
-        // Bristles (cone at back)
-        let bristles = SCNNode(geometry: SCNCone(topRadius: 0.02, bottomRadius: 0.15, height: 0.3))
-        bristles.position = SCNVector3(0, -0.3, 0.8)
-        bristles.eulerAngles.x = .pi / 2
-        bristles.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xF39C12)
-        node.addChildNode(bristles)
+        // Plush cushion edge (slightly larger torus)
+        let cushion = SCNNode(geometry: SCNTorus(ringRadius: 0.45, pipeRadius: 0.06))
+        cushion.position = SCNVector3(0, -0.32, 0)
+        cushion.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xCECBF6)
+        node.addChildNode(cushion)
+
+        // Hot air balloon envelope (smooth lavender)
+        let balloon = SCNNode(geometry: SCNSphere(radius: 0.5))
+        balloon.scale = SCNVector3(1.0, 1.2, 1.0)
+        balloon.position = SCNVector3(0, 0.45, 0)
+        balloon.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xCECBF6)
+        node.addChildNode(balloon)
+
+        // 4 thin ropes from basket to balloon
+        for (x, z) in [(-0.35, -0.35), (0.35, -0.35), (-0.35, 0.35), (0.35, 0.35)] as [(Float, Float)] {
+            let rope = SCNNode(geometry: SCNCylinder(radius: 0.005, height: 0.7))
+            rope.position = SCNVector3(x * 0.7, 0, z * 0.7)
+            rope.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x7F77DD)
+            node.addChildNode(rope)
+        }
+
+        // Lavender flame emitter marker (heating the balloon)
+        let flameMarker = SCNNode()
+        flameMarker.name = "flameEmitter"
+        flameMarker.position = SCNVector3(0, -0.05, 0)
+        node.addChildNode(flameMarker)
 
         return node
     }
@@ -353,14 +394,39 @@ final class CharacterRegistry {
         return node
     }
 
-    private func buildEarCopter() -> SCNNode {
+    private func buildCarrotJet() -> SCNNode {
         let node = SCNNode()
-        // Ears act as propeller - minimal vehicle base
-        // Small platform
-        let platform = SCNNode(geometry: SCNCylinder(radius: 0.15, height: 0.03))
-        platform.position = SCNVector3(0, -0.3, 0)
-        platform.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xBDC3C7)
-        node.addChildNode(platform)
+
+        // Streamlined carrot body (long capsule, orange)
+        let carrot = SCNNode(geometry: SCNCapsule(capRadius: 0.18, height: 1.1))
+        carrot.eulerAngles.x = .pi / 2          // lay along Z (forward)
+        carrot.position = SCNVector3(0, -0.25, 0)
+        carrot.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xEF9F27)
+        node.addChildNode(carrot)
+
+        // Pointed nose (carrot tip — darker orange)
+        let nose = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: 0.18, height: 0.28))
+        nose.eulerAngles.x = -.pi / 2
+        nose.position = SCNVector3(0, -0.25, -0.7)
+        nose.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0xBA7517)
+        node.addChildNode(nose)
+
+        // Leafy tail fins (3 layered cones at the back)
+        for (x, y, scaleY) in [(0.0, 0.05, 1.2), (-0.1, -0.05, 1.0), (0.1, -0.05, 1.0)] as [(Float, Float, Float)] {
+            let leaf = SCNNode(geometry: SCNCone(topRadius: 0.0, bottomRadius: 0.07, height: 0.25))
+            leaf.position = SCNVector3(x, -0.25 + y, 0.6)
+            leaf.eulerAngles.x = .pi / 2
+            leaf.scale = SCNVector3(1, scaleY, 1)
+            leaf.geometry?.firstMaterial?.diffuse.contents = colorFromHex(0x97C459)
+            node.addChildNode(leaf)
+        }
+
+        // Heart-shaped exhaust marker (used by particle system later)
+        let heartTrail = SCNNode()
+        heartTrail.name = "flameEmitter"
+        heartTrail.position = SCNVector3(0, -0.25, 0.7)
+        node.addChildNode(heartTrail)
+
         return node
     }
 
