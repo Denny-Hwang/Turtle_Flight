@@ -8,7 +8,7 @@ struct HUDOverlay: View {
             // Top HUD Bar
             HStack {
                 // Left: Speed + Sensitivity
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
                     HUDGauge(
                         label: "SPD",
                         value: "\(Int(flightVM.speed))",
@@ -17,31 +17,31 @@ struct HUDOverlay: View {
                     Text("Lv.\(flightVM.sensitivityLevel.levelNumber)")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .foregroundColor(sensitivityColor)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
+                        .padding(.horizontal, Theme.Spacing.xs + 2)
+                        .padding(.vertical, Theme.Spacing.xxs)
                         .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: Constants.Colors.panelDark).opacity(0.6))
+                            RoundedRectangle(cornerRadius: Theme.Radius.xs - 2)
+                                .fill(Theme.Color.surfaceOverlay)
                         )
                 }
 
                 Spacer()
 
                 // Center: Compass + Flight Time
-                VStack(spacing: 2) {
+                VStack(spacing: Theme.Spacing.xxs) {
                     Text(compassText)
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundColor(Color(hex: Constants.Colors.hudCyan))
+                        .font(Theme.Typography.hudCompass)
+                        .foregroundColor(Theme.Color.hudCyan)
 
                     Text(flightVM.flightTime.mmss)
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(Theme.Typography.hudTimer)
+                        .foregroundColor(Theme.Color.textOnDark)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, Theme.Spacing.m)
+                .padding(.vertical, Theme.Spacing.s - 2)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(hex: Constants.Colors.panelDark).opacity(0.7))
+                    RoundedRectangle(cornerRadius: Theme.Radius.s)
+                        .fill(Theme.Color.surfaceOverlay)
                 )
 
                 Spacer()
@@ -53,27 +53,27 @@ struct HUDOverlay: View {
                     unit: "M"
                 )
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
+            .padding(.horizontal, Theme.Spacing.l)
+            .padding(.top, Theme.Spacing.s)
 
             Spacer()
 
             // Bottom: Region Name (center) + Star Counter (left)
             HStack {
                 // Star counter
-                HStack(spacing: 4) {
+                HStack(spacing: Theme.Spacing.xs) {
                     Image(systemName: "star.fill")
-                        .foregroundColor(Color(hex: Constants.Colors.starGold))
+                        .foregroundColor(Theme.Color.starGold)
                         .font(.system(size: 14))
                     Text("x \(flightVM.starsCollected)")
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundColor(.white)
+                        .font(Theme.Typography.hudGaugeSmall)
+                        .foregroundColor(Theme.Color.textOnDark)
                 }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .padding(.horizontal, Theme.Spacing.s + 2)
+                .padding(.vertical, Theme.Spacing.s - 2)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(hex: Constants.Colors.panelDark).opacity(0.6))
+                    RoundedRectangle(cornerRadius: Theme.Radius.s)
+                        .fill(Theme.Color.surfaceOverlay)
                 )
 
                 Spacer()
@@ -81,20 +81,20 @@ struct HUDOverlay: View {
                 // Region name
                 if !flightVM.currentRegion.isEmpty {
                     Text(flightVM.currentRegion)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textOnDark)
+                        .padding(.horizontal, Theme.Spacing.m)
+                        .padding(.vertical, Theme.Spacing.s - 2)
                         .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(hex: Constants.Colors.panelDark).opacity(0.5))
+                            RoundedRectangle(cornerRadius: Theme.Radius.s)
+                                .fill(Theme.Color.surfaceOverlayMuted)
                         )
                         .transition(.opacity)
                 }
 
                 Spacer()
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Theme.Spacing.l)
             .padding(.bottom, 80) // Space for control buttons
         }
         .allowsHitTesting(false) // Pass touches through to SceneKit
@@ -108,9 +108,9 @@ struct HUDOverlay: View {
 
     private var sensitivityColor: Color {
         switch flightVM.sensitivityLevel {
-        case .easy:   return Color(hex: Constants.Colors.easyGreen)
-        case .normal: return Color(hex: Constants.Colors.normalYellow)
-        case .expert: return Color(hex: Constants.Colors.expertRed)
+        case .easy:   return Theme.Color.easyGreen
+        case .normal: return Theme.Color.normalYellow
+        case .expert: return Theme.Color.expertRed
         }
     }
 }
@@ -125,22 +125,22 @@ struct HUDGauge: View {
     var body: some View {
         VStack(alignment: .center, spacing: 1) {
             Text(label)
-                .font(.system(size: 9, weight: .medium, design: .monospaced))
-                .foregroundColor(Color(hex: Constants.Colors.hudCyan).opacity(0.7))
+                .font(Theme.Typography.microLabel)
+                .foregroundColor(Theme.Color.hudCyan.opacity(0.7))
 
             Text(value)
-                .font(.system(size: 22, weight: .bold, design: .monospaced))
-                .foregroundColor(Color(hex: Constants.Colors.hudCyan))
+                .font(Theme.Typography.hudGauge)
+                .foregroundColor(Theme.Color.hudCyan)
 
             Text(unit)
-                .font(.system(size: 9, weight: .medium, design: .monospaced))
-                .foregroundColor(Color(hex: Constants.Colors.hudCyan).opacity(0.7))
+                .font(Theme.Typography.microLabel)
+                .foregroundColor(Theme.Color.hudCyan.opacity(0.7))
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, Theme.Spacing.s + 2)
+        .padding(.vertical, Theme.Spacing.s - 2)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(hex: Constants.Colors.panelDark).opacity(0.7))
+            RoundedRectangle(cornerRadius: Theme.Radius.s)
+                .fill(Theme.Color.surfaceOverlay)
         )
     }
 }
