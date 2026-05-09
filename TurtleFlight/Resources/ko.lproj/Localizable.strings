@@ -57,6 +57,16 @@
 "vehicle.carrotJet"       = "당근 제트";
 "vehicle.cloudSurf"       = "구름 서핑";
 
+// VehicleTile chips
+"vehicle.tag.shared"      = "공용";
+"vehicle.tag.unique"      = "전용";
+
+// MARK: - Character select screen
+"characterSelect.title"            = "모험을 골라봐";
+"characterSelect.fly"              = "출발!";
+"characterSelect.section.map"      = "맵 선택";
+"characterSelect.section.vehicle"  = "탈것";
+
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";
 "character.penguin.description" = "배로 미끄러지며 하늘을 활공!";

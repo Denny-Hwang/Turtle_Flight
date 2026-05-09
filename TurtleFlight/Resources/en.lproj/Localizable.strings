@@ -54,6 +54,16 @@
 "vehicle.carrotJet"       = "Carrot Jet";
 "vehicle.cloudSurf"       = "Cloud Surf";
 
+// VehicleTile chips
+"vehicle.tag.shared"      = "Shared";
+"vehicle.tag.unique"      = "Unique";
+
+// MARK: - Character select screen
+"characterSelect.title"            = "Choose Your Adventure";
+"characterSelect.fly"              = "FLY!";
+"characterSelect.section.map"      = "Select Map";
+"characterSelect.section.vehicle"  = "Vehicle";
+
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Even a slow turtle can fly!";
 "character.penguin.description" = "Glides through the sky on his belly!";
