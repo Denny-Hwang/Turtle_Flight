@@ -130,14 +130,16 @@ struct MissionHUD: View {
                 .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
 
                 Button(L10n.t("common.retry")) {
-                    missionVM.returnToSelect()
+                    restartCurrentStage()
                 }
                 .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
 
-                Button(L10n.t("common.next")) {
-                    missionVM.returnToSelect()
+                if missionVM.hasNextStage {
+                    Button(L10n.t("common.next")) {
+                        advanceToNextStage()
+                    }
+                    .buttonStyle(MissionButtonStyle(color: Theme.Color.easyGreen))
                 }
-                .buttonStyle(MissionButtonStyle(color: Theme.Color.easyGreen))
             }
         }
         .padding(Theme.Spacing.xxl)
@@ -165,7 +167,7 @@ struct MissionHUD: View {
                 .buttonStyle(MissionButtonStyle(color: Theme.Color.surfaceOverlay))
 
                 Button(L10n.t("common.retry")) {
-                    missionVM.returnToSelect()
+                    restartCurrentStage()
                 }
                 .buttonStyle(MissionButtonStyle(color: Theme.Color.boostOrange))
             }
@@ -175,6 +177,27 @@ struct MissionHUD: View {
             RoundedRectangle(cornerRadius: Theme.Radius.xl)
                 .fill(Theme.Color.surfacePanel)
         )
+    }
+}
+
+    // MARK: - Stage transitions
+    //
+    // Both Retry and Next stay in-flight: we restart the MissionEngine
+    // (which clears prior rings and resets timer/collisions) and flip
+    // missionVM back into `.playing`. The character keeps flying — only
+    // the objective layer changes underneath them.
+
+    private func restartCurrentStage() {
+        guard let stage = missionVM.currentStage else { return }
+        missionEngine.startStage(stage)
+        missionVM.startMission()
+    }
+
+    private func advanceToNextStage() {
+        guard missionVM.advanceToNextStage(),
+              let stage = missionVM.currentStage else { return }
+        missionEngine.startStage(stage)
+        missionVM.startMission()
     }
 }
 

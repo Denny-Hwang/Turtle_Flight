@@ -42,6 +42,23 @@ final class MissionViewModel: ObservableObject {
         currentStageIndex = index
     }
 
+    /// True iff there's a stage after the current one. The MissionHUD uses
+    /// this to decide whether to render the "Next" button on the
+    /// stage-clear overlay.
+    var hasNextStage: Bool {
+        currentStageIndex + 1 < stages.count
+    }
+
+    /// Advance to the next stage if one exists. Returns true on success so
+    /// the caller can decide whether to fall through to a "campaign clear"
+    /// flow vs. spinning up the next mission.
+    @discardableResult
+    func advanceToNextStage() -> Bool {
+        guard hasNextStage else { return false }
+        currentStageIndex += 1
+        return true
+    }
+
     func startMission() {
         missionState = .playing
     }
