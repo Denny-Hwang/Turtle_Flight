@@ -7,6 +7,16 @@ struct HomeView: View {
 
     @State private var selectedMode: FlightMode?
     @State private var showCharacterSelect = false
+    /// True when the user picked Step Goal — pushes StageSelectView before
+    /// CharacterSelect so the player explicitly chooses which stage to
+    /// fly. Free Flight skips this (no stage to pick) and goes straight
+    /// to character select.
+    @State private var showStageSelect = false
+    /// Drives the first-run onboarding fullScreenCover. Initialised lazily
+    /// from persisted state in `.onAppear` so the cover lifecycle plays
+    /// nicely with NavigationStack (true → cover dismisses cleanly when
+    /// flipped back to false).
+    @State private var showOnboarding = false
 
     var body: some View {
         NavigationStack {
@@ -59,7 +69,11 @@ struct HomeView: View {
                             color: Theme.Color.starGold
                         ) {
                             selectedMode = .stepGoal
-                            showCharacterSelect = true
+                            // Step Goal goes through StageSelect first so
+                            // the player explicitly picks which stage to
+                            // fly. CharacterSelect is then pushed from
+                            // inside StageSelect.
+                            showStageSelect = true
                         }
                         .accessibilityLabel(L10n.t("flight.mode.stepGoal"))
                         .accessibilityHint(L10n.t("a11y.mode.stepGoal.hint"))
@@ -118,11 +132,25 @@ struct HomeView: View {
                     flightMode: selectedMode ?? .freePlay
                 )
             }
+            .navigationDestination(isPresented: $showStageSelect) {
+                StageSelectView(
+                    characterVM: characterVM,
+                    flightVM: flightVM,
+                    missionVM: missionVM
+                )
+            }
+        }
+        .fullScreenCover(isPresented: $showOnboarding) {
+            OnboardingView(onFinish: { showOnboarding = false })
         }
         .onAppear {
             characterVM.load()
             flightVM.load()
             missionVM.load()
+            // Show onboarding on first launch only.
+            if !OnboardingState.load().completed {
+                showOnboarding = true
+            }
         }
     }
 }

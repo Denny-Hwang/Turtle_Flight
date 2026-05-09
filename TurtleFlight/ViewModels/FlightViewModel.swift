@@ -14,6 +14,15 @@ final class FlightViewModel: ObservableObject {
     @Published var isBoosting: Bool = false
     @Published var currentRegion: String = ""
     @Published var isFlying: Bool = false
+    /// True while a pause modal owns the screen. The flight loop's
+    /// `update(deltaTime:)` early-exits when this flips on, so:
+    ///   • the simulation freezes (position/heading/speed don't drift)
+    ///   • the mission timer stops counting down
+    ///   • boost / item buttons stop registering
+    /// Gyro and audio are managed by the FlightView lifecycle (gyro stops
+    /// the moment we pause; audio keeps playing under the modal so the
+    /// pause overlay reads as "wait" rather than "the world died").
+    @Published var isPaused: Bool = false
 
     // MARK: - Components
     let flightEngine: FlightEngine
@@ -190,9 +199,54 @@ final class FlightViewModel: ObservableObject {
         baseTrailBirthRate = 0
     }
 
+    // MARK: - Pause / Resume
+
+    /// Pause the simulation. Idempotent. Stops the gyro so phones held
+    /// "for a sec" while the modal is up don't drift the neutral baseline.
+    /// Audio keeps playing — the BGM under a pause modal reads as ambient,
+    /// while a sudden silence would feel like a crash.
+    func pauseFlight() {
+        guard isFlying, !isPaused else { return }
+        isPaused = true
+        gyroController.stop()
+    }
+
+    /// Resume from pause. Idempotent. Recalibrates the gyro to the
+    /// device's current pose so a phone that drifted during the modal
+    /// doesn't surprise the player with a hard turn on resume.
+    func resumeFlight() {
+        guard isFlying, isPaused else { return }
+        isPaused = false
+        gyroController.start()
+        gyroController.calibrate()
+    }
+
+    /// Restart the current flight in place. The character respawns at
+    /// the start position; if a stage is active, its rings spawn fresh.
+    func restartFlight() {
+        guard isFlying, let charNode = characterNode else { return }
+        // Reset character position + flight state.
+        charNode.position = SCNVector3(0, 500, 0)
+        flightEngine.reset()
+        speed = 0
+        altitude = 500
+        heading = 0
+        flightTime = 0
+        starsCollected = 0
+        isBoosting = false
+        // If we were paused, drop the modal too.
+        isPaused = false
+        gyroController.start()
+        gyroController.calibrate()
+    }
+
     /// Main update loop - called every frame from SCNSceneRendererDelegate
     func update(deltaTime: Float) {
         guard isFlying else { return }
+        // Pause modal frozen the simulation. Skip the entire frame so
+        // position/heading/speed don't drift and the mission timer
+        // doesn't tick down.
+        guard !isPaused else { return }
 
         // Update flight physics
         flightEngine.update(

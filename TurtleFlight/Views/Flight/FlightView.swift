@@ -14,6 +14,10 @@ struct FlightView: View {
     @State private var scene = SCNScene()
     @State private var lastUpdateTime: TimeInterval = 0
     @State private var showGyroAlert = false
+    /// True after the user taps Exit on Free Flight. We don't dismiss
+    /// immediately — the FreeFlightResultView surfaces the run summary
+    /// first, then dismiss is wired through its Home button.
+    @State private var showFreeFlightResult = false
 
     var body: some View {
         ZStack {
@@ -39,34 +43,100 @@ struct FlightView: View {
             HUDOverlay(flightVM: flightVM)
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
-                MissionHUD(missionEngine: engine, missionVM: missionVM) {
-                    flightVM.stopFlight()
-                    dismiss()
-                }
+                MissionHUD(missionEngine: engine, missionVM: missionVM)
             }
 
             ControlButtons(
                 onBoost:     { flightVM.activateBoost() },
                 onFire:      { flightVM.fireItem() },
                 onCalibrate: { flightVM.calibrateGyro() },
+                onPause:     { flightVM.pauseFlight() },
                 onExit: {
-                    flightVM.stopFlight()
-                    dismiss()
+                    // Free Flight: surface the result screen before
+                    // dismissing so the player sees their run stats.
+                    // Step Goal: just dismiss — if the player exits a
+                    // mission mid-run, the result/fail overlay would
+                    // already have surfaced if they completed it.
+                    if flightMode == .freePlay {
+                        flightVM.pauseFlight()       // freeze numerics for the summary
+                        showFreeFlightResult = true
+                    } else {
+                        flightVM.stopFlight()
+                        dismiss()
+                    }
                 }
             )
+
+            // Step Goal — full-screen StageResultView when the mission
+            // finishes (success or fail). Replaces the previous in-HUD
+            // overlay (DESIGN_GAP_REPORT §S6).
+            stageResultOverlay
+
+            // Free Flight — end-of-run summary triggered by the Exit
+            // button (DESIGN_GAP_REPORT §S7).
+            if showFreeFlightResult {
+                FreeFlightResultView(
+                    flightTime: flightVM.flightTime,
+                    starsCollected: flightVM.starsCollected,
+                    isNewBestStars: flightVM.starsCollected > missionVM.progress.bestFreeFlightStars,
+                    onHome: {
+                        flightVM.stopFlight()
+                        dismiss()
+                    },
+                    onAgain: {
+                        // Retry the same character/vehicle/theme — restart
+                        // the flight in place and dismiss the result modal.
+                        showFreeFlightResult = false
+                        flightVM.restartFlight()
+                    }
+                )
+                .transition(.opacity)
+            }
+
+            // Pause modal — driven by flightVM.isPaused so both the
+            // explicit Pause button and the scene-phase auto-pause
+            // surface the same UI.
+            if flightVM.isPaused {
+                PauseView(
+                    onResume:  { flightVM.resumeFlight() },
+                    onRestart: {
+                        flightVM.restartFlight()
+                        // For Step Goal, also restart the current stage's
+                        // rings + timer so retry-from-pause matches the
+                        // result-overlay Retry semantics.
+                        if flightMode == .stepGoal,
+                           let stage = missionVM.currentStage {
+                            flightVM.missionEngine?.startStage(stage)
+                            missionVM.startMission()
+                        }
+                    },
+                    onQuit: {
+                        flightVM.stopFlight()
+                        dismiss()
+                    }
+                )
+                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            }
         }
+        .animation(.easeInOut(duration: 0.18), value: flightVM.isPaused)
         .onAppear { setupScene() }
         .onDisappear { flightVM.stopFlight() }
         .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .background, .inactive:
-                flightVM.gyroController.stop()
+                // Auto-pause when iOS takes the foreground (call, Siri,
+                // app switcher). The user has to explicitly Resume on
+                // return — no surprise mid-flight on reactivation.
+                if flightVM.isFlying {
+                    flightVM.pauseFlight()
+                }
                 lastUpdateTime = 0
             case .active:
-                if flightVM.isFlying {
-                    flightVM.gyroController.start()
-                    flightVM.calibrateGyro()
-                }
+                // Stay paused — user must tap Resume. If the user never
+                // paused (e.g. control center swipe-up), we still wait for
+                // their explicit Resume because pauseFlight() above
+                // already flipped isPaused.
+                break
             @unknown default:
                 break
             }
@@ -77,6 +147,72 @@ struct FlightView: View {
             Text(L10n.t("flight.gyro.unavailable.message"))
         }
         .statusBar(hidden: true)
+    }
+
+    // MARK: - Stage Result overlay
+
+    /// Renders the full-screen Step Goal result (or fail) view when the
+    /// MissionViewModel transitions to a terminal state. Renders nothing
+    /// in Free Flight or while the mission is still in progress.
+    @ViewBuilder
+    private var stageResultOverlay: some View {
+        if flightMode == .stepGoal, let stage = missionVM.currentStage {
+            switch missionVM.missionState {
+            case .completed:
+                if let result = missionVM.lastResult {
+                    StageResultView(
+                        stage: stage,
+                        outcome: .success(result),
+                        // priorBest is the *previous* best; the most-recent
+                        // result is already merged into stageResults by
+                        // completeMission(), so we read from before that
+                        // by computing it before the state flips. For now
+                        // we pass the current best — the badge logic
+                        // tolerates equal scores by NOT showing NEW BEST
+                        // unless the time is strictly faster.
+                        priorBest: missionVM.priorBestForLastResult,
+                        hasNextStage: missionVM.hasNextStage,
+                        onHome: {
+                            missionVM.returnToSelect()
+                            flightVM.stopFlight()
+                            dismiss()
+                        },
+                        onRetry: {
+                            flightVM.missionEngine?.startStage(stage)
+                            missionVM.startMission()
+                        },
+                        onNext: {
+                            if missionVM.advanceToNextStage(),
+                               let next = missionVM.currentStage {
+                                flightVM.missionEngine?.startStage(next)
+                                missionVM.startMission()
+                            }
+                        }
+                    )
+                    .transition(.opacity)
+                }
+            case .failed(let reason):
+                StageResultView(
+                    stage: stage,
+                    outcome: .failure(reason: reason),
+                    priorBest: missionVM.progress.stageResults[stage.index],
+                    hasNextStage: false,
+                    onHome: {
+                        missionVM.returnToSelect()
+                        flightVM.stopFlight()
+                        dismiss()
+                    },
+                    onRetry: {
+                        flightVM.missionEngine?.startStage(stage)
+                        missionVM.startMission()
+                    },
+                    onNext: { /* unused for failure */ }
+                )
+                .transition(.opacity)
+            case .selecting, .playing:
+                EmptyView()
+            }
+        }
     }
 
     // MARK: - Scene Setup

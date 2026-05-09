@@ -27,9 +27,24 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "보정";
+"flight.control.pause"     = "일시정지";
 "flight.control.exit"      = "종료";
 "flight.control.boost"     = "부스터";
 "flight.control.item"      = "아이템";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "잠시 멈춤";
+"flight.pause.subtitle"       = "준비되면 다시 시작할 수 있어요.";
+"flight.pause.resume"         = "이어서 비행";
+"flight.pause.resume.hint"    = "두 번 탭하여 비행을 이어갑니다";
+"flight.pause.restart"        = "다시 시작";
+"flight.pause.restart.hint"   = "두 번 탭하여 처음부터 다시 시작합니다";
+"flight.pause.quit"           = "종료";
+"flight.pause.quit.hint"      = "두 번 탭하여 비행을 종료하고 홈으로 갑니다";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "일시정지";
+"a11y.pause.hint"             = "두 번 탭하여 비행을 잠시 멈춥니다";
 
 // MARK: - Mission HUD
 "mission.stage.titleFormat"   = "Stage %lld: %@";
@@ -66,6 +81,42 @@
 "characterSelect.fly"              = "출발!";
 "characterSelect.section.map"      = "맵 선택";
 "characterSelect.section.vehicle"  = "탈것";
+
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "★ %lld 개 획득";
+"mission.result.starsCollectedFormat" = "별 %lld / %lld";
+"mission.result.firstClear"        = "첫 클리어!";
+"mission.result.newBest"           = "신기록!";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "비행 종료";
+"freeFlight.result.subtitle"       = "오늘의 비행 기록이에요.";
+"freeFlight.result.flightTime"     = "비행 시간";
+"freeFlight.result.stars"          = "별 수집";
+"freeFlight.result.again"          = "다시 비행";
+
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "스테이지 선택";
+"stageSelect.progress.format"        = "%lld / %lld 별";
+"stageSelect.objective.format"       = "★★★ 조건: %@";
+"stageSelect.locked.body"            = "이전 스테이지를 클리어하면 잠금이 풀려요.";
+"stageSelect.card.hint.unlocked"     = "두 번 탭하여 이 스테이지로 이동합니다";
+"stageSelect.card.hint.locked"       = "이전 스테이지를 먼저 클리어해야 합니다";
+"stageSelect.card.label.unlocked"    = "스테이지 %lld, %@, 별 %lld개 획득";
+"stageSelect.card.label.locked"      = "스테이지 %lld, 잠겨 있음";
+
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "건너뛰기";
+"onboarding.next"              = "다음";
+"onboarding.start"             = "시작하기";
+"onboarding.cta.hint"          = "두 번 탭하여 다음 단계로 이동합니다";
+"onboarding.page.label"        = "%lld / %lld 페이지";
+"onboarding.welcome.title"     = "Turtle Flight에 오신 걸 환영해요";
+"onboarding.welcome.body"      = "날 수 없는 동물들이 하늘을 누비는 자이로 비행 모험. 친구를 골라 함께 떠나봐요.";
+"onboarding.calibrate.title"   = "기기를 평평하게 잡아주세요";
+"onboarding.calibrate.body"    = "편안한 자세로 기기를 잡고 보정 버튼을 누르면 그 자세가 중립이 됩니다. 언제든 다시 보정할 수 있어요.";
+"onboarding.tilt.title"        = "기울여서 조종해요";
+"onboarding.tilt.body"         = "왼쪽/오른쪽으로 기울이면 좌우 회전, 위쪽을 들거나 내리면 상승/하강이에요. 부드럽고 짧게 움직여요.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";
