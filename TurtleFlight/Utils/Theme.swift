@@ -40,6 +40,12 @@ enum Theme {
         static let surfaceOverlay  = SwiftUI.Color(hex: Constants.Colors.panelDark).opacity(0.7)
         /// Slightly more transparent surfaceOverlay for region-name chip.
         static let surfaceOverlayMuted = SwiftUI.Color(hex: Constants.Colors.panelDark).opacity(0.5)
+        /// Less translucent surfaceOverlay used by Mission stage-title pill.
+        static let surfaceOverlayStrong = SwiftUI.Color(hex: Constants.Colors.panelDark).opacity(0.8)
+        /// Near-opaque dark panel used by full-screen result overlays.
+        static let surfacePanel = SwiftUI.Color(hex: Constants.Colors.panelDark).opacity(0.9)
+        /// Subtler chip used by the collision counter on top of the HUD.
+        static let surfaceOverlaySubtle = SwiftUI.Color(hex: Constants.Colors.panelDark).opacity(0.6)
 
         // Text
         static let textPrimary     = SwiftUI.Color(hex: Constants.Colors.panelDark)
