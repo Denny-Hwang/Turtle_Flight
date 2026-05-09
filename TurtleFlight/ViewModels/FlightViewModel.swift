@@ -37,8 +37,12 @@ final class FlightViewModel: ObservableObject {
     var cameraNode: SCNNode?
 
     /// Last-applied expression — used to skip redundant per-frame UV
-    /// transitions when the boost/idle state hasn't actually flipped.
-    private var currentExpression: CharacterExpression = .default
+    /// transitions when the latched / boost / idle state hasn't flipped.
+    private var lastDisplayedExpression: CharacterExpression = .default
+
+    /// Pure state-machine that decides which expression to show each frame
+    /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
+    private var expressionLatch = ExpressionLatch()
 
     // MARK: - Character Info
     var currentCharacter: CharacterType = .turtle
@@ -116,7 +120,8 @@ final class FlightViewModel: ObservableObject {
 
         self.characterNode = charNode
         self.vehicleNode = nil
-        self.currentExpression = .default
+        self.lastDisplayedExpression = .default
+        self.expressionLatch.reset()
 
         // Setup camera
         let camera = SCNNode()
@@ -183,15 +188,19 @@ final class FlightViewModel: ObservableObject {
         // chase-camera framing instead.
         characterNode?.position = flightState.position
 
-        // Drive the atlas expression cell from flight state. Boosting →
-        // wind-streaked "speed" pose; otherwise the default standing/sitting
-        // pose. Future PRs add `joy` (stage clear) and `scared` (proximity
-        // collision) wiring.
+        // Drive the atlas expression cell from flight state. Priority is
+        // resolved by ExpressionLatch (see Core/Character/ExpressionLatch.swift):
+        // latched(joy|scared) > speed > default.
         if let charNode = characterNode {
-            let target: CharacterExpression = flightState.isBoosting ? .speed : .default
-            if target != currentExpression {
+            let stateKey = Self.missionStateKey(missionEngine?.state)
+            let target = expressionLatch.update(
+                missionStateKey: stateKey,
+                isBoosting: flightState.isBoosting,
+                now: CACurrentMediaTime()
+            )
+            if target != lastDisplayedExpression {
                 characterAnimator.setExpression(target, on: charNode)
-                currentExpression = target
+                lastDisplayedExpression = target
             }
         }
 
@@ -242,6 +251,19 @@ final class FlightViewModel: ObservableObject {
 
     func calibrateGyro() {
         gyroController.calibrate()
+    }
+
+    /// Convert a MissionEngine state into the stable string key that
+    /// ExpressionLatch edge-detects on. Nil ↔ "notStarted" so Free-Flight
+    /// (which has no mission engine attached) reads as a non-trigger state.
+    static func missionStateKey(_ state: MissionEngine.MissionState?) -> String {
+        guard let state = state else { return "notStarted" }
+        switch state {
+        case .notStarted:    return "notStarted"
+        case .inProgress:    return "inProgress"
+        case .completed:     return "completed"
+        case .failed:        return "failed"
+        }
     }
 
     // MARK: - Camera
