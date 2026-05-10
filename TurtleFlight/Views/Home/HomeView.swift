@@ -223,7 +223,7 @@ struct ModeButton: View {
                     .opacity(0.7)
             }
             .foregroundColor(Theme.Color.textOnDark)
-            .frame(width: 140, height: 120)
+            .adaptiveFrame(compactWidth: 140, compactHeight: 120)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)
                     .fill(color)

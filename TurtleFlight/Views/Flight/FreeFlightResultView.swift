@@ -31,7 +31,7 @@ struct FreeFlightResultView: View {
                     .foregroundColor(Theme.Color.textOnDark)
 
                 Text(L10n.t("freeFlight.result.subtitle"))
-                    .font(Theme.Typography.bodyLarge)
+                    .font(Theme.Typography.bodyDynamic)
                     .foregroundColor(Theme.Color.textOnDarkMuted)
                     .multilineTextAlignment(.center)
 

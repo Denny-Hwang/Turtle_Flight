@@ -160,6 +160,28 @@ enum Theme {
         static let hudGaugeSmall  = Font.system(size: 14, weight: .bold,    design: .monospaced)
         static let hudTimer       = Font.system(size: 12, weight: .medium,  design: .monospaced)
         static let hudCompass     = Font.system(size: 14, weight: .bold,    design: .monospaced)
+
+        // MARK: - Dynamic Type variants
+        //
+        // The fixed-pixel tokens above stay the canonical choice for
+        // chrome where layout must hold (HUD chips, tile labels). For
+        // body / explanatory copy on modal screens (Onboarding, Result,
+        // Pause), the *Dynamic* variants below tie into the user's
+        // preferred text size so the app respects the system-wide
+        // Larger Text accessibility setting. Use them anywhere the
+        // text is the primary content rather than UI furniture.
+        //
+        // Mapping rationale:
+        //   • bodyDynamic    → .body         (matches body copy)
+        //   • titleDynamic   → .title2       (matches modal headlines)
+        //   • subtitleDyn    → .callout      (one notch under title)
+        //   • captionDynamic → .caption       (small explanatory text)
+
+        static let bodyDynamic     = Font.system(.body,     design: .default).weight(.regular)
+        static let bodyDynamicBold = Font.system(.body,     design: .default).weight(.semibold)
+        static let titleDynamic    = Font.system(.title2,   design: .rounded).weight(.bold)
+        static let subtitleDynamic = Font.system(.callout,  design: .rounded).weight(.medium)
+        static let captionDynamic  = Font.system(.caption,  design: .default)
     }
 }
 
@@ -176,5 +198,47 @@ extension View {
             x: shadow.xOffset,
             y: shadow.yOffset
         )
+    }
+}
+
+// MARK: - Size class adaptive helpers
+
+/// Multiplier applied to compact-sized layouts to scale them up for
+/// regular size class (iPad). Used by tile/button sizing helpers below
+/// so a single source of truth controls the iPhone↔iPad scale-up.
+///
+/// 1.4× was picked empirically: a 140pt iPhone ModeButton becomes
+/// 196pt on iPad, which roughly matches the visual weight of native
+/// iPadOS controls without dwarfing the canvas.
+extension Theme {
+    static let iPadScale: CGFloat = 1.4
+}
+
+/// Returns a size scaled up for regular size class (iPad), pass-through
+/// for compact (iPhone). The argument should be the design's compact
+/// reference size; the regular value is computed from it. Used by the
+/// home/stage tile sizing so iPad layouts read at iPad scale rather
+/// than as oversized iPhone layouts.
+struct AdaptiveSize: ViewModifier {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    let compactWidth: CGFloat
+    let compactHeight: CGFloat
+
+    func body(content: Content) -> some View {
+        let scale = (sizeClass == .regular) ? Theme.iPadScale : 1.0
+        return content.frame(
+            width: compactWidth * scale,
+            height: compactHeight * scale
+        )
+    }
+}
+
+extension View {
+    /// Apply iPhone-baseline width/height that scales up on iPad.
+    /// Drop-in replacement for `.frame(width: w, height: h)` on tiles
+    /// and buttons that look tiny on iPad otherwise.
+    func adaptiveFrame(compactWidth: CGFloat, compactHeight: CGFloat) -> some View {
+        modifier(AdaptiveSize(compactWidth: compactWidth, compactHeight: compactHeight))
     }
 }

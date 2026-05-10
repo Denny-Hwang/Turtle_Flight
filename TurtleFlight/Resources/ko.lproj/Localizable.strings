@@ -50,8 +50,9 @@
 "flight.mode.freePlay.subtitle" = "Free Flight";
 
 // MARK: - Flight - gyro availability
-"flight.gyro.unavailable.title"   = "자이로스코프를 사용할 수 없습니다";
-"flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.";
+"flight.gyro.unavailable.title"   = "자이로 센서 없음";
+"flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서를 사용할 수 없어요. 화면을 손가락으로 드래그하면 임시 조종이 가능해요.";
+"flight.gyro.unavailable.continue" = "계속 진행";
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "보정";

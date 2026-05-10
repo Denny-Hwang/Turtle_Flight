@@ -179,7 +179,7 @@ private struct StageCard: View {
                 // Earned stars (out of 3) — small below
                 earnedStarsRow
             }
-            .frame(width: 130, height: 220)
+            .adaptiveFrame(compactWidth: 130, compactHeight: 220)
             .padding(.vertical, Theme.Spacing.m)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)

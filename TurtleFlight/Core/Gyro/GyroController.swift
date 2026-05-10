@@ -54,6 +54,63 @@ final class GyroController: ObservableObject {
         profile = SensitivityProfile.profile(for: level)
     }
 
+    // MARK: - Fallback (Simulator / iPad-without-gyro)
+
+    /// Inject a manual roll/pitch sample. Each component is a tilt
+    /// approximation in [-1, 1] — typically sourced from a touch-drag
+    /// gesture on the SCNView when `isAvailable == false`. Goes through
+    /// the same dead-zone → response-curve → low-pass filter pipeline
+    /// as a real gyro sample so the in-flight feel matches.
+    ///
+    /// Idempotent if `isAvailable == true` — when a real gyro is
+    /// providing samples we ignore manual injection so an accidental
+    /// touch on a connected device doesn't fight the sensor.
+    func injectFallback(rollNormalized: Double, pitchNormalized: Double) {
+        guard !isAvailable else { return }
+
+        let clampedRoll  = rollNormalized.clamped(to: -1...1)
+        let clampedPitch = pitchNormalized.clamped(to: -1...1)
+
+        // Map the [-1, 1] virtual joystick into the same attitude space
+        // the device-motion path produces — roughly profile.maxTilt
+        // radians at full deflection. That way the dead-zone + curve
+        // logic below is identical for both code paths.
+        let virtualRoll  = clampedRoll  * profile.maxTilt
+        let virtualPitch = clampedPitch * profile.maxTilt
+
+        let filteredRoll  = profile.applyDeadZone(virtualRoll)
+        let filteredPitch = profile.applyDeadZone(virtualPitch)
+
+        let curvedRoll  = profile.applyCurve(filteredRoll)
+        let curvedPitch = profile.applyCurve(filteredPitch)
+
+        let alpha = profile.smoothingAlpha
+        smoothedRoll  = smoothedRoll  * (1 - alpha) + curvedRoll  * alpha
+        smoothedPitch = smoothedPitch * (1 - alpha) + curvedPitch * alpha
+
+        rollInput  = smoothedRoll.clamped(to: -1...1)
+        pitchInput = smoothedPitch.clamped(to: -1...1)
+
+        if abs(rollInput) > 0.05 || abs(pitchInput) > 0.05 {
+            lastInputTime = Date()
+        }
+        timeSinceLastInput = Date().timeIntervalSince(lastInputTime)
+    }
+
+    /// Drop fallback input back to neutral. Called when the user lifts
+    /// their finger off the SCNView so the auto-level path can kick in
+    /// after the configured delay.
+    func releaseFallback() {
+        guard !isAvailable else { return }
+        // Don't slam to zero — let the smoothing decay so the camera
+        // doesn't jump back to neutral instantly.
+        let alpha = profile.smoothingAlpha
+        smoothedRoll  = smoothedRoll  * (1 - alpha)
+        smoothedPitch = smoothedPitch * (1 - alpha)
+        rollInput  = smoothedRoll.clamped(to: -1...1)
+        pitchInput = smoothedPitch.clamped(to: -1...1)
+    }
+
     // MARK: - Private Methods
 
     private func processMotion(_ motion: CMDeviceMotion) {

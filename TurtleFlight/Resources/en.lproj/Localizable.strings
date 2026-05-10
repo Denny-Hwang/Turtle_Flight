@@ -47,8 +47,9 @@
 "flight.mode.freePlay.subtitle" = "Open sky";
 
 // MARK: - Flight - gyro availability
-"flight.gyro.unavailable.title"   = "Gyroscope unavailable";
-"flight.gyro.unavailable.message" = "This device doesn't support the gyroscope sensor. Please play on a device that has one.";
+"flight.gyro.unavailable.title"   = "No gyroscope";
+"flight.gyro.unavailable.message" = "This device doesn't have a gyroscope. You can still steer by dragging on the screen.";
+"flight.gyro.unavailable.continue" = "Continue";
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrate";

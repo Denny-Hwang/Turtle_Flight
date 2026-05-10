@@ -125,8 +125,10 @@ struct StageResultView: View {
             Image(systemName: "exclamationmark.octagon.fill")
                 .font(.system(size: 48))
                 .foregroundColor(Theme.Color.expertRed)
+            // Dynamic Type — failure copy is the primary content of the
+            // failure state and benefits from system text-size respect.
             Text(reason)
-                .font(Theme.Typography.bodyLarge)
+                .font(Theme.Typography.bodyDynamic)
                 .foregroundColor(Theme.Color.textOnDark)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.l)

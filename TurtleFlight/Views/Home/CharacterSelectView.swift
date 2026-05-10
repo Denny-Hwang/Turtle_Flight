@@ -249,11 +249,11 @@ struct CharacterTile: View {
                     .resizable()
                     .interpolation(.high)
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 44, height: 44)
+                    .adaptiveFrame(compactWidth: 44, compactHeight: 44)
                 Text(character.config.name)
                     .font(Theme.Typography.tileLabel)
             }
-            .frame(width: 64, height: 72)
+            .adaptiveFrame(compactWidth: 64, compactHeight: 72)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l - 2)
                     .fill(isSelected ? Theme.Color.surfaceSelected : Theme.Color.surfaceMuted)

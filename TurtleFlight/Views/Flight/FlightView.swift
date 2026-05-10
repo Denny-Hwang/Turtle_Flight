@@ -143,7 +143,9 @@ struct FlightView: View {
             }
         }
         .alert(L10n.t("flight.gyro.unavailable.title"), isPresented: $showGyroAlert) {
-            Button(L10n.t("common.ok")) { dismiss() }
+            // Don't dismiss the flight — the SceneKitView's pan-gesture
+            // fallback lets the player still steer (DESIGN_GAP_REPORT P2-7).
+            Button(L10n.t("flight.gyro.unavailable.continue")) {}
         } message: {
             Text(L10n.t("flight.gyro.unavailable.message"))
         }
@@ -346,7 +348,9 @@ struct SceneKitView: UIViewRepresentable {
     let flightVM: FlightViewModel
     let onUpdate: (TimeInterval) -> Void
 
-    func makeCoordinator() -> Coordinator { Coordinator(onUpdate: onUpdate) }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onUpdate: onUpdate, flightVM: flightVM)
+    }
 
     func makeUIView(context: Context) -> SCNView {
         let scnView = SCNView()
@@ -356,6 +360,17 @@ struct SceneKitView: UIViewRepresentable {
         scnView.showsStatistics = false
         scnView.preferredFramesPerSecond = 60
         scnView.antialiasingMode = .multisampling2X
+
+        // Simulator / iPad-without-gyro fallback: a pan gesture on the
+        // scene view is mapped to roll / pitch input so the app stays
+        // exhibitable without a real device. Real-device sessions ignore
+        // this input (`GyroController.injectFallback` short-circuits when
+        // the gyro is available). See P2-7 in DESIGN_GAP_REPORT.
+        let pan = UIPanGestureRecognizer(target: context.coordinator,
+                                          action: #selector(Coordinator.handlePan(_:)))
+        pan.maximumNumberOfTouches = 1
+        scnView.addGestureRecognizer(pan)
+
         return scnView
     }
 
@@ -363,10 +378,42 @@ struct SceneKitView: UIViewRepresentable {
 
     class Coordinator: NSObject, SCNSceneRendererDelegate {
         var onUpdate: ((TimeInterval) -> Void)?
-        init(onUpdate: @escaping (TimeInterval) -> Void) { self.onUpdate = onUpdate }
+        let flightVM: FlightViewModel
+
+        init(onUpdate: @escaping (TimeInterval) -> Void,
+             flightVM: FlightViewModel) {
+            self.onUpdate = onUpdate
+            self.flightVM = flightVM
+        }
+
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
             DispatchQueue.main.async { [weak self] in
                 self?.onUpdate?(time)
+            }
+        }
+
+        /// Pan-gesture → fallback input. Only fires meaningful samples
+        /// when the gyro is unavailable; the GyroController side guards
+        /// the same condition. Mapping: drag right to roll right, drag
+        /// up (translation.y < 0) to pitch up. Range scales by view
+        /// half-extents so a full-edge drag reads as ±1.0 input.
+        @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
+            guard let view = recognizer.view else { return }
+            switch recognizer.state {
+            case .began, .changed:
+                let translation = recognizer.translation(in: view)
+                let halfWidth  = max(view.bounds.width  / 2, 1)
+                let halfHeight = max(view.bounds.height / 2, 1)
+                let roll  = Double(translation.x / halfWidth)
+                let pitch = Double(-translation.y / halfHeight)
+                flightVM.gyroController.injectFallback(
+                    rollNormalized: roll,
+                    pitchNormalized: pitch
+                )
+            case .ended, .cancelled, .failed:
+                flightVM.gyroController.releaseFallback()
+            default:
+                break
             }
         }
     }
