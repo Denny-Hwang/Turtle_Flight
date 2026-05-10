@@ -86,12 +86,27 @@ docs/
 
 ## Getting Started
 
-1. Clone the repository
-2. Open the project in Xcode 15+
-3. Select an iOS device or simulator target
-4. Build and run (Cmd + R)
+1. Clone the repository.
+2. **Create the Xcode project locally.** The repo currently ships sources
+   only — `TurtleFlight.xcodeproj` is not committed. From Xcode:
+   *File → New → Project → iOS → App* (Product Name: `TurtleFlight`,
+   Interface: SwiftUI, Language: Swift, Bundle ID: as you prefer), then
+   replace the generated stub sources with this repo's `TurtleFlight/`
+   directory. Set **Deployment Target = iOS 16.0**, **Devices = iPhone +
+   iPad**, **Orientation = Landscape only**, and add `gyroscope` /
+   `accelerometer` to *Required device capabilities* (already set in the
+   bundled `Info.plist`).
+3. Add the existing `Assets.xcassets`, `Resources/`, and `PrivacyInfo.xcprivacy`
+   to the target.
+4. Add `Tests/` as a Unit Test target with `@testable import TurtleFlight`.
+5. Select an iOS device or simulator target → Build and run (`⌘R`).
 
-> **Note:** Gyroscope controls require a physical device. The simulator will use fallback input.
+> **Note:** Gyroscope controls require a physical device. On Simulator /
+> iPad-without-gyro, drag on the scene view to steer (touch-fallback).
+>
+> A future PR will introduce XcodeGen / Tuist tooling so the project file
+> is reproducible from a YAML spec; until then, the manual setup above is
+> the canonical path.
 
 ## Localization
 
@@ -167,12 +182,24 @@ This project is licensed under the BSD 3-Clause License. See [LICENSE](LICENSE) 
 
 ## 시작하기
 
-1. 저장소를 clone
-2. Xcode 15+ 에서 프로젝트 열기
-3. iOS 기기 또는 시뮬레이터 타깃 선택
-4. 빌드 후 실행 (⌘R)
+1. 저장소를 clone.
+2. **로컬에서 Xcode 프로젝트 파일 생성.** 현재 저장소는 소스만 포함 —
+   `TurtleFlight.xcodeproj`는 커밋되지 않았습니다. Xcode에서
+   *File → New → Project → iOS → App* (Product Name `TurtleFlight`,
+   SwiftUI, Swift, Bundle ID 임의)으로 만든 뒤 생성된 스텁 소스를
+   본 저장소 `TurtleFlight/` 로 교체합니다. **Deployment Target =
+   iOS 16.0**, **Devices = iPhone + iPad**, **Orientation = Landscape
+   only**, *Required device capabilities*에 `gyroscope`,
+   `accelerometer`를 설정 (이미 번들 `Info.plist`에 명시됨).
+3. 기존 `Assets.xcassets`, `Resources/`, `PrivacyInfo.xcprivacy`를 타깃에 추가.
+4. `Tests/`를 Unit Test 타깃으로 추가하고 `@testable import TurtleFlight` 사용.
+5. iOS 기기 또는 시뮬레이터 선택 → 빌드 후 실행 (⌘R).
 
-> 자이로 조작은 실기기에서만 동작합니다. 시뮬레이터는 폴백 입력을 사용합니다.
+> 자이로 조작은 실기기에서만 동작합니다. 시뮬레이터/자이로 없는 iPad에서는
+> 화면을 손가락으로 드래그하여 조종합니다 (touch-fallback).
+>
+> 추후 PR에서 XcodeGen / Tuist 도입하여 YAML 스펙으로 프로젝트 파일을
+> 재생성할 수 있도록 할 예정입니다. 그때까지는 위 수동 설정이 정식 경로입니다.
 
 ## 다국어
 

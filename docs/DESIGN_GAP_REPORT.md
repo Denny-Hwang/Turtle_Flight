@@ -368,3 +368,73 @@ The **engineering** layer of Turtle Flight is in good shape (109 passing tests, 
 - No pause, no settings, no onboarding, no real result screen.
 
 The work needed to close this gap is well-defined, sequenced in §6 above, and parallelizable across one designer + one engineer for ~6 sprints. None of it requires re-authoring the SVG art that already exists.
+
+---
+
+## 10. Closure log — PR series #25–#43 (2026-05-10)
+
+This report is a 2026-05-09 snapshot. The PR series that followed
+(visual-design pipeline #25–#42 + Sprint 0–3 in #43) closes the
+overwhelming majority of items called out above. The matrix below
+maps each issue ID to its landing PR.
+
+### Phase 0 — Asset pipeline (#25–#34)
+
+| ID | Issue | Status | Landing |
+|----|-------|--------|---------|
+| C1 | Mochi vehicle conflict | ✅ Closed | #13 spec-alignment-c1-c4 |
+| C2 | Hoppy personality + vehicle conflict | ✅ Closed | #13 |
+| C3 | Vehicle key vs SVG asset | ✅ Closed | #13 |
+| C4 | Turbo brand color drift | ✅ Closed | #13 (palette aligned) |
+| C5 | MapTheme.displayName never localized | ✅ Closed | **PR #43 Sprint 0** |
+| C6 | Info.plist LaunchScreenBackground reference dangling | ✅ Closed | #15 assets-xcassets-foundation |
+| §2.1 12 missing SVGs | silhouette + vehicle_only × 6 | ✅ Closed | #14 |
+| §2.2 Asset Catalog absent | AppIcon / LaunchScreen / Characters | ✅ Closed | #15 |
+| §2.3 Expression atlas | 2×2 atlas + UV transform | ✅ Closed | #17 inflight-atlas-billboard |
+
+### Phase 1 — Wire design into binary (#36–#42)
+
+| ID | Issue | Status | Landing |
+|----|-------|--------|---------|
+| §3.1 SVGs never reach binary | Atlas billboard + asset Image() | ✅ Closed | #17, #31 |
+| §3.2 Color palette mismatch | Per-character palettes match prompt | ✅ Closed | #13, #36 |
+| §3.4 No design-token system | Theme.Color/Spacing/Radius/Elevation/Typography | ✅ Closed | #20 design-tokens |
+| §3.5 Hardcoded English in CharacterSelectView | L10n migration | ✅ Closed | #6 i18n + #43 (MapTheme/Stage) |
+| §3.6 Trails are fake | SCNParticleSystem per vehicle | ✅ Closed | #19 vehicle-trail-particles |
+| §4.1 S1 Launch Screen | LaunchScreenBackground colorset | ✅ Closed | #15 |
+| §4.1 S2 App Icon | Single-1024 universal idiom (multi-size pending) | 🟡 Partial | #15 (P0-5 pending) |
+| §4.1 S3 Onboarding | 3-card swipeable tutorial | ✅ Closed | #27 onboarding-view |
+| §4.1 S4 Pause modal | Resume/Restart/Quit + scene-phase auto-pause | ✅ Closed | #28 pause-view |
+| §4.1 S5 Stage-Select screen | 5 cards, locks, star totals | ✅ Closed | #29, #42 |
+| §4.1 S6 Stage-result polish | Full-screen StageResultView with star count-up | ✅ Closed | #30 result-screens |
+| §4.1 S7 Free-Flight result | Run summary + Home/Again | ✅ Closed | #30 |
+| §4.2 S8 Settings screen | Audio / Progress / About | ✅ Closed | **PR #43 Sprint 2** |
+| §4.2 S14 Boost cooldown UI | Progress ring on ThumbButton | ✅ Closed | **PR #43 Sprint 1** |
+| §4.2 S16 Star pickup HUD pulse | Counter chip springs on pickup | ✅ Closed | **PR #43 Sprint 1** |
+| §4.2 S17 Compass-to-objective arrow | Chevron under stage title, on-course tint | ✅ Closed | **PR #43 Sprint 1** |
+| §4.2 S18 Mission timer audio | 5/3/1s beeps | ✅ Closed | **PR #43 Sprint 1** |
+| §4.2 S19 Particle trails | (= §3.6) | ✅ Closed | #19 |
+| §4.2 S20 Expression switching | ExpressionLatch (joy/scared/speed/default) | ✅ Closed | #18 expression-latch |
+| §4.3 A2 Reduce Motion | Sensitivity clamp + camera dampening | ✅ Closed | a11y commit + **PR #43 Sprint 2** |
+| §4.3 A5 VoiceOver coverage | ControlButtons / HomeView / SettingsView labels | ✅ Closed | a11y commit + **PR #43 Sprint 2** |
+| §4.3 A9 Empty state when gyro unavailable | Touch-drag fallback on SCNView | ✅ Closed | **PR #43 Sprint 3** |
+| §4.3 A1 Dynamic Type | Five new `*Dynamic` typography tokens | 🟡 Partial | **PR #43 Sprint 3** (body copy) |
+| §4.3 A7 iPad layout | adaptiveFrame on tiles (1.4×) | 🟡 Partial | **PR #43 Sprint 3** |
+| §4.3 A6 Localization (5+ locales) | Process documented in `docs/I18N.md`; translations pending | 🟡 Doc only | **PR #43 Sprint 3** |
+
+### Still genuinely open (post-1.0)
+
+- **§4.1 S2 partial** — AppIcon multi-size export. `scripts/build_assets.sh`
+  pipeline is in place but needs a host with `librsvg + imagemagick` to
+  populate 60/76/120/152/167/180 sizes.
+- **§4.2 S10 / S11** — Sensitivity / map-theme live previews
+  (design-driven, not engineering).
+- **§4.2 S15** — Item ammo / cooldown UI. The fire button has no ammo
+  semantics yet (P1-2 in the senior review).
+- **§4.2 S21–S22** — App Store screenshots + asset-catalog tooling
+  release pipeline.
+- **§4.3 A3 / A4** — High-contrast HUD variant + colorblind-safe
+  collision indicators.
+- **§4.3 A6 actual translations** — ja/zh-Hans/es/fr/de bundles.
+- **§4.4 F1–F7** — All P3 items (mid-flight vehicle switch, daily
+  challenges, minimap, photo mode, replay, Game Center, shop) — v1.x.

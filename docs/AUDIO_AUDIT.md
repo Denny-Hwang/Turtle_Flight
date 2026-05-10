@@ -31,9 +31,9 @@
 
 ### Medium
 
-- **인게임 음소거 UI 부재** — `setMuted/toggleMute` 메서드는 있으나 사용자가 토글할 화면이 없음. App Review에서 BGM이 계속 재생되는 게임은 음소거 UI 요구 가능. SettingsScreen 또는 HUD에 스피커 아이콘 토글 추가 필요.
-- **Volume slider 부재** — `bgmVolume`(0.3) / `sfxVolume`(0.5) 하드코딩. 고정값으로도 출시 가능하지만 UX는 손해.
-- **`sfxPlayers` 딕셔너리 상한 없음** — 일회성 SFX는 0.1~1.2초 후 timer로 자동 정리되지만, 연타 시 일시 피크 발생 가능. 16개 정도로 캡 권장.
+- ~~**인게임 음소거 UI 부재**~~ — ✅ **PR #43 Sprint 2에서 해소**. `SettingsView`(Audio 섹션)에 mute toggle 추가, `HomeView` 우상단 gear 버튼으로 진입.
+- ~~**Volume slider 부재**~~ — ✅ **PR #43 Sprint 2에서 해소**. `setBGMVolume(_:)` / `setSFXVolume(_:)` 공개 API + UserDefaults 영속화. 슬라이더는 SettingsView Audio 섹션에서 0–100% 노출.
+- **`sfxPlayers` 딕셔너리 상한 없음** — 일회성 SFX는 0.1~1.2초 후 timer로 자동 정리되지만, 연타 시 일시 피크 발생 가능. 16개 정도로 캡 권장. (여전히 open — v1.x 후보.)
 
 ### Low
 

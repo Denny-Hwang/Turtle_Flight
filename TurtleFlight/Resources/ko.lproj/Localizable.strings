@@ -18,7 +18,6 @@
 "settings.audio.mute"                     = "음소거";
 "settings.audio.bgm"                      = "배경음 볼륨";
 "settings.audio.sfx"                      = "효과음 볼륨";
-"settings.audio.preview"                  = "음 들어보기";
 
 "settings.section.progress"               = "진행 상황";
 "settings.progress.reset"                 = "진행 기록 초기화";

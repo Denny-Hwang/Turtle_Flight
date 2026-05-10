@@ -15,7 +15,6 @@
 "settings.audio.mute"                     = "Mute";
 "settings.audio.bgm"                      = "BGM volume";
 "settings.audio.sfx"                      = "SFX volume";
-"settings.audio.preview"                  = "Preview";
 
 "settings.section.progress"               = "Progress";
 "settings.progress.reset"                 = "Reset progress";

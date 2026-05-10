@@ -299,3 +299,29 @@
 3. Instruments > Leaks/Allocations로 메모리 확인
 4. 실기기 (iPhone 12+)에서 자이로 반응 체감 테스트
 5. App Store Connect > TestFlight 배포 (내부 테스터 5명 이상 권장)
+
+---
+
+## 8. Closure log — Sprint 0–3 (2026-05-10, PR #43)
+
+본 보고서는 2026-03-27 검증 시점 스냅샷입니다. 이후 Sprint 0–3에서 닫힌 항목:
+
+| 보고 항목 | 후속 처리 | 위치 |
+|----------|----------|------|
+| §2.1 #7 자이로 미지원 알림 | Sprint 3에서 fallback 입력으로 대체 — alert는 안내문만 띄우고 dismiss 안함 | `FlightView.alert`, `GyroController.injectFallback` |
+| §2.1 #8 UserDefaults silent fail | `MissionViewModel.lastPersistenceError` published 처리 (Sprint 0 이전) | `MissionViewModel.save()` |
+| §2.1 #9 euler 중복 계산 | Sprint 0에서 dead code 정리 시 `applyFlightPose` 통째로 삭제 | `CharacterAnimator.swift` |
+| §2.1 #10 첫 프레임 점프 | Sprint 0 이전 lastUpdateTime guard로 처리 | `FlightView.swift:31-34` |
+
+**Sprint 0–3에서 추가된 게임 루프 / 접근성 항목** (당시 미발견):
+- 미션 완료 wiring 단절 (Step Goal 미션이 끝나지 않던 결정적 결함)
+- 충돌 판정 미가동 (3성 평가 트리비얼화)
+- per-vehicle 애니메이션 dead code (~190 LOC)
+- MapTheme / StageDefinition 영어 한국어 하드코딩
+- Settings 화면 부재
+- Reduce Motion 카메라 미적용
+- Simulator 자이로 fallback 부재
+
+위 항목들은 모두 PR #43에서 closure. 전체 변경 사항은 `CHANGELOG.md` 참조.
+
+**테스트 카운트**: 109 → 169 (+60). XCTest 카테고리는 `MissionTerminalBridge`, `CollisionDetection`, `LocalizationCoverage`, `Sprint1Polish`, `SettingsAndAudio`, `Sprint3Accessibility`.
