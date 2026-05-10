@@ -25,6 +25,24 @@ struct StageDefinition {
         return localized == key ? koreanName : localized
     }
 
+    /// Localized one-line description shown on `StageSelectView`. Looks up
+    /// `stage.<index>.description`; falls back to the legacy `description`
+    /// stored on the struct. The fallback exists so unit tests on bare
+    /// `StageDefinition` values keep passing without a strings bundle.
+    var displayDescription: String {
+        let key = "stage.\(index).description"
+        let localized = NSLocalizedString(key, comment: key)
+        return localized == key ? description : localized
+    }
+
+    /// Localized "★★★ goal: …" copy on `StageSelectView`. Looks up
+    /// `stage.<index>.star3Condition`; falls back to the static field.
+    var displayStar3Condition: String {
+        let key = "stage.\(index).star3Condition"
+        let localized = NSLocalizedString(key, comment: key)
+        return localized == key ? star3Condition : localized
+    }
+
     /// Generate ring positions for this stage
     func generateRings() -> [SCNVector3] {
         switch index {

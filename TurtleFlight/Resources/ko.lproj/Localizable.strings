@@ -9,6 +9,34 @@
 "common.home"       = "홈으로";
 "common.retry"      = "다시 도전";
 "common.next"       = "다음";
+"common.cancel"     = "취소";
+"common.done"       = "완료";
+
+// MARK: - Settings
+"settings.title"                          = "설정";
+"settings.section.audio"                  = "사운드";
+"settings.audio.mute"                     = "음소거";
+"settings.audio.bgm"                      = "배경음 볼륨";
+"settings.audio.sfx"                      = "효과음 볼륨";
+"settings.audio.preview"                  = "음 들어보기";
+
+"settings.section.progress"               = "진행 상황";
+"settings.progress.reset"                 = "진행 기록 초기화";
+"settings.progress.reset.confirm.title"   = "정말 초기화할까요?";
+"settings.progress.reset.confirm.message" = "모든 스테이지의 별 점수와 잠금 해제 기록이 사라집니다. 되돌릴 수 없어요.";
+"settings.progress.reset.confirm.action"  = "초기화";
+"settings.progress.replayOnboarding"      = "튜토리얼 다시 보기";
+
+"settings.section.about"                  = "앱 정보";
+"settings.about.version"                  = "버전";
+"settings.about.privacy"                  = "개인정보 처리방침";
+"settings.about.support"                  = "고객 지원";
+"settings.about.credits"                  = "제작 정보";
+"settings.about.credits.body"             = "Turtle Flight — 날 수 없는 동물들의 하늘 모험\n자이로 비행 어드벤처";
+
+// VoiceOver — settings entry
+"a11y.settings.label" = "설정";
+"a11y.settings.hint"  = "두 번 탭하여 설정 화면을 엽니다";
 
 // MARK: - Home screen
 "home.subtitle"           = "날 수 없는 동물들의 하늘 모험";
@@ -22,8 +50,9 @@
 "flight.mode.freePlay.subtitle" = "Free Flight";
 
 // MARK: - Flight - gyro availability
-"flight.gyro.unavailable.title"   = "자이로스코프를 사용할 수 없습니다";
-"flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서가 지원되지 않습니다. 자이로 센서가 있는 기기에서 플레이해 주세요.";
+"flight.gyro.unavailable.title"   = "자이로 센서 없음";
+"flight.gyro.unavailable.message" = "이 기기에서는 자이로 센서를 사용할 수 없어요. 화면을 손가락으로 드래그하면 임시 조종이 가능해요.";
+"flight.gyro.unavailable.continue" = "계속 진행";
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "보정";
@@ -62,6 +91,56 @@
 "stage.2.name" = "계곡 비행";
 "stage.3.name" = "산맥 넘기";
 "stage.4.name" = "스카이 레이스";
+
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "링 10개를 순서대로 통과해요";
+"stage.1.description" = "구름 기둥 사이로 체크포인트 5개를 통과해요";
+"stage.2.description" = "구불구불한 계곡을 저공비행으로 통과해요";
+"stage.3.description" = "산봉우리 7개의 정상 링을 통과해요";
+"stage.4.description" = "에어 레이스 코스를 완주해요 (링 20개)";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "60초 이내 완료";
+"stage.1.star3Condition" = "접촉 0회 + 90초 이내";
+"stage.2.star3Condition" = "접촉 0회 + 별 5개 전체 수집";
+"stage.3.star3Condition" = "전체 통과 + 120초 이내";
+"stage.4.star3Condition" = "전체 통과 + 80초 이내 + 접촉 0회";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "하늘 왕국";
+"theme.sky.subtitle"      = "구름과 무지개";
+"theme.space.displayName" = "우주 여행";
+"theme.space.subtitle"    = "별과 행성";
+"theme.ocean.displayName" = "바닷속 꿈";
+"theme.ocean.subtitle"    = "산호와 거품";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "구름 왕국";
+"theme.sky.region.1"   = "무지개 골짜기";
+"theme.sky.region.2"   = "반짝호수";
+"theme.sky.region.3"   = "바람 언덕";
+"theme.sky.region.4"   = "별빛 들판";
+"theme.sky.region.5"   = "해바라기 밭";
+"theme.sky.region.6"   = "수정 동굴";
+"theme.sky.region.7"   = "노을 해변";
+
+"theme.space.region.0" = "은하수 길";
+"theme.space.region.1" = "성운 정원";
+"theme.space.region.2" = "토성 고리공원";
+"theme.space.region.3" = "별똥별 거리";
+"theme.space.region.4" = "달 점프존";
+"theme.space.region.5" = "혜성 길";
+"theme.space.region.6" = "은하 소용돌이";
+"theme.space.region.7" = "소행성 놀이터";
+
+"theme.ocean.region.0" = "산호 성";
+"theme.ocean.region.1" = "거품 거리";
+"theme.ocean.region.2" = "해초 숲";
+"theme.ocean.region.3" = "진주 만";
+"theme.ocean.region.4" = "해파리 들판";
+"theme.ocean.region.5" = "보물 산호초";
+"theme.ocean.region.6" = "고래 노래 만";
+"theme.ocean.region.7" = "불가사리 정원";
 
 // MARK: - Vehicle display names
 "vehicle.shellJet"        = "등껍질 제트";

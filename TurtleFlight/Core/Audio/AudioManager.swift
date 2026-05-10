@@ -23,17 +23,61 @@ final class AudioManager {
             UserDefaults.standard.set(isMuted, forKey: Keys.muted)
         }
     }
-    private var bgmVolume: Float = 0.3
-    private var sfxVolume: Float = 0.5
+    /// BGM volume in [0, 1]. Persisted across launches via UserDefaults.
+    /// Applied live when changed — the active BGM player gets the new
+    /// volume immediately so the SettingsView slider reads as connected.
+    private(set) var bgmVolume: Float {
+        didSet {
+            UserDefaults.standard.set(bgmVolume, forKey: Keys.bgmVolume)
+            bgmPlayer?.volume = bgmVolume
+        }
+    }
+    /// SFX volume in [0, 1]. The vehicle loop adopts the new volume live;
+    /// one-shot SFX (boost, star, ring) read this on every fire so the
+    /// next tap reflects the latest setting.
+    private(set) var sfxVolume: Float {
+        didSet {
+            UserDefaults.standard.set(sfxVolume, forKey: Keys.sfxVolume)
+            // Vehicle loop runs at sfxVolume * 0.4 so apply the same scale.
+            activeLoopPlayer?.volume = sfxVolume * 0.4
+        }
+    }
 
     private enum Keys {
         static let muted = "audio.muted"
+        static let bgmVolume = "audio.bgmVolume"
+        static let sfxVolume = "audio.sfxVolume"
     }
+
+    /// Default volumes used on first launch. Pulled out so the SettingsView
+    /// "reset to defaults" path has a single source of truth.
+    static let defaultBGMVolume: Float = 0.3
+    static let defaultSFXVolume: Float = 0.5
 
     private init() {
         isMuted = UserDefaults.standard.bool(forKey: Keys.muted)
+        // Load persisted volumes, falling through to the design defaults
+        // when no value has been written yet (UserDefaults returns 0 for
+        // missing Float keys, which would silently mute on first launch).
+        let storedBGM = UserDefaults.standard.object(forKey: Keys.bgmVolume) as? Float
+        let storedSFX = UserDefaults.standard.object(forKey: Keys.sfxVolume) as? Float
+        bgmVolume = storedBGM ?? Self.defaultBGMVolume
+        sfxVolume = storedSFX ?? Self.defaultSFXVolume
         configureAudioSession()
         registerSessionObservers()
+    }
+
+    // MARK: - Public volume API (settings)
+
+    /// Set BGM volume in [0, 1]. Clamps out-of-range values so a slider
+    /// glitch can't push us past the AVAudioPlayer's accepted range.
+    func setBGMVolume(_ value: Float) {
+        bgmVolume = max(0, min(1, value))
+    }
+
+    /// Set SFX volume in [0, 1].
+    func setSFXVolume(_ value: Float) {
+        sfxVolume = max(0, min(1, value))
     }
 
     // MARK: - Audio Session
@@ -183,6 +227,25 @@ final class AudioManager {
         guard !isMuted else { return }
         let data = SynthAudio.generateStageFailSFX(durationSeconds: 0.8)
         playOneShot(data: data, volume: sfxVolume * 0.7)
+    }
+
+    /// Brief low-frequency thump for terrain/obstacle brushes. Distinct
+    /// from `playStageFail` (which is the bigger "mission lost" cue) — this
+    /// is more of a physical "ouch, that hurt" beat to pair with the
+    /// heavy-haptic generator on `MissionEngine.registerCollision()`.
+    func playCollision() {
+        guard !isMuted else { return }
+        let data = SynthAudio.generateCollisionSFX(durationSeconds: 0.25)
+        playOneShot(data: data, volume: sfxVolume * 0.6)
+    }
+
+    /// Single high-pitched chirp used for the 5/3/1-second mission-timer
+    /// countdown. Distinct from `playButtonTap` (which is a flatter UI
+    /// click) — this rises slightly so consecutive ticks feel urgent.
+    func playTimerTick() {
+        guard !isMuted else { return }
+        let data = SynthAudio.generateTimerTickSFX(durationSeconds: 0.18)
+        playOneShot(data: data, volume: sfxVolume * 0.55)
     }
 
     func playButtonTap() {
@@ -436,6 +499,45 @@ enum SynthAudio {
 
     static func generateButtonTapSFX(durationSeconds: Double) -> Data {
         return generateTone(frequencies: [800], duration: durationSeconds, envelope: .decay, amplitude: 0.3)
+    }
+
+    /// 1100Hz tick that rises ~50Hz across its duration. Short enough to
+    /// not muddle voiceover, distinct from button taps so the player reads
+    /// it as urgency rather than feedback.
+    static func generateTimerTickSFX(durationSeconds: Double) -> Data {
+        let numSamples = Int(sampleRate * durationSeconds)
+        var samples = [Int16](repeating: 0, count: numSamples)
+        for i in 0..<numSamples {
+            let t = Double(i) / sampleRate
+            let progress = t / durationSeconds
+            let freq = 1100.0 + progress * 50.0
+            // Sharp attack, quick decay → reads as a "tick" rather than a tone.
+            let env = (progress < 0.05 ? progress / 0.05 : exp(-(progress - 0.05) * 8.0))
+            let sample = sin(2.0 * .pi * freq * t) * env * 0.55
+            samples[i] = Int16(clamping: Int(sample * 16000))
+        }
+        return wavData(from: samples)
+    }
+
+    /// Short low-frequency thump (~80Hz) with a fast decay envelope and a
+    /// touch of noise so it reads as a physical brush rather than a tone.
+    /// Pairs with `UIImpactFeedbackGenerator(style: .heavy)` on collision.
+    static func generateCollisionSFX(durationSeconds: Double) -> Data {
+        let numSamples = Int(sampleRate * durationSeconds)
+        var samples = [Int16](repeating: 0, count: numSamples)
+        for i in 0..<numSamples {
+            let t = Double(i) / sampleRate
+            let progress = t / durationSeconds
+            // Fast exponential decay — most of the energy in the first 60ms.
+            let env = exp(-progress * 12.0)
+            // Two layered low sines for a chunkier thump than a pure tone.
+            var sample = sin(2.0 * .pi * 80.0 * t) * 0.5
+            sample += sin(2.0 * .pi * 120.0 * t) * 0.25
+            // Brief noise burst at the very front for the "thud" attack.
+            sample += whiteNoise() * 0.15 * exp(-progress * 25.0)
+            samples[i] = Int16(clamping: Int(sample * env * 18000))
+        }
+        return wavData(from: samples)
     }
 
     // MARK: - Helpers

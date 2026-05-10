@@ -31,8 +31,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "turbo_turtle",
                 defaultVehicle: .shellJet,
                 availableVehicles: [.shellJet, .cloudSurf],
-                description: L10n.t("character.turtle.description"),
-                personality: "느리지만 꿋꿋한. 고글 착용"
+                description: L10n.t("character.turtle.description")
             )
         case .penguin:
             return CharacterConfig(
@@ -42,8 +41,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "pip_penguin",
                 defaultVehicle: .bellyGlider,
                 availableVehicles: [.bellyGlider, .cloudSurf],
-                description: L10n.t("character.penguin.description"),
-                personality: "통통하고 명랑. 스카프 휘날림"
+                description: L10n.t("character.penguin.description")
             )
         case .hamster:
             return CharacterConfig(
@@ -53,8 +51,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "nutty_hamster",
                 defaultVehicle: .hamsterCopter,
                 availableVehicles: [.hamsterCopter, .cloudSurf],
-                description: L10n.t("character.hamster.description"),
-                personality: "호기심 왕. 볼이 빵빵하게 부풀어 있음"
+                description: L10n.t("character.hamster.description")
             )
         case .cat:
             return CharacterConfig(
@@ -64,8 +61,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "mochi_cat",
                 defaultVehicle: .cushionBalloon,
                 availableVehicles: [.cushionBalloon, .cloudSurf],
-                description: L10n.t("character.cat.description"),
-                personality: "도도한 츤데레. 별 표시 + 방울 목걸이"
+                description: L10n.t("character.cat.description")
             )
         case .frog:
             return CharacterConfig(
@@ -75,8 +71,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "bounce_frog",
                 defaultVehicle: .balloonBody,
                 availableVehicles: [.balloonBody, .cloudSurf],
-                description: L10n.t("character.frog.description"),
-                personality: "느긋한 성격. 볼이 부풀면 표정 변화"
+                description: L10n.t("character.frog.description")
             )
         case .bunny:
             return CharacterConfig(
@@ -86,8 +81,7 @@ enum CharacterType: String, CaseIterable, Codable {
                 modelName: "hoppy_bunny",
                 defaultVehicle: .carrotJet,
                 availableVehicles: [.carrotJet, .cloudSurf],
-                description: L10n.t("character.bunny.description"),
-                personality: "수줍지만 모험심 많은. 한쪽 귀에 꽃, 한쪽 귀가 살짝 처짐"
+                description: L10n.t("character.bunny.description")
             )
         }
     }
@@ -101,5 +95,4 @@ struct CharacterConfig {
     let defaultVehicle: VehicleType
     let availableVehicles: [VehicleType]
     let description: String
-    let personality: String
 }

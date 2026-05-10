@@ -43,7 +43,7 @@ struct FlightView: View {
             HUDOverlay(flightVM: flightVM)
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
-                MissionHUD(missionEngine: engine, missionVM: missionVM)
+                MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
             }
 
             ControlButtons(
@@ -64,7 +64,8 @@ struct FlightView: View {
                         flightVM.stopFlight()
                         dismiss()
                     }
-                }
+                },
+                boostProgress: flightVM.boostProgress
             )
 
             // Step Goal — full-screen StageResultView when the mission
@@ -106,7 +107,7 @@ struct FlightView: View {
                         // result-overlay Retry semantics.
                         if flightMode == .stepGoal,
                            let stage = missionVM.currentStage {
-                            flightVM.missionEngine?.startStage(stage)
+                            flightVM.startStage(stage)
                             missionVM.startMission()
                         }
                     },
@@ -142,7 +143,9 @@ struct FlightView: View {
             }
         }
         .alert(L10n.t("flight.gyro.unavailable.title"), isPresented: $showGyroAlert) {
-            Button(L10n.t("common.ok")) { dismiss() }
+            // Don't dismiss the flight — the SceneKitView's pan-gesture
+            // fallback lets the player still steer (DESIGN_GAP_REPORT P2-7).
+            Button(L10n.t("flight.gyro.unavailable.continue")) {}
         } message: {
             Text(L10n.t("flight.gyro.unavailable.message"))
         }
@@ -178,13 +181,13 @@ struct FlightView: View {
                             dismiss()
                         },
                         onRetry: {
-                            flightVM.missionEngine?.startStage(stage)
+                            flightVM.startStage(stage)
                             missionVM.startMission()
                         },
                         onNext: {
                             if missionVM.advanceToNextStage(),
                                let next = missionVM.currentStage {
-                                flightVM.missionEngine?.startStage(next)
+                                flightVM.startStage(next)
                                 missionVM.startMission()
                             }
                         }
@@ -203,7 +206,7 @@ struct FlightView: View {
                         dismiss()
                     },
                     onRetry: {
-                        flightVM.missionEngine?.startStage(stage)
+                        flightVM.startStage(stage)
                         missionVM.startMission()
                     },
                     onNext: { /* unused for failure */ }
@@ -218,6 +221,23 @@ struct FlightView: View {
     // MARK: - Scene Setup
 
     private func setupScene() {
+        // Bridge MissionEngine terminal-state transitions to MissionViewModel
+        // so Step Goal mode actually completes from the player's POV: the
+        // StageResultView overlay surfaces, star scores persist, and the
+        // next stage unlocks. Without this bridge the engine ends the
+        // mission internally but no visible UI ever changes — the player
+        // is left flying forever after clearing all rings.
+        flightVM.onMissionTerminalState = { [missionVM] state in
+            switch state {
+            case .completed(let result):
+                missionVM.completeMission(result: result)
+            case .failed(let reason):
+                missionVM.failMission(reason: reason)
+            case .notStarted, .inProgress:
+                break
+            }
+        }
+
         scene.background.contents = mapTheme.backgroundColor
 
         // Ambient light
@@ -256,7 +276,10 @@ struct FlightView: View {
         }
 
         if flightMode == .stepGoal, let stage = missionVM.currentStage {
-            flightVM.missionEngine?.startStage(stage)
+            // Use the FlightViewModel helper so the engine sees the
+            // terrain height function — Stage 3 ring clearance + Stage 4
+            // mountain pillars both depend on it.
+            flightVM.startStage(stage)
             missionVM.startMission()
         }
     }
@@ -325,7 +348,9 @@ struct SceneKitView: UIViewRepresentable {
     let flightVM: FlightViewModel
     let onUpdate: (TimeInterval) -> Void
 
-    func makeCoordinator() -> Coordinator { Coordinator(onUpdate: onUpdate) }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onUpdate: onUpdate, flightVM: flightVM)
+    }
 
     func makeUIView(context: Context) -> SCNView {
         let scnView = SCNView()
@@ -335,6 +360,17 @@ struct SceneKitView: UIViewRepresentable {
         scnView.showsStatistics = false
         scnView.preferredFramesPerSecond = 60
         scnView.antialiasingMode = .multisampling2X
+
+        // Simulator / iPad-without-gyro fallback: a pan gesture on the
+        // scene view is mapped to roll / pitch input so the app stays
+        // exhibitable without a real device. Real-device sessions ignore
+        // this input (`GyroController.injectFallback` short-circuits when
+        // the gyro is available). See P2-7 in DESIGN_GAP_REPORT.
+        let pan = UIPanGestureRecognizer(target: context.coordinator,
+                                          action: #selector(Coordinator.handlePan(_:)))
+        pan.maximumNumberOfTouches = 1
+        scnView.addGestureRecognizer(pan)
+
         return scnView
     }
 
@@ -342,10 +378,42 @@ struct SceneKitView: UIViewRepresentable {
 
     class Coordinator: NSObject, SCNSceneRendererDelegate {
         var onUpdate: ((TimeInterval) -> Void)?
-        init(onUpdate: @escaping (TimeInterval) -> Void) { self.onUpdate = onUpdate }
+        let flightVM: FlightViewModel
+
+        init(onUpdate: @escaping (TimeInterval) -> Void,
+             flightVM: FlightViewModel) {
+            self.onUpdate = onUpdate
+            self.flightVM = flightVM
+        }
+
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
             DispatchQueue.main.async { [weak self] in
                 self?.onUpdate?(time)
+            }
+        }
+
+        /// Pan-gesture → fallback input. Only fires meaningful samples
+        /// when the gyro is unavailable; the GyroController side guards
+        /// the same condition. Mapping: drag right to roll right, drag
+        /// up (translation.y < 0) to pitch up. Range scales by view
+        /// half-extents so a full-edge drag reads as ±1.0 input.
+        @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
+            guard let view = recognizer.view else { return }
+            switch recognizer.state {
+            case .began, .changed:
+                let translation = recognizer.translation(in: view)
+                let halfWidth  = max(view.bounds.width  / 2, 1)
+                let halfHeight = max(view.bounds.height / 2, 1)
+                let roll  = Double(translation.x / halfWidth)
+                let pitch = Double(-translation.y / halfHeight)
+                flightVM.gyroController.injectFallback(
+                    rollNormalized: roll,
+                    pitchNormalized: pitch
+                )
+            case .ended, .cancelled, .failed:
+                flightVM.gyroController.releaseFallback()
+            default:
+                break
             }
         }
     }

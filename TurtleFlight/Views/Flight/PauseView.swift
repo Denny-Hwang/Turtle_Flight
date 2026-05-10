@@ -34,7 +34,7 @@ struct PauseView: View {
                     .foregroundColor(Theme.Color.textOnDark)
 
                 Text(L10n.t("flight.pause.subtitle"))
-                    .font(Theme.Typography.bodyLarge)
+                    .font(Theme.Typography.bodyDynamic)
                     .foregroundColor(Theme.Color.textOnDarkMuted)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Theme.Spacing.xl)

@@ -7,12 +7,11 @@ enum MapTheme: String, CaseIterable, Codable {
     case space
     case ocean
 
+    /// Localized title shown in the map-picker card. Falls through to the
+    /// raw key if a `.strings` file omits the entry — that surfaces the
+    /// missing translation in QA rather than silently shipping English.
     var displayName: String {
-        switch self {
-        case .sky:   return "Sky Kingdom"
-        case .space: return "Cosmic Voyage"
-        case .ocean: return "Ocean Dream"
-        }
+        L10n.t("theme.\(rawValue).displayName")
     }
 
     var emoji: String {
@@ -23,12 +22,9 @@ enum MapTheme: String, CaseIterable, Codable {
         }
     }
 
+    /// Localized subtitle ("Clouds & Rainbows", "별과 행성", …).
     var subtitle: String {
-        switch self {
-        case .sky:   return "Clouds & Rainbows"
-        case .space: return "Stars & Planets"
-        case .ocean: return "Coral & Bubbles"
-        }
+        L10n.t("theme.\(rawValue).subtitle")
     }
 
     var icon: String {
@@ -121,41 +117,12 @@ enum MapTheme: String, CaseIterable, Codable {
 
     // MARK: - Region Names
 
+    /// 8 localized region names that fade in/out at the bottom of the HUD
+    /// as the player moves through the world. Looked up via
+    /// `theme.<themeId>.region.<n>` so Korean players see "구름 왕국"
+    /// instead of "Cloud Kingdom". The count (8) is fixed across themes
+    /// — `FlightViewModel.updateRegionName` indexes modulo this length.
     var regionNames: [String] {
-        switch self {
-        case .sky:
-            return [
-                "Cloud Kingdom",
-                "Rainbow Valley",
-                "Sparkle Lake",
-                "Windy Hills",
-                "Starlight Plains",
-                "Sunflower Fields",
-                "Crystal Caves",
-                "Sunset Beach"
-            ]
-        case .space:
-            return [
-                "Milky Way Lane",
-                "Nebula Garden",
-                "Saturn's Ring Park",
-                "Shooting Star Alley",
-                "Moon Bounce Zone",
-                "Comet Trail",
-                "Galaxy Whirlpool",
-                "Asteroid Playground"
-            ]
-        case .ocean:
-            return [
-                "Coral Castle",
-                "Bubble Boulevard",
-                "Seaweed Forest",
-                "Pearl Harbor Cove",
-                "Jellyfish Meadow",
-                "Treasure Reef",
-                "Whale Song Bay",
-                "Starfish Garden"
-            ]
-        }
+        (0..<8).map { L10n.t("theme.\(rawValue).region.\($0)") }
     }
 }

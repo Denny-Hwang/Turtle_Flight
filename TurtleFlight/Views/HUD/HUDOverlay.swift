@@ -3,6 +3,13 @@ import SwiftUI
 struct HUDOverlay: View {
     @ObservedObject var flightVM: FlightViewModel
 
+    /// Pulsing scale applied to the star counter on each pickup. Starts
+    /// at 1.0, springs to 1.4 on collection, then settles back. Driven
+    /// by `.onChange(of: starsCollected)` below — there's no direct
+    /// "pickup happened" event, but the published counter monotonically
+    /// increases so any rise is a pickup.
+    @State private var starCounterScale: CGFloat = 1.0
+
     var body: some View {
         VStack {
             // Top HUD Bar
@@ -60,7 +67,9 @@ struct HUDOverlay: View {
 
             // Bottom: Region Name (center) + Star Counter (left)
             HStack {
-                // Star counter
+                // Star counter — pulses scale on each pickup so the
+                // visceral "I just got one" feedback loop reads even
+                // without watching the world animate.
                 HStack(spacing: Theme.Spacing.xs) {
                     Image(systemName: "star.fill")
                         .foregroundColor(Theme.Color.starGold)
@@ -75,6 +84,21 @@ struct HUDOverlay: View {
                     RoundedRectangle(cornerRadius: Theme.Radius.s)
                         .fill(Theme.Color.surfaceOverlay)
                 )
+                .scaleEffect(starCounterScale)
+                .onChange(of: flightVM.starsCollected) { _ in
+                    // Spring up, then settle back. The delayed return
+                    // beat lets the eye register the count change before
+                    // the chip relaxes — under 0.4s total so it never
+                    // blocks the next pickup's animation.
+                    withAnimation(.spring(response: 0.18, dampingFraction: 0.45)) {
+                        starCounterScale = 1.4
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                        withAnimation(.spring(response: 0.22, dampingFraction: 0.7)) {
+                            starCounterScale = 1.0
+                        }
+                    }
+                }
 
                 Spacer()
 

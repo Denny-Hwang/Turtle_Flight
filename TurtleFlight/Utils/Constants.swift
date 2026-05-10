@@ -70,6 +70,29 @@ enum Constants {
         static let starCollectionRadius: Float = 10.0
         static let projectileSpeed: Float = 50.0
         static let projectileLifetime: TimeInterval = 3.0
+        /// Refill threshold — once uncollected pool drops below this count
+        /// (and the cooldown has elapsed), the flight loop spawns a fresh
+        /// cluster around the player. Tuned so the player rarely *sees*
+        /// the field empty without making it feel infinite either.
+        static let starRespawnThreshold: Int = 3
+        /// Minimum interval between two respawn calls. A flat-out flier
+        /// could otherwise dump a fresh cluster every couple of seconds.
+        static let starRespawnCooldown: TimeInterval = 4.0
+    }
+
+    // MARK: - Collision
+    enum Collision {
+        /// Vertical clearance (in world units) between the character billboard
+        /// and the terrain mesh below it. Below this the flight loop registers
+        /// a collision with `MissionEngine.registerCollision()`. Tuned so the
+        /// player has to actually graze the surface — not so loose that
+        /// hovering 30m up trips it constantly.
+        static let groundClearance: Float = 8.0
+        /// Minimum gap between consecutive collision events. A flat hilltop
+        /// would otherwise spam ~60 collisions/sec at 60fps, killing the
+        /// 3-star eligibility on the first contact frame. 0.5s gives the
+        /// player time to correct before a second penalty.
+        static let cooldown: TimeInterval = 0.5
     }
 
     // MARK: - Region Names (fallback — themes supply their own)

@@ -23,6 +23,14 @@ final class ItemSystem {
     private(set) var starsCollected: Int = 0
     private let parentNode: SCNNode
 
+    /// Stars in the pool that haven't been picked up yet. Used by the
+    /// flight loop to decide when to spawn fresh ones (Free Flight runs
+    /// otherwise become star-deserts after the initial cluster is cleaned
+    /// up).
+    var uncollectedStarCount: Int {
+        stars.lazy.filter { !$0.isCollected }.count
+    }
+
     init(parentNode: SCNNode) {
         self.parentNode = parentNode
     }

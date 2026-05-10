@@ -137,14 +137,18 @@ struct OnboardingCard: View {
             illustrationView
                 .frame(maxWidth: .infinity, maxHeight: 180)
 
+            // Dynamic Type aware — onboarding is the first text the
+            // player reads, and a parent who has Larger Text enabled
+            // for their child should not have to squint at the tutorial
+            // because the title was hard-coded at 22pt.
             Text(title)
-                .font(Theme.Typography.title)
+                .font(Theme.Typography.titleDynamic)
                 .foregroundColor(Theme.Color.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.xl)
 
             Text(body)
-                .font(Theme.Typography.bodyLarge)
+                .font(Theme.Typography.bodyDynamic)
                 .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)

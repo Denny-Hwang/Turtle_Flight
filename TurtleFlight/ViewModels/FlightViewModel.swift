@@ -53,6 +53,47 @@ final class FlightViewModel: ObservableObject {
     /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
     private var expressionLatch = ExpressionLatch()
 
+    /// Last observed MissionEngine state key. Used to edge-detect terminal
+    /// transitions (.completed / .failed) so the FlightView can bridge them
+    /// to MissionViewModel exactly once. The expression latch uses the same
+    /// key shape but maintains its own copy — they're orthogonal concerns
+    /// (UI/persistence vs. cosmetic facial cue).
+    private var lastObservedMissionStateKey: String = "notStarted"
+
+    /// Wall-clock time of the last collision event. Used to debounce so
+    /// hugging the terrain at 60fps doesn't fire 60 collisions/sec.
+    private var lastCollisionTime: TimeInterval = 0
+
+    /// Last second-bucket the timer-countdown beep fired in. -1 means
+    /// "no beep emitted yet for this run". The beep sequence (5/3/1s)
+    /// only fires once per integer second, so this is reset on stage
+    /// start and updated each frame the engine still has time left.
+    private var lastTimerBeepBucket: Int = -1
+
+    /// Wall-clock time of the most recent free-flight star respawn.
+    /// Debounces respawn so we don't dump a fresh ring every frame the
+    /// pool happens to read low.
+    private var lastStarSpawnTime: TimeInterval = 0
+
+    /// Live direction (radians) from the character to the active mission
+    /// ring, **relative to current heading**. 0 = straight ahead, +π/2 =
+    /// 90° to the right, ±π = directly behind. Nil while no Step-Goal
+    /// stage is active. Drives the objective compass arrow on MissionHUD.
+    @Published private(set) var directionToObjective: Double? = nil
+
+    /// Boost progress in [0, 1]. 0 = ready (full ring), 1 = full duration
+    /// boost just started. Drives the cooldown/duration ring overlaid on
+    /// the boost ThumbButton.
+    @Published private(set) var boostProgress: Float = 0
+
+    /// Fired exactly once when the MissionEngine transitions to a terminal
+    /// state (.completed or .failed). The FlightView wires this to
+    /// `MissionViewModel.completeMission(result:)` /
+    /// `failMission(reason:)` so star scores, stage progression, and the
+    /// `StageResultView` overlay all actually run. Without this bridge the
+    /// Step Goal mode never ends from the player's perspective.
+    var onMissionTerminalState: ((MissionEngine.MissionState) -> Void)?
+
     // MARK: - Trail emitter
     /// Empty SCNNode that sits ~1.2 world units behind the character along
     /// its heading; the per-vehicle trail particle system is attached here.
@@ -143,6 +184,7 @@ final class FlightViewModel: ObservableObject {
         self.vehicleNode = nil
         self.lastDisplayedExpression = .default
         self.expressionLatch.reset()
+        self.lastObservedMissionStateKey = "notStarted"
 
         // Build per-vehicle trail emitter and attach to scene root (not the
         // billboard) so its world position can track behind the heading.
@@ -197,6 +239,24 @@ final class FlightViewModel: ObservableObject {
         trailEmitterNode = nil
         trailParticleSystem = nil
         baseTrailBirthRate = 0
+        // Drop the Step-Goal-only published values so a follow-up Free
+        // Flight doesn't read stale objective indicators.
+        directionToObjective = nil
+        boostProgress = 0
+        lastTimerBeepBucket = -1
+    }
+
+    /// Start a Step-Goal stage with terrain-aware ring clamping. Wrapper
+    /// that supplies `MissionEngine.startStage` with a height function
+    /// so rings can't spawn inside the terrain (Stage 3 regression) and
+    /// Stage 4's procedural mountain pillars sit on the actual ground.
+    /// Resets the per-stage beep bucket so the 5/3/1s countdown chimes
+    /// don't carry over from the previous run.
+    func startStage(_ stage: StageDefinition) {
+        lastTimerBeepBucket = -1
+        missionEngine?.startStage(stage) { [weak self] x, z in
+            self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
+        }
     }
 
     // MARK: - Pause / Resume
@@ -234,6 +294,11 @@ final class FlightViewModel: ObservableObject {
         flightTime = 0
         starsCollected = 0
         isBoosting = false
+        // Reset mission-transition observer so a Retry's terminal state
+        // re-fires the bridge (the key was last "completed"/"failed" if the
+        // player came from a result screen).
+        lastObservedMissionStateKey = "notStarted"
+        expressionLatch.reset()
         // If we were paused, drop the modal too.
         isPaused = false
         gyroController.start()
@@ -337,13 +402,187 @@ final class FlightViewModel: ObservableObject {
         itemSystem?.updateStarAnimations(deltaTime: deltaTime)
         itemSystem?.updateProjectiles(deltaTime: deltaTime)
 
+        // Ground-clearance collision check. Runs BEFORE the mission update
+        // so the registered collision is already counted when the engine
+        // tallies stars on the same frame the final ring is passed. Only
+        // active during Step Goal — Free Flight has no collision metric.
+        if let pos = characterNode?.position {
+            checkGroundCollision(at: pos)
+        }
+
         // Update mission
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
         }
 
+        // Edge-detect mission terminal-state transitions and emit exactly one
+        // event per transition. Without this bridge the MissionViewModel
+        // stays at .playing forever — StageResultView never appears, star
+        // scores never persist, and Stage 2+ never unlocks. The same key
+        // shape feeds the cosmetic ExpressionLatch above; we keep a separate
+        // copy here because the lifecycle concerns (UI flow, persistence)
+        // are independent of the facial cue.
+        observeMissionTerminalTransition()
+
+        // Refresh derived per-frame published state for the UI (objective
+        // arrow, boost cooldown ring). Cheap to recompute; cheaper than
+        // making the views poll every frame.
+        updateObjectiveDirection(flightState: flightState)
+        updateBoostProgress(flightState: flightState)
+
+        // Audio: timer countdown beep buckets (5s / 3s / 1s) and star
+        // respawn for endless Free Flight runs. Both side-effecting, so
+        // run last after the published state has settled.
+        emitTimerCountdownBeepIfNeeded()
+        respawnStarsIfDepleted()
+
         // Update region name
         updateRegionName()
+    }
+
+    /// Refresh `directionToObjective` from the active mission's current
+    /// ring. Returns nil when there's no in-progress mission, so the HUD
+    /// can hide the arrow during Free Flight.
+    private func updateObjectiveDirection(flightState: FlightEngine.FlightState) {
+        guard let engine = missionEngine,
+              case .inProgress = engine.state,
+              let ringPos = engine.currentRingPosition
+        else {
+            if directionToObjective != nil { directionToObjective = nil }
+            return
+        }
+        let pos = flightState.position
+        let dx = ringPos.x - pos.x
+        let dz = ringPos.z - pos.z
+        // heading 0 = facing -Z (north). atan2(dx, -dz) maps that to 0.
+        let angleToRing = atan2(dx, -dz)
+        let headingRad = Double(flightState.heading).rad
+        var relative = Double(angleToRing) - headingRad
+        // Normalise to [-π, π] so the SwiftUI rotationEffect always picks
+        // the short way around.
+        while relative > .pi  { relative -= 2 * .pi }
+        while relative < -.pi { relative += 2 * .pi }
+        directionToObjective = relative
+    }
+
+    /// Refresh `boostProgress` (0…1) from the engine's remaining boost
+    /// time. Drives the cooldown ring overlaid on the boost ThumbButton.
+    private func updateBoostProgress(flightState: FlightEngine.FlightState) {
+        let dur = Float(Constants.Flight.boostDuration)
+        guard dur > 0 else { boostProgress = 0; return }
+        boostProgress = max(0, min(1, flightState.boostTimeRemaining / dur))
+    }
+
+    /// Fire a one-shot countdown chirp on the integer-second boundary
+    /// when there are 5, 3, or 1 seconds left. Idempotent across frames
+    /// thanks to `lastTimerBeepBucket` — the same second never beeps twice.
+    private func emitTimerCountdownBeepIfNeeded() {
+        guard let remaining = missionEngine?.remainingTime, remaining > 0 else {
+            return
+        }
+        let bucket = Int(ceil(remaining))
+        let triggers: Set<Int> = [5, 3, 1]
+        guard triggers.contains(bucket), bucket != lastTimerBeepBucket else {
+            return
+        }
+        lastTimerBeepBucket = bucket
+        AudioManager.shared.playTimerTick()
+    }
+
+    /// Refill the star pool when only a handful of uncollected stars
+    /// remain. Without this, Free Flight runs become star-deserts after
+    /// the player picks up the initial 10. Debounced via
+    /// `Constants.Items.starRespawnCooldown`.
+    private func respawnStarsIfDepleted() {
+        guard let items = itemSystem,
+              let pos = characterNode?.position,
+              items.uncollectedStarCount < Constants.Items.starRespawnThreshold
+        else { return }
+        let now = CACurrentMediaTime()
+        guard now - lastStarSpawnTime > Constants.Items.starRespawnCooldown else {
+            return
+        }
+        lastStarSpawnTime = now
+        items.spawnStars(around: pos)
+    }
+
+    /// Edge-detect MissionEngine state transitions; fire `onMissionTerminalState`
+    /// exactly once when the engine flips into `.completed` or `.failed`.
+    /// Idempotent across frames: repeated frames in the same terminal state
+    /// don't re-fire because the key only updates on transition.
+    private func observeMissionTerminalTransition() {
+        let key = Self.missionStateKey(missionEngine?.state)
+        guard Self.shouldEmitMissionTerminalEvent(currentKey: key,
+                                                   lastKey: lastObservedMissionStateKey) else {
+            // Always advance the stored key — even on a non-terminal change
+            // (e.g. inProgress→inProgress is the common case, but we also
+            // need to drop the latch when leaving a terminal back to
+            // notStarted/inProgress so a Retry re-arms.)
+            lastObservedMissionStateKey = key
+            return
+        }
+        lastObservedMissionStateKey = key
+        guard let state = missionEngine?.state else { return }
+        switch state {
+        case .completed, .failed:
+            onMissionTerminalState?(state)
+        case .notStarted, .inProgress:
+            break
+        }
+    }
+
+    /// Pure decision: given the engine's current state-key and the key we
+    /// last observed, should we fire `onMissionTerminalState` this frame?
+    /// Extracted as a static helper so unit tests can pin the edge-
+    /// detection without spinning up a full SceneKit scene + gyro stack.
+    static func shouldEmitMissionTerminalEvent(currentKey: String,
+                                                lastKey: String) -> Bool {
+        guard currentKey != lastKey else { return false }
+        return currentKey == "completed" || currentKey == "failed"
+    }
+
+    /// Register a collision when the character flies dangerously close to
+    /// the terrain mesh. Debounced via `Constants.Collision.cooldown` so a
+    /// flat hilltop doesn't tally 60 hits/sec. Only counts during an active
+    /// mission — Free Flight has no collision metric to feed.
+    ///
+    /// Why ground-clearance and not full physics? FlightEngine clamps
+    /// altitude at the profile's `minAltitude` (50/20/5m), but terrain can
+    /// rise to 300m. The intuitive failure mode "I just clipped a mountain"
+    /// is exactly what this function tracks. A future PR can layer NPC /
+    /// ring-rim brush detection on top.
+    private func checkGroundCollision(at pos: SCNVector3) {
+        guard let engine = missionEngine,
+              case .inProgress = engine.state,
+              let terrain = terrainGenerator
+        else { return }
+        let groundHeight = terrain.heightAt(x: pos.x, z: pos.z)
+        let clearance = pos.y - groundHeight
+        let now = CACurrentMediaTime()
+        guard Self.shouldRegisterCollision(clearance: clearance,
+                                            now: now,
+                                            lastCollisionTime: lastCollisionTime) else {
+            return
+        }
+        lastCollisionTime = now
+        engine.registerCollision()
+        // Heavy haptic + dedicated collision thump so the player feels the
+        // brush. Synth-generated, so no asset cost.
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.prepare()
+        generator.impactOccurred()
+        AudioManager.shared.playCollision()
+    }
+
+    /// Pure decision: should a collision be registered given the current
+    /// clearance and the wall-clock gap since the last collision? Used by
+    /// `checkGroundCollision` and exercised directly by tests so the
+    /// debounce + threshold logic is pinned without needing a SCNScene.
+    static func shouldRegisterCollision(clearance: Float,
+                                         now: TimeInterval,
+                                         lastCollisionTime: TimeInterval) -> Bool {
+        guard clearance < Constants.Collision.groundClearance else { return false }
+        return now - lastCollisionTime > Constants.Collision.cooldown
     }
 
     // MARK: - Actions
@@ -393,14 +632,22 @@ final class FlightViewModel: ObservableObject {
 
         let targetPos = SCNVector3(targetX, targetY, targetZ)
 
-        // Smooth camera follow
-        let t = Constants.Camera.lerpSpeed
+        // Camera lerp speed. With Reduce Motion enabled, slow the lerp
+        // so the chase camera glides instead of snapping — small reduces
+        // visual swing during turns, which the spec calls out as a
+        // motion-sickness mitigation. The factor (0.45×) was picked so
+        // rapid-fire turns still feel responsive but oscillation is
+        // damped.
+        let baseSpeed = Constants.Camera.lerpSpeed
+        let t = reduceMotionEnabled ? baseSpeed * 0.45 : baseSpeed
         camNode.position = SCNVector3.lerp(camNode.position, targetPos, t: t)
 
         // Look at character
         let lookAt = SCNLookAtConstraint(target: charNode)
         lookAt.isGimbalLockEnabled = true
-        lookAt.influenceFactor = 0.9
+        // Slacken the look-at constraint when Reduce Motion is on so the
+        // camera doesn't jerk toward the character during sharp banks.
+        lookAt.influenceFactor = reduceMotionEnabled ? 0.5 : 0.9
         camNode.constraints = [lookAt]
     }
 

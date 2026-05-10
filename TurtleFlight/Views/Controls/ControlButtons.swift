@@ -6,6 +6,10 @@ struct ControlButtons: View {
     let onCalibrate: () -> Void
     let onPause: () -> Void
     let onExit: () -> Void
+    /// Boost ring fill in [0, 1]. 0 = idle (no ring drawn), 1 = full
+    /// duration just-fired. Drains as the boost timer counts down so the
+    /// player can read remaining boost at a glance.
+    var boostProgress: Float = 0
 
     var body: some View {
         VStack {
@@ -43,11 +47,14 @@ struct ControlButtons: View {
 
             // Bottom: Boost (left) + Fire (right)
             HStack {
-                // Boost Button (left bottom)
+                // Boost Button (left bottom). The progress ring drains
+                // from full → empty as the boost timer counts down so
+                // the player can read remaining boost at a glance.
                 ThumbButton(
                     icon: "flame.fill",
                     label: L10n.t("flight.control.boost"),
                     color: Theme.Color.boostOrange,
+                    progress: boostProgress,
                     action: onBoost
                 )
                 .padding(.leading, Constants.Controls.buttonPadding)
@@ -78,6 +85,11 @@ struct ThumbButton: View {
     let icon: String
     let label: String
     let color: Color
+    /// Optional progress ring overlay in [0, 1]. 0 hides the ring; >0
+    /// draws a circular stroke that fills clockwise from the top so the
+    /// player can read remaining time at a glance. Used by the boost
+    /// button — the fire button just leaves it at the default.
+    var progress: Float = 0
     let action: () -> Void
 
     @State private var isPressed = false
@@ -102,6 +114,7 @@ struct ThumbButton: View {
                     .fill(color)
                     .shadow(color: color.opacity(0.5), radius: 6, y: 2)
             )
+            .overlay(progressRing)
         }
         .scaleEffect(isPressed ? 0.9 : 1.0)
         .simultaneousGesture(
@@ -109,6 +122,26 @@ struct ThumbButton: View {
                 .onChanged { _ in isPressed = true }
                 .onEnded { _ in isPressed = false }
         )
+    }
+
+    /// Circular progress overlay drawn just outside the button's circle.
+    /// Hidden when progress is zero so idle buttons don't get a 0%-arc
+    /// ghost. The white stroke + drop shadow lifts the ring off the
+    /// button colour without needing a translucent fill.
+    @ViewBuilder
+    private var progressRing: some View {
+        if progress > 0.001 {
+            Circle()
+                .trim(from: 0, to: CGFloat(min(max(progress, 0), 1)))
+                .stroke(
+                    Color.white.opacity(0.92),
+                    style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+                .padding(2)
+                .animation(.linear(duration: 0.12), value: progress)
+                .accessibilityHidden(true)
+        }
     }
 }
 
