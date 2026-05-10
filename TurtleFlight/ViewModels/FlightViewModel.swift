@@ -632,14 +632,22 @@ final class FlightViewModel: ObservableObject {
 
         let targetPos = SCNVector3(targetX, targetY, targetZ)
 
-        // Smooth camera follow
-        let t = Constants.Camera.lerpSpeed
+        // Camera lerp speed. With Reduce Motion enabled, slow the lerp
+        // so the chase camera glides instead of snapping — small reduces
+        // visual swing during turns, which the spec calls out as a
+        // motion-sickness mitigation. The factor (0.45×) was picked so
+        // rapid-fire turns still feel responsive but oscillation is
+        // damped.
+        let baseSpeed = Constants.Camera.lerpSpeed
+        let t = reduceMotionEnabled ? baseSpeed * 0.45 : baseSpeed
         camNode.position = SCNVector3.lerp(camNode.position, targetPos, t: t)
 
         // Look at character
         let lookAt = SCNLookAtConstraint(target: charNode)
         lookAt.isGimbalLockEnabled = true
-        lookAt.influenceFactor = 0.9
+        // Slacken the look-at constraint when Reduce Motion is on so the
+        // camera doesn't jerk toward the character during sharp banks.
+        lookAt.influenceFactor = reduceMotionEnabled ? 0.5 : 0.9
         camNode.constraints = [lookAt]
     }
 

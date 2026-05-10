@@ -23,17 +23,61 @@ final class AudioManager {
             UserDefaults.standard.set(isMuted, forKey: Keys.muted)
         }
     }
-    private var bgmVolume: Float = 0.3
-    private var sfxVolume: Float = 0.5
+    /// BGM volume in [0, 1]. Persisted across launches via UserDefaults.
+    /// Applied live when changed — the active BGM player gets the new
+    /// volume immediately so the SettingsView slider reads as connected.
+    private(set) var bgmVolume: Float {
+        didSet {
+            UserDefaults.standard.set(bgmVolume, forKey: Keys.bgmVolume)
+            bgmPlayer?.volume = bgmVolume
+        }
+    }
+    /// SFX volume in [0, 1]. The vehicle loop adopts the new volume live;
+    /// one-shot SFX (boost, star, ring) read this on every fire so the
+    /// next tap reflects the latest setting.
+    private(set) var sfxVolume: Float {
+        didSet {
+            UserDefaults.standard.set(sfxVolume, forKey: Keys.sfxVolume)
+            // Vehicle loop runs at sfxVolume * 0.4 so apply the same scale.
+            activeLoopPlayer?.volume = sfxVolume * 0.4
+        }
+    }
 
     private enum Keys {
         static let muted = "audio.muted"
+        static let bgmVolume = "audio.bgmVolume"
+        static let sfxVolume = "audio.sfxVolume"
     }
+
+    /// Default volumes used on first launch. Pulled out so the SettingsView
+    /// "reset to defaults" path has a single source of truth.
+    static let defaultBGMVolume: Float = 0.3
+    static let defaultSFXVolume: Float = 0.5
 
     private init() {
         isMuted = UserDefaults.standard.bool(forKey: Keys.muted)
+        // Load persisted volumes, falling through to the design defaults
+        // when no value has been written yet (UserDefaults returns 0 for
+        // missing Float keys, which would silently mute on first launch).
+        let storedBGM = UserDefaults.standard.object(forKey: Keys.bgmVolume) as? Float
+        let storedSFX = UserDefaults.standard.object(forKey: Keys.sfxVolume) as? Float
+        bgmVolume = storedBGM ?? Self.defaultBGMVolume
+        sfxVolume = storedSFX ?? Self.defaultSFXVolume
         configureAudioSession()
         registerSessionObservers()
+    }
+
+    // MARK: - Public volume API (settings)
+
+    /// Set BGM volume in [0, 1]. Clamps out-of-range values so a slider
+    /// glitch can't push us past the AVAudioPlayer's accepted range.
+    func setBGMVolume(_ value: Float) {
+        bgmVolume = max(0, min(1, value))
+    }
+
+    /// Set SFX volume in [0, 1].
+    func setSFXVolume(_ value: Float) {
+        sfxVolume = max(0, min(1, value))
     }
 
     // MARK: - Audio Session

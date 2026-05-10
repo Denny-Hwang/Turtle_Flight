@@ -6,6 +6,34 @@
 "common.home"       = "Home";
 "common.retry"      = "Retry";
 "common.next"       = "Next";
+"common.cancel"     = "Cancel";
+"common.done"       = "Done";
+
+// MARK: - Settings
+"settings.title"                          = "Settings";
+"settings.section.audio"                  = "Audio";
+"settings.audio.mute"                     = "Mute";
+"settings.audio.bgm"                      = "BGM volume";
+"settings.audio.sfx"                      = "SFX volume";
+"settings.audio.preview"                  = "Preview";
+
+"settings.section.progress"               = "Progress";
+"settings.progress.reset"                 = "Reset progress";
+"settings.progress.reset.confirm.title"   = "Reset progress?";
+"settings.progress.reset.confirm.message" = "All star scores and stage unlocks will be erased. This can't be undone.";
+"settings.progress.reset.confirm.action"  = "Reset";
+"settings.progress.replayOnboarding"      = "Replay tutorial";
+
+"settings.section.about"                  = "About";
+"settings.about.version"                  = "Version";
+"settings.about.privacy"                  = "Privacy Policy";
+"settings.about.support"                  = "Support";
+"settings.about.credits"                  = "Credits";
+"settings.about.credits.body"             = "Turtle Flight — A sky adventure for animals that can't fly.\nGyro flight adventure.";
+
+// VoiceOver — settings entry
+"a11y.settings.label" = "Settings";
+"a11y.settings.hint"  = "Double-tap to open the settings screen";
 
 // MARK: - Home screen
 "home.subtitle"           = "A sky adventure for animals that can't fly";
