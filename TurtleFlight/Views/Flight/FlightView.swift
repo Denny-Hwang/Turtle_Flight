@@ -218,6 +218,23 @@ struct FlightView: View {
     // MARK: - Scene Setup
 
     private func setupScene() {
+        // Bridge MissionEngine terminal-state transitions to MissionViewModel
+        // so Step Goal mode actually completes from the player's POV: the
+        // StageResultView overlay surfaces, star scores persist, and the
+        // next stage unlocks. Without this bridge the engine ends the
+        // mission internally but no visible UI ever changes — the player
+        // is left flying forever after clearing all rings.
+        flightVM.onMissionTerminalState = { [missionVM] state in
+            switch state {
+            case .completed(let result):
+                missionVM.completeMission(result: result)
+            case .failed(let reason):
+                missionVM.failMission(reason: reason)
+            case .notStarted, .inProgress:
+                break
+            }
+        }
+
         scene.background.contents = mapTheme.backgroundColor
 
         // Ambient light

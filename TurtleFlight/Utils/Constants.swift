@@ -72,6 +72,21 @@ enum Constants {
         static let projectileLifetime: TimeInterval = 3.0
     }
 
+    // MARK: - Collision
+    enum Collision {
+        /// Vertical clearance (in world units) between the character billboard
+        /// and the terrain mesh below it. Below this the flight loop registers
+        /// a collision with `MissionEngine.registerCollision()`. Tuned so the
+        /// player has to actually graze the surface — not so loose that
+        /// hovering 30m up trips it constantly.
+        static let groundClearance: Float = 8.0
+        /// Minimum gap between consecutive collision events. A flat hilltop
+        /// would otherwise spam ~60 collisions/sec at 60fps, killing the
+        /// 3-star eligibility on the first contact frame. 0.5s gives the
+        /// player time to correct before a second penalty.
+        static let cooldown: TimeInterval = 0.5
+    }
+
     // MARK: - Region Names (fallback — themes supply their own)
     static let regionNames = [
         "Cloud Kingdom",

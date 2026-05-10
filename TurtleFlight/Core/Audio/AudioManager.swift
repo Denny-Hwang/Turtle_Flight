@@ -185,6 +185,16 @@ final class AudioManager {
         playOneShot(data: data, volume: sfxVolume * 0.7)
     }
 
+    /// Brief low-frequency thump for terrain/obstacle brushes. Distinct
+    /// from `playStageFail` (which is the bigger "mission lost" cue) — this
+    /// is more of a physical "ouch, that hurt" beat to pair with the
+    /// heavy-haptic generator on `MissionEngine.registerCollision()`.
+    func playCollision() {
+        guard !isMuted else { return }
+        let data = SynthAudio.generateCollisionSFX(durationSeconds: 0.25)
+        playOneShot(data: data, volume: sfxVolume * 0.6)
+    }
+
     func playButtonTap() {
         guard !isMuted else { return }
         let data = SynthAudio.generateButtonTapSFX(durationSeconds: 0.1)
@@ -436,6 +446,27 @@ enum SynthAudio {
 
     static func generateButtonTapSFX(durationSeconds: Double) -> Data {
         return generateTone(frequencies: [800], duration: durationSeconds, envelope: .decay, amplitude: 0.3)
+    }
+
+    /// Short low-frequency thump (~80Hz) with a fast decay envelope and a
+    /// touch of noise so it reads as a physical brush rather than a tone.
+    /// Pairs with `UIImpactFeedbackGenerator(style: .heavy)` on collision.
+    static func generateCollisionSFX(durationSeconds: Double) -> Data {
+        let numSamples = Int(sampleRate * durationSeconds)
+        var samples = [Int16](repeating: 0, count: numSamples)
+        for i in 0..<numSamples {
+            let t = Double(i) / sampleRate
+            let progress = t / durationSeconds
+            // Fast exponential decay — most of the energy in the first 60ms.
+            let env = exp(-progress * 12.0)
+            // Two layered low sines for a chunkier thump than a pure tone.
+            var sample = sin(2.0 * .pi * 80.0 * t) * 0.5
+            sample += sin(2.0 * .pi * 120.0 * t) * 0.25
+            // Brief noise burst at the very front for the "thud" attack.
+            sample += whiteNoise() * 0.15 * exp(-progress * 25.0)
+            samples[i] = Int16(clamping: Int(sample * env * 18000))
+        }
+        return wavData(from: samples)
     }
 
     // MARK: - Helpers

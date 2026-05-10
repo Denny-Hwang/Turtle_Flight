@@ -60,6 +60,56 @@
 "stage.3.name" = "Mountain Cross";
 "stage.4.name" = "Sky Race";
 
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "Pass through 10 rings in order";
+"stage.1.description" = "Weave between cloud pillars through 5 checkpoints";
+"stage.2.description" = "Low flight through a winding valley";
+"stage.3.description" = "Pass through rings on 7 mountain peaks";
+"stage.4.description" = "Finish the air race course (20 rings)";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "Finish within 60 seconds";
+"stage.1.star3Condition" = "Zero collisions, finish within 90s";
+"stage.2.star3Condition" = "Zero collisions, collect all 5 stars";
+"stage.3.star3Condition" = "All rings, finish within 120s";
+"stage.4.star3Condition" = "All rings, within 80s, zero collisions";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "Sky Kingdom";
+"theme.sky.subtitle"      = "Clouds & Rainbows";
+"theme.space.displayName" = "Cosmic Voyage";
+"theme.space.subtitle"    = "Stars & Planets";
+"theme.ocean.displayName" = "Ocean Dream";
+"theme.ocean.subtitle"    = "Coral & Bubbles";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "Cloud Kingdom";
+"theme.sky.region.1"   = "Rainbow Valley";
+"theme.sky.region.2"   = "Sparkle Lake";
+"theme.sky.region.3"   = "Windy Hills";
+"theme.sky.region.4"   = "Starlight Plains";
+"theme.sky.region.5"   = "Sunflower Fields";
+"theme.sky.region.6"   = "Crystal Caves";
+"theme.sky.region.7"   = "Sunset Beach";
+
+"theme.space.region.0" = "Milky Way Lane";
+"theme.space.region.1" = "Nebula Garden";
+"theme.space.region.2" = "Saturn's Ring Park";
+"theme.space.region.3" = "Shooting Star Alley";
+"theme.space.region.4" = "Moon Bounce Zone";
+"theme.space.region.5" = "Comet Trail";
+"theme.space.region.6" = "Galaxy Whirlpool";
+"theme.space.region.7" = "Asteroid Playground";
+
+"theme.ocean.region.0" = "Coral Castle";
+"theme.ocean.region.1" = "Bubble Boulevard";
+"theme.ocean.region.2" = "Seaweed Forest";
+"theme.ocean.region.3" = "Pearl Harbor Cove";
+"theme.ocean.region.4" = "Jellyfish Meadow";
+"theme.ocean.region.5" = "Treasure Reef";
+"theme.ocean.region.6" = "Whale Song Bay";
+"theme.ocean.region.7" = "Starfish Garden";
+
 // MARK: - Vehicle display names
 "vehicle.shellJet"        = "Shell Jet";
 "vehicle.bellyGlider"     = "Belly Glider";

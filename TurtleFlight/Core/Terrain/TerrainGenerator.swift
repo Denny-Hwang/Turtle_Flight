@@ -52,6 +52,16 @@ final class TerrainGenerator {
         loadedChunks.removeAll()
     }
 
+    /// World-space terrain height under the (x, z) world coordinate. Used by
+    /// the flight loop to decide ground-clearance — when `playerY - heightAt
+    /// (...) < threshold`, a collision is registered (FlightViewModel).
+    /// Public so the gameplay layer can query without copy-pasting the
+    /// fractal-noise sampling. The value is deterministic for a given
+    /// `seed` so tests can pin it.
+    func heightAt(x: Float, z: Float) -> Float {
+        terrainHeight(x: x, z: z)
+    }
+
     // MARK: - Chunk Generation
 
     private func generateChunk(coord: ChunkCoord) -> SCNNode {

@@ -63,6 +63,56 @@
 "stage.3.name" = "산맥 넘기";
 "stage.4.name" = "스카이 레이스";
 
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "링 10개를 순서대로 통과해요";
+"stage.1.description" = "구름 기둥 사이로 체크포인트 5개를 통과해요";
+"stage.2.description" = "구불구불한 계곡을 저공비행으로 통과해요";
+"stage.3.description" = "산봉우리 7개의 정상 링을 통과해요";
+"stage.4.description" = "에어 레이스 코스를 완주해요 (링 20개)";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "60초 이내 완료";
+"stage.1.star3Condition" = "접촉 0회 + 90초 이내";
+"stage.2.star3Condition" = "접촉 0회 + 별 5개 전체 수집";
+"stage.3.star3Condition" = "전체 통과 + 120초 이내";
+"stage.4.star3Condition" = "전체 통과 + 80초 이내 + 접촉 0회";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "하늘 왕국";
+"theme.sky.subtitle"      = "구름과 무지개";
+"theme.space.displayName" = "우주 여행";
+"theme.space.subtitle"    = "별과 행성";
+"theme.ocean.displayName" = "바닷속 꿈";
+"theme.ocean.subtitle"    = "산호와 거품";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "구름 왕국";
+"theme.sky.region.1"   = "무지개 골짜기";
+"theme.sky.region.2"   = "반짝호수";
+"theme.sky.region.3"   = "바람 언덕";
+"theme.sky.region.4"   = "별빛 들판";
+"theme.sky.region.5"   = "해바라기 밭";
+"theme.sky.region.6"   = "수정 동굴";
+"theme.sky.region.7"   = "노을 해변";
+
+"theme.space.region.0" = "은하수 길";
+"theme.space.region.1" = "성운 정원";
+"theme.space.region.2" = "토성 고리공원";
+"theme.space.region.3" = "별똥별 거리";
+"theme.space.region.4" = "달 점프존";
+"theme.space.region.5" = "혜성 길";
+"theme.space.region.6" = "은하 소용돌이";
+"theme.space.region.7" = "소행성 놀이터";
+
+"theme.ocean.region.0" = "산호 성";
+"theme.ocean.region.1" = "거품 거리";
+"theme.ocean.region.2" = "해초 숲";
+"theme.ocean.region.3" = "진주 만";
+"theme.ocean.region.4" = "해파리 들판";
+"theme.ocean.region.5" = "보물 산호초";
+"theme.ocean.region.6" = "고래 노래 만";
+"theme.ocean.region.7" = "불가사리 정원";
+
 // MARK: - Vehicle display names
 "vehicle.shellJet"        = "등껍질 제트";
 "vehicle.bellyGlider"     = "배 활공";

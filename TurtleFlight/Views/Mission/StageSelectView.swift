@@ -120,13 +120,13 @@ struct StageSelectView: View {
         let stage = missionVM.stages[missionVM.currentStageIndex]
         let unlocked = missionVM.isStageUnlocked(stage.index)
         return VStack(spacing: Theme.Spacing.s) {
-            Text(unlocked ? stage.description : L10n.t("stageSelect.locked.body"))
+            Text(unlocked ? stage.displayDescription : L10n.t("stageSelect.locked.body"))
                 .font(Theme.Typography.bodyLarge)
                 .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.xl)
             if unlocked {
-                Text(L10n.format("stageSelect.objective.format", stage.star3Condition))
+                Text(L10n.format("stageSelect.objective.format", stage.displayStar3Condition))
                     .font(Theme.Typography.caption)
                     .foregroundColor(Theme.Color.textPrimary.opacity(0.55))
                     .multilineTextAlignment(.center)

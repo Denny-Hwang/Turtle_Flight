@@ -53,6 +53,25 @@ final class FlightViewModel: ObservableObject {
     /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
     private var expressionLatch = ExpressionLatch()
 
+    /// Last observed MissionEngine state key. Used to edge-detect terminal
+    /// transitions (.completed / .failed) so the FlightView can bridge them
+    /// to MissionViewModel exactly once. The expression latch uses the same
+    /// key shape but maintains its own copy — they're orthogonal concerns
+    /// (UI/persistence vs. cosmetic facial cue).
+    private var lastObservedMissionStateKey: String = "notStarted"
+
+    /// Wall-clock time of the last collision event. Used to debounce so
+    /// hugging the terrain at 60fps doesn't fire 60 collisions/sec.
+    private var lastCollisionTime: TimeInterval = 0
+
+    /// Fired exactly once when the MissionEngine transitions to a terminal
+    /// state (.completed or .failed). The FlightView wires this to
+    /// `MissionViewModel.completeMission(result:)` /
+    /// `failMission(reason:)` so star scores, stage progression, and the
+    /// `StageResultView` overlay all actually run. Without this bridge the
+    /// Step Goal mode never ends from the player's perspective.
+    var onMissionTerminalState: ((MissionEngine.MissionState) -> Void)?
+
     // MARK: - Trail emitter
     /// Empty SCNNode that sits ~1.2 world units behind the character along
     /// its heading; the per-vehicle trail particle system is attached here.
@@ -143,6 +162,7 @@ final class FlightViewModel: ObservableObject {
         self.vehicleNode = nil
         self.lastDisplayedExpression = .default
         self.expressionLatch.reset()
+        self.lastObservedMissionStateKey = "notStarted"
 
         // Build per-vehicle trail emitter and attach to scene root (not the
         // billboard) so its world position can track behind the heading.
@@ -234,6 +254,11 @@ final class FlightViewModel: ObservableObject {
         flightTime = 0
         starsCollected = 0
         isBoosting = false
+        // Reset mission-transition observer so a Retry's terminal state
+        // re-fires the bridge (the key was last "completed"/"failed" if the
+        // player came from a result screen).
+        lastObservedMissionStateKey = "notStarted"
+        expressionLatch.reset()
         // If we were paused, drop the modal too.
         isPaused = false
         gyroController.start()
@@ -337,13 +362,109 @@ final class FlightViewModel: ObservableObject {
         itemSystem?.updateStarAnimations(deltaTime: deltaTime)
         itemSystem?.updateProjectiles(deltaTime: deltaTime)
 
+        // Ground-clearance collision check. Runs BEFORE the mission update
+        // so the registered collision is already counted when the engine
+        // tallies stars on the same frame the final ring is passed. Only
+        // active during Step Goal — Free Flight has no collision metric.
+        if let pos = characterNode?.position {
+            checkGroundCollision(at: pos)
+        }
+
         // Update mission
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
         }
 
+        // Edge-detect mission terminal-state transitions and emit exactly one
+        // event per transition. Without this bridge the MissionViewModel
+        // stays at .playing forever — StageResultView never appears, star
+        // scores never persist, and Stage 2+ never unlocks. The same key
+        // shape feeds the cosmetic ExpressionLatch above; we keep a separate
+        // copy here because the lifecycle concerns (UI flow, persistence)
+        // are independent of the facial cue.
+        observeMissionTerminalTransition()
+
         // Update region name
         updateRegionName()
+    }
+
+    /// Edge-detect MissionEngine state transitions; fire `onMissionTerminalState`
+    /// exactly once when the engine flips into `.completed` or `.failed`.
+    /// Idempotent across frames: repeated frames in the same terminal state
+    /// don't re-fire because the key only updates on transition.
+    private func observeMissionTerminalTransition() {
+        let key = Self.missionStateKey(missionEngine?.state)
+        guard Self.shouldEmitMissionTerminalEvent(currentKey: key,
+                                                   lastKey: lastObservedMissionStateKey) else {
+            // Always advance the stored key — even on a non-terminal change
+            // (e.g. inProgress→inProgress is the common case, but we also
+            // need to drop the latch when leaving a terminal back to
+            // notStarted/inProgress so a Retry re-arms.)
+            lastObservedMissionStateKey = key
+            return
+        }
+        lastObservedMissionStateKey = key
+        guard let state = missionEngine?.state else { return }
+        switch state {
+        case .completed, .failed:
+            onMissionTerminalState?(state)
+        case .notStarted, .inProgress:
+            break
+        }
+    }
+
+    /// Pure decision: given the engine's current state-key and the key we
+    /// last observed, should we fire `onMissionTerminalState` this frame?
+    /// Extracted as a static helper so unit tests can pin the edge-
+    /// detection without spinning up a full SceneKit scene + gyro stack.
+    static func shouldEmitMissionTerminalEvent(currentKey: String,
+                                                lastKey: String) -> Bool {
+        guard currentKey != lastKey else { return false }
+        return currentKey == "completed" || currentKey == "failed"
+    }
+
+    /// Register a collision when the character flies dangerously close to
+    /// the terrain mesh. Debounced via `Constants.Collision.cooldown` so a
+    /// flat hilltop doesn't tally 60 hits/sec. Only counts during an active
+    /// mission — Free Flight has no collision metric to feed.
+    ///
+    /// Why ground-clearance and not full physics? FlightEngine clamps
+    /// altitude at the profile's `minAltitude` (50/20/5m), but terrain can
+    /// rise to 300m. The intuitive failure mode "I just clipped a mountain"
+    /// is exactly what this function tracks. A future PR can layer NPC /
+    /// ring-rim brush detection on top.
+    private func checkGroundCollision(at pos: SCNVector3) {
+        guard let engine = missionEngine,
+              case .inProgress = engine.state,
+              let terrain = terrainGenerator
+        else { return }
+        let groundHeight = terrain.heightAt(x: pos.x, z: pos.z)
+        let clearance = pos.y - groundHeight
+        let now = CACurrentMediaTime()
+        guard Self.shouldRegisterCollision(clearance: clearance,
+                                            now: now,
+                                            lastCollisionTime: lastCollisionTime) else {
+            return
+        }
+        lastCollisionTime = now
+        engine.registerCollision()
+        // Heavy haptic + dedicated collision thump so the player feels the
+        // brush. Synth-generated, so no asset cost.
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.prepare()
+        generator.impactOccurred()
+        AudioManager.shared.playCollision()
+    }
+
+    /// Pure decision: should a collision be registered given the current
+    /// clearance and the wall-clock gap since the last collision? Used by
+    /// `checkGroundCollision` and exercised directly by tests so the
+    /// debounce + threshold logic is pinned without needing a SCNScene.
+    static func shouldRegisterCollision(clearance: Float,
+                                         now: TimeInterval,
+                                         lastCollisionTime: TimeInterval) -> Bool {
+        guard clearance < Constants.Collision.groundClearance else { return false }
+        return now - lastCollisionTime > Constants.Collision.cooldown
     }
 
     // MARK: - Actions
