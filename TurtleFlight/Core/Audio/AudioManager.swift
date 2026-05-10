@@ -195,6 +195,15 @@ final class AudioManager {
         playOneShot(data: data, volume: sfxVolume * 0.6)
     }
 
+    /// Single high-pitched chirp used for the 5/3/1-second mission-timer
+    /// countdown. Distinct from `playButtonTap` (which is a flatter UI
+    /// click) — this rises slightly so consecutive ticks feel urgent.
+    func playTimerTick() {
+        guard !isMuted else { return }
+        let data = SynthAudio.generateTimerTickSFX(durationSeconds: 0.18)
+        playOneShot(data: data, volume: sfxVolume * 0.55)
+    }
+
     func playButtonTap() {
         guard !isMuted else { return }
         let data = SynthAudio.generateButtonTapSFX(durationSeconds: 0.1)
@@ -446,6 +455,24 @@ enum SynthAudio {
 
     static func generateButtonTapSFX(durationSeconds: Double) -> Data {
         return generateTone(frequencies: [800], duration: durationSeconds, envelope: .decay, amplitude: 0.3)
+    }
+
+    /// 1100Hz tick that rises ~50Hz across its duration. Short enough to
+    /// not muddle voiceover, distinct from button taps so the player reads
+    /// it as urgency rather than feedback.
+    static func generateTimerTickSFX(durationSeconds: Double) -> Data {
+        let numSamples = Int(sampleRate * durationSeconds)
+        var samples = [Int16](repeating: 0, count: numSamples)
+        for i in 0..<numSamples {
+            let t = Double(i) / sampleRate
+            let progress = t / durationSeconds
+            let freq = 1100.0 + progress * 50.0
+            // Sharp attack, quick decay → reads as a "tick" rather than a tone.
+            let env = (progress < 0.05 ? progress / 0.05 : exp(-(progress - 0.05) * 8.0))
+            let sample = sin(2.0 * .pi * freq * t) * env * 0.55
+            samples[i] = Int16(clamping: Int(sample * 16000))
+        }
+        return wavData(from: samples)
     }
 
     /// Short low-frequency thump (~80Hz) with a fast decay envelope and a

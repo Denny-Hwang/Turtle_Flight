@@ -43,7 +43,7 @@ struct FlightView: View {
             HUDOverlay(flightVM: flightVM)
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
-                MissionHUD(missionEngine: engine, missionVM: missionVM)
+                MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
             }
 
             ControlButtons(
@@ -64,7 +64,8 @@ struct FlightView: View {
                         flightVM.stopFlight()
                         dismiss()
                     }
-                }
+                },
+                boostProgress: flightVM.boostProgress
             )
 
             // Step Goal — full-screen StageResultView when the mission
@@ -106,7 +107,7 @@ struct FlightView: View {
                         // result-overlay Retry semantics.
                         if flightMode == .stepGoal,
                            let stage = missionVM.currentStage {
-                            flightVM.missionEngine?.startStage(stage)
+                            flightVM.startStage(stage)
                             missionVM.startMission()
                         }
                     },
@@ -178,13 +179,13 @@ struct FlightView: View {
                             dismiss()
                         },
                         onRetry: {
-                            flightVM.missionEngine?.startStage(stage)
+                            flightVM.startStage(stage)
                             missionVM.startMission()
                         },
                         onNext: {
                             if missionVM.advanceToNextStage(),
                                let next = missionVM.currentStage {
-                                flightVM.missionEngine?.startStage(next)
+                                flightVM.startStage(next)
                                 missionVM.startMission()
                             }
                         }
@@ -203,7 +204,7 @@ struct FlightView: View {
                         dismiss()
                     },
                     onRetry: {
-                        flightVM.missionEngine?.startStage(stage)
+                        flightVM.startStage(stage)
                         missionVM.startMission()
                     },
                     onNext: { /* unused for failure */ }
@@ -273,7 +274,10 @@ struct FlightView: View {
         }
 
         if flightMode == .stepGoal, let stage = missionVM.currentStage {
-            flightVM.missionEngine?.startStage(stage)
+            // Use the FlightViewModel helper so the engine sees the
+            // terrain height function — Stage 3 ring clearance + Stage 4
+            // mountain pillars both depend on it.
+            flightVM.startStage(stage)
             missionVM.startMission()
         }
     }

@@ -9,10 +9,15 @@ import SwiftUI
 struct MissionHUD: View {
     let missionEngine: MissionEngine
     @ObservedObject var missionVM: MissionViewModel
+    /// Drives the objective compass arrow under the stage title. The
+    /// arrow rotates to always point at the next ring relative to the
+    /// player's heading; published from FlightViewModel each frame as
+    /// `directionToObjective`.
+    @ObservedObject var flightVM: FlightViewModel
 
     var body: some View {
         VStack {
-            // Top: Stage title + Timer
+            // Top: Stage title + Timer + Objective arrow
             HStack {
                 Spacer()
 
@@ -30,6 +35,8 @@ struct MissionHUD: View {
                                     : Theme.Color.textOnDark
                                 )
                         }
+
+                        objectiveArrow
                     }
                     .padding(.horizontal, Theme.Spacing.l)
                     .padding(.vertical, Theme.Spacing.s)
@@ -92,5 +99,31 @@ struct MissionHUD: View {
         // the SceneKit scene. Modal overlays (StageResultView, PauseView)
         // are siblings, not children, of this view.
         .allowsHitTesting(false)
+    }
+
+    /// Compass-style chevron under the stage title that always points at
+    /// the next ring relative to the player's heading. Hidden when no
+    /// objective is active (between stages, or on a completed/failed
+    /// run). The bearing tint flips green when the player is roughly on
+    /// course (±20°) so the visual reinforces "you're heading the right
+    /// way" without needing words.
+    @ViewBuilder
+    private var objectiveArrow: some View {
+        if let bearing = flightVM.directionToObjective {
+            let onCourse = abs(bearing) < .pi / 9   // 20°
+            HStack(spacing: Theme.Spacing.xs) {
+                Image(systemName: "location.north.fill")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(onCourse
+                        ? Theme.Color.easyGreen
+                        : Theme.Color.starGold
+                    )
+                    .rotationEffect(.radians(bearing))
+                    .animation(.easeOut(duration: 0.15), value: bearing)
+                Text(missionEngine.progressText)
+                    .font(Theme.Typography.microLabel)
+                    .foregroundColor(Theme.Color.textOnDarkMuted)
+            }
+        }
     }
 }

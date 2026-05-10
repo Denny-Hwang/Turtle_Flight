@@ -70,6 +70,14 @@ enum Constants {
         static let starCollectionRadius: Float = 10.0
         static let projectileSpeed: Float = 50.0
         static let projectileLifetime: TimeInterval = 3.0
+        /// Refill threshold — once uncollected pool drops below this count
+        /// (and the cooldown has elapsed), the flight loop spawns a fresh
+        /// cluster around the player. Tuned so the player rarely *sees*
+        /// the field empty without making it feel infinite either.
+        static let starRespawnThreshold: Int = 3
+        /// Minimum interval between two respawn calls. A flat-out flier
+        /// could otherwise dump a fresh cluster every couple of seconds.
+        static let starRespawnCooldown: TimeInterval = 4.0
     }
 
     // MARK: - Collision

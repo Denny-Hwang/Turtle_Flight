@@ -64,6 +64,28 @@ final class FlightViewModel: ObservableObject {
     /// hugging the terrain at 60fps doesn't fire 60 collisions/sec.
     private var lastCollisionTime: TimeInterval = 0
 
+    /// Last second-bucket the timer-countdown beep fired in. -1 means
+    /// "no beep emitted yet for this run". The beep sequence (5/3/1s)
+    /// only fires once per integer second, so this is reset on stage
+    /// start and updated each frame the engine still has time left.
+    private var lastTimerBeepBucket: Int = -1
+
+    /// Wall-clock time of the most recent free-flight star respawn.
+    /// Debounces respawn so we don't dump a fresh ring every frame the
+    /// pool happens to read low.
+    private var lastStarSpawnTime: TimeInterval = 0
+
+    /// Live direction (radians) from the character to the active mission
+    /// ring, **relative to current heading**. 0 = straight ahead, +π/2 =
+    /// 90° to the right, ±π = directly behind. Nil while no Step-Goal
+    /// stage is active. Drives the objective compass arrow on MissionHUD.
+    @Published private(set) var directionToObjective: Double? = nil
+
+    /// Boost progress in [0, 1]. 0 = ready (full ring), 1 = full duration
+    /// boost just started. Drives the cooldown/duration ring overlaid on
+    /// the boost ThumbButton.
+    @Published private(set) var boostProgress: Float = 0
+
     /// Fired exactly once when the MissionEngine transitions to a terminal
     /// state (.completed or .failed). The FlightView wires this to
     /// `MissionViewModel.completeMission(result:)` /
@@ -217,6 +239,24 @@ final class FlightViewModel: ObservableObject {
         trailEmitterNode = nil
         trailParticleSystem = nil
         baseTrailBirthRate = 0
+        // Drop the Step-Goal-only published values so a follow-up Free
+        // Flight doesn't read stale objective indicators.
+        directionToObjective = nil
+        boostProgress = 0
+        lastTimerBeepBucket = -1
+    }
+
+    /// Start a Step-Goal stage with terrain-aware ring clamping. Wrapper
+    /// that supplies `MissionEngine.startStage` with a height function
+    /// so rings can't spawn inside the terrain (Stage 3 regression) and
+    /// Stage 4's procedural mountain pillars sit on the actual ground.
+    /// Resets the per-stage beep bucket so the 5/3/1s countdown chimes
+    /// don't carry over from the previous run.
+    func startStage(_ stage: StageDefinition) {
+        lastTimerBeepBucket = -1
+        missionEngine?.startStage(stage) { [weak self] x, z in
+            self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
+        }
     }
 
     // MARK: - Pause / Resume
@@ -384,8 +424,86 @@ final class FlightViewModel: ObservableObject {
         // are independent of the facial cue.
         observeMissionTerminalTransition()
 
+        // Refresh derived per-frame published state for the UI (objective
+        // arrow, boost cooldown ring). Cheap to recompute; cheaper than
+        // making the views poll every frame.
+        updateObjectiveDirection(flightState: flightState)
+        updateBoostProgress(flightState: flightState)
+
+        // Audio: timer countdown beep buckets (5s / 3s / 1s) and star
+        // respawn for endless Free Flight runs. Both side-effecting, so
+        // run last after the published state has settled.
+        emitTimerCountdownBeepIfNeeded()
+        respawnStarsIfDepleted()
+
         // Update region name
         updateRegionName()
+    }
+
+    /// Refresh `directionToObjective` from the active mission's current
+    /// ring. Returns nil when there's no in-progress mission, so the HUD
+    /// can hide the arrow during Free Flight.
+    private func updateObjectiveDirection(flightState: FlightEngine.FlightState) {
+        guard let engine = missionEngine,
+              case .inProgress = engine.state,
+              let ringPos = engine.currentRingPosition
+        else {
+            if directionToObjective != nil { directionToObjective = nil }
+            return
+        }
+        let pos = flightState.position
+        let dx = ringPos.x - pos.x
+        let dz = ringPos.z - pos.z
+        // heading 0 = facing -Z (north). atan2(dx, -dz) maps that to 0.
+        let angleToRing = atan2(dx, -dz)
+        let headingRad = Double(flightState.heading).rad
+        var relative = Double(angleToRing) - headingRad
+        // Normalise to [-π, π] so the SwiftUI rotationEffect always picks
+        // the short way around.
+        while relative > .pi  { relative -= 2 * .pi }
+        while relative < -.pi { relative += 2 * .pi }
+        directionToObjective = relative
+    }
+
+    /// Refresh `boostProgress` (0…1) from the engine's remaining boost
+    /// time. Drives the cooldown ring overlaid on the boost ThumbButton.
+    private func updateBoostProgress(flightState: FlightEngine.FlightState) {
+        let dur = Float(Constants.Flight.boostDuration)
+        guard dur > 0 else { boostProgress = 0; return }
+        boostProgress = max(0, min(1, flightState.boostTimeRemaining / dur))
+    }
+
+    /// Fire a one-shot countdown chirp on the integer-second boundary
+    /// when there are 5, 3, or 1 seconds left. Idempotent across frames
+    /// thanks to `lastTimerBeepBucket` — the same second never beeps twice.
+    private func emitTimerCountdownBeepIfNeeded() {
+        guard let remaining = missionEngine?.remainingTime, remaining > 0 else {
+            return
+        }
+        let bucket = Int(ceil(remaining))
+        let triggers: Set<Int> = [5, 3, 1]
+        guard triggers.contains(bucket), bucket != lastTimerBeepBucket else {
+            return
+        }
+        lastTimerBeepBucket = bucket
+        AudioManager.shared.playTimerTick()
+    }
+
+    /// Refill the star pool when only a handful of uncollected stars
+    /// remain. Without this, Free Flight runs become star-deserts after
+    /// the player picks up the initial 10. Debounced via
+    /// `Constants.Items.starRespawnCooldown`.
+    private func respawnStarsIfDepleted() {
+        guard let items = itemSystem,
+              let pos = characterNode?.position,
+              items.uncollectedStarCount < Constants.Items.starRespawnThreshold
+        else { return }
+        let now = CACurrentMediaTime()
+        guard now - lastStarSpawnTime > Constants.Items.starRespawnCooldown else {
+            return
+        }
+        lastStarSpawnTime = now
+        items.spawnStars(around: pos)
     }
 
     /// Edge-detect MissionEngine state transitions; fire `onMissionTerminalState`

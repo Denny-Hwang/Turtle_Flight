@@ -82,7 +82,7 @@ struct HomeView: View {
                     // Sensitivity Selection
                     VStack(spacing: Theme.Spacing.m) {
                         Text(L10n.t("home.sensitivity.label"))
-                            .font(.system(size: 14, weight: .medium))
+                            .font(Theme.Typography.bodyLarge)
                             .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
 
                         HStack(spacing: Theme.Spacing.m) {
