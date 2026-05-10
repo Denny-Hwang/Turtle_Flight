@@ -53,4 +53,16 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 60 FPS on iPhone 12+, < 250MB memory, < 80MB app size.
 
 ## Open follow-ups (RN 폐기로 인한 손실분)
-- 다국어 리소스: RN쪽 i18next에 ko/en/ja/zh/es/fr/de/ar/hi/pt 10개 로케일 JSON이 있었음. 네이티브에서는 `Localizable.strings` (per-locale `.lproj/`) 로 다시 구축 필요. v1은 ko/en만으로 출시 가능.
+- 다국어 리소스: RN쪽 i18next에 ko/en/ja/zh/es/fr/de/ar/hi/pt 10개 로케일 JSON이 있었음. 네이티브에서는 `Localizable.strings` (per-locale `.lproj/`) 로 다시 구축. v1은 ko/en만으로 출시. v1.x 로케일 추가 절차는 `docs/I18N.md` 참조.
+
+## Sprint 0–3 closure (PR #43)
+출시 차단급 P0 + 주요 P1 + 선택된 P2 항목 정리. 전체 변경 로그는 `CHANGELOG.md` 참조.
+
+| Sprint | 핵심 변경 |
+|--------|----------|
+| 0 | 미션 완료 wiring, 충돌 판정, dead code (~190 LOC) 제거, MapTheme/Stage L10n |
+| 1 | HUD pulse, boost ring, 목표 화살표, 5/3/1초 비프, 별 재스폰, Stage 3 클리어런스, Stage 4 산 |
+| 2 | SettingsView 신규, 오디오 볼륨 API, Reduce Motion 카메라 완화 |
+| 3 | Simulator 자이로 폴백, Dynamic Type 토큰, iPad 1.4× 적응 사이즈, i18n 프로세스 문서 |
+
+이전 보고서(`docs/VALIDATION_REPORT.md`, `docs/DESIGN_GAP_REPORT.md`, `docs/AUDIO_AUDIT.md`)는 historical snapshot으로 유지. 본 PR 시리즈로 닫힌 항목들은 각 보고서 끝의 closure log 섹션 참조.
