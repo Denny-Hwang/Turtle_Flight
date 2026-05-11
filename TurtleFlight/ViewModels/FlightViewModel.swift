@@ -4,6 +4,21 @@ import AVFoundation
 import Combine
 import UIKit
 
+/// THREADING INVARIANT — read before touching this type.
+///
+/// Every public method here is expected to be called on the main thread:
+///   • SwiftUI view bodies (HUDOverlay, FlightView) drive most calls and
+///     are @MainActor by virtue of SwiftUI's actor model.
+///   • The SCNView render delegate (`SceneKitView.Coordinator`) hops to
+///     `DispatchQueue.main.async` before forwarding the frame tick to
+///     `update(deltaTime:)`, so the per-frame path is also on main.
+///   • `GyroController` is `@MainActor` and its callbacks fire on `.main`.
+///
+/// We hold off on marking the whole class `@MainActor` to keep the diff
+/// surface small for the v1.0 launch — the chain of changes would cascade
+/// into the SCNView Coordinator and several test fixtures. The invariant
+/// above is the contract; Swift 6 strict-concurrency adoption is a v1.1
+/// follow-up tracked in CHANGELOG.
 final class FlightViewModel: ObservableObject {
     // MARK: - Published State
     @Published var speed: Float = 0

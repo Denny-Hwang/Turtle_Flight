@@ -1,9 +1,12 @@
 import SwiftUI
+import CoreMotion
 
-/// First-run gyro tutorial. Three swipeable cards:
+/// First-run gyro tutorial. Four swipeable cards:
 ///   1. Welcome — brand + character cameo
 ///   2. Hold flat + calibrate — explain neutral position
 ///   3. Tilt to steer — explain roll/pitch mapping
+///   4. Try Tilt — live tilt-meter so the player feels the mechanic
+///      before being asked to commit to a flight
 ///
 /// Triggered from HomeView when `OnboardingState.completed` is false.
 /// Once finished (Get Started tap OR Skip), persists `completed = true`
@@ -14,7 +17,7 @@ struct OnboardingView: View {
     let onFinish: () -> Void
 
     @State private var pageIndex: Int = 0
-    private static let pageCount = 3
+    private static let pageCount = 4
 
     var body: some View {
         ZStack {
@@ -43,6 +46,7 @@ struct OnboardingView: View {
                             .padding(.vertical, Theme.Spacing.s)
                     }
                     .accessibilityLabel(L10n.t("onboarding.skip"))
+                    .accessibilityHint(L10n.t("a11y.onboarding.skip.hint"))
                 }
                 .padding(.top, Theme.Spacing.s)
 
@@ -68,6 +72,14 @@ struct OnboardingView: View {
                         body:  L10n.t("onboarding.tilt.body")
                     )
                     .tag(2)
+
+                    // Live tilt-meter: the first place the player feels the
+                    // gyro responding under their hand. The art is a stand-in
+                    // for the turtle silhouette — its rotation/translation
+                    // mirrors device roll/pitch so the player can hover-test
+                    // before committing to a flight.
+                    TryTiltCard(isActive: pageIndex == 3)
+                        .tag(3)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
 
@@ -91,7 +103,9 @@ struct OnboardingView: View {
                 }
                 .padding(.horizontal, Theme.Spacing.xl)
                 .padding(.bottom, Theme.Spacing.xl)
-                .accessibilityHint(L10n.t("onboarding.cta.hint"))
+                .accessibilityHint(pageIndex < Self.pageCount - 1
+                    ? L10n.t("a11y.onboarding.next.hint")
+                    : L10n.t("a11y.onboarding.start.hint"))
             }
         }
     }
@@ -174,6 +188,112 @@ struct OnboardingCard: View {
     }
 }
 
+// MARK: - Try Tilt Card
+
+/// Real-time tilt indicator powered by `CMMotionManager`. The icon mirrors
+/// roll → rotation and pitch → vertical offset so the player feels the
+/// mapping before being thrown into a 6-degree-of-freedom flight.
+///
+/// `isActive` is the TabView selection match — we only spin up CoreMotion
+/// while this page is on-screen so the sensor doesn't stay warm if the
+/// user backs out, and so simulator runs (no real motion) don't hold the
+/// hardware open.
+struct TryTiltCard: View {
+    let isActive: Bool
+
+    @State private var roll: Double = 0     // radians, [-π, π]
+    @State private var pitch: Double = 0    // radians, [-π/2, π/2]
+    @StateObject private var sampler = TiltSampler()
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.l) {
+            ZStack {
+                // Soft horizon plate — gives the icon something to relate to.
+                Capsule()
+                    .fill(Theme.Color.brandPrimary.opacity(0.15))
+                    .frame(width: 180, height: 8)
+                    .rotationEffect(.radians(-roll))
+
+                // The live indicator. SF symbol stands in for the turtle
+                // until the in-flight character preview can be reused
+                // here without dragging in SceneKit machinery.
+                Image(systemName: "tortoise.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(Theme.Color.brandPrimary)
+                    .frame(width: 96, height: 96)
+                    .rotationEffect(.radians(-roll))
+                    .offset(y: CGFloat(pitch * 90))
+                    .animation(.easeOut(duration: 0.08), value: roll)
+                    .animation(.easeOut(duration: 0.08), value: pitch)
+            }
+            .frame(maxWidth: .infinity, maxHeight: 180)
+            .accessibilityElement()
+            .accessibilityLabel(L10n.t("onboarding.try.title"))
+
+            Text(L10n.t("onboarding.try.title"))
+                .font(Theme.Typography.titleDynamic)
+                .foregroundColor(Theme.Color.textPrimary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, Theme.Spacing.xl)
+
+            Text(L10n.t("onboarding.try.body"))
+                .font(Theme.Typography.bodyDynamic)
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
+                .multilineTextAlignment(.center)
+                .lineSpacing(4)
+                .padding(.horizontal, Theme.Spacing.xl)
+        }
+        .onAppear { if isActive { sampler.start { roll = $0; pitch = $1 } } }
+        .onChange(of: isActive) { active in
+            if active {
+                sampler.start { roll = $0; pitch = $1 }
+            } else {
+                sampler.stop()
+            }
+        }
+        .onDisappear { sampler.stop() }
+    }
+}
+
+/// Thin CMMotionManager wrapper scoped to the Try Tilt card lifetime.
+/// Kept inside Onboarding rather than reusing GyroController because the
+/// latter is wired through the flight stack (calibration, sensitivity
+/// profiles, expression latching). For a 5-second feel test we just want
+/// the raw attitude.
+final class TiltSampler: ObservableObject {
+    private let manager = CMMotionManager()
+
+    func start(_ onUpdate: @escaping (Double, Double) -> Void) {
+        guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
+        manager.deviceMotionUpdateInterval = 1.0 / 30.0
+        manager.startDeviceMotionUpdates(to: .main) { motion, _ in
+            guard let m = motion else { return }
+            // Landscape-friendly mapping. In landscape, device pitch
+            // becomes the "lean forward/back" axis and roll becomes
+            // "tilt left/right" — same convention GyroController uses
+            // in flight.
+            onUpdate(m.attitude.roll, m.attitude.pitch)
+        }
+    }
+
+    func stop() {
+        if manager.isDeviceMotionActive {
+            manager.stopDeviceMotionUpdates()
+        }
+    }
+
+    deinit {
+        // stopDeviceMotionUpdates() is documented as thread-safe; the
+        // motion queue (`.main`) is what we pass to start, and stop just
+        // tears down the publisher. SwiftUI's onDisappear normally calls
+        // stop() before deinit but the guard keeps us safe regardless.
+        if manager.isDeviceMotionActive {
+            manager.stopDeviceMotionUpdates()
+        }
+    }
+}
+
 // MARK: - Page Dots
 
 struct PageDots: View {
@@ -193,7 +313,8 @@ struct PageDots: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(L10n.format("onboarding.page.label", index + 1, count))
+        .accessibilityLabel(L10n.format("a11y.onboarding.page.format", index + 1, count))
+        .accessibilityHint(L10n.t("a11y.onboarding.page.hint"))
     }
 }
 

@@ -16,84 +16,101 @@ struct MissionHUD: View {
     @ObservedObject var flightVM: FlightViewModel
 
     var body: some View {
-        VStack {
-            // Top: Stage title + Timer + Objective arrow
-            HStack {
-                Spacer()
+        GeometryReader { proxy in
+            VStack {
+                // Top: Stage title + Timer + Objective arrow
+                HStack {
+                    Spacer()
 
-                if let stage = missionVM.currentStage {
-                    VStack(spacing: Theme.Spacing.xs) {
-                        Text(L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
-                            .font(Theme.Typography.label)
-                            .foregroundColor(Theme.Color.textOnDark)
+                    if let stage = missionVM.currentStage {
+                        VStack(spacing: Theme.Spacing.xs) {
+                            Text(L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
+                                .font(Theme.Typography.label)
+                                .foregroundColor(Theme.Color.textOnDark)
+                                .accessibilityAddTraits(.isHeader)
 
-                        if let remaining = missionEngine.remainingTime {
-                            Text(remaining.mmss)
-                                .font(.system(size: 18, weight: .bold, design: .monospaced))
-                                .foregroundColor(missionEngine.isTimeCritical
-                                    ? Theme.Color.expertRed
-                                    : Theme.Color.textOnDark
-                                )
+                            if let remaining = missionEngine.remainingTime {
+                                Text(remaining.mmss)
+                                    .font(.system(size: 18, weight: .bold, design: .monospaced))
+                                    .foregroundColor(missionEngine.isTimeCritical
+                                        ? Theme.Color.expertRed
+                                        : Theme.Color.textOnDark
+                                    )
+                                    .accessibilityLabel(L10n.format("a11y.mission.remaining.format", remaining.mmss))
+                            }
+
+                            objectiveArrow
                         }
-
-                        objectiveArrow
+                        .padding(.horizontal, Theme.Spacing.l)
+                        .padding(.vertical, Theme.Spacing.s)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.Radius.s + 2)
+                                .fill(Theme.Color.surfaceOverlayStrong)
+                        )
                     }
-                    .padding(.horizontal, Theme.Spacing.l)
-                    .padding(.vertical, Theme.Spacing.s)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.Radius.s + 2)
-                            .fill(Theme.Color.surfaceOverlayStrong)
-                    )
+
+                    Spacer()
+                }
+                // Safe-area-aware top inset. In landscape on Dynamic-Island
+                // devices the top inset is ~0 but on iPad it grows; on
+                // older iPhones with no notch it stays at 0. Adding a
+                // minimum 12pt guarantees breathing room either way and
+                // never crowds the Dynamic Island when the inset is real.
+                .padding(.top, max(proxy.safeAreaInsets.top, Theme.Spacing.m))
+
+                Spacer()
+
+                // Right side: Progress + Collisions
+                HStack {
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: Theme.Spacing.s) {
+                        // Ring progress
+                        HStack(spacing: Theme.Spacing.xs) {
+                            Image(systemName: "circle.dashed")
+                                .foregroundColor(Theme.Color.hudCyan)
+                            Text(missionEngine.progressText)
+                                .font(Theme.Typography.hudGaugeSmall)
+                                .foregroundColor(Theme.Color.textOnDark)
+                        }
+                        .padding(.horizontal, Theme.Spacing.s + 2)
+                        .padding(.vertical, Theme.Spacing.s - 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.Radius.s)
+                                .fill(Theme.Color.surfaceOverlay)
+                        )
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(L10n.format("a11y.mission.progress.format", missionEngine.progressText))
+
+                        // Collision counter
+                        HStack(spacing: Theme.Spacing.xs) {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(missionEngine.collisions > 0
+                                    ? Theme.Color.expertRed
+                                    : Theme.Color.easyGreen
+                                )
+                            Text(L10n.format("mission.collisions.format", missionEngine.collisions))
+                                .font(Theme.Typography.caption)
+                                .foregroundColor(Theme.Color.textOnDark)
+                        }
+                        .padding(.horizontal, Theme.Spacing.s + 2)
+                        .padding(.vertical, Theme.Spacing.xs)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.Radius.xs)
+                                .fill(Theme.Color.surfaceOverlaySubtle)
+                        )
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(L10n.format("a11y.mission.collisions.format", missionEngine.collisions))
+                    }
+                    // Safe-area-aware trailing inset. Landscape on
+                    // Dynamic-Island devices puts the inset on the leading
+                    // edge, so the right side is usually zero — Theme.l
+                    // alone is enough. Keeping max() guards iPad.
+                    .padding(.trailing, max(proxy.safeAreaInsets.trailing, Theme.Spacing.l))
                 }
 
                 Spacer()
             }
-            .padding(.top, 50)
-
-            Spacer()
-
-            // Right side: Progress + Collisions
-            HStack {
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: Theme.Spacing.s) {
-                    // Ring progress
-                    HStack(spacing: Theme.Spacing.xs) {
-                        Image(systemName: "circle.dashed")
-                            .foregroundColor(Theme.Color.hudCyan)
-                        Text(missionEngine.progressText)
-                            .font(Theme.Typography.hudGaugeSmall)
-                            .foregroundColor(Theme.Color.textOnDark)
-                    }
-                    .padding(.horizontal, Theme.Spacing.s + 2)
-                    .padding(.vertical, Theme.Spacing.s - 2)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.Radius.s)
-                            .fill(Theme.Color.surfaceOverlay)
-                    )
-
-                    // Collision counter
-                    HStack(spacing: Theme.Spacing.xs) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .foregroundColor(missionEngine.collisions > 0
-                                ? Theme.Color.expertRed
-                                : Theme.Color.easyGreen
-                            )
-                        Text(L10n.format("mission.collisions.format", missionEngine.collisions))
-                            .font(Theme.Typography.caption)
-                            .foregroundColor(Theme.Color.textOnDark)
-                    }
-                    .padding(.horizontal, Theme.Spacing.s + 2)
-                    .padding(.vertical, Theme.Spacing.xs)
-                    .background(
-                        RoundedRectangle(cornerRadius: Theme.Radius.xs)
-                            .fill(Theme.Color.surfaceOverlaySubtle)
-                    )
-                }
-                .padding(.trailing, Theme.Spacing.l)
-            }
-
-            Spacer()
         }
         // The HUD is purely informational; touches always pass through to
         // the SceneKit scene. Modal overlays (StageResultView, PauseView)
