@@ -1,10 +1,15 @@
 # TurtleFlight
 
-**A Sky Adventure for Animals That Can't Fly** — A gyroscope-based character flight adventure game for iOS.
-
-Six adorable animals take to the skies with their unique vehicles in this tilt-controlled flying experience. No airplanes here — the characters themselves soar through the air!
+**Tilt your phone. Fly a turtle.** A gyroscope-controlled flying game where six animals that have no business being in the sky take to it anyway — strapped into custom vehicles, one to each species. Built native iOS for the lowest possible input latency, because the whole game lives in the ~2ms gap between your wrist and the screen.
 
 > [한국어 README는 아래로 스크롤하세요 ↓](#터틀-플라이트-한국어)
+
+## Why TurtleFlight
+
+- **The mechanic is the whole game.** CoreMotion sampled at 60 Hz, sub-3ms input-to-camera latency, three discrete sensitivity profiles (Easy → Expert) so a four-year-old and a teenager both find a setting that feels right.
+- **Six characters, six handling signatures.** The jets are sharp, the balloons are floaty, the hamster ball turns on a dime. Same physics core, different multipliers — pick the one whose feel matches the stage.
+- **Mission mode that actually ramps.** Five stages from "tap-the-rings" to a 20-ring sky-race with branching three-star paths, tuned against an Apple-senior-grade gameplay review.
+- **Built for the App Store launch.** Privacy manifest, VoiceOver across the HUD, Reduce Motion, Dynamic Type on modal copy, Korean + English at parity, gracefully degrades when the gyro isn't available (Simulator, iPad mini without one).
 
 ## Characters
 

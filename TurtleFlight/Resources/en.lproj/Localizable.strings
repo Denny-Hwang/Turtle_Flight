@@ -217,3 +217,46 @@
 "a11y.sensitivity.expert.label" = "Control sensitivity: Expert";
 "a11y.sensitivity.hint"         = "Double-tap to select this sensitivity";
 
+// HUD VoiceOver readouts — gameplay state that is otherwise visual-only.
+"a11y.hud.speed.format"        = "Speed %lld kilometres per hour";
+"a11y.hud.altitude.format"     = "Altitude %lld metres";
+"a11y.hud.sensitivity.format"  = "Sensitivity level %lld";
+"a11y.hud.compass.format"      = "Heading %@ %lld degrees, flight time %@";
+"a11y.hud.stars.format"        = "Stars collected: %lld";
+"a11y.hud.stars.announce.format" = "Star collected. Total %lld.";
+"a11y.hud.region.format"       = "Region: %@";
+
+// Mission HUD readouts.
+"a11y.mission.remaining.format"  = "Time remaining %@";
+"a11y.mission.progress.format"   = "Mission progress: %@";
+"a11y.mission.collisions.format" = "Collisions so far: %lld";
+
+// Onboarding navigation hints.
+"a11y.onboarding.page.format"  = "Page %lld of %lld";
+"a11y.onboarding.page.hint"    = "Swipe left or right to navigate between pages";
+"a11y.onboarding.skip.hint"    = "Double-tap to skip onboarding and continue";
+"a11y.onboarding.next.hint"    = "Double-tap to go to the next page";
+"a11y.onboarding.start.hint"   = "Double-tap to finish onboarding and start playing";
+
+// Try-it-out flight (mini gyro experience).
+"onboarding.try.title"         = "Tilt to Try";
+"onboarding.try.body"          = "Tilt your phone gently to feel the controls. No score, no danger — just a 30-second taste.";
+"onboarding.try.cta"           = "Try Tilt";
+"onboarding.try.exit"          = "Done";
+"onboarding.try.timeLeft.format" = "%llds";
+
+// Free Flight result sharing.
+"freeFlight.result.share"      = "Share";
+"freeFlight.result.share.subject" = "My Turtle Flight run";
+"freeFlight.result.share.body.format" = "🐢 Turtle Flight\nFlight time: %@\nStars: %lld ⭐";
+
+// Pause screen — system interruption phrase.
+"pause.reason.system"          = "Paused for an interruption";
+
+// Settings — Sensitivity guide section.
+"settings.section.sensitivity"        = "Sensitivity Guide";
+"settings.sensitivity.tilt.format"    = "%lld° tilt";
+"settings.sensitivity.easy.caption"   = "8° dead zone, cubic response, gentle auto-level after 2s. Best for first flights and younger players.";
+"settings.sensitivity.normal.caption" = "4° dead zone, quadratic response, auto-level after 4s. Balanced — recommended.";
+"settings.sensitivity.expert.caption" = "1.5° dead zone, linear response, no auto-level, stall enabled. Maximum control with maximum cost.";
+

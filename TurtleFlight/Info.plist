@@ -33,6 +33,10 @@
 	<dict>
 		<key>UIColorName</key>
 		<string>LaunchScreenBackground</string>
+		<key>UIImageName</key>
+		<string>turbo_default</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>

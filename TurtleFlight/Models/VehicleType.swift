@@ -54,4 +54,42 @@ enum VehicleType: String, CaseIterable, Codable {
         case .cloudSurf:       return nil
         }
     }
+
+    /// Per-vehicle flight-feel multipliers. The MVP shipped with all six
+    /// vehicles sharing identical physics — visual flavour only — which
+    /// playtesters consistently flagged as "why does my character matter?"
+    /// These multipliers are intentionally small (±15%) so the sensitivity
+    /// profile remains the dominant tuning axis but each vehicle has a
+    /// recognisable signature when the player flips between them.
+    ///
+    /// Conventions:
+    ///   • `turn` scales `SensitivityProfile.turnSpeed` (heading response)
+    ///   • `pitch` scales `SensitivityProfile.pitchSpeed` (climb/dive)
+    ///   • `bank` scales the visible camera roll on `bankingAngle` so
+    ///     fast vehicles look more committed and balloon types look
+    ///     more level.
+    var handling: VehicleHandling {
+        switch self {
+        case .shellJet:       return VehicleHandling(turn: 0.90, pitch: 0.95, bank: 1.00)
+        case .bellyGlider:    return VehicleHandling(turn: 1.00, pitch: 1.10, bank: 1.10)
+        case .hamsterCopter:  return VehicleHandling(turn: 1.15, pitch: 0.95, bank: 0.90)
+        case .cushionBalloon: return VehicleHandling(turn: 0.85, pitch: 1.05, bank: 0.80)
+        case .balloonBody:    return VehicleHandling(turn: 0.95, pitch: 1.15, bank: 0.95)
+        case .carrotJet:      return VehicleHandling(turn: 1.10, pitch: 1.05, bank: 1.20)
+        case .cloudSurf:      return VehicleHandling(turn: 1.00, pitch: 1.00, bank: 1.00)
+        }
+    }
+}
+
+/// Small tuning vector applied on top of the sensitivity profile so each
+/// character/vehicle pair has a distinguishable flight feel. Values are
+/// dimensionless multipliers centred at 1.0.
+struct VehicleHandling: Equatable {
+    let turn: Float
+    let pitch: Float
+    let bank: Float
+
+    /// Identity handling — every multiplier 1.0. Used when no vehicle is
+    /// selected (initial state, unit tests, fallback).
+    static let neutral = VehicleHandling(turn: 1.0, pitch: 1.0, bank: 1.0)
 }

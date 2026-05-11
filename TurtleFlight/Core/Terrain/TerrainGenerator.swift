@@ -36,7 +36,10 @@ final class TerrainGenerator {
 
         let chunksToRemove = loadedChunks.keys.filter { !neededChunks.contains($0) }
         for coord in chunksToRemove {
-            loadedChunks[coord]?.removeFromParentNode()
+            if let node = loadedChunks[coord] {
+                stopAllActionsRecursively(in: node)
+                node.removeFromParentNode()
+            }
             loadedChunks.removeValue(forKey: coord)
         }
 
@@ -48,8 +51,27 @@ final class TerrainGenerator {
     }
 
     func clearAllChunks() {
-        for (_, node) in loadedChunks { node.removeFromParentNode() }
+        for (_, node) in loadedChunks {
+            stopAllActionsRecursively(in: node)
+            node.removeFromParentNode()
+        }
         loadedChunks.removeAll()
+    }
+
+    /// Recursively `removeAllActions()` for a node and its descendants.
+    /// Required because the 3×3 visible-chunk window swaps chunks every
+    /// time the player crosses a chunk boundary, and every decoration
+    /// (clouds, birds, balloons, planets, UFOs, fish schools, …) is
+    /// attached with `.runAction(.repeatForever(...))`. Without this
+    /// sweep, an evicted chunk's actions stayed alive on the orphaned
+    /// nodes until ARC finally claimed them — a slow, undetectable
+    /// retain accumulation on long sessions. `removeFromParentNode()`
+    /// alone does NOT cancel actions.
+    private func stopAllActionsRecursively(in node: SCNNode) {
+        node.removeAllActions()
+        for child in node.childNodes {
+            stopAllActionsRecursively(in: child)
+        }
     }
 
     /// World-space terrain height under the (x, z) world coordinate. Used by

@@ -65,6 +65,29 @@ struct FreeFlightResultView: View {
                         color: Theme.Color.surfaceOverlay,
                         action: onHome
                     )
+                    // Share — bridges the bare result number into the
+                    // viral loop. ShareLink (iOS 16+) handles the
+                    // UIActivityViewController dance for us and gives a
+                    // proper iPad popover anchor automatically.
+                    ShareLink(
+                        item: shareMessage,
+                        subject: Text(L10n.t("freeFlight.result.share.subject"))
+                    ) {
+                        Text(L10n.t("freeFlight.result.share"))
+                            .font(Theme.Typography.button)
+                            .foregroundColor(Theme.Color.textOnDark)
+                            .padding(.horizontal, Theme.Spacing.xl)
+                            .padding(.vertical, Theme.Spacing.m)
+                            .background(
+                                RoundedRectangle(cornerRadius: Theme.Radius.m)
+                                    .fill(Theme.Color.brandSky)
+                            )
+                    }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    })
+                    .accessibilityLabel(L10n.t("freeFlight.result.share"))
+
                     ResultActionButton(
                         title: L10n.t("freeFlight.result.again"),
                         color: Theme.Color.brandPrimary,
@@ -82,6 +105,13 @@ struct FreeFlightResultView: View {
                 withAnimation(.easeOut(duration: 0.3)) { showButtons = true }
             }
         }
+    }
+
+    /// Plain-text share blurb. Formatted via L10n so KR/EN both read
+    /// naturally. The flight time uses the same mm:ss helper as the HUD
+    /// so the receiver sees identical numbers.
+    private var shareMessage: String {
+        L10n.format("freeFlight.result.share.body.format", flightTime.mmss, starsCollected)
     }
 
     private func statRow(icon: String, label: String, value: String, badge: String?) -> some View {

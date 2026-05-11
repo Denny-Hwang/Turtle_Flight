@@ -52,6 +52,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 audioSection
+                sensitivityGuideSection
                 progressSection
                 aboutSection
             }
@@ -109,6 +110,57 @@ struct SettingsView: View {
                 }
             )
         }
+    }
+
+    /// Comparison table of the three sensitivity profiles. The actual
+    /// selection lives on Home (`SensitivityButton`s), but the player
+    /// has no way to learn *what* each level changes without picking
+    /// one and feeling it. This section spells out the dead zone,
+    /// response curve, and auto-level behaviour up-front so the player
+    /// can make an informed pick before flying.
+    private var sensitivityGuideSection: some View {
+        Section(L10n.t("settings.section.sensitivity")) {
+            sensitivityRow(
+                level: .easy,
+                tint: Theme.Color.easyGreen,
+                caption: L10n.t("settings.sensitivity.easy.caption")
+            )
+            sensitivityRow(
+                level: .normal,
+                tint: Theme.Color.normalYellow,
+                caption: L10n.t("settings.sensitivity.normal.caption")
+            )
+            sensitivityRow(
+                level: .expert,
+                tint: Theme.Color.expertRed,
+                caption: L10n.t("settings.sensitivity.expert.caption")
+            )
+        }
+    }
+
+    private func sensitivityRow(level: SensitivityLevel,
+                                tint: Color,
+                                caption: String) -> some View {
+        let profile = SensitivityProfile.profile(for: level)
+        return VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
+            HStack(spacing: Theme.Spacing.s) {
+                Circle()
+                    .fill(tint)
+                    .frame(width: 10, height: 10)
+                Text("Lv.\(level.levelNumber)  \(level.displayName)")
+                    .font(Theme.Typography.bodyDynamicBold)
+                Spacer()
+                Text(L10n.format("settings.sensitivity.tilt.format", Int(profile.maxTilt * 180 / .pi)))
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+            }
+            Text(caption)
+                .font(Theme.Typography.captionDynamic)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, Theme.Spacing.xxs)
+        .accessibilityElement(children: .combine)
     }
 
     private var progressSection: some View {

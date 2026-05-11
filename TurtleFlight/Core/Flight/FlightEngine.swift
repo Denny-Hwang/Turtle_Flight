@@ -18,6 +18,11 @@ final class FlightEngine {
     // MARK: - Properties
     private(set) var state = FlightState()
     private var profile: SensitivityProfile
+    /// Per-vehicle multipliers applied on top of the sensitivity profile
+    /// each frame. Defaults to `.neutral` (all 1.0) for unit tests and
+    /// pre-vehicle-selection state. FlightViewModel sets this in
+    /// `startFlight(...)` to the current vehicle's handling.
+    var vehicleHandling: VehicleHandling = .neutral
 
     // MARK: - Init
     init(sensitivity: SensitivityLevel = .easy) {
@@ -62,14 +67,17 @@ final class FlightEngine {
         let baseSpeed = Constants.Flight.defaultSpeed * speedMultiplier
         state.speed = baseSpeed
 
-        // Heading (yaw) from roll input
-        let turnRate = Float(profile.turnSpeed) * Float(rollInput) * deltaTime
+        // Heading (yaw) from roll input, scaled by the current vehicle's
+        // turn multiplier so e.g. the carrot jet (1.10) feels noticeably
+        // sharper than the cushion balloon (0.85).
+        let turnRate = Float(profile.turnSpeed) * vehicleHandling.turn * Float(rollInput) * deltaTime
         state.heading += turnRate
         if state.heading >= 360 { state.heading -= 360 }
         if state.heading < 0 { state.heading += 360 }
 
-        // Vertical speed from pitch input
-        let pitchRate = Float(profile.pitchSpeed) * Float(pitchInput)
+        // Vertical speed from pitch input, with per-vehicle pitch multiplier
+        // (e.g. balloon body has the highest lift at 1.15).
+        let pitchRate = Float(profile.pitchSpeed) * vehicleHandling.pitch * Float(pitchInput)
         state.verticalSpeed = pitchRate
 
         // Auto-level
@@ -107,7 +115,9 @@ final class FlightEngine {
         // CharacterAnimator may layer additional per-vehicle motion on top
         // of these axes (additive on .x for bellyGlider, override on .z
         // for cloudSurf, etc.) but no longer recomputes the base bank/pitch.
-        let bankAngle = -Float(rollInput) * Constants.Camera.bankingAngle * 2
+        // Bank carries the per-vehicle bias so a carrot-jet hard turn reads
+        // as committed and a cushion-balloon turn stays politely level.
+        let bankAngle = -Float(rollInput) * Constants.Camera.bankingAngle * 2 * vehicleHandling.bank
         let pitchAngle = Float(pitchInput) * 0.2
         state.rotation = SCNVector3(pitchAngle, -headingRad, bankAngle)
     }

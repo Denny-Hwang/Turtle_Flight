@@ -2,6 +2,13 @@ import Foundation
 import CoreMotion
 import Combine
 
+/// THREADING INVARIANT — every CoreMotion callback is scheduled on
+/// `.main` (see `start(...)`), every consumer (FlightViewModel) calls
+/// us from the main thread, and the `@Published` properties are read
+/// by SwiftUI on main. We do not mark the class `@MainActor` yet
+/// because doing so cascades into the SCNView Coordinator and several
+/// test fixtures; the invariant above is the v1.0 contract. Swift 6
+/// strict-concurrency adoption is a v1.1 follow-up.
 final class GyroController: ObservableObject {
     // MARK: - Published State
     @Published var rollInput: Double = 0.0   // -1...1

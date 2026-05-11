@@ -220,3 +220,46 @@
 "a11y.sensitivity.expert.label" = "조종 민감도: 전문가";
 "a11y.sensitivity.hint"         = "두 번 탭하여 이 민감도를 선택합니다";
 
+// HUD 음성 안내 — 시각 정보만 있던 게임 상태를 보이스오버로 알립니다.
+"a11y.hud.speed.format"        = "속도 시속 %lld 킬로미터";
+"a11y.hud.altitude.format"     = "고도 %lld 미터";
+"a11y.hud.sensitivity.format"  = "민감도 %lld단계";
+"a11y.hud.compass.format"      = "방위 %@ %lld도, 비행 시간 %@";
+"a11y.hud.stars.format"        = "수집한 별 %lld개";
+"a11y.hud.stars.announce.format" = "별을 획득했어요. 총 %lld개입니다.";
+"a11y.hud.region.format"       = "지역: %@";
+
+// 미션 HUD 음성 안내.
+"a11y.mission.remaining.format"  = "남은 시간 %@";
+"a11y.mission.progress.format"   = "미션 진행률: %@";
+"a11y.mission.collisions.format" = "지금까지 충돌 %lld회";
+
+// 온보딩 페이지 안내.
+"a11y.onboarding.page.format"  = "%lld번째 페이지, 전체 %lld";
+"a11y.onboarding.page.hint"    = "왼쪽 또는 오른쪽으로 스와이프해 페이지를 이동합니다";
+"a11y.onboarding.skip.hint"    = "두 번 탭하여 온보딩을 건너뛰고 시작합니다";
+"a11y.onboarding.next.hint"    = "두 번 탭하여 다음 페이지로 이동합니다";
+"a11y.onboarding.start.hint"   = "두 번 탭하여 온보딩을 마치고 시작합니다";
+
+// 자이로 체험(Try Tilt) 미니 비행.
+"onboarding.try.title"         = "기울여 보기";
+"onboarding.try.body"          = "기기를 가볍게 기울여 조종감을 체험해 보세요. 점수도 위험도 없는 30초입니다.";
+"onboarding.try.cta"           = "기울여 보기";
+"onboarding.try.exit"          = "완료";
+"onboarding.try.timeLeft.format" = "%lld초";
+
+// 자유 비행 결과 공유.
+"freeFlight.result.share"      = "공유하기";
+"freeFlight.result.share.subject" = "내 거북이 비행 기록";
+"freeFlight.result.share.body.format" = "🐢 거북이 비행\n비행 시간: %@\n별: %lld개 ⭐";
+
+// 일시정지 — 시스템 인터럽션 안내.
+"pause.reason.system"          = "잠시 멈췄어요";
+
+// 설정 — 민감도 안내 섹션.
+"settings.section.sensitivity"        = "민감도 안내";
+"settings.sensitivity.tilt.format"    = "최대 %lld°";
+"settings.sensitivity.easy.caption"   = "8° 데드존, 큐빅 반응, 2초 후 자동 수평. 첫 비행과 어린이 플레이어에게 권장.";
+"settings.sensitivity.normal.caption" = "4° 데드존, 2차 반응, 4초 후 자동 수평. 균형 — 일반 권장.";
+"settings.sensitivity.expert.caption" = "1.5° 데드존, 선형 반응, 자동 수평 없음, 실속 활성. 최대 컨트롤, 최대 난이도.";
+
