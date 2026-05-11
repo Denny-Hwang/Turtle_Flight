@@ -293,9 +293,14 @@ struct FlightView: View {
         scene.rootNode.addChildNode(sun)
     }
 
-    /// Distant star particles for space theme
+    /// Distant star particles for space theme. The count is gated on
+    /// Reduce Motion — 200 small spheres produced first-frame stutter on
+    /// older devices and are a busy field for vestibular-sensitive
+    /// players. With Reduce Motion ON we drop to 60 and skip the
+    /// nebula sphere entirely.
     private func addStarDome() {
-        let starCount = 200
+        let reducedMotion = UIAccessibility.isReduceMotionEnabled
+        let starCount = reducedMotion ? 60 : 200
         for i in 0..<starCount {
             let angle1 = Float(i) / Float(starCount) * .pi * 2
             let angle2 = Float.random(in: 0...(Float.pi))
@@ -312,12 +317,16 @@ struct FlightView: View {
                 UIColor(red: CGFloat(brightness), green: CGFloat(brightness), blue: 1.0, alpha: 0.8)
             scene.rootNode.addChildNode(star)
         }
-        // Distant nebula sphere
-        let nebula = SCNNode(geometry: SCNSphere(radius: 2800))
-        nebula.geometry?.firstMaterial?.diffuse.contents =
-            UIColor(red: 0.2, green: 0.05, blue: 0.35, alpha: 0.4)
-        nebula.geometry?.firstMaterial?.isDoubleSided = true
-        scene.rootNode.addChildNode(nebula)
+        // Distant nebula sphere. Skipped under Reduce Motion since the
+        // semitransparent double-sided sphere is one of the heavier first
+        // frames in the space theme — its purpose is purely atmospheric.
+        if !reducedMotion {
+            let nebula = SCNNode(geometry: SCNSphere(radius: 2800))
+            nebula.geometry?.firstMaterial?.diffuse.contents =
+                UIColor(red: 0.2, green: 0.05, blue: 0.35, alpha: 0.4)
+            nebula.geometry?.firstMaterial?.isDoubleSided = true
+            scene.rootNode.addChildNode(nebula)
+        }
     }
 
     /// Subtle caustic glow layer for ocean theme

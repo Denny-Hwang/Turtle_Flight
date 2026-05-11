@@ -253,3 +253,10 @@
 // Pause screen — system interruption phrase.
 "pause.reason.system"          = "Paused for an interruption";
 
+// Settings — Sensitivity guide section.
+"settings.section.sensitivity"        = "Sensitivity Guide";
+"settings.sensitivity.tilt.format"    = "%lld° tilt";
+"settings.sensitivity.easy.caption"   = "8° dead zone, cubic response, gentle auto-level after 2s. Best for first flights and younger players.";
+"settings.sensitivity.normal.caption" = "4° dead zone, quadratic response, auto-level after 4s. Balanced — recommended.";
+"settings.sensitivity.expert.caption" = "1.5° dead zone, linear response, no auto-level, stall enabled. Maximum control with maximum cost.";
+
