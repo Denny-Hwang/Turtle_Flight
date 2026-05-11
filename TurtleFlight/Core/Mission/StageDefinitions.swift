@@ -165,9 +165,16 @@ extension StageDefinition {
             ringCount: 8,
             ringRadius: 35,
             timeLimit: 180,
-            star3Time: nil,
-            starCountForPerfect: 5,  // 별 5개 전체 수집 필요
-            star3Condition: "접촉 0회 + 별 5개 전체 수집",
+            // Stage 3 introduces the new "collect every star" mechanic.
+            // Adding an explicit star3Time (150s) gives players a second
+            // legible path to the third star — they can earn ★★★ either
+            // by sweeping the field clean OR by clearing in 150s. The
+            // original design dropped star3Time entirely here, which
+            // made the difficulty cliff vs. Stage 2 (where 90s with
+            // zero collisions was the only path) feel arbitrary.
+            star3Time: 150,
+            starCountForPerfect: 5,
+            star3Condition: "접촉 0회 + 별 5개 전체 수집 또는 150초 이내",
             star2Condition: "완료",
             learningGoal: "연속 S자 비행"
         ),
@@ -179,10 +186,15 @@ extension StageDefinition {
             description: "산봉우리 7개의 정상 링 통과",
             ringCount: 7,
             ringRadius: 25,
-            timeLimit: 150,
-            star3Time: 120,
+            // Bumped time pressure: 150→140s timeLimit, 120→110s
+            // star3Time. Stage 5 used to crash from 120→80s star3 in
+            // one jump; nudging Stage 4 down a touch makes the ramp
+            // 110 → 90 instead of 120 → 80, which reads as a curve
+            // rather than a wall.
+            timeLimit: 140,
+            star3Time: 110,
             starCountForPerfect: nil,
-            star3Condition: "전체 통과 + 120초 이내",
+            star3Condition: "전체 통과 + 110초 이내",
             star2Condition: "완료",
             learningGoal: "급격한 피치 전환 + 부스터 타이밍"
         ),
@@ -194,10 +206,15 @@ extension StageDefinition {
             description: "에어 레이스 코스 완주 (링 20개 + S자 + 급선회)",
             ringCount: 20,
             ringRadius: 15,
+            // 80s star3 was punishing — that's 4s per ring on a 20-ring
+            // course full of sharp turns. 90s is still tight (4.5s/ring)
+            // but leaves a margin for one mid-course recovery, which
+            // playtesters wanted to feel as "earned hard" rather than
+            // "impossible." Time limit unchanged at 120s.
             timeLimit: 120,
-            star3Time: 80,
+            star3Time: 90,
             starCountForPerfect: nil,
-            star3Condition: "전체 통과 + 80초 이내 + 접촉 0회",
+            star3Condition: "전체 통과 + 90초 이내 + 접촉 0회",
             star2Condition: "완료",
             learningGoal: "종합 기동"
         )

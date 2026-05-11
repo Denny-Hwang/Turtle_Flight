@@ -185,6 +185,11 @@ final class FlightViewModel: ObservableObject {
         currentVehicle = vehicle
         currentMapTheme = theme
 
+        // Push per-vehicle handling into the physics engine. This is what
+        // turns "all six vehicles fly identically" into "the carrot jet
+        // really does turn sharper than the cushion balloon."
+        flightEngine.vehicleHandling = vehicle.handling
+
         // Build the atlas-textured billboard. Vehicle is baked into the
         // flying-pose art, so a single billboard subsumes both per spec
         // (docs/CHARACTER_DESIGN_PROMPT.md §Technical Notes / 2).

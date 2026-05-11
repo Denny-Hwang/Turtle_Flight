@@ -37,8 +37,20 @@ enum Constants {
     enum Camera {
         static let followDistance: Float = 15.0
         static let followHeight: Float = 5.0
-        static let lerpSpeed: Float = 0.1
-        static let bankingAngle: Float = 0.15
+        /// Per-frame slerp factor used by `FlightViewModel.updateCamera()`.
+        /// 0.15 was retuned from 0.10 after the PH-launch review: sharp
+        /// turns at Lv3 with 90° course corrections every couple seconds
+        /// (Stage 5 air-race) produced ~100ms camera lag that read as
+        /// "the camera is losing the character." 0.15 cuts that lag to
+        /// ~67ms while still smoothing out the high-frequency gyro
+        /// noise that 0.20+ would let through. Reduce-Motion users
+        /// continue to fall back to a slower lerp in FlightViewModel.
+        static let lerpSpeed: Float = 0.15
+        /// Roll applied to the camera as a fraction of the player's roll
+        /// input. 0.25 (≈14°) was retuned from 0.15 (≈8°) to give the
+        /// banking a more readable visual hook on PH demo video frames
+        /// — at 0.15 a maximum bank looked nearly level.
+        static let bankingAngle: Float = 0.25
     }
 
     // MARK: - Terrain
@@ -75,9 +87,12 @@ enum Constants {
         /// cluster around the player. Tuned so the player rarely *sees*
         /// the field empty without making it feel infinite either.
         static let starRespawnThreshold: Int = 3
-        /// Minimum interval between two respawn calls. A flat-out flier
-        /// could otherwise dump a fresh cluster every couple of seconds.
-        static let starRespawnCooldown: TimeInterval = 4.0
+        /// Minimum interval between two respawn calls. Halved from 4.0s
+        /// after the PH-launch review: at 4s the Free Flight rhythm
+        /// stalled into "wait for stars" lulls after the initial
+        /// cluster. 2.0s keeps a fresh cluster reachable without
+        /// devolving into a confetti-everywhere blur.
+        static let starRespawnCooldown: TimeInterval = 2.0
     }
 
     // MARK: - Collision
