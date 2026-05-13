@@ -14,6 +14,15 @@ struct PauseView: View {
     let onResume: () -> Void
     let onRestart: () -> Void
     let onQuit: () -> Void
+    /// When true, the Restart button surfaces a confirmation dialog
+    /// before firing `onRestart`. Used by Step Goal mid-mission so a
+    /// player who tapped Pause to read the screen doesn't lose ring /
+    /// star / time progress by a misplaced tap. Free Flight and
+    /// stage-not-yet-started pauses bypass the dialog because there's
+    /// no in-flight progress to protect.
+    var restartRequiresConfirmation: Bool = false
+
+    @State private var showRestartConfirm = false
 
     var body: some View {
         ZStack {
@@ -52,7 +61,13 @@ struct PauseView: View {
                         title: L10n.t("flight.pause.restart"),
                         systemImage: "arrow.counterclockwise",
                         color: Theme.Color.boostOrange,
-                        action: onRestart
+                        action: {
+                            if restartRequiresConfirmation {
+                                showRestartConfirm = true
+                            } else {
+                                onRestart()
+                            }
+                        }
                     )
                     .accessibilityHint(L10n.t("flight.pause.restart.hint"))
 
@@ -74,6 +89,19 @@ struct PauseView: View {
                     .elevation(Theme.Elevation.cardHigh)
             )
             .padding(.horizontal, Theme.Spacing.xl)
+        }
+        .confirmationDialog(
+            L10n.t("flight.pause.restart.confirm.title"),
+            isPresented: $showRestartConfirm,
+            titleVisibility: .visible
+        ) {
+            Button(L10n.t("flight.pause.restart.confirm.action"),
+                   role: .destructive) {
+                onRestart()
+            }
+            Button(L10n.t("common.cancel"), role: .cancel) {}
+        } message: {
+            Text(L10n.t("flight.pause.restart.confirm.message"))
         }
     }
 }

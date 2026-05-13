@@ -48,7 +48,10 @@ struct FlightView: View {
 
             ControlButtons(
                 onBoost:     { flightVM.activateBoost() },
-                onFire:      { flightVM.fireItem() },
+                // v1 ships with the item button hidden — see ControlButtons
+                // and DESIGN_GAP_REPORT P1-2. Pass nil so the slot is empty
+                // rather than wired to a no-op projectile.
+                onFire:      nil,
                 onCalibrate: { flightVM.calibrateGyro() },
                 onPause:     { flightVM.pauseFlight() },
                 onExit: {
@@ -114,7 +117,14 @@ struct FlightView: View {
                     onQuit: {
                         flightVM.stopFlight()
                         dismiss()
-                    }
+                    },
+                    // Only ask for confirmation when there's actual mid-
+                    // mission progress to lose — Step Goal with rings
+                    // already passed. Free Flight has no in-flight
+                    // progress so we keep the fast path.
+                    restartRequiresConfirmation:
+                        flightMode == .stepGoal
+                        && missionVM.missionState == .playing
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
             }
@@ -268,7 +278,21 @@ struct FlightView: View {
             addCausticsOverlay()
         }
 
-        flightVM.startFlight(scene: scene, character: character, vehicle: vehicle, theme: mapTheme)
+        // Layer the player's chosen cosmetic trail tier on top of the
+        // vehicle's stock colour. Clamp to the highest currently
+        // unlocked tier so a tier that's persisted but no longer earned
+        // (e.g. progress reset) doesn't render.
+        let claimedTier = missionVM.progress.selectedTrailTier
+        let earnedTier = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.totalStars)
+        let tierToApply: TrailColorTier =
+            claimedTier.unlockStarThreshold <= earnedTier.unlockStarThreshold
+            ? claimedTier
+            : earnedTier
+        flightVM.startFlight(scene: scene,
+                             character: character,
+                             vehicle: vehicle,
+                             theme: mapTheme,
+                             trailTier: tierToApply)
 
         // Check gyro availability after starting flight
         if !flightVM.gyroController.isAvailable {

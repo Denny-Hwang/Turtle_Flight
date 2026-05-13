@@ -52,6 +52,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 audioSection
+                trailColorSection
                 sensitivityGuideSection
                 progressSection
                 aboutSection
@@ -114,10 +115,38 @@ struct SettingsView: View {
 
     /// Comparison table of the three sensitivity profiles. The actual
     /// selection lives on Home (`SensitivityButton`s), but the player
-    /// has no way to learn *what* each level changes without picking
-    /// one and feeling it. This section spells out the dead zone,
-    /// response curve, and auto-level behaviour up-front so the player
-    /// can make an informed pick before flying.
+    /// Star-milestone trail tier picker. The senior review (2026-05-12)
+    /// called out the missing retention loop — stars accumulate but
+    /// have no cosmetic outlet. The four tiers (vehicle / magenta /
+    /// gold / rainbow) unlock at 0/50/150/300★ and the player picks
+    /// among the ones they've earned. The footer caption tells the
+    /// player what they still need for the next tier so the count has
+    /// a tangible target.
+    private var trailColorSection: some View {
+        Section {
+            ForEach(TrailColorTier.allCases, id: \.self) { tier in
+                TrailTierRow(
+                    tier: tier,
+                    totalStars: missionVM.progress.totalStars,
+                    isSelected: missionVM.progress.selectedTrailTier == tier
+                ) {
+                    missionVM.setSelectedTrailTier(tier)
+                }
+            }
+        } header: {
+            Text(L10n.t("settings.section.trail"))
+        } footer: {
+            // Next-tier nudge — only show when there's a higher tier the
+            // player hasn't unlocked yet.
+            let earned = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.totalStars)
+            if let next = TrailColorTier.allCases.first(where: { $0.unlockStarThreshold > earned.unlockStarThreshold }) {
+                let remaining = next.unlockStarThreshold - missionVM.progress.totalStars
+                Text(L10n.format("settings.trail.footer.format",
+                                 remaining, L10n.t(next.l10nKey)))
+            }
+        }
+    }
+
     private var sensitivityGuideSection: some View {
         Section(L10n.t("settings.section.sensitivity")) {
             sensitivityRow(
@@ -312,6 +341,94 @@ struct SettingsView: View {
     static let supportURL = URL(
         string: "https://github.com/Denny-Hwang/Turtle_Flight/issues"
     )!
+}
+
+// MARK: - Trail Tier Row
+
+/// One row in the Trail Color section. Locked tiers render greyed out
+/// with the unlock threshold; unlocked tiers are tappable and show a
+/// checkmark when selected. The colour swatch on the leading edge
+/// mirrors the actual trail colour the player will see in flight.
+private struct TrailTierRow: View {
+    let tier: TrailColorTier
+    let totalStars: Int
+    let isSelected: Bool
+    let action: () -> Void
+
+    private var unlocked: Bool { tier.isUnlocked(totalStars: totalStars) }
+
+    var body: some View {
+        Button(action: { if unlocked { action() } }) {
+            HStack(spacing: Theme.Spacing.m) {
+                swatch
+                    .frame(width: 22, height: 22)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L10n.t(tier.l10nKey))
+                        .font(Theme.Typography.bodyLarge)
+                        .foregroundColor(unlocked ? Theme.Color.textPrimary : .secondary)
+                    if !unlocked {
+                        Text(L10n.format("settings.trail.locked.format",
+                                          tier.unlockStarThreshold))
+                            .font(Theme.Typography.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .foregroundColor(Theme.Color.brandPrimary)
+                } else if !unlocked {
+                    Image(systemName: "lock.fill")
+                        .foregroundColor(.secondary)
+                        .accessibilityHidden(true)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .disabled(!unlocked)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+        .accessibilityHint(unlocked
+                           ? L10n.t("settings.trail.hint.unlocked")
+                           : L10n.format("settings.trail.hint.locked", tier.unlockStarThreshold))
+    }
+
+    /// Swatch preview. `.vehicle` shows a stripe of three core vehicle
+    /// colours so the player understands "the rocket flame stays
+    /// orange, etc."; coloured tiers show their override colour;
+    /// rainbow shows a small hue gradient.
+    @ViewBuilder
+    private var swatch: some View {
+        switch tier {
+        case .vehicle:
+            // Three-stripe gradient hinting at the per-vehicle colours.
+            LinearGradient(
+                colors: [
+                    Color(.sRGB, red: 0.94, green: 0.62, blue: 0.15, opacity: 1), // Turbo orange
+                    Color(.sRGB, red: 0.52, green: 0.72, blue: 0.92, opacity: 1), // Pip blue
+                    Color(.sRGB, red: 0.98, green: 0.78, blue: 0.46, opacity: 1)  // Nutty gold
+                ],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .clipShape(Circle())
+        case .rainbow:
+            // Approximate the rainbow particle effect — full hue ring.
+            AngularGradient(
+                gradient: Gradient(colors: [
+                    .red, .orange, .yellow, .green, .blue, .purple, .red
+                ]),
+                center: .center
+            )
+            .clipShape(Circle())
+        default:
+            // Solid override colour for magenta / gold.
+            Circle()
+                .fill(Color(tier.overrideColor ?? .gray))
+        }
+    }
 }
 
 // MARK: - Credits

@@ -18,7 +18,10 @@ final class MissionViewModel: ObservableObject {
     /// Set when persistence fails so the UI can surface a non-blocking warning.
     @Published var lastPersistenceError: String?
 
-    enum MissionDisplayState {
+    /// Equatable so views can branch on `state == .playing` without an
+    /// `if case` ceremony. The associated `String` on `.failed` is itself
+    /// Equatable, so the synthesised conformance covers all cases.
+    enum MissionDisplayState: Equatable {
         case selecting
         case playing
         case completed
@@ -75,6 +78,17 @@ final class MissionViewModel: ObservableObject {
         priorBestForLastResult = progress.stageResults[result.stageIndex]
         lastResult = result
         progress.updateStageResult(result)
+        // Auto-promote the cosmetic trail tier if this clear crossed a
+        // new star milestone. The next flight visually rewards the
+        // achievement without the player having to discover Settings.
+        // `lastSeenTrailTierThreshold` records the highest threshold
+        // we've already auto-promoted past, so subsequent clears that
+        // don't cross a new milestone leave the tier alone.
+        let earned = TrailColorTier.highestUnlocked(totalStars: progress.totalStars)
+        if earned.unlockStarThreshold > progress.lastSeenTrailTierThreshold {
+            progress.lastSeenTrailTierThreshold = earned.unlockStarThreshold
+            progress.selectedTrailTier = earned
+        }
         missionState = .completed
         AudioManager.shared.playStageClear()
         save()
@@ -106,10 +120,30 @@ final class MissionViewModel: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: "playerProgress") else { return }
         do {
             progress = try JSONDecoder().decode(PlayerProgress.self, from: data)
+            // Clamp the persisted trail tier down to whatever's actually
+            // earned. Defends against (a) a Reset Progress that wiped
+            // stars but left the previously-picked tier, and (b) old
+            // saved blobs from before tier earning was enforced.
+            let earned = TrailColorTier.highestUnlocked(totalStars: progress.totalStars)
+            if progress.selectedTrailTier.unlockStarThreshold > earned.unlockStarThreshold {
+                progress.selectedTrailTier = earned
+            }
         } catch {
             // Corrupt payload - keep defaults and clear it so we don't loop on the bad blob.
             log.error("Failed to decode PlayerProgress, resetting: \(error.localizedDescription, privacy: .public)")
             UserDefaults.standard.removeObject(forKey: "playerProgress")
         }
+    }
+
+    // MARK: - Trail tier helpers
+
+    /// Player-driven trail tier change from SettingsView. Persists
+    /// immediately. No-op if the requested tier isn't unlocked yet —
+    /// the Settings row is also disabled for locked tiers, so this is
+    /// belt-and-suspenders against a logic error in the caller.
+    func setSelectedTrailTier(_ tier: TrailColorTier) {
+        guard tier.isUnlocked(totalStars: progress.totalStars) else { return }
+        progress.selectedTrailTier = tier
+        save()
     }
 }

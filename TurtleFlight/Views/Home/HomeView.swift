@@ -21,6 +21,12 @@ struct HomeView: View {
     /// gear button in the top-right.
     @State private var showSettings = false
 
+    /// Mirror of `AudioManager.shared.isMuted` so the home-screen mute
+    /// chip can re-render its glyph each tap. Re-synced when the
+    /// SettingsView sheet dismisses (where the player may have toggled
+    /// mute via the Audio section) so the icon stays consistent.
+    @State private var isMuted: Bool = AudioManager.shared.isMuted
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -36,12 +42,37 @@ struct HomeView: View {
                 )
                 .ignoresSafeArea()
 
-                // Top-right settings gear. Sits inside the safe area so
-                // it doesn't fight the title spacing. Use `.ultraThinMaterial`
-                // for a soft contrast against the bright sky gradient.
+                // Top-right controls: mute toggle + settings gear. Two
+                // circular `.ultraThinMaterial` chips inside the safe
+                // area. The mute toggle lives outside Settings because
+                // App Review reasonably expects one-tap mute on a
+                // music-playing kids game; a 3-tap path (gear →
+                // Settings → Audio → Mute) reads as hidden.
                 VStack {
-                    HStack {
+                    HStack(spacing: Theme.Spacing.s) {
                         Spacer()
+                        Button {
+                            AudioManager.shared.toggleMute()
+                            isMuted = AudioManager.shared.isMuted
+                        } label: {
+                            Image(systemName: isMuted
+                                  ? "speaker.slash.fill"
+                                  : "speaker.wave.2.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(Theme.Color.textPrimary)
+                                .padding(Theme.Spacing.s + 2)
+                                .background(
+                                    Circle().fill(.ultraThinMaterial)
+                                )
+                        }
+                        .accessibilityLabel(L10n.t("a11y.mute.label"))
+                        .accessibilityValue(isMuted
+                                            ? L10n.t("a11y.mute.value.muted")
+                                            : L10n.t("a11y.mute.value.unmuted"))
+                        .accessibilityHint(isMuted
+                                           ? L10n.t("a11y.mute.hint.unmute")
+                                           : L10n.t("a11y.mute.hint.mute"))
+
                         Button {
                             showSettings = true
                         } label: {
@@ -74,6 +105,13 @@ struct HomeView: View {
                     }
                     .padding(.top, Theme.Spacing.xxxl)
 
+                    // Currently-selected character cameo. Surfaces the
+                    // identity the player will fly with the next time
+                    // they tap a mode — until this chip existed, the
+                    // home screen never showed *who* you were going to
+                    // be, only what you were going to do.
+                    SelectedCharacterCameo(character: characterVM.selectedCharacter)
+
                     Spacer()
 
                     // Mode Selection
@@ -92,9 +130,20 @@ struct HomeView: View {
 
                         ModeButton(
                             title: L10n.t("flight.mode.stepGoal"),
-                            subtitle: "\(missionVM.progress.totalStars)/15",
+                            // Pre-progress players see a literal mission
+                            // count ("5 missions") so the chip reads as a
+                            // promise of content rather than a cryptic
+                            // "0/15". Once they earn any star the chip
+                            // flips to the running score. The total cap
+                            // stays dynamic via `stages.count * 3`.
+                            subtitle: missionVM.progress.totalStars > 0
+                                ? "\(missionVM.progress.totalStars)/\(missionVM.stages.count * 3)★"
+                                : L10n.format("flight.mode.stepGoal.subtitle.firstRun", missionVM.stages.count),
                             icon: "target",
-                            color: Theme.Color.starGold
+                            // brandPrimary (Turbo mint) so the button
+                            // doesn't compete with the star-gold colour
+                            // used for actual rewards across the HUD.
+                            color: Theme.Color.brandPrimary
                         ) {
                             selectedMode = .stepGoal
                             // Step Goal goes through StageSelect first so
@@ -171,7 +220,12 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingView(onFinish: { showOnboarding = false })
         }
-        .sheet(isPresented: $showSettings) {
+        .sheet(isPresented: $showSettings, onDismiss: {
+            // SettingsView's Audio section may have flipped mute via its
+            // own toggle / volume sliders. Re-sync the home-screen icon
+            // so the speaker glyph reflects the latest state.
+            isMuted = AudioManager.shared.isMuted
+        }) {
             SettingsView(
                 isPresented: $showSettings,
                 missionVM: missionVM,
@@ -262,6 +316,55 @@ struct SensitivityButton: View {
             )
             .foregroundColor(isSelected ? Theme.Color.textOnDark : Theme.Color.textPrimary)
         }
+    }
+}
+
+// MARK: - Selected Character Cameo
+
+/// Shows the currently-selected character on Home so the player sees
+/// *who* they'll fly with the next time they pick a mode. Before this
+/// chip existed, the home screen never surfaced character identity —
+/// the only place the choice was visible was inside CharacterSelectView
+/// itself. Adds a small "you are X" reinforcement to every visit.
+///
+/// Tap target is the chip itself: 44pt minimum tappable area satisfied
+/// by the padded HStack. No tap action is wired right now (taps would
+/// need a mode pre-selection); the chip is purely informational.
+private struct SelectedCharacterCameo: View {
+    let character: CharacterType
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.s) {
+            Image("\(character.assetPrefix)_icon")
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 36, height: 36)
+                .clipShape(Circle())
+                .background(
+                    Circle().fill(.ultraThinMaterial)
+                )
+
+            VStack(alignment: .leading, spacing: 0) {
+                Text(L10n.t("home.cameo.label"))
+                    .font(Theme.Typography.microLabel)
+                    .foregroundColor(Theme.Color.textPrimary.opacity(0.55))
+                Text(character.config.name)
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textPrimary)
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.m)
+        .padding(.vertical, Theme.Spacing.s - 2)
+        .background(
+            Capsule().fill(.ultraThinMaterial)
+        )
+        // Re-identify on character change so the icon refresh triggers
+        // a transition rather than swapping in place.
+        .id(character)
+        .transition(.opacity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(L10n.format("a11y.home.cameo.format", character.config.name))
     }
 }
 

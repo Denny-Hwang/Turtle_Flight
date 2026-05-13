@@ -4,6 +4,13 @@ import SwiftUI
 struct TurtleFlightApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
+    init() {
+        // Register the MetricKit subscriber early so the first daily
+        // payload after install lands. See Core/Observability/
+        // MetricsCollector.swift for the rationale + privacy notes.
+        MetricsCollector.shared.register()
+    }
+
     var body: some Scene {
         WindowGroup {
             HomeView()
