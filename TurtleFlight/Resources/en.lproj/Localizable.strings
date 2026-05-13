@@ -24,6 +24,17 @@
 "settings.progress.replayOnboarding"      = "Replay tutorial";
 
 "settings.section.about"                  = "About";
+
+// Trail color tier section (cosmetic star-milestone progression)
+"settings.section.trail"          = "Trail Color";
+"settings.trail.tier.vehicle"     = "Default (per vehicle)";
+"settings.trail.tier.magenta"     = "Magenta";
+"settings.trail.tier.gold"        = "Gold";
+"settings.trail.tier.rainbow"     = "Rainbow";
+"settings.trail.locked.format"    = "Unlocks at ★ %lld";
+"settings.trail.footer.format"    = "Earn %lld more ★ to unlock \"%@\"";
+"settings.trail.hint.unlocked"    = "Double-tap to switch to this trail color";
+"settings.trail.hint.locked"      = "Earn %lld stars to unlock";
 "settings.about.version"                  = "Version";
 "settings.about.privacy"                  = "Privacy Policy";
 "settings.about.support"                  = "Support";
@@ -32,6 +43,18 @@
 
 // VoiceOver — settings entry
 "a11y.settings.label" = "Settings";
+
+// VoiceOver — home-screen mute toggle
+"a11y.mute.label"          = "Mute";
+"a11y.mute.value.muted"    = "On";
+"a11y.mute.value.unmuted"  = "Off";
+"a11y.mute.hint.mute"      = "Double-tap to silence all sounds";
+"a11y.mute.hint.unmute"    = "Double-tap to turn sound back on";
+
+// Home — character cameo + Step Goal subtitle
+"home.cameo.label"                       = "Flying as";
+"a11y.home.cameo.format"                 = "Currently selected character: %@";
+"flight.mode.stepGoal.subtitle.firstRun" = "%lld missions";
 "a11y.settings.hint"  = "Double-tap to open the settings screen";
 
 // MARK: - Home screen
@@ -64,6 +87,9 @@
 "flight.pause.resume.hint"    = "Double-tap to keep flying";
 "flight.pause.restart"        = "Restart";
 "flight.pause.restart.hint"   = "Double-tap to start the flight over from the beginning";
+"flight.pause.restart.confirm.title"   = "Restart this stage?";
+"flight.pause.restart.confirm.message" = "Rings passed, stars collected, and time remaining will all reset.";
+"flight.pause.restart.confirm.action"  = "Restart";
 "flight.pause.quit"           = "Quit";
 "flight.pause.quit.hint"      = "Double-tap to end the flight and return home";
 

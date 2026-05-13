@@ -2,7 +2,11 @@ import SwiftUI
 
 struct ControlButtons: View {
     let onBoost: () -> Void
-    let onFire: () -> Void
+    /// Optional fire-item handler. Nil hides the bottom-right item button
+    /// entirely — v1 keeps it hidden because the underlying projectile has
+    /// no impact behaviour yet (DESIGN_GAP_REPORT P1-2). A future release
+    /// that adds scoring targets re-introduces a non-nil handler.
+    let onFire: (() -> Void)?
     let onCalibrate: () -> Void
     let onPause: () -> Void
     let onExit: () -> Void
@@ -63,16 +67,32 @@ struct ControlButtons: View {
 
                 Spacer()
 
-                // Fire Button (right bottom)
-                ThumbButton(
-                    icon: "star.fill",
-                    label: L10n.t("flight.control.item"),
-                    color: Theme.Color.starGold,
-                    action: onFire
-                )
-                .padding(.trailing, Constants.Controls.buttonPadding)
-                .accessibilityLabel(L10n.t("a11y.item.label"))
-                .accessibilityHint(L10n.t("a11y.item.hint"))
+                // Fire Button (right bottom). v1 hides this entirely
+                // because the projectile has no impact behaviour yet —
+                // showing a useless button trains the player to ignore
+                // controls, which is worse than just not offering them.
+                // A future release that wires up a scoring target
+                // re-introduces this by passing a non-nil onFire.
+                if let onFire {
+                    ThumbButton(
+                        icon: "star.fill",
+                        label: L10n.t("flight.control.item"),
+                        color: Theme.Color.starGold,
+                        action: onFire
+                    )
+                    .padding(.trailing, Constants.Controls.buttonPadding)
+                    .accessibilityLabel(L10n.t("a11y.item.label"))
+                    .accessibilityHint(L10n.t("a11y.item.hint"))
+                } else {
+                    // Reserve symmetric trailing space so the boost
+                    // button doesn't drift to centre when the item slot
+                    // is empty.
+                    Color.clear
+                        .frame(width: Constants.Controls.buttonSize,
+                               height: Constants.Controls.buttonSize)
+                        .padding(.trailing, Constants.Controls.buttonPadding)
+                        .accessibilityHidden(true)
+                }
             }
             .padding(.bottom, Constants.Controls.buttonPadding)
         }

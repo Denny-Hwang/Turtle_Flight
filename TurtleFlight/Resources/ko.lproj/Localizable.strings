@@ -27,6 +27,17 @@
 "settings.progress.replayOnboarding"      = "튜토리얼 다시 보기";
 
 "settings.section.about"                  = "앱 정보";
+
+// Trail color tier section (cosmetic star-milestone progression)
+"settings.section.trail"          = "트레일 색상";
+"settings.trail.tier.vehicle"     = "기본 (탈것별)";
+"settings.trail.tier.magenta"     = "마젠타";
+"settings.trail.tier.gold"        = "골드";
+"settings.trail.tier.rainbow"     = "레인보우";
+"settings.trail.locked.format"    = "★ %lld개 모으면 잠금 해제";
+"settings.trail.footer.format"    = "★ %lld개 더 모으면 \"%@\" 잠금 해제";
+"settings.trail.hint.unlocked"    = "두 번 탭하여 이 트레일 색상으로 변경합니다";
+"settings.trail.hint.locked"      = "별 %lld개를 모으면 잠금이 풀립니다";
 "settings.about.version"                  = "버전";
 "settings.about.privacy"                  = "개인정보 처리방침";
 "settings.about.support"                  = "고객 지원";
@@ -36,6 +47,18 @@
 // VoiceOver — settings entry
 "a11y.settings.label" = "설정";
 "a11y.settings.hint"  = "두 번 탭하여 설정 화면을 엽니다";
+
+// VoiceOver — home-screen mute toggle
+"a11y.mute.label"          = "음소거";
+"a11y.mute.value.muted"    = "켜짐";
+"a11y.mute.value.unmuted"  = "꺼짐";
+"a11y.mute.hint.mute"      = "두 번 탭하여 모든 사운드를 끕니다";
+"a11y.mute.hint.unmute"    = "두 번 탭하여 사운드를 다시 켭니다";
+
+// Home — character cameo + Step Goal subtitle
+"home.cameo.label"                       = "현재 선택";
+"a11y.home.cameo.format"                 = "현재 선택된 캐릭터: %@";
+"flight.mode.stepGoal.subtitle.firstRun" = "미션 %lld개";
 
 // MARK: - Home screen
 "home.subtitle"           = "날 수 없는 동물들의 하늘 모험";
@@ -67,6 +90,9 @@
 "flight.pause.resume.hint"    = "두 번 탭하여 비행을 이어갑니다";
 "flight.pause.restart"        = "다시 시작";
 "flight.pause.restart.hint"   = "두 번 탭하여 처음부터 다시 시작합니다";
+"flight.pause.restart.confirm.title"   = "스테이지를 다시 시작할까요?";
+"flight.pause.restart.confirm.message" = "지금까지 통과한 링과 별, 남은 시간이 모두 초기화돼요.";
+"flight.pause.restart.confirm.action"  = "다시 시작";
 "flight.pause.quit"           = "종료";
 "flight.pause.quit.hint"      = "두 번 탭하여 비행을 종료하고 홈으로 갑니다";
 

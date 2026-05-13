@@ -10,6 +10,13 @@ struct HUDOverlay: View {
     /// increases so any rise is a pickup.
     @State private var starCounterScale: CGFloat = 1.0
 
+    /// Opacity of a thin red rim that flashes around the screen on each
+    /// collision. Pairs with the existing haptic + sound feedback so a
+    /// deaf / silent-phone / hard-of-hearing player still gets a visual
+    /// cue. Edge-driven by `flightVM.collisionFlashTrigger` (a monotonic
+    /// counter incremented inside the flight loop).
+    @State private var collisionFlashOpacity: Double = 0
+
     /// Honors the system-wide Reduce Motion toggle. When ON we skip the
     /// star-counter spring pulse so vestibular-sensitive players don't
     /// get a chip animation on every pickup.
@@ -22,6 +29,38 @@ struct HUDOverlay: View {
             // and fall back to Theme.l on devices with zero insets so the
             // chrome never crowds the Dynamic Island or notch.
             let horizontalInset = max(proxy.safeAreaInsets.leading, proxy.safeAreaInsets.trailing, Theme.Spacing.l)
+
+            ZStack {
+            // Collision flash — full-screen red rim that fades out over
+            // ~0.45s. Behind the HUD chips so the gauges stay readable,
+            // but above the SceneKit scene so it reads as a UI effect
+            // rather than a world event. Hidden from VoiceOver because
+            // the existing audio + haptic cues already announce the
+            // collision; this is for the deaf / silenced path.
+            Rectangle()
+                .stroke(Theme.Color.expertRed, lineWidth: 10)
+                .ignoresSafeArea()
+                .opacity(collisionFlashOpacity)
+                .accessibilityHidden(true)
+                .allowsHitTesting(false)
+                .onChange(of: flightVM.collisionFlashTrigger) { _ in
+                    // Two-stage animation: snap visible, then fade. Gives
+                    // a sharp "tick" feel on impact rather than a slow
+                    // bloom. Reduce Motion still shows the flash (it's
+                    // information, not decoration) but skips the eased
+                    // ramp so the rim simply blinks.
+                    if reduceMotion {
+                        collisionFlashOpacity = 0.9
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                            collisionFlashOpacity = 0
+                        }
+                    } else {
+                        collisionFlashOpacity = 0.9
+                        withAnimation(.easeOut(duration: 0.45)) {
+                            collisionFlashOpacity = 0
+                        }
+                    }
+                }
 
             VStack {
                 // Top HUD Bar
@@ -148,6 +187,7 @@ struct HUDOverlay: View {
                 .padding(.horizontal, horizontalInset)
                 .padding(.bottom, max(proxy.safeAreaInsets.bottom + 80, 80)) // Space for control buttons
             }
+            }   // ← closes the wrapping ZStack (collision flash + VStack)
         }
         .allowsHitTesting(false) // Pass touches through to SceneKit
     }

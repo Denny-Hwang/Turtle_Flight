@@ -9,6 +9,85 @@ window.
 
 ## [Unreleased]
 
+### Added — Retention loop + a11y closure (post-PH polish)
+
+After the Product Hunt launch pass merged, a follow-up review pointed
+to two genuine v1 gaps and four small polish items that had regressed
+between PR #43 and PR #45. This entry closes them.
+
+**Retention hook (new)**
+- **Star-milestone trail color tiers** — the running `totalStars`
+  count finally has a cosmetic outlet. Four tiers gate by star total:
+  `vehicle` (default — per-vehicle colour) → `magenta` (50★) →
+  `gold` (150★) → `rainbow` (300★, full-hue particleColorVariation).
+  `MissionViewModel.completeMission` auto-promotes the selected tier
+  exactly once per crossed milestone via `lastSeenTrailTierThreshold`,
+  so the next flight visually rewards the achievement without the
+  player having to discover Settings. Manual downgrades from Settings
+  are respected.
+- **Settings → Trail Color section** — picker over the four tiers.
+  Locked rows show the threshold ("Unlocks at ★ 50"); the section
+  footer nudges with "Earn 23 more ★ to unlock Gold". Section is
+  built around `TrailTierRow` for VoiceOver clarity (each row exposes
+  combined label + value + hint).
+- **Codable migration** — `PlayerProgress` gains `selectedTrailTier`
+  + `lastSeenTrailTierThreshold` via `decodeIfPresent`, so v1 saved
+  blobs from before this PR keep decoding cleanly. `MissionViewModel.
+  load()` clamps an over-claimed tier (e.g. after Reset Progress) down
+  to whatever's actually earned.
+
+**Observability (new)**
+- **MetricKit subscription** — `Core/Observability/MetricsCollector`
+  subscribes to `MXMetricManager` in `TurtleFlightApp.init`. Daily
+  metric and diagnostic payloads (launch time, hang rate, CPU /
+  memory, crashes, disk-write exceptions) log to OSLog. Zero
+  third-party SDK; payload delivery is gated on the user's iOS
+  analytics-sharing preference.
+
+**A11y closure**
+- **Home-screen mute toggle** — speaker chip next to the gear button,
+  one-tap mute / unmute. The 3-tap path through Settings → Audio →
+  Mute reads as hidden for a kids-rated game.
+- **Visible collision flash** — thin red rim that fades 0.9 → 0 over
+  ~0.45s on each collision. Edge-driven by a monotonic
+  `FlightViewModel.collisionFlashTrigger` counter. Pairs the existing
+  haptic + sound with a visual cue so deaf / silent-phone /
+  hard-of-hearing players have an equivalent signal. Honours Reduce
+  Motion (blinks rather than fades when on).
+- **Color-blind safe collision counter** — collision chip on MissionHUD
+  now layers three independent channels: icon shape (`triangle.fill`
+  vs `checkmark.circle.fill`), colour (red vs green), and a 2pt red
+  rim around the chip when count > 0. WCAG SC 1.4.1 closure.
+- **`PauseView` Restart confirmation** — `restartRequiresConfirmation`
+  flag wired from `FlightView` when `flightMode == .stepGoal &&
+  missionState == .playing`. Free Flight and pre-mission pauses keep
+  the fast path. Required `MissionDisplayState: Equatable`.
+
+**Home polish**
+- **Selected character cameo** — small chip ("Flying as / Turbo")
+  between the title and mode buttons so the player always sees *who*
+  they'll fly with on the next mode tap.
+- **Step Goal smart subtitle** — `"0/15"` cold-start text becomes
+  `"5 missions"` for first-run players; flips to running `"%d/%d★"`
+  once any star is earned. Mission cap is dynamic via
+  `stages.count * 3`.
+- **Step Goal mode-button colour** — `starGold` → `brandPrimary` so
+  the gold colour stays uniformly tied to "star reward" across the
+  app.
+
+**P1-2 closure**
+- **Fire button hidden in v1** — `ControlButtons.onFire` is now
+  optional; `FlightView` passes `nil`. The projectile has no impact
+  behaviour, and showing a useless button trains the player to
+  ignore controls. Symmetric padding reserved so the boost button
+  stays anchored.
+
+### Tests — post-PH polish
+- `Tests/TrailColorTierTests.swift` — 13 cases pinning tier
+  thresholds, `highestUnlocked` boundary behaviour, Codable round-
+  trip + legacy-blob migration, MissionViewModel auto-promotion,
+  manual-downgrade respect, and `load()`-time clamp.
+
 ### Added — Product Hunt launch pass
 
 Post-Sprint-3, before the v1.0 cut, an Apple-senior-grade review of the

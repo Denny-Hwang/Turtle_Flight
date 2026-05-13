@@ -96,6 +96,13 @@ final class FlightViewModel: ObservableObject {
     /// stage is active. Drives the objective compass arrow on MissionHUD.
     @Published private(set) var directionToObjective: Double? = nil
 
+    /// Monotonically-increasing trigger for a one-shot HUD flash on
+    /// collision. Sound + haptic already fire, but a deaf / silent-phone
+    /// session needs a visible cue. The HUD overlay observes this
+    /// counter via `.onChange(of:)` and runs a brief red-rim animation
+    /// each time it ticks up.
+    @Published private(set) var collisionFlashTrigger: Int = 0
+
     /// Boost progress in [0, 1]. 0 = ready (full ring), 1 = full duration
     /// boost just started. Drives the cooldown/duration ring overlaid on
     /// the boost ThumbButton.
@@ -180,7 +187,11 @@ final class FlightViewModel: ObservableObject {
 
     // MARK: - Flight Control
 
-    func startFlight(scene: SCNScene, character: CharacterType, vehicle: VehicleType, theme: MapTheme = .sky) {
+    func startFlight(scene: SCNScene,
+                     character: CharacterType,
+                     vehicle: VehicleType,
+                     theme: MapTheme = .sky,
+                     trailTier: TrailColorTier = .vehicle) {
         currentCharacter = character
         currentVehicle = vehicle
         currentMapTheme = theme
@@ -210,6 +221,19 @@ final class FlightViewModel: ObservableObject {
         // billboard) so its world position can track behind the heading.
         let trailNode = SCNNode()
         let trailSystem = registry.buildTrailParticleSystem(for: vehicle)
+        // Layer the cosmetic trail tier on top of the vehicle's stock
+        // colour. Tiers other than `.vehicle` overwrite particleColor
+        // (or, for `.rainbow`, push the colour variation up to a full
+        // hue range so each particle picks its own hue).
+        if let override = trailTier.overrideColor {
+            trailSystem.particleColor = override
+        } else if trailTier.useRainbow {
+            // Full-hue variation, modest saturation/brightness wobble.
+            // The vector represents the +/- variation around the base
+            // HSBA values, so H = 1.0 spans the entire colour wheel.
+            trailSystem.particleColor = .white
+            trailSystem.particleColorVariation = SCNVector4(1.0, 0.4, 0.0, 0.0)
+        }
         trailNode.addParticleSystem(trailSystem)
         trailNode.position = charNode.position
         scene.rootNode.addChildNode(trailNode)
@@ -592,6 +616,10 @@ final class FlightViewModel: ObservableObject {
         generator.prepare()
         generator.impactOccurred()
         AudioManager.shared.playCollision()
+        // Tick the visible-flash counter so the HUD overlay can flash a
+        // red rim. Pairs the haptic+sound with a visual cue so players
+        // on silent or hard-of-hearing still see the collision.
+        collisionFlashTrigger &+= 1
     }
 
     /// Pure decision: should a collision be registered given the current

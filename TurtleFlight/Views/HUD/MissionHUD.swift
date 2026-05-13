@@ -82,15 +82,26 @@ struct MissionHUD: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(L10n.format("a11y.mission.progress.format", missionEngine.progressText))
 
-                        // Collision counter
+                        // Collision counter. Once collisions > 0 we
+                        // (a) tint the icon red, (b) bold the count,
+                        // and (c) draw a red rim around the chip. Three
+                        // independent channels (icon shape + colour +
+                        // border weight) so a colour-blind player still
+                        // reads the warning even if red↔green looks the
+                        // same to them.
+                        let hit = missionEngine.collisions > 0
                         HStack(spacing: Theme.Spacing.xs) {
-                            Image(systemName: "exclamationmark.triangle")
-                                .foregroundColor(missionEngine.collisions > 0
+                            Image(systemName: hit
+                                  ? "exclamationmark.triangle.fill"
+                                  : "checkmark.circle.fill")
+                                .foregroundColor(hit
                                     ? Theme.Color.expertRed
                                     : Theme.Color.easyGreen
                                 )
                             Text(L10n.format("mission.collisions.format", missionEngine.collisions))
-                                .font(Theme.Typography.caption)
+                                .font(hit
+                                      ? Theme.Typography.caption.weight(.bold)
+                                      : Theme.Typography.caption)
                                 .foregroundColor(Theme.Color.textOnDark)
                         }
                         .padding(.horizontal, Theme.Spacing.s + 2)
@@ -98,6 +109,11 @@ struct MissionHUD: View {
                         .background(
                             RoundedRectangle(cornerRadius: Theme.Radius.xs)
                                 .fill(Theme.Color.surfaceOverlaySubtle)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: Theme.Radius.xs)
+                                        .stroke(hit ? Theme.Color.expertRed : .clear,
+                                                lineWidth: 2)
+                                )
                         )
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(L10n.format("a11y.mission.collisions.format", missionEngine.collisions))
