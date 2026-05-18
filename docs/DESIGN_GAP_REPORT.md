@@ -433,8 +433,54 @@ maps each issue ID to its landing PR.
   semantics yet (P1-2 in the senior review).
 - **§4.2 S21–S22** — App Store screenshots + asset-catalog tooling
   release pipeline.
-- **§4.3 A3 / A4** — High-contrast HUD variant + colorblind-safe
-  collision indicators.
+- **§4.3 A3 / A4** — High-contrast HUD variant. (Colorblind-safe
+  collision indicator was closed in the post-PH polish PR.)
 - **§4.3 A6 actual translations** — ja/zh-Hans/es/fr/de bundles.
 - **§4.4 F1–F7** — All P3 items (mid-flight vehicle switch, daily
   challenges, minimap, photo mode, replay, Game Center, shop) — v1.x.
+
+---
+
+## 11. Closure log — Sprint 4 (2026-05-18, release infra + felt acceleration)
+
+The post-PH senior review (rendered in chat, summarised at the top
+of this PR's CHANGELOG entry) identified one P0 cluster (release
+infrastructure) and one P1 cluster (felt acceleration / in-flight
+a11y) that this report had not previously enumerated because they
+sit outside the original "design integration" framing. They are
+recorded here for completeness so the matrix below covers every
+audit-class item the project has ever shipped against.
+
+### Release infrastructure (newly P0, all closed)
+
+| ID | Issue | Status | Landing |
+|----|-------|--------|---------|
+| O1 | `TurtleFlight.xcodeproj` absent from repo | ✅ Closed | Sprint 4 — XcodeGen `project.yml` |
+| O2 | No GitHub Actions / CI | ✅ Closed | Sprint 4 — `.github/workflows/ios-tests.yml` runs 169 XCTest cases per PR |
+| O3 | `SettingsView.privacyURL` pointed at a non-existent `PRIVACY.md` | ✅ Closed | Sprint 4 — bilingual `PRIVACY.md` at repo root |
+
+### Felt-acceleration & in-flight a11y (newly P1, all closed)
+
+| ID | Issue | Status | Landing |
+|----|-------|--------|---------|
+| G3 | Boost has no visual / camera world feedback (only "speed number doubles") | ✅ Closed | Sprint 4 — `Constants.Camera.boostFOVDelta` / `boostFollowDistanceDelta`, `FlightViewModel.updateCamera` lerps both with `boostProgress` |
+| U1 | Mid-flight sensitivity change required 6+ taps (Exit → Home → Settings → …) | ✅ Closed | Sprint 4 — PauseView gains optional `sensitivityLevel: Binding<SensitivityLevel>?` and renders an inline Easy/Normal/Expert selector |
+| C5 | `AudioManager.playOneShot` could leak entries when `AVAudioPlayer.duration == 0` | ✅ Closed | Sprint 4 — 24-entry FIFO cap + 2s fallback cleanup delay |
+
+### Sprint 4에서 의도적으로 v1.1 로 미룬 항목 (rationale recorded here for next sprint planning)
+
+- **G1 Daily Challenge mode** — closes the 15★ campaign cap vs.
+  50★ retention-tier math gap. Needs translation + new MissionEngine
+  modifier API + 2-week design.
+- **C3 / G4 Ring plane-intersection collision** — the current
+  sphere-distance check in `MissionEngine.update` theoretically
+  allows side passes. A plane-crossing replacement needs
+  `prevPlayerPosition` tracking, which a few existing
+  `MissionEngineTests` cases would need to be re-pinned around.
+- **CharacterRegistry 600+ LOC primitive removal** — atlas
+  billboard path is the live default; the legacy
+  `SCNSphere`/`SCNCapsule` builders are dead weight but the
+  fallback semantics need TestFlight verification before deletion.
+- **G5 Free Flight soft goals** (daily target / personal best
+  banner) — closes the "no payoff in Free Flight" perception. Needs
+  UI design + L10n + telemetry plumbing.

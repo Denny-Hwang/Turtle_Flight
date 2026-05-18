@@ -51,6 +51,22 @@ enum Constants {
         /// banking a more readable visual hook on PH demo video frames
         /// — at 0.15 a maximum bank looked nearly level.
         static let bankingAngle: Float = 0.25
+        /// Default field of view. The boost path layers `boostFOVDelta`
+        /// on top of this scaled by `boostProgress` so a max-boost frame
+        /// reads at ~78° and the player feels the acceleration through
+        /// the lens rather than only as a number going up.
+        static let fieldOfView: CGFloat = 70.0
+        /// Extra degrees added to the FOV at full-boost (`boostProgress=1`).
+        /// Lerped down with boost progress so the change is automatically
+        /// reversible. 8° was picked so the perspective punch is visible
+        /// in side-by-side without crossing into vestibular-discomfort
+        /// territory. Suppressed entirely when Reduce Motion is on.
+        static let boostFOVDelta: CGFloat = 8.0
+        /// Extra follow-distance at full-boost. Pulling the camera back
+        /// 3m while the speed is doubled keeps the character's apparent
+        /// on-screen size roughly constant — without this, max-boost
+        /// reads as "the screen got smaller" rather than "I got faster."
+        static let boostFollowDistanceDelta: Float = 3.0
     }
 
     // MARK: - Terrain

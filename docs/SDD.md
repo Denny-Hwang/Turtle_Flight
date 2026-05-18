@@ -204,6 +204,12 @@ TurtleFlight/
 - 캐릭터+탈것이 화면 중앙 30~40% 영역 차지
 - 부드러운 카메라 (Lerp, damping)
 - 선회 시 뱅킹 효과
+- **부스터 카메라 임팩트** (Sprint 4): 부스터 활성 시 FOV 70°→78°,
+  follow distance 15m→18m 까지 `boostProgress`로 lerp. 캐릭터의
+  apparent on-screen size를 유지해 가속감을 perspective로 표현.
+  Reduce Motion 시 비활성 (vestibular comfort).
+- Tunable via `Constants.Camera.fieldOfView` / `boostFOVDelta` /
+  `boostFollowDistanceDelta`.
 
 #### 3.4.2 Terrain (MVP)
 - Perlin Noise 기반 Procedural 지형
@@ -277,6 +283,22 @@ See source code for detailed implementations of:
 - W4: World + 5캐릭터 (나머지 캐릭터, 아이템, HUD, 사운드)
 - W5: Modes (자유 비행, Step Goal 5스테이지, 홈/캐릭터선택)
 - W6: Polish (최적화, 테스트, App Store 준비)
+
+### 6.2 Build & CI
+
+`TurtleFlight.xcodeproj` 는 저장소에 커밋되지 않습니다. `project.yml`
+에서 XcodeGen 으로 재생성합니다 (`brew install xcodegen && xcodegen
+generate`). GitHub Actions(`.github/workflows/ios-tests.yml`) 가 매
+PR 마다 macOS 14 + iOS 시뮬레이터에서 169 XCTest 케이스를 실행합니다.
+
+릴리스 빌드 산출 (Sprint 4 이후 권장 순서):
+
+1. `xcodegen generate`
+2. Xcode > Product > Archive (Release config)
+3. App Size 측정 (Organizer > 해당 아카이브 > Show in Finder > `.xcarchive` 크기 확인, 목표 < 80MB)
+4. Instruments Time Profiler 실기기 60FPS 검증 (iPhone 12, iPhone 16 Pro)
+5. Allocations 트레이스 5분 비행 메모리 < 250MB 확인
+6. TestFlight 내부 베타 5명 이상 / 1주일
 
 ## 7. App Store Submission
 

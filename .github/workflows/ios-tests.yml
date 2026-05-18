@@ -1,0 +1,100 @@
+# GitHub Actions — Turtle Flight unit test suite.
+#
+# Runs every XCTest case (currently 169 across 24 files) on every PR
+# and on pushes to main. Uses XcodeGen to regenerate the .xcodeproj
+# from `project.yml` so the CI build is reproducible and contributors
+# can't drift project settings.
+#
+# Required runner: macos-14 (provides Xcode 15.x + iOS 17 simulator).
+# Simulator: iPhone 15 — matches the 60FPS / iOS 16+ target band.
+
+name: iOS Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Only one CI run per branch — newer pushes cancel in-flight runs so
+# stale Stage 4 checks don't sit holding the merge queue.
+concurrency:
+  group: ios-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & test
+    runs-on: macos-14
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.4
+        run: |
+          # Pin Xcode version so swift-version drift can't break the
+          # generated project file. macos-14 ships 15.4 by default but
+          # the runner image occasionally swaps it.
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Install XcodeGen + xcpretty
+        run: |
+          brew install xcodegen
+          gem install xcpretty --no-document
+
+      - name: Generate Xcode project
+        run: |
+          xcodegen generate
+          test -d TurtleFlight.xcodeproj
+
+      - name: Resolve dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project TurtleFlight.xcodeproj \
+            -scheme TurtleFlight || true
+          # `|| true` because TurtleFlight has no SwiftPM dependencies
+          # today; the resolve step is left here for forward compat so
+          # a future Algorithms/Collections add doesn't fail CI silently.
+
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TurtleFlight.xcodeproj \
+            -scheme TurtleFlight \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || (
+              echo "::error::Build failed — see Xcode log above"
+              exit 1
+            )
+
+      - name: Run tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project TurtleFlight.xcodeproj \
+            -scheme TurtleFlight \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -configuration Debug \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty --report junit --output build/reports/junit.xml || (
+              echo "::error::One or more XCTest cases failed"
+              exit 1
+            )
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: build/reports/junit.xml
+          if-no-files-found: warn
+          retention-days: 14

@@ -241,11 +241,13 @@ final class FlightViewModel: ObservableObject {
         self.trailParticleSystem = trailSystem
         self.baseTrailBirthRate = CharacterRegistry.trailParameters(for: vehicle).baseBirthRate
 
-        // Setup camera
+        // Setup camera. Field of view is driven dynamically in
+        // updateCamera() so boost-progress can punch it; this is the
+        // resting value that idle (non-boosting) flight reads at.
         let camera = SCNNode()
         camera.camera = SCNCamera()
         camera.camera?.zFar = 5000
-        camera.camera?.fieldOfView = 70
+        camera.camera?.fieldOfView = Constants.Camera.fieldOfView
         scene.rootNode.addChildNode(camera)
         self.cameraNode = camera
 
@@ -670,8 +672,23 @@ final class FlightViewModel: ObservableObject {
         guard let charNode = characterNode, let camNode = cameraNode else { return }
 
         let headingRad = heading.rad
+        // Boost-modulated follow distance + FOV. Pulling the camera back
+        // 3m and widening the FOV 8° while the speed is doubled keeps
+        // the character's apparent on-screen size roughly constant and
+        // gives the acceleration a perspective punch that "speed = 2x
+        // bigger number" alone never delivers. Reduce-Motion users
+        // get the resting frame instead — the punch is exactly the
+        // kind of camera oscillation that's vestibular-uncomfortable.
+        let boost: Float = reduceMotionEnabled ? 0 : boostProgress
         let dist = Constants.Camera.followDistance
+            + Constants.Camera.boostFollowDistanceDelta * boost
         let height = Constants.Camera.followHeight
+        let targetFOV = Constants.Camera.fieldOfView
+            + Constants.Camera.boostFOVDelta * CGFloat(boost)
+        // SCNCamera.fieldOfView is animated implicitly by SCNTransaction
+        // when assigned each frame, so the change reads as a smooth
+        // lerp instead of a snap.
+        camNode.camera?.fieldOfView = targetFOV
 
         // Target camera position: behind and above character
         let targetX = charNode.position.x - sin(headingRad) * dist

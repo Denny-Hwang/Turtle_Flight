@@ -124,7 +124,13 @@ struct FlightView: View {
                     // progress so we keep the fast path.
                     restartRequiresConfirmation:
                         flightMode == .stepGoal
-                        && missionVM.missionState == .playing
+                        && missionVM.missionState == .playing,
+                    // Surface the sensitivity selector inline so a player
+                    // who feels Easy is too floaty (or Expert is too hot)
+                    // can swap it without exiting the flight. The didSet
+                    // on FlightViewModel.sensitivityLevel re-applies the
+                    // profile to both the gyro pipeline and the engine.
+                    sensitivityLevel: $flightVM.sensitivityLevel
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
             }

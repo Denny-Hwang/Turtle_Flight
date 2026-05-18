@@ -303,6 +303,15 @@ final class AudioManager {
         }
     }
 
+    /// Hard cap on simultaneous one-shot retains. Without this, a rapid
+    /// flurry of pickups (multi-star cluster + ring pass on the same
+    /// frame) could push the sfxPlayers dictionary past a few dozen
+    /// entries if any asyncAfter scheduler hiccups. 24 covers the
+    /// worst observed burst (~6 stars + 1 ring + UI taps) with a 4×
+    /// safety margin while keeping the audio mixer's voice budget
+    /// healthy.
+    private static let maxConcurrentOneShots = 24
+
     private func playOneShot(data: Data, volume: Float) {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             do {
@@ -312,10 +321,29 @@ final class AudioManager {
                 player.prepareToPlay()
                 player.play()
                 let key = UUID().uuidString
+                // AVAudioPlayer.duration can occasionally read as 0 on
+                // freshly-prepared synth payloads — fall back to a 2s
+                // worst-case window so a 0-duration read can't leak the
+                // entry. The +0.1s buffer past `duration` matches the
+                // original code path for the well-behaved case.
+                let cleanupDelay: TimeInterval = player.duration > 0
+                    ? player.duration + 0.1
+                    : 2.0
                 DispatchQueue.main.async {
-                    self?.sfxPlayers[key] = player
-                    // Clean up after playback
-                    DispatchQueue.main.asyncAfter(deadline: .now() + player.duration + 0.1) {
+                    guard let self = self else { return }
+                    // Hard cap defense — if the dictionary grew past the
+                    // budget (asyncAfter scheduler hiccup, etc.), drop
+                    // the oldest entries before inserting the new one
+                    // so we never accumulate beyond `maxConcurrentOneShots`.
+                    if self.sfxPlayers.count >= Self.maxConcurrentOneShots {
+                        let overflow = self.sfxPlayers.count - Self.maxConcurrentOneShots + 1
+                        for k in self.sfxPlayers.keys.prefix(overflow) {
+                            self.sfxPlayers[k]?.stop()
+                            self.sfxPlayers.removeValue(forKey: k)
+                        }
+                    }
+                    self.sfxPlayers[key] = player
+                    DispatchQueue.main.asyncAfter(deadline: .now() + cleanupDelay) { [weak self] in
                         self?.sfxPlayers.removeValue(forKey: key)
                     }
                 }
