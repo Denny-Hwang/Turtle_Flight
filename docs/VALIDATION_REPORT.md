@@ -325,3 +325,40 @@
 위 항목들은 모두 PR #43에서 closure. 전체 변경 사항은 `CHANGELOG.md` 참조.
 
 **테스트 카운트**: 109 → 169 (+60). XCTest 카테고리는 `MissionTerminalBridge`, `CollisionDetection`, `LocalizationCoverage`, `Sprint1Polish`, `SettingsAndAudio`, `Sprint3Accessibility`.
+
+---
+
+## 9. Closure log — Sprint 4 (2026-05-18, release-infra + felt acceleration)
+
+본 보고서 §5.2 ("성능 목표 달성 여부") 와 §6 ("알려진 미검증 영역") 의
+일부 항목은 여전히 TestFlight 실기기 + Instruments 패스가 필요하지만,
+**그 패스를 운영할 수 있는 인프라 자체가 없던 격차**가 Sprint 4에서
+닫혔습니다. 또한 senior review에서 지적된 v1.0 출시 차단 인프라 3건이
+모두 처리됐습니다.
+
+| 항목 | 후속 처리 | 위치 |
+|------|----------|------|
+| `xcodeproj` 부재 (출시 차단급) | XcodeGen `project.yml` 도입. `brew install xcodegen && xcodegen generate` 로 재현 가능 | `project.yml` (repo root) |
+| GitHub Actions CI 부재 | macOS 14 + iOS 시뮬레이터에서 169 XCTest를 PR마다 실행 | `.github/workflows/ios-tests.yml` |
+| `PRIVACY.md` 부재 (SettingsView가 가리키는 URL이 깨진 링크) | 정책 본문 + COPPA/GDPR 포지셔닝 + 매 키마다 written reason | `PRIVACY.md` |
+| 부스터 시 카메라 임팩트 부재 (G3) | `Constants.Camera.boostFOVDelta` / `boostFollowDistanceDelta` 추가, `updateCamera` 가 `boostProgress`로 lerp. Reduce Motion 시 비활성 | `FlightViewModel.updateCamera`, `Constants.Camera` |
+| 인비행 sensitivity 변경 6-탭 경로 (U1) | PauseView가 옵션 `sensitivityLevel: Binding<SensitivityLevel>?` 받아 인라인 selector 표시 | `PauseView.SensitivityRow`, `FlightView` |
+| `AudioManager.playOneShot` 사전 무한 증가 잠재 (C5) | 24-entry FIFO cap + 0-duration fallback cleanupDelay | `AudioManager.playOneShot` |
+
+### 여전히 열려있는 항목 (TestFlight 의존)
+
+이 보고서 §5.2 의 FPS/Memory/AppSize/LaunchTime 검증은 **실기기 +
+Instruments + Xcode Archive** 가 필요하며 Sprint 4 범위가 아닙니다.
+다만 이제 CI가 머지 직전마다 빌드/테스트를 실행하므로 회귀가 PR
+단계에서 잡힙니다. 출시 직전 1주일 안에 다음을 권장:
+
+1. iPhone 12 + iPhone 16 Pro 실기기에서 Instruments Time Profiler (60 FPS 확인)
+2. Allocations 트레이스 (5분 비행 시 < 250 MB 확인)
+3. Xcode Archive → `.ipa` 크기 < 80 MB 확인
+4. TestFlight 내부 베타 5명 / 1주일 — 자이로 필링 정량 피드백
+
+### Sprint 4에서 의도적으로 v1.1 로 미룬 항목
+
+- **Daily Challenge 모드** (G1 retention math 격차 해소)
+- **링 plane-intersection 충돌** (테스트 호환성 필요)
+- **CharacterRegistry primitive geometry 600+ LOC 제거** (실기기 fallback 검증 필요)

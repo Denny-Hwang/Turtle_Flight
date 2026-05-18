@@ -91,27 +91,45 @@ docs/
 
 ## Getting Started
 
-1. Clone the repository.
-2. **Create the Xcode project locally.** The repo currently ships sources
-   only — `TurtleFlight.xcodeproj` is not committed. From Xcode:
-   *File → New → Project → iOS → App* (Product Name: `TurtleFlight`,
-   Interface: SwiftUI, Language: Swift, Bundle ID: as you prefer), then
-   replace the generated stub sources with this repo's `TurtleFlight/`
-   directory. Set **Deployment Target = iOS 16.0**, **Devices = iPhone +
-   iPad**, **Orientation = Landscape only**, and add `gyroscope` /
-   `accelerometer` to *Required device capabilities* (already set in the
-   bundled `Info.plist`).
-3. Add the existing `Assets.xcassets`, `Resources/`, and `PrivacyInfo.xcprivacy`
-   to the target.
-4. Add `Tests/` as a Unit Test target with `@testable import TurtleFlight`.
-5. Select an iOS device or simulator target → Build and run (`⌘R`).
+The project file is generated from `project.yml` via **[XcodeGen](https://github.com/yonsm/XcodeGen)**.
+The generated `TurtleFlight.xcodeproj` is intentionally **not** committed
+so contributors can't drift settings — regenerate it locally.
+
+```bash
+# One-time setup
+brew install xcodegen
+
+# From the repo root, every time project.yml changes
+xcodegen generate
+
+# Open the freshly-generated project in Xcode
+open TurtleFlight.xcodeproj
+```
+
+The generated project sets Deployment Target = iOS 16.0, Devices =
+iPhone + iPad, Orientation = Landscape only, and propagates the
+required device capabilities, Info.plist path, asset catalog,
+PrivacyInfo manifest, and the `TurtleFlightTests` unit-test target
+automatically. Hit `⌘R` to build and run.
 
 > **Note:** Gyroscope controls require a physical device. On Simulator /
 > iPad-without-gyro, drag on the scene view to steer (touch-fallback).
->
-> A future PR will introduce XcodeGen / Tuist tooling so the project file
-> is reproducible from a YAML spec; until then, the manual setup above is
-> the canonical path.
+
+## Tooling
+
+| Tool | Purpose | Install |
+|------|---------|---------|
+| XcodeGen | Reproducible `.xcodeproj` from `project.yml` | `brew install xcodegen` |
+| xcpretty | Pretty xcodebuild logs (used by CI) | `gem install xcpretty` |
+| librsvg + ImageMagick | Regenerate raster icons from SVG (`scripts/build_assets.sh`) | `brew install librsvg imagemagick` |
+
+## Continuous Integration
+
+GitHub Actions (`.github/workflows/ios-tests.yml`) runs the full
+XCTest suite on every PR and push to `main` against the latest iOS
+simulator on macOS 14. The same `xcodegen generate` step the README
+recommends is the first thing CI does, so a working PR is one that
+builds from a clean checkout with no human-in-the-loop project file.
 
 ## Localization
 
@@ -187,24 +205,43 @@ This project is licensed under the BSD 3-Clause License. See [LICENSE](LICENSE) 
 
 ## 시작하기
 
-1. 저장소를 clone.
-2. **로컬에서 Xcode 프로젝트 파일 생성.** 현재 저장소는 소스만 포함 —
-   `TurtleFlight.xcodeproj`는 커밋되지 않았습니다. Xcode에서
-   *File → New → Project → iOS → App* (Product Name `TurtleFlight`,
-   SwiftUI, Swift, Bundle ID 임의)으로 만든 뒤 생성된 스텁 소스를
-   본 저장소 `TurtleFlight/` 로 교체합니다. **Deployment Target =
-   iOS 16.0**, **Devices = iPhone + iPad**, **Orientation = Landscape
-   only**, *Required device capabilities*에 `gyroscope`,
-   `accelerometer`를 설정 (이미 번들 `Info.plist`에 명시됨).
-3. 기존 `Assets.xcassets`, `Resources/`, `PrivacyInfo.xcprivacy`를 타깃에 추가.
-4. `Tests/`를 Unit Test 타깃으로 추가하고 `@testable import TurtleFlight` 사용.
-5. iOS 기기 또는 시뮬레이터 선택 → 빌드 후 실행 (⌘R).
+프로젝트 파일은 `project.yml` 로부터 **[XcodeGen](https://github.com/yonsm/XcodeGen)**
+이 생성합니다. `TurtleFlight.xcodeproj`는 의도적으로 커밋되지 않습니다
+— 각자 로컬에서 생성해 설정 드리프트를 막습니다.
+
+```bash
+# 최초 1회
+brew install xcodegen
+
+# 저장소 루트에서, project.yml이 바뀔 때마다
+xcodegen generate
+
+# Xcode로 열기
+open TurtleFlight.xcodeproj
+```
+
+Deployment Target = iOS 16.0, Devices = iPhone + iPad,
+Orientation = Landscape only, Required device capabilities, Info.plist,
+Asset catalog, PrivacyInfo 매니페스트, `TurtleFlightTests` 유닛 테스트
+타깃이 자동 설정됩니다. ⌘R로 빌드/실행.
 
 > 자이로 조작은 실기기에서만 동작합니다. 시뮬레이터/자이로 없는 iPad에서는
 > 화면을 손가락으로 드래그하여 조종합니다 (touch-fallback).
->
-> 추후 PR에서 XcodeGen / Tuist 도입하여 YAML 스펙으로 프로젝트 파일을
-> 재생성할 수 있도록 할 예정입니다. 그때까지는 위 수동 설정이 정식 경로입니다.
+
+## 도구 (Tooling)
+
+| 도구 | 용도 | 설치 |
+|------|------|------|
+| XcodeGen | `project.yml` 에서 재현 가능한 `.xcodeproj` 생성 | `brew install xcodegen` |
+| xcpretty | xcodebuild 로그 가독성 (CI 사용) | `gem install xcpretty` |
+| librsvg + ImageMagick | SVG → 래스터 아이콘 재생성 (`scripts/build_assets.sh`) | `brew install librsvg imagemagick` |
+
+## CI
+
+GitHub Actions(`.github/workflows/ios-tests.yml`)가 main 푸시와 모든 PR에
+대해 macOS 14 + 최신 iOS 시뮬레이터에서 전체 XCTest 스위트를 실행합니다.
+CI 첫 단계가 `xcodegen generate` 이므로 깔끔한 체크아웃에서 사람 손을
+거치지 않고 빌드되는 PR만 통과합니다.
 
 ## 다국어
 

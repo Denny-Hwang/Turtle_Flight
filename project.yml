@@ -1,0 +1,103 @@
+# XcodeGen project specification for Turtle Flight.
+#
+# This file replaces the manual "create a new Xcode project locally" step
+# the README used to require. Once XcodeGen is installed (brew install
+# xcodegen), running `xcodegen generate` from the repo root produces a
+# reproducible `TurtleFlight.xcodeproj` that any contributor (and CI)
+# gets identical settings for: deployment target, orientations, required
+# device capabilities, Info.plist path, Privacy manifest, asset catalog,
+# resource bundles, and the test target.
+#
+# Keep this file the single source of truth for project structure.
+# Edits to Bundle ID, build settings, or target membership belong here,
+# not in the generated .xcodeproj (which should be regenerated each time).
+
+name: TurtleFlight
+
+options:
+  bundleIdPrefix: com.turtleflight
+  minimumXcodeGenVersion: "2.39.0"
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    CLANG_ENABLE_MODULES: YES
+    # Apple App Store binary expectations
+    ENABLE_BITCODE: NO
+    SUPPORTS_MACCATALYST: NO
+    # Asset processing
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+
+targets:
+  TurtleFlight:
+    type: application
+    platform: iOS
+    sources:
+      - path: TurtleFlight
+        excludes:
+          - "Info.plist"
+          - "PrivacyInfo.xcprivacy"
+    resources:
+      - path: TurtleFlight/Resources
+        type: folder
+      - path: TurtleFlight/Assets.xcassets
+      - path: TurtleFlight/PrivacyInfo.xcprivacy
+    info:
+      path: TurtleFlight/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app
+        PRODUCT_NAME: $(TARGET_NAME)
+        # We ship a hand-authored Info.plist (the file referenced by
+        # `info.path` above) — orientation, capabilities, motion-usage
+        # description, and launch screen all live there. Do NOT add
+        # INFOPLIST_KEY_* build settings here; XcodeGen would generate
+        # a second Info.plist and the two would conflict.
+        TARGETED_DEVICE_FAMILY: "1,2"  # iPhone + iPad
+        DEVELOPMENT_TEAM: ""           # set per-contributor via .xcconfig override
+        CODE_SIGN_STYLE: Automatic
+        # Static analysis hygiene
+        GCC_WARN_UNUSED_FUNCTION: YES
+        CLANG_WARN_DOCUMENTATION_COMMENTS: YES
+
+  TurtleFlightTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: TurtleFlight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app.tests
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TurtleFlight.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TurtleFlight"
+
+schemes:
+  TurtleFlight:
+    build:
+      targets:
+        TurtleFlight: all
+        TurtleFlightTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - TurtleFlightTests
+      gatherCoverageData: true
+      coverageTargets:
+        - TurtleFlight
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

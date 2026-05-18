@@ -9,6 +9,106 @@ window.
 
 ## [Unreleased]
 
+### Added — Sprint 4 (release infra + felt-acceleration + in-flight a11y)
+
+After the post-PH polish merged, a senior service review surfaced
+three remaining v1.0 blockers and four felt-game-design gaps. This
+sprint closes the infrastructure blockers and the highest-ROI
+gameplay-feel items; the larger content-design items (Daily
+Challenge mode, CharacterRegistry primitive removal, ring plane-
+intersection collision) are sequenced as v1.1.
+
+**Release infrastructure (P0)**
+- **XcodeGen `project.yml`** — the repository no longer requires
+  "create a new Xcode project locally" as the README's first
+  contributor step. `brew install xcodegen && xcodegen generate`
+  produces a reproducible `TurtleFlight.xcodeproj` with deployment
+  target / orientations / device capabilities / Info.plist /
+  PrivacyInfo / asset catalog / `TurtleFlightTests` target all
+  pre-wired. The generated project is intentionally not committed
+  so contributor-side drift is impossible.
+- **GitHub Actions CI (`.github/workflows/ios-tests.yml`)** — every
+  PR and `main` push runs the full XCTest suite (169 cases) against
+  the latest iOS simulator on macos-14. Concurrency-grouped per
+  branch so newer pushes cancel stale runs. JUnit report uploaded
+  as a 14-day artifact for triage.
+- **`PRIVACY.md`** — the live privacy policy that `SettingsView.privacyURL`
+  has always pointed at but never actually existed in the repo.
+  Spells out the "nothing leaves the device" guarantee, every
+  UserDefaults key the app writes, every Apple framework declared
+  in `PrivacyInfo.xcprivacy`, COPPA/GDPR child-data positioning,
+  and the user controls. Bilingual (en/ko).
+
+**Felt acceleration (P1)**
+- **Boost camera punch** — `FlightViewModel.updateCamera` now layers
+  an 8° FOV widening and a 3m follow-distance pullback at
+  `boostProgress == 1`, lerping smoothly back to the resting frame
+  as the boost timer drains. The character's apparent on-screen
+  size stays roughly constant so max-boost reads as "I got faster"
+  rather than "the screen got smaller." Suppressed under Reduce
+  Motion (the camera punch is exactly the kind of oscillation
+  vestibular-sensitive players asked us to keep off the default
+  table). New `Constants.Camera.fieldOfView` / `boostFOVDelta` /
+  `boostFollowDistanceDelta` tokens for tunability.
+
+**In-flight a11y (P1)**
+- **PauseView sensitivity selector** — the pause modal now optionally
+  surfaces a 3-button Easy/Normal/Expert picker under the
+  Resume/Restart/Quit row. Wired through to
+  `$flightVM.sensitivityLevel`, so the existing `didSet` re-applies
+  the profile to both the gyro pipeline and the flight engine
+  without a flight restart. Closes the 6-tap path (Exit → Home →
+  Settings → Audio → Done → Mode → Stage → Character → FLY) that
+  previously stood between a kid feeling "this is too sensitive"
+  and actually fixing it. Selector visibility is opt-in via a new
+  `sensitivityLevel: Binding<SensitivityLevel>?` parameter — nil
+  hides it (preview / future contexts).
+
+**Audio leak guard (P2)**
+- **`AudioManager.playOneShot` hard cap** — the per-key cleanup
+  scheduler always fired before, but a 0-duration read from
+  `AVAudioPlayer.duration` would schedule its `asyncAfter` at +0.1s,
+  which on a busy main thread occasionally slipped. Added a 24-entry
+  cap on the `sfxPlayers` dictionary with FIFO eviction (calls
+  `.stop()` on dropped players) plus a 2s fallback `cleanupDelay`
+  when `player.duration <= 0`. Net effect: the dictionary cannot
+  grow unbounded even under a frame where 6+ stars pop on the same
+  tick.
+
+### Tests — Sprint 4
+
+No new test files this sprint — the changes are CI infra, design
+tokens, and view-layer wiring with existing test coverage holding.
+The new `Constants.Camera.fieldOfView` / `boostFOVDelta` /
+`boostFollowDistanceDelta` tokens are referenced from
+`FlightViewModel.startFlight` and `updateCamera` and consequently
+exercised by every existing `FlightEngine*` integration case via
+the indirect call path. PauseView's optional sensitivity binding
+defaults to `nil`, so all pre-existing `PauseFlightTests` continue
+to construct PauseView with the original 3-arg initializer.
+
+### Deferred to v1.1
+
+The senior review identified three larger gameplay-content items
+that are intentionally NOT in Sprint 4 because they each carry
+either test-compatibility risk or a substantial design-content
+investment that should go through TestFlight feedback first:
+
+- **Daily Challenge mode** — reuse the existing 5 stages with
+  modifiers ("no-boost", "≥5 stars", "<55s"). Closes the
+  15★ campaign cap vs. 50★ retention-tier gap. Needs translation
+  work and a new MissionEngine modifier API.
+- **Ring plane-intersection collision** — the current sphere-distance
+  check at `MissionEngine.update:121` allows theoretical side
+  passes; a plane-crossing replacement needs `prevPlayerPosition`
+  tracking in MissionEngine, which a few existing tests would need
+  to be re-pinned around.
+- **CharacterRegistry primitive geometry removal** — ~600 LOC of
+  legacy `SCNSphere`/`SCNCapsule` builders that the atlas billboard
+  path has superseded. Removal saves both binary size and mental
+  model overhead but the fallback semantics need to be verified
+  on physical hardware before the legacy path can be deleted.
+
 ### Added — Retention loop + a11y closure (post-PH polish)
 
 After the Product Hunt launch pass merged, a follow-up review pointed

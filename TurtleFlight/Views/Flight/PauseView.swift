@@ -21,6 +21,13 @@ struct PauseView: View {
     /// stage-not-yet-started pauses bypass the dialog because there's
     /// no in-flight progress to protect.
     var restartRequiresConfirmation: Bool = false
+    /// Optional in-flight sensitivity binding. When supplied, the pause
+    /// modal surfaces a 3-button selector under the action buttons so
+    /// the player can swap Easy/Normal/Expert without going Exit →
+    /// Home → Settings → Done → Mode → Stage → Character → Fly. nil
+    /// hides the selector entirely (useful for previews / contexts
+    /// without a live FlightViewModel).
+    var sensitivityLevel: Binding<SensitivityLevel>? = nil
 
     @State private var showRestartConfirm = false
 
@@ -80,6 +87,19 @@ struct PauseView: View {
                     .accessibilityHint(L10n.t("flight.pause.quit.hint"))
                 }
                 .padding(.horizontal, Theme.Spacing.xl)
+
+                // In-flight sensitivity selector. Surfaced only when the
+                // caller passed a binding — previews and tests that omit
+                // it get the original 3-button modal. The point of
+                // surfacing this here is that swapping Easy↔Normal mid-
+                // mission previously required Exit → Home → Settings →
+                // 5 more taps; for a kids-rated game the "this feels
+                // too sensitive" reaction needs to be 1 tap from where
+                // the player is right now.
+                if let sensitivityLevel {
+                    SensitivityRow(selection: sensitivityLevel)
+                        .padding(.horizontal, Theme.Spacing.xl)
+                }
             }
             .padding(Theme.Spacing.xl)
             .frame(maxWidth: 380)
@@ -134,6 +154,57 @@ private struct PauseButton: View {
                 RoundedRectangle(cornerRadius: Theme.Radius.m)
                     .fill(color)
             )
+        }
+    }
+}
+
+// MARK: - Sensitivity row
+
+/// Three-button picker shown inside PauseView when a sensitivity
+/// binding is provided. The visual style matches Home's
+/// `SensitivityButton` row at a smaller, denser scale — players
+/// already recognise this layout from first-run.
+private struct SensitivityRow: View {
+    @Binding var selection: SensitivityLevel
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.xs) {
+            Text(L10n.t("home.sensitivity.label"))
+                .font(Theme.Typography.label)
+                .foregroundColor(Theme.Color.textOnDarkMuted)
+            HStack(spacing: Theme.Spacing.s) {
+                ForEach(SensitivityLevel.allCases, id: \.self) { level in
+                    Button {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        selection = level
+                    } label: {
+                        Text("\(level.emoji)  \(level.displayName)")
+                            .font(Theme.Typography.labelSmall)
+                            .foregroundColor(selection == level
+                                             ? Theme.Color.textOnDark
+                                             : Theme.Color.textOnDarkMuted)
+                            .padding(.vertical, Theme.Spacing.xs + 2)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: Theme.Radius.s)
+                                    .fill(selection == level
+                                          ? tint(for: level)
+                                          : Theme.Color.surfaceOverlayStrong)
+                            )
+                    }
+                    .accessibilityLabel(L10n.t("a11y.sensitivity.\(level.rawValue).label"))
+                    .accessibilityHint(L10n.t("a11y.sensitivity.hint"))
+                    .accessibilityAddTraits(selection == level ? .isSelected : [])
+                }
+            }
+        }
+    }
+
+    private func tint(for level: SensitivityLevel) -> Color {
+        switch level {
+        case .easy:   return Theme.Color.easyGreen
+        case .normal: return Theme.Color.normalYellow
+        case .expert: return Theme.Color.expertRed
         }
     }
 }
