@@ -9,6 +9,45 @@ window.
 
 ## [Unreleased]
 
+### Added — Localization expansion + full AppIcon set
+
+Closes two long-standing follow-ups: the five backlog locales and the
+multi-size app icon export.
+
+**Localization — 5 new bundle locales (ja, zh-Hans, es, fr, de)**
+- Each `<locale>.lproj/Localizable.strings` translated from the en
+  source of truth at **full 213-key parity** — ko/en plus the five new
+  locales, seven total.
+- Style per `docs/I18N.md`: ja kanji/katakana stage names, zh-Hans
+  short 2–3 char stage names, es/fr/de informal "you" form, German
+  button labels kept short to avoid HUD/button overflow.
+- All five registered in `Info.plist` `CFBundleLocalizations`.
+- **`Tests/LocalizationParityTests.swift`** (4 cases) — enforces, across
+  every declared locale: presence, exact key-set match with en, no
+  empty values, and matching `%lld`/`%@` format specifiers (a mismatch
+  crashes `String(format:)` at runtime).
+- **Build fix:** `project.yml` Resources path no longer uses
+  `type: folder`. A folder reference nested the `.lproj` dirs under
+  `Resources/`, where `NSLocalizedString` can't find them; the plain
+  group reference lets XcodeGen emit them as variant groups at the
+  bundle root. (This had silently broken even ko/en in XcodeGen builds.)
+- `docs/I18N.md` + `README.md` (both languages) + `CLAUDE.md` updated
+  to reflect 7 shipping bundle locales. App Store Connect *marketing*
+  copy for the five new locales remains a separate, pending hand-off.
+
+**Full classic AppIcon set**
+- `AppIcon.appiconset` now carries every native iOS size
+  (20/29/40/58/60/76/80/87/120/152/167/180/1024) rendered from
+  `assets/ui/app-icon/app_icon.svg` at native resolution, flattened to
+  opaque sRGB (no alpha — App Store rejects the marketing icon with an
+  alpha channel) on the icon's base blue. Replaces the single-1024
+  universal-idiom entry.
+- `Contents.json` rewritten with the full iPhone + iPad + ios-marketing
+  slot mapping.
+- `scripts/build_assets.sh` app-icon stage updated to emit all sizes +
+  the full Contents.json, so a future `librsvg + imagemagick`
+  regeneration stays consistent with what shipped.
+
 ### Added — Sprint 4 (release infra + felt-acceleration + in-flight a11y)
 
 After the post-PH polish merged, a senior service review surfaced

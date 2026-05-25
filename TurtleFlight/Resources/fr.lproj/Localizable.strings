@@ -1,0 +1,287 @@
+/* TurtleFlight Localizable.strings — French (fr)
+   Keys identical to en.lproj; values translated. Informal "tu" form. */
+
+// MARK: - Common
+"common.ok"         = "OK";
+"common.home"       = "Accueil";
+"common.retry"      = "Réessayer";
+"common.next"       = "Suivant";
+"common.cancel"     = "Annuler";
+"common.done"       = "OK";
+
+// MARK: - Settings
+"settings.title"                          = "Réglages";
+"settings.section.audio"                  = "Audio";
+"settings.audio.mute"                     = "Couper le son";
+"settings.audio.bgm"                      = "Volume de la musique";
+"settings.audio.sfx"                      = "Volume des effets";
+
+"settings.section.progress"               = "Progression";
+"settings.progress.reset"                 = "Réinitialiser la progression";
+"settings.progress.reset.confirm.title"   = "Réinitialiser la progression ?";
+"settings.progress.reset.confirm.message" = "Toutes les étoiles et tous les niveaux débloqués seront effacés. Action irréversible.";
+"settings.progress.reset.confirm.action"  = "Réinitialiser";
+"settings.progress.replayOnboarding"      = "Revoir le tutoriel";
+
+"settings.section.about"                  = "À propos";
+
+// Trail color tier section (cosmetic star-milestone progression)
+"settings.section.trail"          = "Couleur de traînée";
+"settings.trail.tier.vehicle"     = "Par défaut (selon le véhicule)";
+"settings.trail.tier.magenta"     = "Magenta";
+"settings.trail.tier.gold"        = "Or";
+"settings.trail.tier.rainbow"     = "Arc-en-ciel";
+"settings.trail.locked.format"    = "Débloqué à ★ %lld";
+"settings.trail.footer.format"    = "Encore ★ %lld pour débloquer « %@ »";
+"settings.trail.hint.unlocked"    = "Touche deux fois pour utiliser cette couleur de traînée";
+"settings.trail.hint.locked"      = "Obtiens %lld étoiles pour débloquer";
+"settings.about.version"                  = "Version";
+"settings.about.privacy"                  = "Politique de confidentialité";
+"settings.about.support"                  = "Assistance";
+"settings.about.credits"                  = "Crédits";
+"settings.about.credits.body"             = "Turtle Flight — une aventure dans le ciel pour les animaux qui ne savent pas voler.\nAventure de vol au gyroscope.";
+
+// VoiceOver — settings entry
+"a11y.settings.label" = "Réglages";
+
+// VoiceOver — home-screen mute toggle
+"a11y.mute.label"          = "Couper le son";
+"a11y.mute.value.muted"    = "Activé";
+"a11y.mute.value.unmuted"  = "Désactivé";
+"a11y.mute.hint.mute"      = "Touche deux fois pour couper tous les sons";
+"a11y.mute.hint.unmute"    = "Touche deux fois pour réactiver le son";
+
+// Home — character cameo + Step Goal subtitle
+"home.cameo.label"                       = "Tu pilotes";
+"a11y.home.cameo.format"                 = "Personnage sélectionné : %@";
+"flight.mode.stepGoal.subtitle.firstRun" = "%lld missions";
+"a11y.settings.hint"  = "Touche deux fois pour ouvrir les réglages";
+
+// MARK: - Home screen
+"home.subtitle"           = "Une aventure dans le ciel pour les animaux qui ne savent pas voler";
+"home.sensitivity.label"  = "Sensibilité des commandes";
+"home.stats.bestStars"    = "Record : %lld";
+"home.stats.flightTime"   = "Temps de vol %@";
+
+// MARK: - Flight modes
+"flight.mode.freePlay"    = "Vol libre";
+"flight.mode.stepGoal"    = "Missions";
+"flight.mode.freePlay.subtitle" = "Ciel ouvert";
+
+// MARK: - Flight - gyro availability
+"flight.gyro.unavailable.title"   = "Pas de gyroscope";
+"flight.gyro.unavailable.message" = "Cet appareil n'a pas de gyroscope. Tu peux quand même piloter en glissant sur l'écran.";
+"flight.gyro.unavailable.continue" = "Continuer";
+
+// MARK: - Control buttons
+"flight.control.calibrate" = "Calibrer";
+"flight.control.pause"     = "Pause";
+"flight.control.exit"      = "Quitter";
+"flight.control.boost"     = "Turbo";
+"flight.control.item"      = "Objet";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "En pause";
+"flight.pause.subtitle"       = "Souffle un peu. Reprends quand tu es prêt.";
+"flight.pause.resume"         = "Reprendre";
+"flight.pause.resume.hint"    = "Touche deux fois pour continuer à voler";
+"flight.pause.restart"        = "Recommencer";
+"flight.pause.restart.hint"   = "Touche deux fois pour recommencer le vol depuis le début";
+"flight.pause.restart.confirm.title"   = "Recommencer ce niveau ?";
+"flight.pause.restart.confirm.message" = "Les anneaux passés, les étoiles et le temps restant seront réinitialisés.";
+"flight.pause.restart.confirm.action"  = "Recommencer";
+"flight.pause.quit"           = "Quitter";
+"flight.pause.quit.hint"      = "Touche deux fois pour terminer le vol et revenir à l'accueil";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "Pause";
+"a11y.pause.hint"             = "Touche deux fois pour mettre le vol en pause";
+
+// MARK: - Mission HUD
+"mission.stage.titleFormat"   = "Niveau %lld : %@";
+"mission.collisions.format"   = "Chocs : %lld";
+"mission.progress.ringFormat" = "Anneau %lld/%lld";
+"mission.result.clear"        = "Niveau réussi !";
+"mission.result.timeFormat"        = "Temps : %@";
+"mission.result.collisionsFormat"  = "Chocs : %lld";
+"mission.result.failed"       = "Mission échouée";
+"mission.fail.timeout"        = "Temps écoulé !";
+
+// MARK: - Stage names (display)
+"stage.0.name" = "Balade céleste";
+"stage.1.name" = "Labyrinthe de nuages";
+"stage.2.name" = "Vol en vallée";
+"stage.3.name" = "Traversée des montagnes";
+"stage.4.name" = "Course aérienne";
+
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "Franchis 10 anneaux dans l'ordre";
+"stage.1.description" = "Faufile-toi entre les colonnes de nuages par 5 points de contrôle";
+"stage.2.description" = "Vol à basse altitude dans une vallée sinueuse";
+"stage.3.description" = "Franchis les anneaux de 7 sommets de montagne";
+"stage.4.description" = "Termine le circuit de course aérienne (20 anneaux)";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "Termine en moins de 60 secondes";
+"stage.1.star3Condition" = "Zéro choc, termine en moins de 90 s";
+"stage.2.star3Condition" = "Zéro choc, récupère les 5 étoiles";
+"stage.3.star3Condition" = "Tous les anneaux, termine en moins de 120 s";
+"stage.4.star3Condition" = "Tous les anneaux, en moins de 80 s, zéro choc";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "Royaume du Ciel";
+"theme.sky.subtitle"      = "Nuages et arcs-en-ciel";
+"theme.space.displayName" = "Voyage Cosmique";
+"theme.space.subtitle"    = "Étoiles et planètes";
+"theme.ocean.displayName" = "Rêve Océanique";
+"theme.ocean.subtitle"    = "Corail et bulles";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "Royaume des Nuages";
+"theme.sky.region.1"   = "Vallée de l'Arc-en-ciel";
+"theme.sky.region.2"   = "Lac Scintillant";
+"theme.sky.region.3"   = "Collines Venteuses";
+"theme.sky.region.4"   = "Plaines Étoilées";
+"theme.sky.region.5"   = "Champs de Tournesols";
+"theme.sky.region.6"   = "Grottes de Cristal";
+"theme.sky.region.7"   = "Plage du Couchant";
+
+"theme.space.region.0" = "Allée de la Voie Lactée";
+"theme.space.region.1" = "Jardin de Nébuleuses";
+"theme.space.region.2" = "Parc des Anneaux de Saturne";
+"theme.space.region.3" = "Ruelle des Étoiles Filantes";
+"theme.space.region.4" = "Zone de Rebond Lunaire";
+"theme.space.region.5" = "Sillage de la Comète";
+"theme.space.region.6" = "Tourbillon Galactique";
+"theme.space.region.7" = "Aire de Jeu des Astéroïdes";
+
+"theme.ocean.region.0" = "Château de Corail";
+"theme.ocean.region.1" = "Boulevard des Bulles";
+"theme.ocean.region.2" = "Forêt d'Algues";
+"theme.ocean.region.3" = "Crique aux Perles";
+"theme.ocean.region.4" = "Prairie de Méduses";
+"theme.ocean.region.5" = "Récif au Trésor";
+"theme.ocean.region.6" = "Baie du Chant des Baleines";
+"theme.ocean.region.7" = "Jardin d'Étoiles de Mer";
+
+// MARK: - Vehicle display names
+"vehicle.shellJet"        = "Carapace à réaction";
+"vehicle.bellyGlider"     = "Planeur sur le ventre";
+"vehicle.hamsterCopter"   = "Hélico boule de hamster";
+"vehicle.cushionBalloon"  = "Montgolfière coussin";
+"vehicle.balloonBody"     = "Corps ballon";
+"vehicle.carrotJet"       = "Jet carotte";
+"vehicle.cloudSurf"       = "Surf des nuages";
+
+// VehicleTile chips
+"vehicle.tag.shared"      = "Commun";
+"vehicle.tag.unique"      = "Unique";
+
+// MARK: - Character select screen
+"characterSelect.title"            = "Choisis ton aventure";
+"characterSelect.fly"              = "DÉCOLLE !";
+"characterSelect.section.map"      = "Choisir la carte";
+"characterSelect.section.vehicle"  = "Véhicule";
+
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "%lld étoiles obtenues";
+"mission.result.starsCollectedFormat" = "Étoiles %lld sur %lld";
+"mission.result.firstClear"        = "Première réussite !";
+"mission.result.newBest"           = "Nouveau record !";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "Vol terminé";
+"freeFlight.result.subtitle"       = "Voici ton récapitulatif.";
+"freeFlight.result.flightTime"     = "Temps de vol";
+"freeFlight.result.stars"          = "Étoiles récupérées";
+"freeFlight.result.again"          = "Revoler";
+
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "Choisis un niveau";
+"stageSelect.progress.format"        = "%lld / %lld étoiles";
+"stageSelect.objective.format"       = "Objectif ★★★ : %@";
+"stageSelect.locked.body"            = "Réussis le niveau précédent pour débloquer celui-ci.";
+"stageSelect.card.hint.unlocked"     = "Touche deux fois pour choisir ce niveau";
+"stageSelect.card.hint.locked"       = "Réussis d'abord le niveau précédent";
+"stageSelect.card.label.unlocked"    = "Niveau %lld, %@, %lld étoiles obtenues";
+"stageSelect.card.label.locked"      = "Niveau %lld, verrouillé";
+
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "Passer";
+"onboarding.next"              = "Suivant";
+"onboarding.start"             = "Commencer";
+"onboarding.cta.hint"          = "Touche deux fois pour passer à l'étape suivante";
+"onboarding.page.label"        = "Page %lld sur %lld";
+"onboarding.welcome.title"     = "Bienvenue dans Turtle Flight";
+"onboarding.welcome.body"      = "Une aventure de vol au gyroscope pour les animaux qui ne savent pas voler. Choisis un ami et envole-toi avec lui.";
+"onboarding.calibrate.title"   = "Tiens l'appareil à plat";
+"onboarding.calibrate.body"    = "Tiens l'appareil dans une position confortable, puis touche Calibrer pour en faire ta position neutre. Tu peux recalibrer à tout moment.";
+"onboarding.tilt.title"        = "Incline pour piloter";
+"onboarding.tilt.body"         = "Incline à gauche/droite pour tourner, lève ou abaisse le haut pour monter ou descendre. Les petits mouvements doux sont les meilleurs.";
+
+// MARK: - Character descriptions (shown in CharacterSelectView)
+"character.turtle.description"  = "Même une tortue lente peut voler !";
+"character.penguin.description" = "Il plane dans le ciel sur son ventre !";
+"character.hamster.description" = "Une boule de hamster prend son envol !";
+"character.cat.description"     = "Il flotte avec élégance dans une montgolfière coussin !";
+"character.frog.description"    = "Il s'élève comme un ballon !";
+"character.bunny.description"   = "Il fonce vers le ciel dans un petit jet carotte !";
+
+// MARK: - Accessibility (VoiceOver)
+"a11y.boost.label"     = "Turbo";
+"a11y.boost.hint"      = "Touche deux fois pour accélérer brièvement";
+"a11y.item.label"      = "Tirer un objet";
+"a11y.item.hint"       = "Touche deux fois pour tirer une étoile dans la direction du vol";
+"a11y.calibrate.label" = "Calibrer le gyroscope";
+"a11y.calibrate.hint"  = "Touche deux fois pour définir l'inclinaison actuelle comme neutre";
+"a11y.exit.label"      = "Quitter le vol";
+"a11y.exit.hint"       = "Touche deux fois pour revenir à l'écran d'accueil";
+"a11y.mode.freePlay.hint"   = "Touche deux fois pour commencer le vol libre";
+"a11y.mode.stepGoal.hint"   = "Touche deux fois pour commencer une mission";
+"a11y.sensitivity.easy.label"   = "Sensibilité des commandes : Facile";
+"a11y.sensitivity.normal.label" = "Sensibilité des commandes : Normale";
+"a11y.sensitivity.expert.label" = "Sensibilité des commandes : Expert";
+"a11y.sensitivity.hint"         = "Touche deux fois pour choisir cette sensibilité";
+
+// HUD VoiceOver readouts — gameplay state that is otherwise visual-only.
+"a11y.hud.speed.format"        = "Vitesse %lld kilomètres par heure";
+"a11y.hud.altitude.format"     = "Altitude %lld mètres";
+"a11y.hud.sensitivity.format"  = "Niveau de sensibilité %lld";
+"a11y.hud.compass.format"      = "Cap %@ %lld degrés, temps de vol %@";
+"a11y.hud.stars.format"        = "Étoiles récupérées : %lld";
+"a11y.hud.stars.announce.format" = "Étoile obtenue. Total %lld.";
+"a11y.hud.region.format"       = "Région : %@";
+
+// Mission HUD readouts.
+"a11y.mission.remaining.format"  = "Temps restant %@";
+"a11y.mission.progress.format"   = "Progression de la mission : %@";
+"a11y.mission.collisions.format" = "Collisions jusqu'ici : %lld";
+
+// Onboarding navigation hints.
+"a11y.onboarding.page.format"  = "Page %lld sur %lld";
+"a11y.onboarding.page.hint"    = "Balaie vers la gauche ou la droite pour changer de page";
+"a11y.onboarding.skip.hint"    = "Touche deux fois pour passer l'introduction et continuer";
+"a11y.onboarding.next.hint"    = "Touche deux fois pour aller à la page suivante";
+"a11y.onboarding.start.hint"   = "Touche deux fois pour terminer l'introduction et commencer à jouer";
+
+// Try-it-out flight (mini gyro experience).
+"onboarding.try.title"         = "Incline pour essayer";
+"onboarding.try.body"          = "Incline doucement ton téléphone pour sentir les commandes. Sans score ni danger — juste 30 secondes d'essai.";
+"onboarding.try.cta"           = "Essayer l'inclinaison";
+"onboarding.try.exit"          = "OK";
+"onboarding.try.timeLeft.format" = "%lld s";
+
+// Free Flight result sharing.
+"freeFlight.result.share"      = "Partager";
+"freeFlight.result.share.subject" = "Mon vol Turtle Flight";
+"freeFlight.result.share.body.format" = "🐢 Turtle Flight\nTemps de vol : %@\nÉtoiles : %lld ⭐";
+
+// Pause screen — system interruption phrase.
+"pause.reason.system"          = "En pause à cause d'une interruption";
+
+// Settings — Sensitivity guide section.
+"settings.section.sensitivity"        = "Guide de sensibilité";
+"settings.sensitivity.tilt.format"    = "inclinaison de %lld°";
+"settings.sensitivity.easy.caption"   = "Zone morte de 8°, réponse cubique, remise à l'horizontale douce après 2 s. Idéal pour les premiers vols et les jeunes joueurs.";
+"settings.sensitivity.normal.caption" = "Zone morte de 4°, réponse quadratique, remise à l'horizontale après 4 s. Équilibré — recommandé.";
+"settings.sensitivity.expert.caption" = "Zone morte de 1,5°, réponse linéaire, pas de remise à l'horizontale, décrochage activé. Contrôle maximal au prix fort.";

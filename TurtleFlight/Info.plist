@@ -8,6 +8,11 @@
 	<array>
 		<string>en</string>
 		<string>ko</string>
+		<string>ja</string>
+		<string>zh-Hans</string>
+		<string>es</string>
+		<string>fr</string>
+		<string>de</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>Turtle Flight</string>

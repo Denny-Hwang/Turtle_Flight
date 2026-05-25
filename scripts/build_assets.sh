@@ -164,40 +164,57 @@ done
 
 # ---------------------------------------------------------------- app icon
 if [ -f "$APPICON_SVG" ]; then
-  # App Store requires 1024×1024 sRGB, NO alpha (opaque). Render onto white,
-  # then strip alpha so the export is store-compliant.
-  tmp_alpha="$(mktemp -t appicon.XXXX.png)"
-  trap 'rm -f "$tmp_alpha"' EXIT
-  svg_to_png "$APPICON_SVG" "$tmp_alpha" 1024
-  if command -v magick >/dev/null 2>&1; then
-    magick "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
-           -colorspace sRGB \
-           "$APPICON_OUT_DIR/AppIcon-1024.png"
-  elif command -v convert >/dev/null 2>&1; then
-    convert "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
-            -colorspace sRGB \
-            "$APPICON_OUT_DIR/AppIcon-1024.png"
-  else
-    # Fallback: rsvg renders against transparent; copy as-is and warn.
-    cp "$tmp_alpha" "$APPICON_OUT_DIR/AppIcon-1024.png"
-    echo "  ! AppIcon has alpha; install ImageMagick to flatten before submission"
-  fi
-  cat > "$APPICON_OUT_DIR/Contents.json" <<JSON
+  # Full classic iOS icon set. App Store requires the 1024 marketing icon
+  # in sRGB with NO alpha (opaque); the device slots should likewise be
+  # flattened. We render the vector at each native pixel size (crisper
+  # than downscaling one raster), flatten onto the icon's base blue, and
+  # strip alpha. Unique pixel sizes across iPhone + iPad + marketing:
+  APPICON_SIZES=(20 29 40 58 60 76 80 87 120 152 167 180 1024)
+  for px in "${APPICON_SIZES[@]}"; do
+    tmp_alpha="$(mktemp -t "appicon-${px}.XXXX.png")"
+    svg_to_png "$APPICON_SVG" "$tmp_alpha" "$px"
+    if command -v magick >/dev/null 2>&1; then
+      magick "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
+             -colorspace sRGB "$APPICON_OUT_DIR/AppIcon-${px}.png"
+    elif command -v convert >/dev/null 2>&1; then
+      convert "$tmp_alpha" -background "#85B7EB" -alpha remove -alpha off \
+              -colorspace sRGB "$APPICON_OUT_DIR/AppIcon-${px}.png"
+    else
+      cp "$tmp_alpha" "$APPICON_OUT_DIR/AppIcon-${px}.png"
+      echo "  ! AppIcon-${px} has alpha; install ImageMagick to flatten before submission"
+    fi
+    rm -f "$tmp_alpha"
+    echo "  ✓ AppIcon-${px}.png"
+  done
+  # Full classic Contents.json mapping every idiom/scale slot. iOS masks
+  # the corners itself, so the square (corner-filled) renders above are
+  # correct input.
+  cat > "$APPICON_OUT_DIR/Contents.json" <<'JSON'
 {
   "images" : [
-    {
-      "filename" : "AppIcon-1024.png",
-      "idiom" : "universal",
-      "platform" : "ios",
-      "size" : "1024x1024"
-    }
+    { "size" : "20x20", "idiom" : "iphone", "filename" : "AppIcon-40.png", "scale" : "2x" },
+    { "size" : "20x20", "idiom" : "iphone", "filename" : "AppIcon-60.png", "scale" : "3x" },
+    { "size" : "29x29", "idiom" : "iphone", "filename" : "AppIcon-58.png", "scale" : "2x" },
+    { "size" : "29x29", "idiom" : "iphone", "filename" : "AppIcon-87.png", "scale" : "3x" },
+    { "size" : "40x40", "idiom" : "iphone", "filename" : "AppIcon-80.png", "scale" : "2x" },
+    { "size" : "40x40", "idiom" : "iphone", "filename" : "AppIcon-120.png", "scale" : "3x" },
+    { "size" : "60x60", "idiom" : "iphone", "filename" : "AppIcon-120.png", "scale" : "2x" },
+    { "size" : "60x60", "idiom" : "iphone", "filename" : "AppIcon-180.png", "scale" : "3x" },
+    { "size" : "20x20", "idiom" : "ipad", "filename" : "AppIcon-20.png", "scale" : "1x" },
+    { "size" : "20x20", "idiom" : "ipad", "filename" : "AppIcon-40.png", "scale" : "2x" },
+    { "size" : "29x29", "idiom" : "ipad", "filename" : "AppIcon-29.png", "scale" : "1x" },
+    { "size" : "29x29", "idiom" : "ipad", "filename" : "AppIcon-58.png", "scale" : "2x" },
+    { "size" : "40x40", "idiom" : "ipad", "filename" : "AppIcon-40.png", "scale" : "1x" },
+    { "size" : "40x40", "idiom" : "ipad", "filename" : "AppIcon-80.png", "scale" : "2x" },
+    { "size" : "76x76", "idiom" : "ipad", "filename" : "AppIcon-76.png", "scale" : "1x" },
+    { "size" : "76x76", "idiom" : "ipad", "filename" : "AppIcon-152.png", "scale" : "2x" },
+    { "size" : "83.5x83.5", "idiom" : "ipad", "filename" : "AppIcon-167.png", "scale" : "2x" },
+    { "size" : "1024x1024", "idiom" : "ios-marketing", "filename" : "AppIcon-1024.png", "scale" : "1x" }
   ],
   "info" : { "author" : "xcode", "version" : 1 }
 }
 JSON
-  echo "  ✓ AppIcon-1024.png"
-  rm -f "$tmp_alpha"
-  trap - EXIT
+  echo "  ✓ AppIcon Contents.json (full classic set)"
 fi
 
 echo "done. assets exported under TurtleFlight/Assets.xcassets/"
