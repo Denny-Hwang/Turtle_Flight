@@ -133,9 +133,13 @@ builds from a clean checkout with no human-in-the-loop project file.
 
 ## Localization
 
-Korean (`ko`) and English (`en`) are bundled. Strings live in
-`TurtleFlight/Resources/<locale>.lproj/Localizable.strings`. The development
-region is `en` and Korean is the primary marketing locale for v1.
+Seven locales are bundled at full key parity: English (`en`, development
+region), Korean (`ko`, primary marketing), Japanese (`ja`), Simplified
+Chinese (`zh-Hans`), Spanish (`es`), French (`fr`), and German (`de`).
+Strings live in `TurtleFlight/Resources/<locale>.lproj/Localizable.strings`.
+`Tests/LocalizationParityTests.swift` enforces that every locale has the
+same key set, no empty values, and matching format specifiers. See
+[`docs/I18N.md`](docs/I18N.md) for the add-a-locale process.
 
 ## Documentation
 
@@ -245,7 +249,13 @@ CI 첫 단계가 `xcodegen generate` 이므로 깔끔한 체크아웃에서 사�
 
 ## 다국어
 
-한국어(`ko`), 영어(`en`)가 번들에 포함됩니다. 문자열은 `TurtleFlight/Resources/<로케일>.lproj/Localizable.strings` 에 있으며, 개발 리전은 `en`, v1 주요 마켓 로케일은 `ko` 입니다.
+7개 로케일이 동일한 키 셋으로 번들에 포함됩니다: 영어(`en`, 개발 리전),
+한국어(`ko`, 주요 마켓), 일본어(`ja`), 중국어 간체(`zh-Hans`),
+스페인어(`es`), 프랑스어(`fr`), 독일어(`de`). 문자열은
+`TurtleFlight/Resources/<로케일>.lproj/Localizable.strings` 에 있습니다.
+`Tests/LocalizationParityTests.swift` 가 모든 로케일의 키 셋 일치·빈 값
+없음·포맷 지정자 일치를 강제합니다. 로케일 추가 절차는
+[`docs/I18N.md`](docs/I18N.md) 참조.
 
 ## 접근성
 

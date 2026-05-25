@@ -45,8 +45,15 @@ targets:
           - "Info.plist"
           - "PrivacyInfo.xcprivacy"
     resources:
+      # NOTE: do NOT set `type: folder` here. Resources/ contains only
+      # `<locale>.lproj/` directories. A folder reference would copy them
+      # verbatim to `<app>.app/Resources/<locale>.lproj/…`, where
+      # NSLocalizedString can't find them (it looks for `.lproj` at the
+      # bundle root). Adding the directory as a normal group lets XcodeGen
+      # detect each `.lproj` as a localization variant group and place
+      # `Localizable.strings` at `<app>.app/<locale>.lproj/…` — the only
+      # layout the runtime lookup works against.
       - path: TurtleFlight/Resources
-        type: folder
       - path: TurtleFlight/Assets.xcassets
       - path: TurtleFlight/PrivacyInfo.xcprivacy
     info:

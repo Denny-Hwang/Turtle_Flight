@@ -53,7 +53,8 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 60 FPS on iPhone 12+, < 250MB memory, < 80MB app size.
 
 ## Open follow-ups (RN 폐기로 인한 손실분)
-- 다국어 리소스: RN쪽 i18next에 ko/en/ja/zh/es/fr/de/ar/hi/pt 10개 로케일 JSON이 있었음. 네이티브에서는 `Localizable.strings` (per-locale `.lproj/`) 로 다시 구축. v1은 ko/en만으로 출시. v1.x 로케일 추가 절차는 `docs/I18N.md` 참조.
+- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 213키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
+- ⚠️ XcodeGen 주의: `project.yml` 의 `Resources` 는 `type: folder` 금지 — `.lproj` 가 `Resources/` 하위로 중첩되면 `NSLocalizedString` 이 못 찾음. 일반 그룹 참조로 두어 변형 그룹이 번들 루트에 위치하게 함.
 
 ## Sprint 0–4 closure
 출시 차단급 P0 + 주요 P1 + 선택된 P2 항목 정리. 전체 변경 로그는 `CHANGELOG.md` 참조.

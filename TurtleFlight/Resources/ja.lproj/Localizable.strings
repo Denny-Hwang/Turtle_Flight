@@ -1,0 +1,288 @@
+/* TurtleFlight Localizable.strings — Japanese (ja)
+   Keys identical to en.lproj; values translated. Informal, short
+   sentences; stage names kept in kanji/katakana mixed form. */
+
+// MARK: - Common
+"common.ok"         = "OK";
+"common.home"       = "ホーム";
+"common.retry"      = "リトライ";
+"common.next"       = "次へ";
+"common.cancel"     = "キャンセル";
+"common.done"       = "完了";
+
+// MARK: - Settings
+"settings.title"                          = "設定";
+"settings.section.audio"                  = "サウンド";
+"settings.audio.mute"                     = "ミュート";
+"settings.audio.bgm"                      = "BGM音量";
+"settings.audio.sfx"                      = "効果音音量";
+
+"settings.section.progress"               = "進行状況";
+"settings.progress.reset"                 = "進行状況をリセット";
+"settings.progress.reset.confirm.title"   = "リセットしますか？";
+"settings.progress.reset.confirm.message" = "すべてのスター記録とステージの解放が消去されます。元に戻せません。";
+"settings.progress.reset.confirm.action"  = "リセット";
+"settings.progress.replayOnboarding"      = "チュートリアルをもう一度見る";
+
+"settings.section.about"                  = "アプリ情報";
+
+// Trail color tier section (cosmetic star-milestone progression)
+"settings.section.trail"          = "トレイルの色";
+"settings.trail.tier.vehicle"     = "デフォルト（乗り物ごと）";
+"settings.trail.tier.magenta"     = "マゼンタ";
+"settings.trail.tier.gold"        = "ゴールド";
+"settings.trail.tier.rainbow"     = "レインボー";
+"settings.trail.locked.format"    = "★ %lld個で解放";
+"settings.trail.footer.format"    = "あと★ %lld個で「%@」が解放";
+"settings.trail.hint.unlocked"    = "ダブルタップでこのトレイルの色に変更します";
+"settings.trail.hint.locked"      = "スターを%lld個集めると解放されます";
+"settings.about.version"                  = "バージョン";
+"settings.about.privacy"                  = "プライバシーポリシー";
+"settings.about.support"                  = "サポート";
+"settings.about.credits"                  = "クレジット";
+"settings.about.credits.body"             = "Turtle Flight — 空を飛べない動物たちの空の冒険。\nジャイロ操作の飛行アドベンチャー。";
+
+// VoiceOver — settings entry
+"a11y.settings.label" = "設定";
+
+// VoiceOver — home-screen mute toggle
+"a11y.mute.label"          = "ミュート";
+"a11y.mute.value.muted"    = "オン";
+"a11y.mute.value.unmuted"  = "オフ";
+"a11y.mute.hint.mute"      = "ダブルタップですべての音を消します";
+"a11y.mute.hint.unmute"    = "ダブルタップで音を再びオンにします";
+
+// Home — character cameo + Step Goal subtitle
+"home.cameo.label"                       = "選択中";
+"a11y.home.cameo.format"                 = "現在選択中のキャラクター：%@";
+"flight.mode.stepGoal.subtitle.firstRun" = "ミッション%lld個";
+"a11y.settings.hint"  = "ダブルタップで設定画面を開きます";
+
+// MARK: - Home screen
+"home.subtitle"           = "空を飛べない動物たちの空の冒険";
+"home.sensitivity.label"  = "操作感度";
+"home.stats.bestStars"    = "ベスト：%lld";
+"home.stats.flightTime"   = "飛行時間 %@";
+
+// MARK: - Flight modes
+"flight.mode.freePlay"    = "フリーフライト";
+"flight.mode.stepGoal"    = "ステップゴール";
+"flight.mode.freePlay.subtitle" = "大空";
+
+// MARK: - Flight - gyro availability
+"flight.gyro.unavailable.title"   = "ジャイロなし";
+"flight.gyro.unavailable.message" = "この端末にはジャイロセンサーがありません。画面をドラッグして操縦できます。";
+"flight.gyro.unavailable.continue" = "続ける";
+
+// MARK: - Control buttons
+"flight.control.calibrate" = "調整";
+"flight.control.pause"     = "一時停止";
+"flight.control.exit"      = "終了";
+"flight.control.boost"     = "ブースト";
+"flight.control.item"      = "アイテム";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "一時停止";
+"flight.pause.subtitle"       = "ひと休み。準備ができたら再開しましょう。";
+"flight.pause.resume"         = "再開";
+"flight.pause.resume.hint"    = "ダブルタップで飛行を続けます";
+"flight.pause.restart"        = "やり直す";
+"flight.pause.restart.hint"   = "ダブルタップで最初からやり直します";
+"flight.pause.restart.confirm.title"   = "ステージをやり直しますか？";
+"flight.pause.restart.confirm.message" = "通過したリング、集めたスター、残り時間がすべてリセットされます。";
+"flight.pause.restart.confirm.action"  = "やり直す";
+"flight.pause.quit"           = "終了";
+"flight.pause.quit.hint"      = "ダブルタップで飛行を終了してホームに戻ります";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "一時停止";
+"a11y.pause.hint"             = "ダブルタップで飛行を一時停止します";
+
+// MARK: - Mission HUD
+"mission.stage.titleFormat"   = "ステージ%lld：%@";
+"mission.collisions.format"   = "接触：%lld回";
+"mission.progress.ringFormat" = "リング %lld/%lld";
+"mission.result.clear"        = "ステージクリア！";
+"mission.result.timeFormat"        = "タイム：%@";
+"mission.result.collisionsFormat"  = "接触：%lld回";
+"mission.result.failed"       = "ミッション失敗";
+"mission.fail.timeout"        = "時間切れ！";
+
+// MARK: - Stage names (display)
+"stage.0.name" = "空の散歩";
+"stage.1.name" = "雲の迷路";
+"stage.2.name" = "渓谷フライト";
+"stage.3.name" = "山越え";
+"stage.4.name" = "スカイレース";
+
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "10個のリングを順番にくぐろう";
+"stage.1.description" = "雲の柱の間をぬって5つのチェックポイントを通過しよう";
+"stage.2.description" = "曲がりくねった渓谷を低空飛行で抜けよう";
+"stage.3.description" = "7つの山頂のリングをくぐろう";
+"stage.4.description" = "エアレースのコースを完走しよう（リング20個）";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "60秒以内にクリア";
+"stage.1.star3Condition" = "接触0回 ＋ 90秒以内";
+"stage.2.star3Condition" = "接触0回 ＋ スター5個すべて収集";
+"stage.3.star3Condition" = "全リング通過 ＋ 120秒以内";
+"stage.4.star3Condition" = "全リング通過 ＋ 80秒以内 ＋ 接触0回";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "空の王国";
+"theme.sky.subtitle"      = "雲と虹";
+"theme.space.displayName" = "宇宙の旅";
+"theme.space.subtitle"    = "星と惑星";
+"theme.ocean.displayName" = "海の中の夢";
+"theme.ocean.subtitle"    = "サンゴと泡";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "雲の王国";
+"theme.sky.region.1"   = "虹の谷";
+"theme.sky.region.2"   = "きらめき湖";
+"theme.sky.region.3"   = "風の丘";
+"theme.sky.region.4"   = "星明かりの平原";
+"theme.sky.region.5"   = "ひまわり畑";
+"theme.sky.region.6"   = "クリスタルの洞窟";
+"theme.sky.region.7"   = "夕焼けビーチ";
+
+"theme.space.region.0" = "天の川通り";
+"theme.space.region.1" = "星雲の庭";
+"theme.space.region.2" = "土星リングパーク";
+"theme.space.region.3" = "流れ星横丁";
+"theme.space.region.4" = "月のバウンスゾーン";
+"theme.space.region.5" = "彗星の道";
+"theme.space.region.6" = "銀河の渦";
+"theme.space.region.7" = "小惑星の遊び場";
+
+"theme.ocean.region.0" = "サンゴの城";
+"theme.ocean.region.1" = "泡の大通り";
+"theme.ocean.region.2" = "海藻の森";
+"theme.ocean.region.3" = "真珠の入り江";
+"theme.ocean.region.4" = "クラゲの草原";
+"theme.ocean.region.5" = "宝のサンゴ礁";
+"theme.ocean.region.6" = "クジラの歌う湾";
+"theme.ocean.region.7" = "ヒトデの庭";
+
+// MARK: - Vehicle display names
+"vehicle.shellJet"        = "甲羅ジェット";
+"vehicle.bellyGlider"     = "おなか滑空";
+"vehicle.hamsterCopter"   = "ハムスターボールコプター";
+"vehicle.cushionBalloon"  = "クッション熱気球";
+"vehicle.balloonBody"     = "風船ボディ";
+"vehicle.carrotJet"       = "にんじんジェット";
+"vehicle.cloudSurf"       = "クラウドサーフ";
+
+// VehicleTile chips
+"vehicle.tag.shared"      = "共通";
+"vehicle.tag.unique"      = "専用";
+
+// MARK: - Character select screen
+"characterSelect.title"            = "冒険を選ぼう";
+"characterSelect.fly"              = "出発！";
+"characterSelect.section.map"      = "マップを選択";
+"characterSelect.section.vehicle"  = "乗り物";
+
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "スター%lld個獲得";
+"mission.result.starsCollectedFormat" = "スター %lld / %lld";
+"mission.result.firstClear"        = "初クリア！";
+"mission.result.newBest"           = "自己ベスト！";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "フライト終了";
+"freeFlight.result.subtitle"       = "今回の記録です。";
+"freeFlight.result.flightTime"     = "飛行時間";
+"freeFlight.result.stars"          = "集めたスター";
+"freeFlight.result.again"          = "もう一度飛ぶ";
+
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "ステージを選ぶ";
+"stageSelect.progress.format"        = "%lld / %lld スター";
+"stageSelect.objective.format"       = "★★★ 条件：%@";
+"stageSelect.locked.body"            = "前のステージをクリアすると解放されます。";
+"stageSelect.card.hint.unlocked"     = "ダブルタップでこのステージを選びます";
+"stageSelect.card.hint.locked"       = "先に前のステージをクリアしてください";
+"stageSelect.card.label.unlocked"    = "ステージ%lld、%@、スター%lld個獲得";
+"stageSelect.card.label.locked"      = "ステージ%lld、ロック中";
+
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "スキップ";
+"onboarding.next"              = "次へ";
+"onboarding.start"             = "はじめる";
+"onboarding.cta.hint"          = "ダブルタップで次のステップに進みます";
+"onboarding.page.label"        = "%lld / %lld ページ";
+"onboarding.welcome.title"     = "Turtle Flight へようこそ";
+"onboarding.welcome.body"      = "空を飛べない動物たちのジャイロ飛行アドベンチャー。仲間を選んでいっしょに空へ飛び出そう。";
+"onboarding.calibrate.title"   = "端末を平らに持って";
+"onboarding.calibrate.body"    = "楽な姿勢で端末を持ち、調整ボタンを押すとその姿勢が中立になります。いつでも再調整できます。";
+"onboarding.tilt.title"        = "傾けて操縦";
+"onboarding.tilt.body"         = "左右に傾けると旋回、上を持ち上げたり下げたりで上昇・下降。小さくなめらかに動かすのがコツです。";
+
+// MARK: - Character descriptions (shown in CharacterSelectView)
+"character.turtle.description"  = "のろまなカメだって空を飛べる！";
+"character.penguin.description" = "おなかで滑って大空を活空！";
+"character.hamster.description" = "ハムスターボールが空を飛ぶ！";
+"character.cat.description"     = "クッション熱気球で優雅にふわり！";
+"character.frog.description"    = "体が風船になってふわふわ！";
+"character.bunny.description"   = "にんじんジェットでひとっ飛び！";
+
+// MARK: - Accessibility (VoiceOver)
+"a11y.boost.label"     = "ブースト";
+"a11y.boost.hint"      = "ダブルタップで少し加速します";
+"a11y.item.label"      = "アイテム発射";
+"a11y.item.hint"       = "ダブルタップで進行方向にスターを発射します";
+"a11y.calibrate.label" = "ジャイロ調整";
+"a11y.calibrate.hint"  = "ダブルタップで現在の端末の傾きを中立に設定します";
+"a11y.exit.label"      = "飛行を終了";
+"a11y.exit.hint"       = "ダブルタップでホーム画面に戻ります";
+"a11y.mode.freePlay.hint"   = "ダブルタップでフリーフライトを始めます";
+"a11y.mode.stepGoal.hint"   = "ダブルタップでミッションを始めます";
+"a11y.sensitivity.easy.label"   = "操作感度：かんたん";
+"a11y.sensitivity.normal.label" = "操作感度：ふつう";
+"a11y.sensitivity.expert.label" = "操作感度：エキスパート";
+"a11y.sensitivity.hint"         = "ダブルタップでこの感度を選びます";
+
+// HUD VoiceOver readouts — gameplay state that is otherwise visual-only.
+"a11y.hud.speed.format"        = "速度 時速%lldキロメートル";
+"a11y.hud.altitude.format"     = "高度%lldメートル";
+"a11y.hud.sensitivity.format"  = "感度レベル%lld";
+"a11y.hud.compass.format"      = "方位 %@ %lld度、飛行時間 %@";
+"a11y.hud.stars.format"        = "集めたスター：%lld";
+"a11y.hud.stars.announce.format" = "スター獲得。合計%lld個。";
+"a11y.hud.region.format"       = "エリア：%@";
+
+// Mission HUD readouts.
+"a11y.mission.remaining.format"  = "残り時間 %@";
+"a11y.mission.progress.format"   = "ミッションの進行：%@";
+"a11y.mission.collisions.format" = "これまでの接触：%lld回";
+
+// Onboarding navigation hints.
+"a11y.onboarding.page.format"  = "%lld / %lld ページ";
+"a11y.onboarding.page.hint"    = "左右にスワイプしてページを移動します";
+"a11y.onboarding.skip.hint"    = "ダブルタップでオンボーディングをスキップして続けます";
+"a11y.onboarding.next.hint"    = "ダブルタップで次のページに進みます";
+"a11y.onboarding.start.hint"   = "ダブルタップでオンボーディングを終えてプレイを始めます";
+
+// Try-it-out flight (mini gyro experience).
+"onboarding.try.title"         = "傾けてお試し";
+"onboarding.try.body"          = "端末をやさしく傾けて操作感を確かめよう。スコアも危険もなし、30秒だけのお試しです。";
+"onboarding.try.cta"           = "傾けてみる";
+"onboarding.try.exit"          = "完了";
+"onboarding.try.timeLeft.format" = "%lld秒";
+
+// Free Flight result sharing.
+"freeFlight.result.share"      = "シェア";
+"freeFlight.result.share.subject" = "私の Turtle Flight の記録";
+"freeFlight.result.share.body.format" = "🐢 Turtle Flight\n飛行時間：%@\nスター：%lld ⭐";
+
+// Pause screen — system interruption phrase.
+"pause.reason.system"          = "割り込みのため一時停止しました";
+
+// Settings — Sensitivity guide section.
+"settings.section.sensitivity"        = "感度ガイド";
+"settings.sensitivity.tilt.format"    = "傾き%lld°";
+"settings.sensitivity.easy.caption"   = "デッドゾーン8°、3次曲線、2秒後にゆるやかな自動水平化。初フライトや小さなお子さま向け。";
+"settings.sensitivity.normal.caption" = "デッドゾーン4°、2次曲線、4秒後に自動水平化。バランス型 — おすすめ。";
+"settings.sensitivity.expert.caption" = "デッドゾーン1.5°、線形応答、自動水平化なし、失速あり。最大の操作性と引きかえに最大の難しさ。";

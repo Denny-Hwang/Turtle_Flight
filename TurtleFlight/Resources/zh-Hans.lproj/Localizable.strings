@@ -1,0 +1,288 @@
+/* TurtleFlight Localizable.strings — Simplified Chinese (zh-Hans)
+   Keys identical to en.lproj; values translated. Simplified characters;
+   short 2-3 character stage names to fit the StageSelectView card. */
+
+// MARK: - Common
+"common.ok"         = "好";
+"common.home"       = "主页";
+"common.retry"      = "重试";
+"common.next"       = "下一步";
+"common.cancel"     = "取消";
+"common.done"       = "完成";
+
+// MARK: - Settings
+"settings.title"                          = "设置";
+"settings.section.audio"                  = "声音";
+"settings.audio.mute"                     = "静音";
+"settings.audio.bgm"                      = "背景音乐音量";
+"settings.audio.sfx"                      = "音效音量";
+
+"settings.section.progress"               = "进度";
+"settings.progress.reset"                 = "重置进度";
+"settings.progress.reset.confirm.title"   = "重置进度？";
+"settings.progress.reset.confirm.message" = "所有星星记录和已解锁关卡都将被清除，无法撤销。";
+"settings.progress.reset.confirm.action"  = "重置";
+"settings.progress.replayOnboarding"      = "重看教程";
+
+"settings.section.about"                  = "关于";
+
+// Trail color tier section (cosmetic star-milestone progression)
+"settings.section.trail"          = "尾迹颜色";
+"settings.trail.tier.vehicle"     = "默认（按载具）";
+"settings.trail.tier.magenta"     = "品红";
+"settings.trail.tier.gold"        = "金色";
+"settings.trail.tier.rainbow"     = "彩虹";
+"settings.trail.locked.format"    = "集齐 ★ %lld 解锁";
+"settings.trail.footer.format"    = "再集 ★ %lld 即可解锁“%@”";
+"settings.trail.hint.unlocked"    = "双击切换到此尾迹颜色";
+"settings.trail.hint.locked"      = "集齐 %lld 颗星星即可解锁";
+"settings.about.version"                  = "版本";
+"settings.about.privacy"                  = "隐私政策";
+"settings.about.support"                  = "支持";
+"settings.about.credits"                  = "制作人员";
+"settings.about.credits.body"             = "Turtle Flight — 不会飞的动物们的天空冒险。\n陀螺仪飞行冒险。";
+
+// VoiceOver — settings entry
+"a11y.settings.label" = "设置";
+
+// VoiceOver — home-screen mute toggle
+"a11y.mute.label"          = "静音";
+"a11y.mute.value.muted"    = "开";
+"a11y.mute.value.unmuted"  = "关";
+"a11y.mute.hint.mute"      = "双击关闭所有声音";
+"a11y.mute.hint.unmute"    = "双击重新打开声音";
+
+// Home — character cameo + Step Goal subtitle
+"home.cameo.label"                       = "当前选择";
+"a11y.home.cameo.format"                 = "当前选择的角色：%@";
+"flight.mode.stepGoal.subtitle.firstRun" = "%lld 个任务";
+"a11y.settings.hint"  = "双击打开设置页面";
+
+// MARK: - Home screen
+"home.subtitle"           = "不会飞的动物们的天空冒险";
+"home.sensitivity.label"  = "操控灵敏度";
+"home.stats.bestStars"    = "最佳：%lld";
+"home.stats.flightTime"   = "飞行时间 %@";
+
+// MARK: - Flight modes
+"flight.mode.freePlay"    = "自由飞行";
+"flight.mode.stepGoal"    = "关卡任务";
+"flight.mode.freePlay.subtitle" = "辽阔天空";
+
+// MARK: - Flight - gyro availability
+"flight.gyro.unavailable.title"   = "无陀螺仪";
+"flight.gyro.unavailable.message" = "此设备没有陀螺仪。你仍可通过在屏幕上拖动来操控。";
+"flight.gyro.unavailable.continue" = "继续";
+
+// MARK: - Control buttons
+"flight.control.calibrate" = "校准";
+"flight.control.pause"     = "暂停";
+"flight.control.exit"      = "退出";
+"flight.control.boost"     = "加速";
+"flight.control.item"      = "道具";
+
+// MARK: - Pause modal
+"flight.pause.title"          = "已暂停";
+"flight.pause.subtitle"       = "歇口气，准备好就继续吧。";
+"flight.pause.resume"         = "继续";
+"flight.pause.resume.hint"    = "双击继续飞行";
+"flight.pause.restart"        = "重新开始";
+"flight.pause.restart.hint"   = "双击从头重新开始飞行";
+"flight.pause.restart.confirm.title"   = "重新开始本关？";
+"flight.pause.restart.confirm.message" = "已通过的圆环、收集的星星和剩余时间都将重置。";
+"flight.pause.restart.confirm.action"  = "重新开始";
+"flight.pause.quit"           = "退出";
+"flight.pause.quit.hint"      = "双击结束飞行并返回主页";
+
+// VoiceOver — pause control button
+"a11y.pause.label"            = "暂停";
+"a11y.pause.hint"             = "双击暂停飞行";
+
+// MARK: - Mission HUD
+"mission.stage.titleFormat"   = "第 %lld 关：%@";
+"mission.collisions.format"   = "碰撞：%lld 次";
+"mission.progress.ringFormat" = "圆环 %lld/%lld";
+"mission.result.clear"        = "通关！";
+"mission.result.timeFormat"        = "用时：%@";
+"mission.result.collisionsFormat"  = "碰撞：%lld 次";
+"mission.result.failed"       = "任务失败";
+"mission.fail.timeout"        = "时间到！";
+
+// MARK: - Stage names (display)
+"stage.0.name" = "天空漫步";
+"stage.1.name" = "云间迷宫";
+"stage.2.name" = "峡谷飞行";
+"stage.3.name" = "翻越山岭";
+"stage.4.name" = "天空竞速";
+
+// MARK: - Stage descriptions (StageSelectView body)
+"stage.0.description" = "按顺序穿过 10 个圆环";
+"stage.1.description" = "在云柱之间穿行，通过 5 个检查点";
+"stage.2.description" = "低空穿越蜿蜒的峡谷";
+"stage.3.description" = "穿过 7 座山峰上的圆环";
+"stage.4.description" = "完成空中竞速赛道（20 个圆环）";
+
+// MARK: - Stage 3-star conditions (shown under stage description)
+"stage.0.star3Condition" = "60 秒内完成";
+"stage.1.star3Condition" = "零碰撞，90 秒内完成";
+"stage.2.star3Condition" = "零碰撞，集齐全部 5 颗星星";
+"stage.3.star3Condition" = "通过全部圆环，120 秒内完成";
+"stage.4.star3Condition" = "全部圆环，80 秒内，零碰撞";
+
+// MARK: - Map themes (CharacterSelectView, MapThemeCard)
+"theme.sky.displayName"   = "天空王国";
+"theme.sky.subtitle"      = "云朵与彩虹";
+"theme.space.displayName" = "宇宙之旅";
+"theme.space.subtitle"    = "星辰与行星";
+"theme.ocean.displayName" = "海底之梦";
+"theme.ocean.subtitle"    = "珊瑚与气泡";
+
+// MARK: - Region names (HUD bottom-center fade label)
+"theme.sky.region.0"   = "云之王国";
+"theme.sky.region.1"   = "彩虹山谷";
+"theme.sky.region.2"   = "闪光湖";
+"theme.sky.region.3"   = "风之丘";
+"theme.sky.region.4"   = "星光平原";
+"theme.sky.region.5"   = "向日葵田";
+"theme.sky.region.6"   = "水晶洞窟";
+"theme.sky.region.7"   = "日落海滩";
+
+"theme.space.region.0" = "银河大道";
+"theme.space.region.1" = "星云花园";
+"theme.space.region.2" = "土星环公园";
+"theme.space.region.3" = "流星小巷";
+"theme.space.region.4" = "月球弹跳区";
+"theme.space.region.5" = "彗星轨迹";
+"theme.space.region.6" = "银河漩涡";
+"theme.space.region.7" = "小行星游乐场";
+
+"theme.ocean.region.0" = "珊瑚城堡";
+"theme.ocean.region.1" = "气泡大道";
+"theme.ocean.region.2" = "海藻森林";
+"theme.ocean.region.3" = "珍珠湾";
+"theme.ocean.region.4" = "水母草原";
+"theme.ocean.region.5" = "宝藏礁";
+"theme.ocean.region.6" = "鲸歌湾";
+"theme.ocean.region.7" = "海星花园";
+
+// MARK: - Vehicle display names
+"vehicle.shellJet"        = "龟壳喷气机";
+"vehicle.bellyGlider"     = "肚皮滑翔";
+"vehicle.hamsterCopter"   = "仓鼠球直升机";
+"vehicle.cushionBalloon"  = "坐垫热气球";
+"vehicle.balloonBody"     = "气球身体";
+"vehicle.carrotJet"       = "胡萝卜喷气机";
+"vehicle.cloudSurf"       = "云朵冲浪";
+
+// VehicleTile chips
+"vehicle.tag.shared"      = "通用";
+"vehicle.tag.unique"      = "专属";
+
+// MARK: - Character select screen
+"characterSelect.title"            = "选择你的冒险";
+"characterSelect.fly"              = "出发！";
+"characterSelect.section.map"      = "选择地图";
+"characterSelect.section.vehicle"  = "载具";
+
+// MARK: - Stage result screen
+"mission.result.starsLabel"        = "获得 %lld 颗星星";
+"mission.result.starsCollectedFormat" = "星星 %lld / %lld";
+"mission.result.firstClear"        = "首次通关！";
+"mission.result.newBest"           = "新纪录！";
+
+// MARK: - Free Flight result screen
+"freeFlight.result.title"          = "飞行结束";
+"freeFlight.result.subtitle"       = "这是你本次的记录。";
+"freeFlight.result.flightTime"     = "飞行时间";
+"freeFlight.result.stars"          = "收集的星星";
+"freeFlight.result.again"          = "再飞一次";
+
+// MARK: - Stage Select screen
+"stageSelect.title"                  = "选择关卡";
+"stageSelect.progress.format"        = "%lld / %lld 星";
+"stageSelect.objective.format"       = "★★★ 条件：%@";
+"stageSelect.locked.body"            = "通过上一关即可解锁此关。";
+"stageSelect.card.hint.unlocked"     = "双击选择此关卡";
+"stageSelect.card.hint.locked"       = "请先通过上一关";
+"stageSelect.card.label.unlocked"    = "第 %lld 关，%@，获得 %lld 颗星星";
+"stageSelect.card.label.locked"      = "第 %lld 关，已锁定";
+
+// MARK: - Onboarding (first-run gyro tutorial)
+"onboarding.skip"              = "跳过";
+"onboarding.next"              = "下一步";
+"onboarding.start"             = "开始";
+"onboarding.cta.hint"          = "双击进入下一步";
+"onboarding.page.label"        = "第 %lld / %lld 页";
+"onboarding.welcome.title"     = "欢迎来到 Turtle Flight";
+"onboarding.welcome.body"      = "一款为不会飞的动物打造的陀螺仪飞行冒险。挑一个伙伴，一起飞向天空吧。";
+"onboarding.calibrate.title"   = "将设备放平";
+"onboarding.calibrate.body"    = "以舒适的姿势握持设备，点击校准即可将该姿势设为中立。你随时可以重新校准。";
+"onboarding.tilt.title"        = "倾斜操控";
+"onboarding.tilt.body"         = "左右倾斜转向，抬起或压低顶部来爬升或俯冲。小而平滑的动作手感最好。";
+
+// MARK: - Character descriptions (shown in CharacterSelectView)
+"character.turtle.description"  = "再慢的乌龟也能飞上天！";
+"character.penguin.description" = "用肚皮在天空中滑翔！";
+"character.hamster.description" = "仓鼠球飞上天空！";
+"character.cat.description"     = "乘坐垫热气球优雅漂浮！";
+"character.frog.description"    = "身体变成气球飘起来！";
+"character.bunny.description"   = "乘胡萝卜喷气机一飞冲天！";
+
+// MARK: - Accessibility (VoiceOver)
+"a11y.boost.label"     = "加速";
+"a11y.boost.hint"      = "双击短暂加速";
+"a11y.item.label"      = "发射道具";
+"a11y.item.hint"       = "双击朝飞行方向发射星星";
+"a11y.calibrate.label" = "校准陀螺仪";
+"a11y.calibrate.hint"  = "双击将当前设备倾斜设为中立";
+"a11y.exit.label"      = "退出飞行";
+"a11y.exit.hint"       = "双击返回主页";
+"a11y.mode.freePlay.hint"   = "双击开始自由飞行";
+"a11y.mode.stepGoal.hint"   = "双击开始任务";
+"a11y.sensitivity.easy.label"   = "操控灵敏度：简单";
+"a11y.sensitivity.normal.label" = "操控灵敏度：普通";
+"a11y.sensitivity.expert.label" = "操控灵敏度：专家";
+"a11y.sensitivity.hint"         = "双击选择此灵敏度";
+
+// HUD VoiceOver readouts — gameplay state that is otherwise visual-only.
+"a11y.hud.speed.format"        = "速度 每小时 %lld 千米";
+"a11y.hud.altitude.format"     = "高度 %lld 米";
+"a11y.hud.sensitivity.format"  = "灵敏度等级 %lld";
+"a11y.hud.compass.format"      = "航向 %@ %lld 度，飞行时间 %@";
+"a11y.hud.stars.format"        = "已收集星星：%lld";
+"a11y.hud.stars.announce.format" = "收集到星星。共 %lld 颗。";
+"a11y.hud.region.format"       = "区域：%@";
+
+// Mission HUD readouts.
+"a11y.mission.remaining.format"  = "剩余时间 %@";
+"a11y.mission.progress.format"   = "任务进度：%@";
+"a11y.mission.collisions.format" = "目前碰撞次数：%lld";
+
+// Onboarding navigation hints.
+"a11y.onboarding.page.format"  = "第 %lld / %lld 页";
+"a11y.onboarding.page.hint"    = "左右滑动以在页面间切换";
+"a11y.onboarding.skip.hint"    = "双击跳过引导并继续";
+"a11y.onboarding.next.hint"    = "双击进入下一页";
+"a11y.onboarding.start.hint"   = "双击完成引导并开始游戏";
+
+// Try-it-out flight (mini gyro experience).
+"onboarding.try.title"         = "倾斜试一试";
+"onboarding.try.body"          = "轻轻倾斜手机来感受操控。没有分数，没有危险——只是 30 秒的体验。";
+"onboarding.try.cta"           = "试着倾斜";
+"onboarding.try.exit"          = "完成";
+"onboarding.try.timeLeft.format" = "%lld 秒";
+
+// Free Flight result sharing.
+"freeFlight.result.share"      = "分享";
+"freeFlight.result.share.subject" = "我的 Turtle Flight 记录";
+"freeFlight.result.share.body.format" = "🐢 Turtle Flight\n飞行时间：%@\n星星：%lld ⭐";
+
+// Pause screen — system interruption phrase.
+"pause.reason.system"          = "因中断而暂停";
+
+// Settings — Sensitivity guide section.
+"settings.section.sensitivity"        = "灵敏度说明";
+"settings.sensitivity.tilt.format"    = "倾斜 %lld°";
+"settings.sensitivity.easy.caption"   = "8° 死区，三次方响应，2 秒后温和自动回正。适合初次飞行和年幼玩家。";
+"settings.sensitivity.normal.caption" = "4° 死区，二次方响应，4 秒后自动回正。均衡——推荐。";
+"settings.sensitivity.expert.caption" = "1.5° 死区，线性响应，无自动回正，开启失速。极致操控，代价也极高。";
