@@ -64,6 +64,8 @@ targets:
       path: TurtleFlight/TurtleFlight.entitlements
       properties:
         com.apple.developer.game-center: true
+        # iCloud Key-Value progress sync (Phase 4, opt-in in Settings).
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app

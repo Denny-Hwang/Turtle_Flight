@@ -24,6 +24,20 @@
 
 All characters also share the **Cloud Surf** — a cloud-riding vehicle available to everyone.
 
+## What makes it a game (2026-09 roadmap)
+
+- **Gate precision** — every ring is judged by how close to the centre
+  you thread it: BULLSEYE / GREAT / OK / MISS, with a combo multiplier.
+  Rings shrink, tilt into slits, and move as the campaign progresses.
+- **Energy model** (Normal / Expert) — dive to gain speed, climb to lose
+  it; Expert really stalls. Boost is a gauge that stars refill.
+- **Today's Course** — one 12-gate course per calendar day, the same for
+  everyone. **Sky Run** — an endless course that tightens until you miss
+  three gates.
+- **Daily quests, streak, ghost replay, character mastery** — and, all
+  opt-in and off by default: Game Center leaderboards, a daily reminder,
+  iCloud progress sync, ReplayKit clip sharing.
+
 ## Flight Modes
 
 - **Free Flight** — Unlimited open-sky exploration with a flight timer (MM:SS)
@@ -120,16 +134,18 @@ automatically. Hit `⌘R` to build and run.
 | Tool | Purpose | Install |
 |------|---------|---------|
 | XcodeGen | Reproducible `.xcodeproj` from `project.yml` | `brew install xcodegen` |
-| xcpretty | Pretty xcodebuild logs (used by CI) | `gem install xcpretty` |
+| xcbeautify | Pretty xcodebuild logs (used by CI) | `brew install xcbeautify` |
 | librsvg + ImageMagick | Regenerate raster icons from SVG (`scripts/build_assets.sh`) | `brew install librsvg imagemagick` |
 
 ## Continuous Integration
 
 GitHub Actions (`.github/workflows/ios-tests.yml`) runs the full
-XCTest suite on every PR and push to `main` against the latest iOS
-simulator on macOS 14. The same `xcodegen generate` step the README
-recommends is the first thing CI does, so a working PR is one that
-builds from a clean checkout with no human-in-the-loop project file.
+XCTest suite (400+ cases) on every PR and push to `main` on
+`macos-latest`, using the image's default Xcode and the newest iPhone
+simulator it finds (nothing is pinned, so runner-image rotations don't
+break it). Raw xcodebuild logs are kept and compiler / test failures are
+printed with file:line. The same `xcodegen generate` step the README
+recommends is the first thing CI does.
 
 ## Localization
 
@@ -237,15 +253,16 @@ Asset catalog, PrivacyInfo 매니페스트, `TurtleFlightTests` 유닛 테스트
 | 도구 | 용도 | 설치 |
 |------|------|------|
 | XcodeGen | `project.yml` 에서 재현 가능한 `.xcodeproj` 생성 | `brew install xcodegen` |
-| xcpretty | xcodebuild 로그 가독성 (CI 사용) | `gem install xcpretty` |
+| xcbeautify | xcodebuild 로그 가독성 (CI 사용) | `brew install xcbeautify` |
 | librsvg + ImageMagick | SVG → 래스터 아이콘 재생성 (`scripts/build_assets.sh`) | `brew install librsvg imagemagick` |
 
 ## CI
 
-GitHub Actions(`.github/workflows/ios-tests.yml`)가 main 푸시와 모든 PR에
-대해 macOS 14 + 최신 iOS 시뮬레이터에서 전체 XCTest 스위트를 실행합니다.
-CI 첫 단계가 `xcodegen generate` 이므로 깔끔한 체크아웃에서 사람 손을
-거치지 않고 빌드되는 PR만 통과합니다.
+GitHub Actions(`.github/workflows/ios-tests.yml`)가 모든 PR과 `main` 푸시에
+대해 `macos-latest` 이미지의 기본 Xcode + 가장 최신 iPhone 시뮬레이터로 전체
+XCTest 스위트(400+ 케이스)를 실행합니다. Xcode/시뮬레이터 버전을 고정하지
+않아 러너 이미지가 바뀌어도 깨지지 않으며, 실패 시 원본 xcodebuild 로그에서
+파일:줄 단위 오류를 출력합니다.
 
 ## 다국어
 

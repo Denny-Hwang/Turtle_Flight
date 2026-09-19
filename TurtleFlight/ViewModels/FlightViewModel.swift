@@ -246,6 +246,10 @@ final class FlightViewModel: ObservableObject {
     private var activeStage: StageDefinition?
     /// Highest combo seen this run, reported to quests on completion.
     private var simMaxComboSeen: Int = 0
+    /// Gate passes / bullseyes this run (Phase 4 mastery XP). Written on
+    /// the render thread, read once on main at completion.
+    private(set) var runGatePasses: Int = 0
+    private(set) var runBullseyes: Int = 0
     /// Reusable chase-camera constraint (allocated once per flight rather
     /// than once per frame).
     private var lookAtConstraint: SCNLookAtConstraint?
@@ -504,6 +508,8 @@ final class FlightViewModel: ObservableObject {
         activeCourseKey = Self.courseKey(for: stage)
         ghostRecorder.reset()
         simMaxComboSeen = 0
+        runGatePasses = 0
+        runBullseyes = 0
         tearDownGhost()
         if let key = activeCourseKey, !stage.isEndless,
            let track = GhostStore.shared.load(courseKey: key), !track.isEmpty {
@@ -790,6 +796,8 @@ final class FlightViewModel: ObservableObject {
         if crossing.isPass {
             QuestTracker.shared.record(.gatePassed)
             if judgement == .bullseye { QuestTracker.shared.record(.bullseye) }
+            runGatePasses += 1
+            if judgement == .bullseye { runBullseyes += 1 }
             simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
             onMain {
                 AudioManager.shared.playRingPass()

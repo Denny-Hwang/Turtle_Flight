@@ -123,7 +123,10 @@ struct HomeView: View {
                     // they tap a mode — until this chip existed, the
                     // home screen never showed *who* you were going to
                     // be, only what you were going to do.
-                    SelectedCharacterCameo(character: characterVM.selectedCharacter)
+                    SelectedCharacterCameo(
+                        character: characterVM.selectedCharacter,
+                        masteryLevel: missionVM.progress.masteryLevel(for: characterVM.selectedCharacter)
+                    )
 
                     // Fly now — the primary action.
                     Button {
@@ -366,6 +369,12 @@ struct HomeView: View {
             flightVM.load()
             missionVM.load()
             refreshRetention()
+            if missionVM.progress.cloudSyncEnabled {
+                CloudSync.shared.onRemoteProgress = { remote in
+                    missionVM.acceptRemoteProgress(remote)
+                }
+                CloudSync.shared.start(local: missionVM.progress)
+            }
             // Show onboarding on first launch only.
             if !OnboardingState.load().completed {
                 showOnboarding = true
@@ -572,6 +581,7 @@ struct SensitivityButton: View {
 /// need a mode pre-selection); the chip is purely informational.
 private struct SelectedCharacterCameo: View {
     let character: CharacterType
+    var masteryLevel: Int = 1
 
     var body: some View {
         HStack(spacing: Theme.Spacing.s) {
@@ -589,9 +599,20 @@ private struct SelectedCharacterCameo: View {
                 Text(L10n.t("home.cameo.label"))
                     .font(Theme.Typography.microLabel)
                     .foregroundColor(Theme.Color.textPrimary.opacity(0.55))
-                Text(character.config.name)
-                    .font(Theme.Typography.label)
-                    .foregroundColor(Theme.Color.textPrimary)
+                HStack(spacing: Theme.Spacing.xs) {
+                    Text(character.config.name)
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textPrimary)
+                    Text(L10n.format("mastery.level.format", masteryLevel))
+                        .font(Theme.Typography.microLabel)
+                        .foregroundColor(Theme.Color.textOnDark)
+                        .padding(.horizontal, Theme.Spacing.xs + 1)
+                        .padding(.vertical, 1)
+                        .background(Capsule().fill(Theme.Color.brandPrimary))
+                    Text(L10n.t(CharacterMastery.titleKey(for: masteryLevel)))
+                        .font(Theme.Typography.microLabel)
+                        .foregroundColor(Theme.Color.textPrimary.opacity(0.6))
+                }
             }
         }
         .padding(.horizontal, Theme.Spacing.m)

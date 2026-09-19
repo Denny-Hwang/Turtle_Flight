@@ -147,20 +147,47 @@ final class AudioManager {
         activeLoopPlayer?.pause()
     }
 
-    // MARK: - BGM (Procedurally Generated)
+    // MARK: - Asset hook (Phase 4)
+
+    /// Bundled audio wins over synthesis. Drop `bgm_sky.m4a`,
+    /// `vehicle_jet_whoosh.m4a`, `sfx_ring_pass.m4a`, … into the app
+    /// bundle (see `docs/AUDIO_AUDIT.md` for the full name table) and
+    /// they are picked up here with no code change; anything missing
+    /// keeps the synthesised fallback so a partial asset drop is fine.
+    static let assetExtensions = ["m4a", "caf", "wav", "mp3"]
+
+    static func assetURL(named name: String, bundle: Bundle = .main) -> URL? {
+        for ext in assetExtensions {
+            if let url = bundle.url(forResource: name, withExtension: ext) {
+                return url
+            }
+        }
+        return nil
+    }
+
+    /// Cached sound payload: bundled asset bytes when present, otherwise
+    /// the synthesised WAV from `synth`.
+    private func soundData(key: String, asset: String, synth: () -> Data) -> Data {
+        if let cached = wavCache[key] { return cached }
+        let data: Data
+        if let url = Self.assetURL(named: asset), let bytes = try? Data(contentsOf: url) {
+            data = bytes
+        } else {
+            data = synth()
+        }
+        wavCache[key] = data
+        return data
+    }
+
+    // MARK: - BGM (bundled asset or procedurally generated)
 
     func startBGM(theme: String = "sky") {
         lastBGMTheme = theme
         guard !isMuted else { return }
         stopBGM()
 
-        let key = "bgm:\(theme)"
-        let data: Data
-        if let cached = wavCache[key] {
-            data = cached
-        } else {
-            data = SynthAudio.generateBGM(theme: theme, durationSeconds: 30)
-            wavCache[key] = data
+        let data = soundData(key: "bgm:\(theme)", asset: "bgm_\(theme)") {
+            SynthAudio.generateBGM(theme: theme, durationSeconds: 32)
         }
         play(data: data, volume: bgmVolume, loops: -1) { [weak self] player in
             self?.bgmPlayer = player
@@ -179,13 +206,8 @@ final class AudioManager {
         guard !isMuted else { return }
         stopVehicleLoop()
 
-        let key = "vehicle:\(soundName)"
-        let data: Data
-        if let cached = wavCache[key] {
-            data = cached
-        } else {
-            data = SynthAudio.generateVehicleSFX(name: soundName, durationSeconds: 4)
-            wavCache[key] = data
+        let data = soundData(key: "vehicle:\(soundName)", asset: "vehicle_\(soundName)") {
+            SynthAudio.generateVehicleSFX(name: soundName, durationSeconds: 4)
         }
         play(data: data, volume: sfxVolume * 0.4, loops: -1) { [weak self] player in
             self?.activeLoopPlayer = player
@@ -201,31 +223,41 @@ final class AudioManager {
 
     func playBoost() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateBoostSFX(durationSeconds: 0.6)
+        let data = soundData(key: "sfx:boost", asset: "sfx_boost") {
+            SynthAudio.generateBoostSFX(durationSeconds: 0.6)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.7)
     }
 
     func playStarCollect() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateStarCollectSFX(durationSeconds: 0.4)
+        let data = soundData(key: "sfx:star", asset: "sfx_star_collect") {
+            SynthAudio.generateStarCollectSFX(durationSeconds: 0.4)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.6)
     }
 
     func playRingPass() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateRingPassSFX(durationSeconds: 0.5)
+        let data = soundData(key: "sfx:ring", asset: "sfx_ring_pass") {
+            SynthAudio.generateRingPassSFX(durationSeconds: 0.5)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.8)
     }
 
     func playStageClear() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateStageClearSFX(durationSeconds: 1.2)
+        let data = soundData(key: "sfx:clear", asset: "sfx_stage_clear") {
+            SynthAudio.generateStageClearSFX(durationSeconds: 1.2)
+        }
         playOneShot(data: data, volume: sfxVolume)
     }
 
     func playStageFail() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateStageFailSFX(durationSeconds: 0.8)
+        let data = soundData(key: "sfx:fail", asset: "sfx_stage_fail") {
+            SynthAudio.generateStageFailSFX(durationSeconds: 0.8)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.7)
     }
 
@@ -235,7 +267,9 @@ final class AudioManager {
     /// heavy-haptic generator on `MissionEngine.registerCollision()`.
     func playCollision() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateCollisionSFX(durationSeconds: 0.25)
+        let data = soundData(key: "sfx:collision", asset: "sfx_collision") {
+            SynthAudio.generateCollisionSFX(durationSeconds: 0.25)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.6)
     }
 
@@ -244,13 +278,17 @@ final class AudioManager {
     /// click) — this rises slightly so consecutive ticks feel urgent.
     func playTimerTick() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateTimerTickSFX(durationSeconds: 0.18)
+        let data = soundData(key: "sfx:tick", asset: "sfx_timer_tick") {
+            SynthAudio.generateTimerTickSFX(durationSeconds: 0.18)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.55)
     }
 
     func playButtonTap() {
         guard !isMuted else { return }
-        let data = SynthAudio.generateButtonTapSFX(durationSeconds: 0.1)
+        let data = soundData(key: "sfx:tap", asset: "sfx_button_tap") {
+            SynthAudio.generateButtonTapSFX(durationSeconds: 0.1)
+        }
         playOneShot(data: data, volume: sfxVolume * 0.3)
     }
 
@@ -363,35 +401,70 @@ enum SynthAudio {
 
     // MARK: - BGM
 
+    /// Procedural BGM, Phase 4 version. The previous loop was a single
+    /// static chord with a 30-second swell — pleasant for a demo and
+    /// fatiguing by the third run. This one is a four-bar progression
+    /// (I–vi–IV–V flavoured per theme) with a soft triangle-ish pad, a
+    /// gently pulsing arpeggio on top, and a filtered-noise "wind" bed,
+    /// looping seamlessly at `durationSeconds`. Still zero assets; a
+    /// bundled `bgm_<theme>.m4a` overrides it (see `AudioManager.assetURL`).
     static func generateBGM(theme: String, durationSeconds: Double) -> Data {
         let numSamples = Int(sampleRate * durationSeconds)
         var samples = [Int16](repeating: 0, count: numSamples)
 
-        let baseFreqs: [Double]
+        // Chord roots (Hz) for four bars, each a triad built on the root.
+        let progression: [Double]
+        let arpRate: Double          // notes per second
+        let windLevel: Double
         switch theme {
         case "space":
-            baseFreqs = [130.81, 164.81, 196.0, 261.63]  // C3 E3 G3 C4 — ethereal
+            progression = [130.81, 110.0, 174.61, 196.0]   // C3 A2 F3 G3 — wide, slow
+            arpRate = 3
+            windLevel = 0.05
         case "ocean":
-            baseFreqs = [146.83, 174.61, 220.0, 293.66]   // D3 F3 A3 D4 — flowing
+            progression = [146.83, 123.47, 196.0, 220.0]   // D3 B2 G3 A3 — flowing
+            arpRate = 4
+            windLevel = 0.08
         default: // sky
-            baseFreqs = [196.0, 246.94, 293.66, 392.0]    // G3 B3 D4 G4 — bright
+            progression = [196.0, 164.81, 261.63, 293.66]  // G3 E3 C4 D4 — bright
+            arpRate = 5
+            windLevel = 0.06
         }
+        let barSeconds = durationSeconds / Double(progression.count)
+        let major: [Double] = [1.0, 1.25, 1.5, 2.0]       // root, 3rd, 5th, octave
+        var noiseState = 0.0
 
         for i in 0..<numSamples {
             let t = Double(i) / sampleRate
-            var sample: Double = 0
+            let bar = min(Int(t / barSeconds), progression.count - 1)
+            let root = progression[bar]
+            let barT = t - Double(bar) * barSeconds
+            // Cross-fade chords over the last 0.4s of each bar so changes
+            // don't click.
+            let fade = min(1.0, barT / 0.15) * min(1.0, (barSeconds - barT) / 0.4 + 0.6)
 
-            // Layered pads
-            for (idx, freq) in baseFreqs.enumerated() {
-                let phaseOffset = Double(idx) * 0.7
-                let lfo = sin(t * 0.3 + phaseOffset) * 0.3 + 0.7
-                sample += sin(2.0 * .pi * freq * t + phaseOffset) * lfo * 0.15
+            var sample = 0.0
+            // Pad: sum of triangle-ish partials (odd harmonics rolled off).
+            for (k, ratio) in major.enumerated() {
+                let f = root * ratio
+                let base = sin(2.0 * .pi * f * t)
+                let third = sin(2.0 * .pi * f * 3 * t) / 9.0
+                let lfo = 0.85 + 0.15 * sin(t * 0.5 + Double(k))
+                sample += (base + third) * 0.09 * lfo
             }
+            // Arpeggio: one note at a time, plucked envelope.
+            let step = Int(t * arpRate)
+            let noteRatio = major[step % major.count] * 2.0
+            let noteStart = Double(step) / arpRate
+            let pluckEnv = exp(-(t - noteStart) * 6.0)
+            sample += sin(2.0 * .pi * root * noteRatio * t) * pluckEnv * 0.10
+            // Wind bed: one-pole low-passed noise, slowly breathing.
+            noiseState += (Double.random(in: -1...1) - noiseState) * 0.02
+            sample += noiseState * windLevel * (0.6 + 0.4 * sin(t * 0.25))
 
-            // Slow volume swell
-            let envelope = sin(.pi * t / durationSeconds) * 0.8 + 0.2
-
-            samples[i] = Int16(clamping: Int(sample * envelope * 12000))
+            // Loop-safe edges.
+            let edge = min(1.0, t / 0.5, (durationSeconds - t) / 0.5)
+            samples[i] = Int16(clamping: Int(sample * fade * edge * 14000))
         }
 
         return wavData(from: samples)

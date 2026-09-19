@@ -75,8 +75,23 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 PR마다 169 XCTest를 실행합니다. 자세한 절차는 `README.md` Getting
 Started / Tooling / CI 섹션 참조.
 
-## v1.1 backlog (Sprint 4 senior review에서 의도적으로 미룬 항목)
-- **Daily Challenge 모드**: 기존 5 스테이지 + modifier ("no-boost", "≥5★", "<55s"). 15★ campaign cap과 50★ retention tier 사이 격차 해소
-- **링 plane-intersection 충돌**: 현재 sphere-distance 가 측면 fall-through 허용. `prevPlayerPosition` 트래킹 필요
+## 2026-09 로드맵 (4 phase, 모두 머지됨)
+| Phase | PR | 핵심 |
+|---|---|---|
+| 1 기반 수리 | #49 | CI 복구(Xcode/시뮬레이터 unpin), 빌드 깨짐 수정, 통계 저장 버그, 링 평면 교차 판정, 렌더 스레드 루프 + HUD 발행 병합, `CourseSpec`, on-device `Analytics` |
+| 2 코어 재미 | #50 | BULLSEYE/GREAT/OK/MISS 판정 + 콤보, 축소/기울기/이동 게이트, 에너지 모델 + 실속, 부스트 게이지, 즉시 비행 |
+| 3 리텐션 | #51 | 오늘의 코스(`DailyRun`), 스카이런(`EndlessCourse`), 퀘스트 + 연속 출석, 고스트, 옵트인 Game Center/알림 |
+| 4 완성도 | #52 | 오디오 에셋 훅 + BGM 재작성, ReplayKit 클립, iCloud KVS 동기화, 캐릭터 숙련도, 문서 |
+
+**설계 원칙 (유지할 것)**
+- 시뮬레이션은 SceneKit 렌더 스레드에서 돌고 `@Published` 는 main 에서만 쓴다 (`FlightViewModel` 상단 주석). 테스트는 main 에서 동기 호출.
+- 새 저장 필드는 항상 `decodeIfPresent` (또는 `Optional` + 기본값) 로 추가해 구 블롭 호환.
+- 새 문자열은 7개 로케일 전부에 추가 (`LocalizationParityTests` 가 강제).
+- 링 통과 관련 테스트는 `MissionEngine.testPass(ringIndex:)` 로 2프레임 세그먼트를 날린다.
+- 외부로 나가는 것(Game Center, 알림, iCloud, 녹화)은 전부 옵트인 + 기본 OFF, `PRIVACY.md` 에 기록.
+
+## 남은 백로그
 - **CharacterRegistry primitive geometry 600+ LOC 제거**: atlas billboard가 default이므로 dead weight. 실기기 fallback 검증 후 삭제
-- **Free Flight soft goal**: 일일 별 목표 / personal best banner. "비행은 하는데 목적이 없다" 해결
+- **실제 오디오 에셋**: `AudioManager.assetURL` 훅은 준비됨. `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` 파일만 번들에 넣으면 됨
+- **App Store Connect**: Game Center 리더보드/업적 ID(`GameCenterManager` 참조), iCloud KVS 컨테이너, 5개 로케일 마케팅 카피
+- **Swift 6 strict concurrency** 채택

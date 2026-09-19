@@ -338,3 +338,17 @@
 "reminder.title"              = "Turtle Flight";
 "reminder.daily.body"         = "今日のコースができました。90秒、全員同じコース。";
 "reminder.streak.body"        = "今夜で連続記録が途切れます。短い飛行1回でつながります。";
+
+// MARK: - フェーズ4 — クリップ、iCloud同期、熟練度
+"settings.online.cloud"       = "iCloud進行同期";
+"settings.online.cloud.hint"  = "iCloudアカウントで星やアンロックをすべての端末で共有します";
+"settings.online.clips"       = "クリップを録画";
+"settings.online.clips.hint"  = "飛行を録画して結果画面からクリップを共有できます";
+"result.shareClip"            = "クリップを共有";
+"a11y.result.shareClip.hint"  = "ダブルタップでこの飛行の動画を編集して共有します";
+"mastery.level.format"        = "Lv.%lld";
+"mastery.title.1"             = "ひな";
+"mastery.title.2"             = "見習い";
+"mastery.title.3"             = "スカイパイロット";
+"mastery.title.4"             = "エース";
+"mastery.title.5"             = "空の伝説";

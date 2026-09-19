@@ -338,3 +338,17 @@
 "reminder.title"              = "Turtle Flight";
 "reminder.daily.body"         = "今日航线已就绪。90 秒，所有人同一条航线。";
 "reminder.streak.body"        = "你的连续记录今晚就要中断了。飞一次就能延续。";
+
+// MARK: - 第四阶段 — 片段、iCloud 同步、熟练度
+"settings.online.cloud"       = "iCloud 进度同步";
+"settings.online.cloud.hint"  = "通过你的 iCloud 账户在所有设备上保留星星和解锁";
+"settings.online.clips"       = "录制片段";
+"settings.online.clips.hint"  = "录制飞行，以便在结果界面分享片段";
+"result.shareClip"            = "分享片段";
+"a11y.result.shareClip.hint"  = "双击剪辑并分享这次飞行的视频";
+"mastery.level.format"        = "Lv.%lld";
+"mastery.title.1"             = "雏鸟";
+"mastery.title.2"             = "学徒";
+"mastery.title.3"             = "天空飞行员";
+"mastery.title.4"             = "王牌";
+"mastery.title.5"             = "天空传奇";

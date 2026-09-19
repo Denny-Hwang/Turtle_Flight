@@ -341,3 +341,17 @@
 "reminder.title"              = "Turtle Flight";
 "reminder.daily.body"         = "오늘의 코스가 준비됐어요. 90초, 모두 같은 코스.";
 "reminder.streak.body"        = "오늘 밤 연속 기록이 끊겨요. 짧은 비행 한 번이면 이어져요.";
+
+// MARK: - 4단계 — 클립, iCloud 동기화, 숙련도
+"settings.online.cloud"       = "iCloud 진행 동기화";
+"settings.online.cloud.hint"  = "iCloud 계정으로 별과 해금 상태를 모든 기기에서 유지합니다";
+"settings.online.clips"       = "클립 녹화";
+"settings.online.clips.hint"  = "비행을 녹화해 결과 화면에서 클립을 공유할 수 있습니다";
+"result.shareClip"            = "클립 공유";
+"a11y.result.shareClip.hint"  = "두 번 탭하여 이 비행 영상을 편집하고 공유합니다";
+"mastery.level.format"        = "Lv.%lld";
+"mastery.title.1"             = "새내기";
+"mastery.title.2"             = "견습 비행사";
+"mastery.title.3"             = "하늘 조종사";
+"mastery.title.4"             = "에이스";
+"mastery.title.5"             = "하늘의 전설";

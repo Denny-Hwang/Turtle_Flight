@@ -58,6 +58,15 @@ struct PlayerProgress: Codable {
     /// Opt-in local reminder notifications (daily course / streak).
     var remindersEnabled: Bool
 
+    // MARK: Phase 4
+
+    /// Opt-in iCloud Key-Value progress sync (see `CloudSync`).
+    var cloudSyncEnabled: Bool
+    /// Opt-in ReplayKit clip recording (see `ClipRecorder`).
+    var clipRecordingEnabled: Bool
+    /// Mastery XP per character (`CharacterType.rawValue` → XP).
+    var masteryXP: [String: Int]
+
     static let maxDailyResults = 60
 
     /// Stars that count toward cosmetics: campaign + quest bonus.
@@ -146,6 +155,7 @@ struct PlayerProgress: Codable {
         case selectedCharacter, selectedVehicle, sensitivityLevel
         case selectedTrailTier, lastSeenTrailTierThreshold
         case dailyResults, endlessBest, bonusStars, gameCenterEnabled, remindersEnabled
+        case cloudSyncEnabled, clipRecordingEnabled, masteryXP
     }
 
     init(stageResults: [Int: StageResult],
@@ -161,7 +171,10 @@ struct PlayerProgress: Codable {
          endlessBest: StageResult? = nil,
          bonusStars: Int = 0,
          gameCenterEnabled: Bool = false,
-         remindersEnabled: Bool = false) {
+         remindersEnabled: Bool = false,
+         cloudSyncEnabled: Bool = false,
+         clipRecordingEnabled: Bool = false,
+         masteryXP: [String: Int] = [:]) {
         self.stageResults = stageResults
         self.totalStars = totalStars
         self.totalFlightTime = totalFlightTime
@@ -176,6 +189,9 @@ struct PlayerProgress: Codable {
         self.bonusStars = bonusStars
         self.gameCenterEnabled = gameCenterEnabled
         self.remindersEnabled = remindersEnabled
+        self.cloudSyncEnabled = cloudSyncEnabled
+        self.clipRecordingEnabled = clipRecordingEnabled
+        self.masteryXP = masteryXP
     }
 
     init(from decoder: Decoder) throws {
@@ -198,5 +214,9 @@ struct PlayerProgress: Codable {
         self.bonusStars        = try c.decodeIfPresent(Int.self, forKey: .bonusStars) ?? 0
         self.gameCenterEnabled = try c.decodeIfPresent(Bool.self, forKey: .gameCenterEnabled) ?? false
         self.remindersEnabled  = try c.decodeIfPresent(Bool.self, forKey: .remindersEnabled) ?? false
+        // Phase 4 fields.
+        self.cloudSyncEnabled     = try c.decodeIfPresent(Bool.self, forKey: .cloudSyncEnabled) ?? false
+        self.clipRecordingEnabled = try c.decodeIfPresent(Bool.self, forKey: .clipRecordingEnabled) ?? false
+        self.masteryXP            = try c.decodeIfPresent([String: Int].self, forKey: .masteryXP) ?? [:]
     }
 }
