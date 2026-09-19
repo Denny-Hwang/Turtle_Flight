@@ -107,7 +107,14 @@ final class QuestTracker {
     static let shared = QuestTracker(defaults: .standard)
 
     private let defaults: UserDefaults
-    private(set) var current: DailyQuestSet
+    /// Guards `current` — `record` is called from the render thread while
+    /// Home reads `todaysQuests()` on main.
+    private let lock = NSLock()
+    private var _current: DailyQuestSet
+    private(set) var current: DailyQuestSet {
+        get { lock.lock(); defer { lock.unlock() }; return _current }
+        set { lock.lock(); _current = newValue; lock.unlock() }
+    }
     /// Injected clock for tests.
     var now: () -> Date = { Date() }
 
@@ -118,11 +125,12 @@ final class QuestTracker {
         self.defaults = defaults
         if let data = defaults.data(forKey: Self.storageKey),
            let set = try? JSONDecoder().decode(DailyQuestSet.self, from: data) {
-            current = set
+            _current = set
         } else {
-            current = DailyQuestSet(day: "", quests: [])
+            _current = DailyQuestSet(day: "", quests: [])
         }
-        rollOverIfNeeded()
+        // No eager roll-over here: callers go through `todaysQuests()` /
+        // `record(_:)`, which roll over with the (injectable) clock.
     }
 
     /// Today's quests, generating a fresh set when the day changed.
@@ -146,8 +154,9 @@ final class QuestTracker {
     func record(_ event: QuestEvent) -> [String] {
         rollOverIfNeeded()
         var newlyComplete: [String] = []
-        for i in current.quests.indices {
-            var q = current.quests[i]
+        var set = current
+        for i in set.quests.indices {
+            var q = set.quests[i]
             guard !q.isComplete else { continue }
             switch (q.kind, event) {
             case (.collectStars, .starsCollected(let n)):
@@ -175,9 +184,10 @@ final class QuestTracker {
                 continue
             }
             q.progress = min(q.progress, q.target)
-            current.quests[i] = q
+            set.quests[i] = q
             if q.isComplete { newlyComplete.append(q.id) }
         }
+        current = set
         persist()
         return newlyComplete
     }
@@ -185,12 +195,14 @@ final class QuestTracker {
     /// Claim the reward for a completed quest. Returns the stars paid.
     @discardableResult
     func claim(_ id: String) -> Int {
-        guard let i = current.quests.firstIndex(where: { $0.id == id }),
-              current.quests[i].isComplete, !current.quests[i].claimed
+        var set = current
+        guard let i = set.quests.firstIndex(where: { $0.id == id }),
+              set.quests[i].isComplete, !set.quests[i].claimed
         else { return 0 }
-        current.quests[i].claimed = true
+        set.quests[i].claimed = true
+        current = set
         persist()
-        let reward = current.quests[i].rewardStars
+        let reward = set.quests[i].rewardStars
         onReward?(reward)
         return reward
     }

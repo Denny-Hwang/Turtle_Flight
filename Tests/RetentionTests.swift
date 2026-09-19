@@ -101,10 +101,13 @@ final class RetentionTests: XCTestCase {
         if case .inProgress = engine.state {} else { XCTFail("still running") }
 
         // Three near-misses end the run as a completion carrying the length.
+        // Offset relative to the *effective* radius (combo shrink is on)
+        // and modest enough that even a tilted slit reads it as a miss
+        // rather than "not an attempt".
         for _ in 0..<EndlessCourse.maxMisses {
-            let r = engine.rings[engine.currentRingIndex]
+            let effective = engine.currentEffectiveRadius ?? 10
             engine.testPass(ringIndex: engine.currentRingIndex,
-                            lateralOffset: r.radius * 2)
+                            lateralOffset: effective * 1.2)
         }
         guard case .completed(let result) = engine.state else { return XCTFail("run should end") }
         XCTAssertEqual(result.ringsCompleted, 20)
@@ -231,7 +234,9 @@ final class RetentionTests: XCTestCase {
         a.record(.gatePassed)
         let b = QuestTracker(defaults: defaults)
         b.now = { self.date("2026-09-19") }
+        _ = b.todaysQuests()
         XCTAssertEqual(b.current, a.current)
+        XCTAssertEqual(b.current.quests.map(\.progress), a.current.quests.map(\.progress))
     }
 
     // MARK: - Ghost
