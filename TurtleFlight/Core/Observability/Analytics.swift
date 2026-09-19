@@ -94,9 +94,12 @@ final class Analytics {
     /// Call once per app launch. Records the install date on first run
     /// and adds today to the play-day set.
     func markSessionStart() {
+        // Read the clock on the caller's thread: a test that advances
+        // `now` right after this call must not affect the queued write.
+        let stamp = now()
         queue.async { [self] in
-            let today = Self.dayString(now())
-            if firstLaunch == nil { firstLaunch = now() }
+            let today = Self.dayString(stamp)
+            if firstLaunch == nil { firstLaunch = stamp }
             if playDays.last != today, !playDays.contains(today) {
                 playDays.append(today)
                 if playDays.count > Self.maxStoredPlayDays {

@@ -105,14 +105,10 @@ final class Sprint3AccessibilityTests: XCTestCase {
         let sub   = Theme.Typography.subtitleDynamic
         let cap   = Theme.Typography.captionDynamic
         let bold  = Theme.Typography.bodyDynamicBold
-        // Distinct hashables — different tokens shouldn't collapse to one.
-        let set: Set = [
-            String(describing: body),
-            String(describing: title),
-            String(describing: sub),
-            String(describing: cap),
-            String(describing: bold)
-        ]
+        // Distinct values — different tokens shouldn't collapse to one.
+        // (`Font` is Hashable; `String(describing:)` collapses on newer
+        // SwiftUI runtimes, which is why the previous version failed.)
+        let set: Set<Font> = [body, title, sub, cap, bold]
         XCTAssertEqual(set.count, 5,
                        "Dynamic Type tokens must be distinct so they map to different text styles")
     }

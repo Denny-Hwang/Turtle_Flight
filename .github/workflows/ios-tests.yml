@@ -119,6 +119,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-report
-          path: build/reports
+          # JUnit + raw logs only; the .xcresult bundle is ~50 MB.
+          path: |
+            build/reports/*.xml
+            build/reports/*.log
           if-no-files-found: warn
           retention-days: 14

@@ -211,6 +211,10 @@ final class StageDefinitionTests: XCTestCase {
         // Collect only 4 stars (need 5 for 3-star)
         for _ in 0..<4 { engine.registerStarCollected() }
 
+        // Valley Run also grants ★★★ for a sub-150s clear, so burn past
+        // that window first (limit is 180s) to isolate the star rule.
+        engine.update(deltaTime: 151, playerPosition: SCNVector3(999, 999, 999))
+
         // Complete with no collisions
         engine.testPassAllRings()
 

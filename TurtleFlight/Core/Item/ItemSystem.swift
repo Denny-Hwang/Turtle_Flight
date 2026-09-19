@@ -37,12 +37,15 @@ final class ItemSystem {
 
     // MARK: - Star Management
 
-    /// Spawn stars around player position
+    /// Spawn stars around player position. Heights are banded around the
+    /// player's own altitude (-80…+120 m, floored at 100 m) so the cluster
+    /// is reachable with a small climb or dive instead of being scattered
+    /// across the whole 200–800 m column.
     func spawnStars(around position: SCNVector3, count: Int = 10, radius: Float = 200) {
         for i in 0..<count {
             let angle = Float(i) / Float(count) * .pi * 2
             let distance = Float.random(in: 50...radius)
-            let height = Float.random(in: 200...800)
+            let height = max(100, position.y + Float.random(in: -80...120))
 
             let x = position.x + cos(angle) * distance
             let z = position.z + sin(angle) * distance
