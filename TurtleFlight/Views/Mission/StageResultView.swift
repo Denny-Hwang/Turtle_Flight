@@ -46,8 +46,7 @@ struct StageResultView: View {
                     .foregroundColor(headlineColor)
                     .multilineTextAlignment(.center)
 
-                Text(L10n.format("mission.stage.titleFormat",
-                                 stage.index + 1, stage.displayName))
+                Text(stageTitle)
                     .font(Theme.Typography.label)
                     .foregroundColor(Theme.Color.textOnDarkMuted)
 
@@ -75,8 +74,29 @@ struct StageResultView: View {
 
     // MARK: - Subsections
 
+    /// Special courses (daily / endless) have their own titles; the
+    /// campaign keeps "Stage N: name".
+    private var stageTitle: String {
+        if stage.isDailyRun { return L10n.t("daily.title") }
+        if stage.isEndless { return L10n.t("endless.title") }
+        return L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName)
+    }
+
     private func successBody(result: StageResult) -> some View {
         VStack(spacing: Theme.Spacing.l) {
+            if stage.isEndless {
+                // Sky Run: the run's length is the headline number.
+                VStack(spacing: Theme.Spacing.xs) {
+                    Text("\(result.ringsCompleted)")
+                        .font(Theme.Typography.displayLarge)
+                        .foregroundColor(Theme.Color.starGold)
+                    Text(L10n.t("endless.result.gates"))
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textOnDarkMuted)
+                }
+                .padding(.vertical, Theme.Spacing.s)
+                .accessibilityElement(children: .combine)
+            } else {
             // Star count-up
             HStack(spacing: Theme.Spacing.m) {
                 ForEach(0..<3, id: \.self) { i in
@@ -93,6 +113,7 @@ struct StageResultView: View {
             .padding(.vertical, Theme.Spacing.s)
             .accessibilityLabel(L10n.format(
                 "mission.result.starsLabel", result.stars))
+            }
 
             // Stats row
             VStack(spacing: Theme.Spacing.s) {
@@ -198,7 +219,7 @@ struct StageResultView: View {
 
     private var headline: String {
         switch outcome {
-        case .success: return L10n.t("mission.result.clear")
+        case .success: return stage.isEndless ? L10n.t("endless.result.over") : L10n.t("mission.result.clear")
         case .failure: return L10n.t("mission.result.failed")
         }
     }
@@ -235,8 +256,8 @@ struct StageResultView: View {
         switch outcome {
         case .success(let result):
             // Beat-by-beat star reveal. Tuned to feel celebratory but
-            // not slow (~1s for 3 stars).
-            for i in 1...result.stars {
+            // not slow (~1s for 3 stars). Sky Run shows no stars.
+            for i in 1...max(result.stars, 1) where !stage.isEndless && i <= result.stars {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25 * Double(i)) {
                     displayedStars = i
                     AudioManager.shared.playStarCollect()

@@ -231,6 +231,21 @@ final class FlightViewModel: ObservableObject {
     /// Render-thread copy of the latest judgement, mirrored into the
     /// published `judgementEvent` through the HUD frame.
     private var simJudgementEvent: JudgementEvent?
+
+    // MARK: Phase 3 — ghost + quests
+
+    /// Records the player's path during a course for the ghost replay.
+    private var ghostRecorder = GhostRecorder()
+    /// Ghost of the best previous run on this course, if any.
+    private var ghostTrack: GhostTrack?
+    private var ghostNode: SCNNode?
+    /// Course key of the active special/campaign stage ("stage-2",
+    /// "daily-2026-09-19"); nil in Free Flight.
+    private(set) var activeCourseKey: String?
+    /// Stage the recorder is tracking (for the saved ghost's metadata).
+    private var activeStage: StageDefinition?
+    /// Highest combo seen this run, reported to quests on completion.
+    private var simMaxComboSeen: Int = 0
     /// Reusable chase-camera constraint (allocated once per flight rather
     /// than once per frame).
     private var lookAtConstraint: SCNLookAtConstraint?
@@ -431,6 +446,7 @@ final class FlightViewModel: ObservableObject {
         // Start gyro
         gyroController.start()
         isFlying = true
+        QuestTracker.shared.record(.flightStarted(character: character))
         Analytics.shared.track(.flightStarted, [
             "character": character.rawValue,
             "vehicle": vehicle.rawValue,
@@ -465,6 +481,9 @@ final class FlightViewModel: ObservableObject {
         lastPublishedFrame = nil
         lookAtConstraint = nil
         lastRenderTime = 0
+        tearDownGhost()
+        activeCourseKey = nil
+        activeStage = nil
     }
 
     /// Start a Step-Goal stage with terrain-aware ring clamping. Wrapper
@@ -478,6 +497,51 @@ final class FlightViewModel: ObservableObject {
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
         }
+        // Ghost: load the best previous run on this course and start
+        // recording this one. Endless courses have no fixed layout, so
+        // no ghost there.
+        activeStage = stage
+        activeCourseKey = Self.courseKey(for: stage)
+        ghostRecorder.reset()
+        simMaxComboSeen = 0
+        tearDownGhost()
+        if let key = activeCourseKey, !stage.isEndless,
+           let track = GhostStore.shared.load(courseKey: key), !track.isEmpty {
+            ghostTrack = track
+            if let scene = characterNode?.parent {
+                let node = CharacterRegistry.shared.buildInflightBillboard(for: track.character)
+                node.opacity = 0.35
+                node.name = "ghost"
+                node.position = track.position(at: 0) ?? SCNVector3(0, 500, 0)
+                scene.addChildNode(node)
+                ghostNode = node
+            }
+        }
+    }
+
+    /// Stable key for ghost storage. Daily runs key by day so tomorrow's
+    /// course never races yesterday's ghost.
+    static func courseKey(for stage: StageDefinition) -> String {
+        if stage.isDailyRun { return "daily-" + DailyRun.key(for: Date()) }
+        if stage.isEndless { return "endless" }
+        return "stage-\(stage.index)"
+    }
+
+    private func tearDownGhost() {
+        ghostNode?.removeFromParentNode()
+        ghostNode = nil
+        ghostTrack = nil
+    }
+
+    /// Save the recorded path as the course ghost when the run beat the
+    /// stored one. Called from the terminal-state bridge on completion.
+    private func commitGhost(result: StageResult) {
+        guard let key = activeCourseKey, let stage = activeStage, !stage.isEndless else { return }
+        let track = ghostRecorder.makeTrack(courseKey: key,
+                                            score: result.score ?? 0,
+                                            completionTime: result.completionTime,
+                                            character: currentCharacter)
+        GhostStore.shared.saveIfBetter(track)
     }
 
     // MARK: - Pause / Resume
@@ -644,6 +708,9 @@ final class FlightViewModel: ObservableObject {
                 missionEngine?.registerStarCollected()
                 flightEngine.registerStarCollected()   // refills the boost gauge
             }
+            if collected > 0 {
+                QuestTracker.shared.record(.starsCollected(collected))
+            }
         }
         itemSystem?.updateStarAnimations(deltaTime: deltaTime)
         itemSystem?.updateProjectiles(deltaTime: deltaTime)
@@ -661,6 +728,17 @@ final class FlightViewModel: ObservableObject {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
         }
         observeRingCrossings()
+
+        // Ghost: record this run, replay the stored one, both keyed on
+        // the mission clock so a pause freezes both.
+        if let engine = missionEngine, case .inProgress = engine.state,
+           let pos = characterNode?.position {
+            let t = Float(engine.elapsedTime)
+            ghostRecorder.record(time: t, position: pos)
+            if let track = ghostTrack, let node = ghostNode, let ghostPos = track.position(at: t) {
+                node.position = ghostPos
+            }
+        }
 
         // Edge-detect mission terminal-state transitions and emit exactly one
         // event per transition. Without this bridge the MissionViewModel
@@ -710,6 +788,9 @@ final class FlightViewModel: ObservableObject {
                                            judgement: judgement,
                                            points: engine.lastPointsEarned)
         if crossing.isPass {
+            QuestTracker.shared.record(.gatePassed)
+            if judgement == .bullseye { QuestTracker.shared.record(.bullseye) }
+            simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
             onMain {
                 AudioManager.shared.playRingPass()
                 if judgement == .bullseye {
@@ -822,10 +903,13 @@ final class FlightViewModel: ObservableObject {
         lastObservedMissionStateKey = key
         guard let state = missionEngine?.state else { return }
         switch state {
-        case .completed, .failed:
+        case .completed(let result):
+            commitGhost(result: result)
             // MissionViewModel mutates @Published state in response, so
             // the callback must land on main. Synchronous when already
             // there (tests), async from the render thread.
+            onMain { [weak self] in self?.onMissionTerminalState?(state) }
+        case .failed:
             onMain { [weak self] in self?.onMissionTerminalState?(state) }
         case .notStarted, .inProgress:
             break

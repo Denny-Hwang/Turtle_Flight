@@ -54,6 +54,7 @@ struct SettingsView: View {
                 audioSection
                 trailColorSection
                 sensitivityGuideSection
+                onlineSection
                 progressSection
                 aboutSection
             }
@@ -127,7 +128,7 @@ struct SettingsView: View {
             ForEach(TrailColorTier.allCases, id: \.self) { tier in
                 TrailTierRow(
                     tier: tier,
-                    totalStars: missionVM.progress.totalStars,
+                    totalStars: missionVM.progress.effectiveStars,
                     isSelected: missionVM.progress.selectedTrailTier == tier
                 ) {
                     missionVM.setSelectedTrailTier(tier)
@@ -138,12 +139,55 @@ struct SettingsView: View {
         } footer: {
             // Next-tier nudge — only show when there's a higher tier the
             // player hasn't unlocked yet.
-            let earned = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.totalStars)
+            let earned = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.effectiveStars)
             if let next = TrailColorTier.allCases.first(where: { $0.unlockStarThreshold > earned.unlockStarThreshold }) {
-                let remaining = next.unlockStarThreshold - missionVM.progress.totalStars
+                let remaining = next.unlockStarThreshold - missionVM.progress.effectiveStars
                 Text(L10n.format("settings.trail.footer.format",
                                  remaining, L10n.t(next.l10nKey)))
             }
+        }
+    }
+
+    /// Phase 3 opt-ins. Both default OFF so the "no sign-in, no
+    /// notifications" privacy posture holds until the player asks.
+    private var onlineSection: some View {
+        Section {
+            Toggle(L10n.t("settings.online.gameCenter"), isOn: Binding(
+                get: { missionVM.progress.gameCenterEnabled },
+                set: { enabled in
+                    missionVM.progress.gameCenterEnabled = enabled
+                    missionVM.save()
+                    GameCenterManager.shared.setEnabled(enabled)
+                }
+            ))
+            .accessibilityHint(L10n.t("settings.online.gameCenter.hint"))
+
+            Toggle(L10n.t("settings.online.reminders"), isOn: Binding(
+                get: { missionVM.progress.remindersEnabled },
+                set: { enabled in
+                    if enabled {
+                        ReminderScheduler.shared.enable(
+                            dailyBody: L10n.t("reminder.daily.body"),
+                            streakBody: L10n.t("reminder.streak.body"),
+                            title: L10n.t("reminder.title")
+                        ) { granted in
+                            DispatchQueue.main.async {
+                                missionVM.progress.remindersEnabled = granted
+                                missionVM.save()
+                            }
+                        }
+                    } else {
+                        ReminderScheduler.shared.disable()
+                        missionVM.progress.remindersEnabled = false
+                        missionVM.save()
+                    }
+                }
+            ))
+            .accessibilityHint(L10n.t("settings.online.reminders.hint"))
+        } header: {
+            Text(L10n.t("settings.section.online"))
+        } footer: {
+            Text(L10n.t("settings.online.footer"))
         }
     }
 
@@ -311,8 +355,10 @@ struct SettingsView: View {
         missionVM.priorBestForLastResult = nil
         missionVM.currentStageIndex = 0
         // On-device funnel counters are part of "everything the app
-        // stores" — wipe them too.
+        // stores" — wipe them too, along with quests and ghosts.
         Analytics.shared.reset()
+        QuestTracker.shared.reset()
+        GhostStore.shared.deleteAll()
         // Banner stays visible briefly so the destructive action reads
         // as confirmed rather than silently working.
         withAnimation(.easeInOut) { resetSuccess = true }

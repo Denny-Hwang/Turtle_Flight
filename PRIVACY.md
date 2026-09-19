@@ -34,6 +34,8 @@ writes the following keys to `UserDefaults`:
 | `sensitivityLevel` | Your tilt sensitivity choice (`easy` / `normal` / `expert`). | So we honor your control preference each session. |
 | `audio.muted`, `audio.bgmVolume`, `audio.sfxVolume` | Audio toggles. | So music / SFX settings persist. |
 | `onboardingCompleted` | Whether you've already seen the four-card first-run tutorial. | So we don't pester you with the tutorial on every launch. |
+| `quests.v1`, `quests.v1.seconds.<day>` | Today's three daily quests, their progress and whether the bonus was claimed. | Daily goals need to survive a relaunch. Local only; reset with Reset Progress. |
+| *Application Support/ghosts/\*.json* | Your best flight path per course (time + position samples at 10 Hz). | Drawn as a translucent "ghost" of your own best run. Never leaves the device; Reset Progress deletes them. |
 | `analytics.counters.v1`, `analytics.playDays.v1`, `analytics.firstLaunch.v1` | Aggregate counts of in-app events (flights started, rings passed, stages cleared, …), the list of calendar days you opened the app, and the first-launch date. | Lets the app show you your own play history and streak, and lets the team read the funnel off a TestFlight device. **Never uploaded** — there is no network code. Reset Progress deletes them. |
 
 That's the entire on-device storage footprint. None of it is uploaded.
@@ -69,9 +71,20 @@ for audio playback.
   MetricKit reports are gated on iOS's system-wide "Share with App
   Developers" preference and Apple delivers them to the developer; the
   app does not transmit them itself.
-- No login, no account, no Game Center sign-in.
-- No network calls. The app has no `URLSession` configuration and the
-  binary makes no outbound HTTPS request.
+- No login, no account, and **no Game Center sign-in unless you turn it
+  on** in Settings → Game Center & Reminders (off by default). When you
+  enable it, Apple's GameKit signs you in with your Apple ID and the app
+  submits your scores (campaign stars, Daily Run score, Sky Run length)
+  and achievements to Apple's leaderboards. Turn the toggle off and the
+  app stops submitting. Apple's Game Center privacy policy applies to
+  that data; the app itself still stores nothing about your account.
+- **No notifications unless you turn them on.** The optional daily
+  reminder is a *local* notification scheduled on your device (one per
+  day, plus a one-shot streak nudge). No push service, no device token.
+- No network calls originated by the app. The app has no `URLSession`
+  configuration and the binary makes no outbound HTTPS request of its
+  own; the only network traffic is Apple's GameKit framework when Game
+  Center is enabled.
 - No microphone, no camera, no location, no contacts, no photos, no
   HealthKit, no HomeKit.
 - No data shared with third parties, because there is no data to share.

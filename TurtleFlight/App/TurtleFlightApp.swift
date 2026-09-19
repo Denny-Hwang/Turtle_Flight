@@ -12,6 +12,21 @@ struct TurtleFlightApp: App {
         // On-device funnel counters (no network). Records today as a
         // play day and bumps the session count — see Analytics.swift.
         Analytics.shared.markSessionStart()
+        // Phase 3 opt-ins are re-applied on every launch: the streak
+        // reminder is pushed a day out (so it only fires after a missed
+        // day) and Game Center re-authenticates silently if enabled.
+        let missionVM = MissionViewModel()
+        missionVM.load()
+        if missionVM.progress.remindersEnabled {
+            ReminderScheduler.shared.schedule(
+                dailyBody: L10n.t("reminder.daily.body"),
+                streakBody: L10n.t("reminder.streak.body"),
+                title: L10n.t("reminder.title")
+            )
+        }
+        if missionVM.progress.gameCenterEnabled {
+            GameCenterManager.shared.setEnabled(true)
+        }
     }
 
     var body: some Scene {

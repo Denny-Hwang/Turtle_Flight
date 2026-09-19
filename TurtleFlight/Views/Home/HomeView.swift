@@ -26,6 +26,13 @@ struct HomeView: View {
     /// three too many for a player who opened the app because they were
     /// bored on the bus.
     @State private var showQuickFlight = false
+    /// Phase 3: Daily Run / Sky Run launch straight into a Step-Goal
+    /// flight with the special stage selected on `missionVM`.
+    @State private var showSpecialFlight = false
+    /// Today's quests (refreshed on appear and after each flight).
+    @State private var quests: [Quest] = []
+    @State private var streak: Int = 0
+    @State private var questToast: String?
 
     /// Mirror of `AudioManager.shared.isMuted` so the home-screen mute
     /// chip can re-render its glyph each tap. Re-synced when the
@@ -147,6 +154,58 @@ struct HomeView: View {
                     .accessibilityLabel(L10n.t("home.quickFly.title"))
                     .accessibilityHint(L10n.t("a11y.home.quickFly.hint"))
 
+                    // Daily Run + Sky Run — the two "why open the app
+                    // today" hooks, side by side under Fly now.
+                    HStack(spacing: Theme.Spacing.m) {
+                        SpecialCourseButton(
+                            title: L10n.t("daily.title"),
+                            subtitle: dailySubtitle,
+                            icon: "calendar.badge.clock",
+                            color: Theme.Color.brandPrimary
+                        ) {
+                            AudioManager.shared.playButtonTap()
+                            characterVM.save()
+                            missionVM.selectDailyRun()
+                            showSpecialFlight = true
+                        }
+                        .accessibilityHint(L10n.t("a11y.daily.hint"))
+
+                        SpecialCourseButton(
+                            title: L10n.t("endless.title"),
+                            subtitle: endlessSubtitle,
+                            icon: "infinity",
+                            color: Color(hex: 0x6C5CE7)
+                        ) {
+                            AudioManager.shared.playButtonTap()
+                            characterVM.save()
+                            missionVM.selectEndless()
+                            showSpecialFlight = true
+                        }
+                        .accessibilityHint(L10n.t("a11y.endless.hint"))
+                    }
+
+                    // Quests + streak strip
+                    QuestStrip(quests: quests, streak: streak) { quest in
+                        let stars = QuestTracker.shared.claim(quest.id)
+                        if stars > 0 {
+                            missionVM.addBonusStars(stars)
+                            questToast = L10n.format("quest.claimed.format", stars)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                withAnimation { questToast = nil }
+                            }
+                        }
+                        quests = QuestTracker.shared.todaysQuests()
+                    }
+                    if let questToast {
+                        Text(questToast)
+                            .font(Theme.Typography.label)
+                            .foregroundColor(Theme.Color.textOnDark)
+                            .padding(.horizontal, Theme.Spacing.m)
+                            .padding(.vertical, Theme.Spacing.xs + 2)
+                            .background(Capsule().fill(Theme.Color.starGold.opacity(0.85)))
+                            .transition(.opacity)
+                    }
+
                     Spacer()
 
                     // Mode Selection
@@ -255,13 +314,26 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingView(onFinish: { showOnboarding = false })
         }
-        .fullScreenCover(isPresented: $showQuickFlight) {
+        .fullScreenCover(isPresented: $showQuickFlight, onDismiss: refreshRetention) {
             FlightView(
                 flightVM: flightVM,
                 missionVM: missionVM,
                 character: characterVM.selectedCharacter,
                 vehicle: characterVM.selectedVehicle,
                 flightMode: .freePlay,
+                mapTheme: characterVM.selectedMapTheme
+            )
+        }
+        .fullScreenCover(isPresented: $showSpecialFlight, onDismiss: {
+            missionVM.returnToSelect()
+            refreshRetention()
+        }) {
+            FlightView(
+                flightVM: flightVM,
+                missionVM: missionVM,
+                character: characterVM.selectedCharacter,
+                vehicle: characterVM.selectedVehicle,
+                flightMode: .stepGoal,
                 mapTheme: characterVM.selectedMapTheme
             )
         }
@@ -293,11 +365,134 @@ struct HomeView: View {
             characterVM.load()
             flightVM.load()
             missionVM.load()
+            refreshRetention()
             // Show onboarding on first launch only.
             if !OnboardingState.load().completed {
                 showOnboarding = true
             }
         }
+    }
+
+    // MARK: - Phase 3 helpers
+
+    private func refreshRetention() {
+        quests = QuestTracker.shared.todaysQuests()
+        streak = Analytics.shared.currentStreak()
+    }
+
+    private var dailySubtitle: String {
+        if let best = missionVM.todaysDailyBest() {
+            return L10n.format("daily.subtitle.best", best.score ?? 0)
+        }
+        return L10n.t("daily.subtitle.new")
+    }
+
+    private var endlessSubtitle: String {
+        if let best = missionVM.progress.endlessBest {
+            return L10n.format("endless.subtitle.best", best.ringsCompleted)
+        }
+        return L10n.t("endless.subtitle.new")
+    }
+}
+
+// MARK: - Special course button (Daily Run / Sky Run)
+
+private struct SpecialCourseButton: View {
+    let title: String
+    let subtitle: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: Theme.Spacing.s) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .bold))
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(title)
+                        .font(Theme.Typography.labelSmall)
+                    Text(subtitle)
+                        .font(Theme.Typography.microLabel)
+                        .opacity(0.85)
+                        .lineLimit(1)
+                }
+            }
+            .foregroundColor(Theme.Color.textOnDark)
+            .padding(.horizontal, Theme.Spacing.m)
+            .padding(.vertical, Theme.Spacing.s)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.m)
+                    .fill(color)
+                    .shadow(color: color.opacity(0.35), radius: 6, y: 3)
+            )
+        }
+        .accessibilityLabel("\(title). \(subtitle)")
+    }
+}
+
+// MARK: - Quest strip
+
+/// Today's three quests + the day streak. Tapping a completed quest
+/// claims its bonus stars.
+private struct QuestStrip: View {
+    let quests: [Quest]
+    let streak: Int
+    let onClaim: (Quest) -> Void
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.s) {
+            if streak > 0 {
+                HStack(spacing: 3) {
+                    Image(systemName: "flame.fill")
+                        .foregroundColor(Theme.Color.boostOrange)
+                    Text(L10n.format("streak.format", streak))
+                        .font(Theme.Typography.labelSmall)
+                        .foregroundColor(Theme.Color.textPrimary)
+                }
+                .padding(.horizontal, Theme.Spacing.s + 2)
+                .padding(.vertical, Theme.Spacing.xs + 1)
+                .background(Capsule().fill(.ultraThinMaterial))
+                .accessibilityLabel(L10n.format("a11y.streak.format", streak))
+            }
+            ForEach(quests) { quest in
+                Button {
+                    if quest.isComplete && !quest.claimed { onClaim(quest) }
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: quest.claimed
+                              ? "checkmark.seal.fill"
+                              : (quest.isComplete ? "gift.fill" : "circle.dashed"))
+                            .foregroundColor(quest.isComplete ? Theme.Color.starGold : Theme.Color.textPrimary.opacity(0.6))
+                        Text(questLabel(quest))
+                            .font(Theme.Typography.microLabel)
+                            .foregroundColor(Theme.Color.textPrimary)
+                            .lineLimit(1)
+                        Text("\(quest.progress)/\(quest.target)")
+                            .font(Theme.Typography.microLabel)
+                            .foregroundColor(Theme.Color.textPrimary.opacity(0.6))
+                    }
+                    .padding(.horizontal, Theme.Spacing.s + 2)
+                    .padding(.vertical, Theme.Spacing.xs + 1)
+                    .background(
+                        Capsule().fill(quest.claimed
+                                       ? Theme.Color.easyGreen.opacity(0.25)
+                                       : (quest.isComplete ? Theme.Color.starGold.opacity(0.3) : Color.white.opacity(0.35)))
+                    )
+                }
+                .disabled(!quest.isComplete || quest.claimed)
+                .accessibilityLabel(L10n.format("a11y.quest.format", questLabel(quest), quest.progress, quest.target))
+                .accessibilityHint(quest.isComplete && !quest.claimed ? L10n.t("a11y.quest.claim.hint") : "")
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.l)
+    }
+
+    private func questLabel(_ quest: Quest) -> String {
+        if quest.kind == .flyCharacter, let character = quest.character {
+            return L10n.format("quest.flyCharacter.format", character.config.name)
+        }
+        return L10n.format(quest.kind.l10nKey, quest.target)
     }
 }
 

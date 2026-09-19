@@ -58,6 +58,12 @@ targets:
       - path: TurtleFlight/PrivacyInfo.xcprivacy
     info:
       path: TurtleFlight/Info.plist
+    # Game Center (Phase 3, opt-in in Settings). XcodeGen writes the
+    # .entitlements file from these properties on every generate.
+    entitlements:
+      path: TurtleFlight/TurtleFlight.entitlements
+      properties:
+        com.apple.developer.game-center: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app

@@ -117,13 +117,24 @@ struct MissionHUD: View {
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(L10n.format("a11y.hud.score.format", flightVM.score, flightVM.combo))
 
-                        // Ring progress
+                        // Ring progress (+ Sky Run lives)
                         HStack(spacing: Theme.Spacing.xs) {
                             Image(systemName: "circle.dashed")
                                 .foregroundColor(Theme.Color.hudCyan)
                             Text(missionEngine.progressText)
                                 .font(Theme.Typography.hudGaugeSmall)
                                 .foregroundColor(Theme.Color.textOnDark)
+                            if let lives = missionEngine.endlessLivesRemaining {
+                                HStack(spacing: 2) {
+                                    ForEach(0..<EndlessCourse.maxMisses, id: \.self) { i in
+                                        Image(systemName: i < lives ? "heart.fill" : "heart")
+                                            .font(.system(size: 11))
+                                            .foregroundColor(i < lives ? Theme.Color.expertRed : Theme.Color.textOnDarkFaint)
+                                    }
+                                }
+                                .padding(.leading, Theme.Spacing.xs)
+                                .accessibilityLabel(L10n.format("a11y.endless.lives.format", lives))
+                            }
                         }
                         .padding(.horizontal, Theme.Spacing.s + 2)
                         .padding(.vertical, Theme.Spacing.s - 2)

@@ -32,10 +32,34 @@ final class MissionViewModel: ObservableObject {
         StageDefinition.allStages
     }
 
+    /// Non-campaign course currently selected (Daily Run / Sky Run).
+    /// When set it overrides `currentStage`; cleared by `returnToSelect`.
+    @Published var specialStage: StageDefinition?
+
     var currentStage: StageDefinition? {
+        if let specialStage { return specialStage }
         guard currentStageIndex < stages.count else { return nil }
         return stages[currentStageIndex]
     }
+
+    /// Select today's Daily Run as the active course.
+    func selectDailyRun(date: Date = Date()) {
+        specialStage = DailyRun.stage(for: date)
+    }
+
+    /// Select a fresh Sky Run (endless) course.
+    func selectEndless() {
+        specialStage = EndlessCourse.stage()
+    }
+
+    /// Today's best Daily Run result, if any.
+    func todaysDailyBest(date: Date = Date()) -> StageResult? {
+        progress.dailyResults[DailyRun.key(for: date)]
+    }
+
+    /// True when a special course's result was a new best (set by
+    /// `completeMission`; read by the result screen).
+    @Published private(set) var lastSpecialWasNewBest: Bool = false
 
     func isStageUnlocked(_ index: Int) -> Bool {
         if index == 0 { return true }
@@ -55,7 +79,8 @@ final class MissionViewModel: ObservableObject {
     /// this to decide whether to render the "Next" button on the
     /// stage-clear overlay.
     var hasNextStage: Bool {
-        currentStageIndex + 1 < stages.count
+        guard specialStage == nil else { return false }
+        return currentStageIndex + 1 < stages.count
     }
 
     /// Advance to the next stage if one exists. Returns true on success so
@@ -73,12 +98,28 @@ final class MissionViewModel: ObservableObject {
     }
 
     func completeMission(result: StageResult) {
-        // Capture prior best BEFORE merging the new result — drives the
-        // "New Best!" badge in StageResultView.
-        priorBestForLastResult = progress.stageResults[result.stageIndex]
         lastResult = result
-        progress.updateStageResult(result)
+        if let special = specialStage, special.isSpecial {
+            // Daily / endless: separate ladders, never campaign stars.
+            let dayKey = DailyRun.key(for: Date())
+            priorBestForLastResult = special.isDailyRun
+                ? progress.dailyResults[dayKey]
+                : progress.endlessBest
+            lastSpecialWasNewBest = progress.updateSpecialResult(result, dayKey: dayKey)
+        } else {
+            // Capture prior best BEFORE merging the new result — drives the
+            // "New Best!" badge in StageResultView.
+            priorBestForLastResult = progress.stageResults[result.stageIndex]
+            progress.updateStageResult(result)
+        }
         progress.totalFlightTime += result.completionTime
+        QuestTracker.shared.record(.courseCleared(collisions: result.collisions,
+                                                  isDaily: specialStage?.isDailyRun == true))
+        QuestTracker.shared.record(.flightTime(seconds: result.completionTime))
+        if let combo = result.maxCombo {
+            QuestTracker.shared.record(.comboReached(combo))
+        }
+        GameCenterManager.shared.report(result: result, stage: currentStage, progress: progress)
         Analytics.shared.track(.stageCompleted, [
             "stage": result.stageIndex,
             "stars": result.stars,
@@ -91,7 +132,7 @@ final class MissionViewModel: ObservableObject {
         // `lastSeenTrailTierThreshold` records the highest threshold
         // we've already auto-promoted past, so subsequent clears that
         // don't cross a new milestone leave the tier alone.
-        let earned = TrailColorTier.highestUnlocked(totalStars: progress.totalStars)
+        let earned = TrailColorTier.highestUnlocked(totalStars: progress.effectiveStars)
         if earned.unlockStarThreshold > progress.lastSeenTrailTierThreshold {
             progress.lastSeenTrailTierThreshold = earned.unlockStarThreshold
             progress.selectedTrailTier = earned
@@ -107,6 +148,7 @@ final class MissionViewModel: ObservableObject {
         missionState = .failed(reason)
         if elapsed > 0 {
             progress.totalFlightTime += elapsed
+            QuestTracker.shared.record(.flightTime(seconds: elapsed))
             save()
         }
         Analytics.shared.track(.stageFailed, [
@@ -129,6 +171,7 @@ final class MissionViewModel: ObservableObject {
             progress.bestFreeFlightStars = starsCollected
         }
         progress.totalFlightTime += max(0, flightTime)
+        QuestTracker.shared.record(.flightTime(seconds: max(0, flightTime)))
         Analytics.shared.track(.freeFlightEnded, [
             "time": Int(flightTime),
             "stars": starsCollected,
@@ -140,6 +183,20 @@ final class MissionViewModel: ObservableObject {
 
     func returnToSelect() {
         missionState = .selecting
+        specialStage = nil
+        lastSpecialWasNewBest = false
+    }
+
+    /// Pay quest reward stars into the progress blob.
+    func addBonusStars(_ stars: Int) {
+        guard stars > 0 else { return }
+        progress.bonusStars += stars
+        let earned = TrailColorTier.highestUnlocked(totalStars: progress.effectiveStars)
+        if earned.unlockStarThreshold > progress.lastSeenTrailTierThreshold {
+            progress.lastSeenTrailTierThreshold = earned.unlockStarThreshold
+            progress.selectedTrailTier = earned
+        }
+        save()
     }
 
     // MARK: - Persistence
@@ -163,7 +220,7 @@ final class MissionViewModel: ObservableObject {
             // earned. Defends against (a) a Reset Progress that wiped
             // stars but left the previously-picked tier, and (b) old
             // saved blobs from before tier earning was enforced.
-            let earned = TrailColorTier.highestUnlocked(totalStars: progress.totalStars)
+            let earned = TrailColorTier.highestUnlocked(totalStars: progress.effectiveStars)
             if progress.selectedTrailTier.unlockStarThreshold > earned.unlockStarThreshold {
                 progress.selectedTrailTier = earned
             }
@@ -181,7 +238,7 @@ final class MissionViewModel: ObservableObject {
     /// the Settings row is also disabled for locked tiers, so this is
     /// belt-and-suspenders against a logic error in the caller.
     func setSelectedTrailTier(_ tier: TrailColorTier) {
-        guard tier.isUnlocked(totalStars: progress.totalStars) else { return }
+        guard tier.isUnlocked(totalStars: progress.effectiveStars) else { return }
         progress.selectedTrailTier = tier
         save()
     }
