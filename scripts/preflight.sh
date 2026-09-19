@@ -13,11 +13,23 @@ ok()   { echo "✅ $*"; }
 
 # ---- 1. Info.plist essentials ------------------------------------------------
 PLIST=TurtleFlight/Info.plist
-for key in CFBundleShortVersionString CFBundleVersion NSMotionUsageDescription \
-           NSPhotoLibraryAddUsageDescription ITSAppUsesNonExemptEncryption \
-           UILaunchScreen UIRequiredDeviceCapabilities CFBundleLocalizations; do
-  grep -q "<key>$key</key>" "$PLIST" || fail "Info.plist missing $key"
-done
+# Parse the plist (XML or binary) rather than grepping: `xcodegen
+# generate` must never rewrite this file, and if it ever does the keys
+# below are the ones whose absence gets a build rejected or crashes on
+# first CoreMotion access.
+python3 - "$PLIST" <<'PY' || fail "Info.plist is missing a required key (see above)"
+import plistlib, sys
+d = plistlib.load(open(sys.argv[1], 'rb'))
+required = ["CFBundleShortVersionString", "CFBundleVersion", "NSMotionUsageDescription",
+            "NSPhotoLibraryAddUsageDescription", "ITSAppUsesNonExemptEncryption",
+            "UILaunchScreen", "UIRequiredDeviceCapabilities", "CFBundleLocalizations",
+            "UISupportedInterfaceOrientations"]
+missing = [k for k in required if k not in d]
+if missing:
+    print("missing:", ", ".join(missing)); sys.exit(1)
+if "UIInterfaceOrientationPortrait" in d["UISupportedInterfaceOrientations"]:
+    print("portrait orientation must not be supported (landscape-only game)"); sys.exit(1)
+PY
 ok "Info.plist has version, usage descriptions, launch screen, capabilities"
 
 # ---- 2. Privacy manifest -----------------------------------------------------
