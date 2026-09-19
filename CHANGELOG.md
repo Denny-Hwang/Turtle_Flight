@@ -9,6 +9,58 @@ window.
 
 ## [Unreleased]
 
+### Phase 3 — 리텐션 (retention loop)
+
+Third roadmap phase: the reasons to open the app *today*.
+
+**Today's Course (Daily Run)** — `DailyRun`
+- A 12-gate course generated from a stable hash of the calendar date:
+  same course for every player, new one tomorrow. Pattern, gate recipe,
+  spacing, amplitude, jitter and radius all come from the seed. 120 s
+  limit, ★★★ under 75 s. Best result stored per day
+  (`PlayerProgress.dailyResults`, trimmed to 60 days), never in the
+  campaign ladder.
+
+**Sky Run (endless)** — `EndlessCourse`
+- Rings arrive in 24-ring chunks; `MissionEngine` refills when fewer
+  than 10 remain and detaches passed rings, so memory stays flat.
+  Radius, spacing and wobble tighten with distance; hard gate kinds
+  appear more often deeper in. Three misses end the run as a
+  *completion* whose headline is gates passed. Hearts on the HUD.
+  `PlayerProgress.endlessBest`.
+
+**Daily quests + streak** — `QuestSystem`
+- Three quests a day from a seeded pool (stars, gates, bullseyes, clean
+  clear, minutes, daily course, combo, character). Progress is fed from
+  the game loop; claiming pays **bonus stars** that count toward the
+  trail-colour tiers (`effectiveStars`), finally making the 50/150/300★
+  cosmetics reachable. Day streak (from `Analytics` play days) shown on
+  Home.
+
+**Ghost replay** — `GhostTrack` / `GhostRecorder` / `GhostStore`
+- Every course run is recorded at 10 Hz; the best-scoring run per
+  course is saved (~20 KB JSON) and replayed as a 35 % opacity billboard
+  keyed on the mission clock. Daily ghosts are keyed by day.
+
+**Game Center (opt-in)** — `GameCenterManager`
+- Off by default. When enabled: leaderboards for campaign stars, Daily
+  Run score, Sky Run length; achievements for first bullseye, combo 10,
+  Sky Run 50, campaign 15★, 7-day streak. Entitlement added via
+  `project.yml`.
+
+**Reminders (opt-in)** — `ReminderScheduler`
+- Local notifications only: daily 18:00 "today's course is ready" and a
+  one-shot streak nudge that is pushed a day out on every launch.
+
+**UI** — Home: Today's Course + Sky Run buttons under Fly now, quest
+strip with claim, streak chip. Settings: Game Center & Reminders
+section. Result screen: Sky Run headline, special-course titles.
+
+**Privacy** — `PRIVACY.md` updated (quests, ghosts, opt-in Game Center
+and notifications). **L10n:** 35 keys × 7 locales (261 each).
+**Tests:** `RetentionTests` (16).
+
+
 ### Phase 2 — 코어 재미 (core fun loop)
 
 Second roadmap phase: turns "flying through hoops" into a precision game

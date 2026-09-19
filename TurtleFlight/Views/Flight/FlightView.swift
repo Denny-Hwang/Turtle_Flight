@@ -205,7 +205,7 @@ struct FlightView: View {
                 StageResultView(
                     stage: stage,
                     outcome: .failure(reason: reason),
-                    priorBest: missionVM.progress.stageResults[stage.index],
+                    priorBest: stage.isSpecial ? nil : missionVM.progress.stageResults[stage.index],
                     hasNextStage: false,
                     onHome: {
                         missionVM.returnToSelect()
@@ -295,7 +295,7 @@ struct FlightView: View {
         // unlocked tier so a tier that's persisted but no longer earned
         // (e.g. progress reset) doesn't render.
         let claimedTier = missionVM.progress.selectedTrailTier
-        let earnedTier = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.totalStars)
+        let earnedTier = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.effectiveStars)
         let tierToApply: TrailColorTier =
             claimedTier.unlockStarThreshold <= earnedTier.unlockStarThreshold
             ? claimedTier

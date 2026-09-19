@@ -118,6 +118,18 @@ final class MissionEngine {
     /// Points the most recent crossing earned.
     private(set) var lastPointsEarned: Int = 0
 
+    // MARK: Endless (Sky Run)
+
+    /// True while running an `EndlessCourse` stage: rings arrive in
+    /// chunks, passed rings are removed, and `EndlessCourse.maxMisses`
+    /// misses end the run as a *completion* (the run's length is the
+    /// result, not a failure).
+    private(set) var isEndless = false
+    private var endlessSeed: UInt64 = 0
+    /// Total rings generated so far across all chunks (endless only).
+    private(set) var generatedRingCount = 0
+    private var terrainHeightFn: ((Float, Float) -> Float)?
+
     /// Per-step radius reduction while `comboShrink` is on, and its floor.
     static let comboShrinkPerStep: Float = 0.04
     static let comboShrinkFloor: Float = 0.6
@@ -173,9 +185,21 @@ final class MissionEngine {
         lastJudgement = nil
         lastPointsEarned = 0
         state = .inProgress
+        terrainHeightFn = terrainHeightAt
+        isEndless = stage.isEndless
+        endlessSeed = stage.course.seed
+        generatedRingCount = 0
 
         // Clear previous rings + decorations
         clearRings()
+
+        if isEndless {
+            // Endless: pull the first chunk and return — the campaign path
+            // below (single fixed layout, Stage 4 pillars) doesn't apply.
+            appendEndlessChunk()
+            highlightRing(at: 0)
+            return
+        }
 
         // Generate rings, clamping each above the terrain when we have
         // a height query function. The clearance buffer (ringRadius + 20)
@@ -262,11 +286,21 @@ final class MissionEngine {
                 passCurrentRing()
             } else {
                 ringMisses += 1
+                if isEndless && ringMisses >= EndlessCourse.maxMisses {
+                    completeStage()
+                    return
+                }
             }
         }
 
         // Animate current target ring
         animateTargetRing()
+    }
+
+    /// Misses left before an endless run ends (nil outside endless).
+    var endlessLivesRemaining: Int? {
+        guard isEndless else { return nil }
+        return max(0, EndlessCourse.maxMisses - ringMisses)
     }
 
     /// Advance past the current target ring: play the pass animation,
@@ -275,12 +309,21 @@ final class MissionEngine {
         let ring = rings[currentRingIndex]
         rings[currentRingIndex].isPassed = true
 
-        // Ring pass animation
+        // Ring pass animation. Endless runs also detach the node so the
+        // scene never accumulates hundreds of passed tori.
         let scaleUp = SCNAction.scale(to: 1.5, duration: 0.2)
         let fadeOut = SCNAction.fadeOut(duration: 0.3)
-        ring.node.runAction(.sequence([scaleUp, fadeOut]))
+        if isEndless {
+            ring.node.runAction(.sequence([scaleUp, fadeOut, .removeFromParentNode()]))
+        } else {
+            ring.node.runAction(.sequence([scaleUp, fadeOut]))
+        }
 
         currentRingIndex += 1
+
+        if isEndless, rings.count - currentRingIndex < EndlessCourse.refillThreshold {
+            appendEndlessChunk()
+        }
 
         // Highlight next ring
         if currentRingIndex < rings.count {
@@ -291,6 +334,38 @@ final class MissionEngine {
         if currentRingIndex >= rings.count {
             completeStage()
         }
+    }
+
+    /// Generate and attach the next endless chunk.
+    private func appendEndlessChunk() {
+        guard let stage = currentStage else { return }
+        let specs = EndlessCourse.chunk(seed: endlessSeed,
+                                        startIndex: generatedRingCount,
+                                        previousEnd: rings.last?.position)
+        let positions = specs.map(\.position)
+        // Normals from the tail of the existing course + the new chunk so
+        // the join is smooth.
+        let context = (rings.suffix(1).map(\.position)) + positions
+        let normals = Array(CourseGenerator.normals(for: context).suffix(positions.count))
+        for (i, spec) in specs.enumerated() {
+            let safePos: SCNVector3 = {
+                guard let heightFn = terrainHeightFn else { return spec.position }
+                let groundY = heightFn(spec.position.x, spec.position.z)
+                return SCNVector3(spec.position.x,
+                                  max(spec.position.y, groundY + spec.radius + 20),
+                                  spec.position.z)
+            }()
+            let normal = normals[i]
+            let index = generatedRingCount + i
+            let node = createRingNode(radius: spec.radius, index: index, kind: spec.kind)
+            node.position = safePos
+            node.eulerAngles.y = atan2(normal.x, normal.z)
+            parentNode.addChildNode(node)
+            rings.append(Ring(node: node, position: safePos, radius: spec.radius,
+                              normal: normal, kind: spec.kind))
+        }
+        generatedRingCount += specs.count
+        _ = stage
     }
 
     /// Pure geometry: does the segment `from → to` cross the ring's plane
@@ -377,7 +452,7 @@ final class MissionEngine {
             collisions: collisions,
             starsCollected: starsCollected,
             ringsCompleted: currentRingIndex,
-            totalRings: rings.count,
+            totalRings: isEndless ? currentRingIndex : rings.count,
             date: Date(),
             score: score.points,
             maxCombo: score.maxCombo,
@@ -558,6 +633,9 @@ final class MissionEngine {
 
     var progressText: String {
         guard let stage = currentStage else { return "" }
+        if isEndless {
+            return L10n.format("mission.progress.endlessFormat", currentRingIndex)
+        }
         return L10n.format("mission.progress.ringFormat", currentRingIndex, stage.ringCount)
     }
 
