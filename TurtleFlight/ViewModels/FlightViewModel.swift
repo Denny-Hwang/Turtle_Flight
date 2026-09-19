@@ -47,6 +47,26 @@ final class FlightViewModel: ObservableObject {
     /// pause overlay reads as "wait" rather than "the world died").
     @Published var isPaused: Bool = false
 
+    // MARK: - Phase 2: gate scoring surface
+
+    /// One gate judgement, published for the HUD callout. `id` is
+    /// monotonic so SwiftUI's `onChange` fires even for two identical
+    /// judgements in a row.
+    struct JudgementEvent: Equatable {
+        let id: Int
+        let judgement: GateJudgement
+        let points: Int
+    }
+
+    /// Latest gate judgement (nil until the first crossing of a run).
+    @Published private(set) var judgementEvent: JudgementEvent?
+    /// Running precision score for the active course.
+    @Published private(set) var score: Int = 0
+    /// Current combo (consecutive passes).
+    @Published private(set) var combo: Int = 0
+    /// True while the Expert energy model has the character stalled.
+    @Published private(set) var isStalled: Bool = false
+
     // MARK: - Per-frame publishing
 
     /// Snapshot of every per-frame published value. Built on the render
@@ -62,6 +82,10 @@ final class FlightViewModel: ObservableObject {
         var boostProgress: Float
         var directionToObjective: Double?
         var currentRegion: String
+        var score: Int = 0
+        var combo: Int = 0
+        var isStalled: Bool = false
+        var judgementEvent: JudgementEvent? = nil
 
         /// True when the two frames would render identically on the HUD.
         func displaysSame(as other: HUDFrame) -> Bool {
@@ -74,6 +98,10 @@ final class FlightViewModel: ObservableObject {
                 && Int(boostProgress * 100) == Int(other.boostProgress * 100)
                 && Self.quantize(directionToObjective) == Self.quantize(other.directionToObjective)
                 && currentRegion == other.currentRegion
+                && score == other.score
+                && combo == other.combo
+                && isStalled == other.isStalled
+                && judgementEvent?.id == other.judgementEvent?.id
         }
 
         private static func quantize(_ radians: Double?) -> Int? {
@@ -139,6 +167,10 @@ final class FlightViewModel: ObservableObject {
             directionToObjective = frame.directionToObjective
         }
         if currentRegion != frame.currentRegion { currentRegion = frame.currentRegion }
+        if score != frame.score { score = frame.score }
+        if combo != frame.combo { combo = frame.combo }
+        if isStalled != frame.isStalled { isStalled = frame.isStalled }
+        if judgementEvent?.id != frame.judgementEvent?.id { judgementEvent = frame.judgementEvent }
     }
 
     // MARK: - Components
@@ -196,6 +228,9 @@ final class FlightViewModel: ObservableObject {
     /// Last `MissionEngine.crossingCount` we reacted to, for edge-detecting
     /// ring pass / miss events.
     private var lastSeenCrossingCount: Int = 0
+    /// Render-thread copy of the latest judgement, mirrored into the
+    /// published `judgementEvent` through the HUD frame.
+    private var simJudgementEvent: JudgementEvent?
     /// Reusable chase-camera constraint (allocated once per flight rather
     /// than once per frame).
     private var lookAtConstraint: SCNLookAtConstraint?
@@ -336,6 +371,11 @@ final class FlightViewModel: ObservableObject {
         self.simStarsCollected = 0
         self.boostRequested = false
         self.lastSeenCrossingCount = 0
+        self.simJudgementEvent = nil
+        self.judgementEvent = nil
+        self.score = 0
+        self.combo = 0
+        self.isStalled = false
         self.lastPublishedFrame = nil
         self.lastRenderTime = 0
 
@@ -480,6 +520,11 @@ final class FlightViewModel: ObservableObject {
         isBoosting = false
         boostRequested = false
         lastSeenCrossingCount = 0
+        simJudgementEvent = nil
+        judgementEvent = nil
+        score = 0
+        combo = 0
+        isStalled = false
         lastPublishedFrame = nil
         lastRenderTime = 0
         // Reset mission-transition observer so a Retry's terminal state
@@ -597,6 +642,7 @@ final class FlightViewModel: ObservableObject {
             }
             for _ in 0..<collected {
                 missionEngine?.registerStarCollected()
+                flightEngine.registerStarCollected()   // refills the boost gauge
             }
         }
         itemSystem?.updateStarAnimations(deltaTime: deltaTime)
@@ -641,7 +687,11 @@ final class FlightViewModel: ObservableObject {
             starsCollected: simStarsCollected,
             boostProgress: computeBoostProgress(flightState: flightState),
             directionToObjective: computeObjectiveDirection(flightState: flightState),
-            currentRegion: computeRegionName()
+            currentRegion: computeRegionName(),
+            score: missionEngine?.score.points ?? 0,
+            combo: missionEngine?.score.combo ?? 0,
+            isStalled: flightState.isStalled,
+            judgementEvent: simJudgementEvent
         )
         publish(frame)
     }
@@ -655,13 +705,29 @@ final class FlightViewModel: ObservableObject {
               let crossing = engine.lastCrossing
         else { return }
         lastSeenCrossingCount = engine.crossingCount
+        let judgement = engine.lastJudgement ?? GateScoring.judge(accuracy: crossing.accuracy)
+        simJudgementEvent = JudgementEvent(id: engine.crossingCount,
+                                           judgement: judgement,
+                                           points: engine.lastPointsEarned)
         if crossing.isPass {
-            onMain { AudioManager.shared.playRingPass() }
+            onMain {
+                AudioManager.shared.playRingPass()
+                if judgement == .bullseye {
+                    let generator = UIImpactFeedbackGenerator(style: .rigid)
+                    generator.impactOccurred()
+                }
+            }
             Analytics.shared.track(.ringPassed, [
                 "ring": crossing.ringIndex,
-                "accuracy": Double(crossing.accuracy)
+                "accuracy": Double(crossing.accuracy),
+                "judgement": judgement.rawValue,
+                "combo": engine.score.combo
             ])
         } else {
+            onMain {
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.warning)
+            }
             Analytics.shared.track(.ringMissed, [
                 "ring": crossing.ringIndex,
                 "accuracy": Double(crossing.accuracy)
@@ -693,12 +759,16 @@ final class FlightViewModel: ObservableObject {
         return relative
     }
 
-    /// Boost progress (0…1) from the engine's remaining boost time.
-    /// Drives the cooldown ring overlaid on the boost ThumbButton.
+    /// Boost ring value (0…1). While boosting it is the remaining
+    /// fraction of the burst; otherwise it is the gauge charge, so the
+    /// ring visibly refills from stars and reads "ready" when full.
     private func computeBoostProgress(flightState: FlightEngine.FlightState) -> Float {
-        let dur = Float(Constants.Flight.boostDuration)
-        guard dur > 0 else { return 0 }
-        return max(0, min(1, flightState.boostTimeRemaining / dur))
+        if flightState.isBoosting {
+            let dur = Float(Constants.Flight.boostDuration)
+            guard dur > 0 else { return 0 }
+            return max(0, min(1, flightState.boostTimeRemaining / dur))
+        }
+        return max(0, min(1, flightState.boostCharge))
     }
 
     /// Fire a one-shot countdown chirp on the integer-second boundary
@@ -826,6 +896,12 @@ final class FlightViewModel: ObservableObject {
     // MARK: - Actions
 
     func activateBoost() {
+        // The engine only honours the request with a full gauge; don't
+        // play the whoosh (or flip the mirror) for a tap that can't fire.
+        guard flightEngine.canBoost else {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            return
+        }
         boostRequested = true
         isBoosting = true
         AudioManager.shared.playBoost()

@@ -15,8 +15,35 @@ struct MissionHUD: View {
     /// `directionToObjective`.
     @ObservedObject var flightVM: FlightViewModel
 
+    /// Callout state for the gate judgement ("BULLSEYE!" etc.). Driven by
+    /// `flightVM.judgementEvent`; fades out on its own.
+    @State private var calloutEvent: FlightViewModel.JudgementEvent?
+    @State private var calloutVisible = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         GeometryReader { proxy in
+            ZStack {
+            judgementCallout
+                .onChange(of: flightVM.judgementEvent) { event in
+                    guard let event else { return }
+                    calloutEvent = event
+                    if reduceMotion {
+                        calloutVisible = true
+                    } else {
+                        withAnimation(.spring(response: 0.22, dampingFraction: 0.6)) {
+                            calloutVisible = true
+                        }
+                    }
+                    let id = event.id
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                        guard calloutEvent?.id == id else { return }
+                        withAnimation(.easeOut(duration: 0.25)) { calloutVisible = false }
+                    }
+                    UIAccessibility.post(notification: .announcement,
+                                         argument: L10n.t(event.judgement.l10nKey))
+                }
+
             VStack {
                 // Top: Stage title + Timer + Objective arrow
                 HStack {
@@ -65,6 +92,31 @@ struct MissionHUD: View {
                     Spacer()
 
                     VStack(alignment: .trailing, spacing: Theme.Spacing.s) {
+                        // Score + combo (Phase 2 gate precision)
+                        HStack(spacing: Theme.Spacing.s) {
+                            if flightVM.combo >= 2 {
+                                Text(L10n.format("hud.combo.format", flightVM.combo))
+                                    .font(Theme.Typography.labelSmall)
+                                    .foregroundColor(Theme.Color.starGold)
+                                    .padding(.horizontal, Theme.Spacing.s)
+                                    .padding(.vertical, Theme.Spacing.xxs + 1)
+                                    .background(Capsule().fill(Theme.Color.starGold.opacity(0.18)))
+                                    .transition(.scale.combined(with: .opacity))
+                            }
+                            Text(L10n.format("hud.score.format", flightVM.score))
+                                .font(Theme.Typography.hudGaugeSmall)
+                                .foregroundColor(Theme.Color.textOnDark)
+                        }
+                        .padding(.horizontal, Theme.Spacing.s + 2)
+                        .padding(.vertical, Theme.Spacing.s - 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.Radius.s)
+                                .fill(Theme.Color.surfaceOverlay)
+                        )
+                        .animation(.spring(response: 0.25), value: flightVM.combo >= 2)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(L10n.format("a11y.hud.score.format", flightVM.score, flightVM.combo))
+
                         // Ring progress
                         HStack(spacing: Theme.Spacing.xs) {
                             Image(systemName: "circle.dashed")
@@ -127,11 +179,45 @@ struct MissionHUD: View {
 
                 Spacer()
             }
+            }   // ZStack
         }
         // The HUD is purely informational; touches always pass through to
         // the SceneKit scene. Modal overlays (StageResultView, PauseView)
         // are siblings, not children, of this view.
         .allowsHitTesting(false)
+    }
+
+    /// Centre-screen judgement callout. Sits just above the character so
+    /// the eye doesn't have to leave the ring it just flew through.
+    @ViewBuilder
+    private var judgementCallout: some View {
+        if let event = calloutEvent {
+            VStack(spacing: Theme.Spacing.xxs) {
+                Text(L10n.t(event.judgement.l10nKey))
+                    .font(Theme.Typography.displayMedium)
+                    .foregroundColor(Self.calloutColor(for: event.judgement))
+                    .shadow(color: .black.opacity(0.5), radius: 4, y: 2)
+                if event.points > 0 {
+                    Text("+\(event.points)")
+                        .font(Theme.Typography.hudGaugeSmall)
+                        .foregroundColor(Theme.Color.textOnDark)
+                        .shadow(color: .black.opacity(0.5), radius: 3, y: 1)
+                }
+            }
+            .scaleEffect(calloutVisible ? 1 : 0.6)
+            .opacity(calloutVisible ? 1 : 0)
+            .offset(y: -70)
+            .accessibilityHidden(true)
+        }
+    }
+
+    static func calloutColor(for judgement: GateJudgement) -> Color {
+        switch judgement {
+        case .bullseye: return Theme.Color.starGold
+        case .great:    return Theme.Color.hudCyan
+        case .ok:       return Theme.Color.textOnDark
+        case .miss:     return Theme.Color.expertRed
+        }
     }
 
     /// Compass-style chevron under the stage title that always points at

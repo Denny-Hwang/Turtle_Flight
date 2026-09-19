@@ -286,3 +286,18 @@
 "settings.sensitivity.normal.caption" = "4° dead zone, quadratic response, auto-level after 4s. Balanced — recommended.";
 "settings.sensitivity.expert.caption" = "1.5° dead zone, linear response, no auto-level, stall enabled. Maximum control with maximum cost.";
 
+
+// MARK: - Phase 2 — gate precision, boost gauge, quick fly
+"gate.judgement.bullseye"   = "BULLSEYE!";
+"gate.judgement.great"      = "GREAT";
+"gate.judgement.ok"         = "OK";
+"gate.judgement.miss"       = "MISS";
+"hud.score.format"          = "%lld pts";
+"hud.combo.format"          = "x%lld combo";
+"a11y.hud.score.format"     = "Score %lld points, combo %lld";
+"hud.stall"                 = "STALL";
+"mission.result.scoreFormat" = "Score: %lld";
+"mission.result.comboFormat" = "Best combo x%lld · Bullseyes %lld";
+"home.quickFly.title"       = "Fly now";
+"home.quickFly.subtitle"    = "Free flight as %@";
+"a11y.home.quickFly.hint"   = "Double-tap to start a free flight right away with your current character";

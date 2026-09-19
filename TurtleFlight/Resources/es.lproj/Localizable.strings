@@ -285,3 +285,18 @@
 "settings.sensitivity.easy.caption"   = "Zona muerta de 8°, respuesta cúbica, autonivelado suave tras 2 s. Ideal para los primeros vuelos y jugadores pequeños.";
 "settings.sensitivity.normal.caption" = "Zona muerta de 4°, respuesta cuadrática, autonivelado tras 4 s. Equilibrado: recomendado.";
 "settings.sensitivity.expert.caption" = "Zona muerta de 1,5°, respuesta lineal, sin autonivelado, con pérdida. Máximo control al máximo precio.";
+
+// MARK: - Fase 2 — precisión de aros, medidor de turbo, volar ya
+"gate.judgement.bullseye"   = "¡DIANA!";
+"gate.judgement.great"      = "GENIAL";
+"gate.judgement.ok"         = "OK";
+"gate.judgement.miss"       = "FALLO";
+"hud.score.format"          = "%lld pts";
+"hud.combo.format"          = "x%lld combo";
+"a11y.hud.score.format"     = "Puntuación %lld puntos, combo %lld";
+"hud.stall"                 = "PÉRDIDA";
+"mission.result.scoreFormat" = "Puntuación: %lld";
+"mission.result.comboFormat" = "Mejor combo x%lld · Dianas %lld";
+"home.quickFly.title"       = "Volar ya";
+"home.quickFly.subtitle"    = "Vuelo libre con %@";
+"a11y.home.quickFly.hint"   = "Pulsa dos veces para empezar un vuelo libre ahora mismo con tu personaje actual";

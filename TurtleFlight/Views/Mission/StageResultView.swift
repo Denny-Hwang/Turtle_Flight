@@ -108,6 +108,19 @@ struct StageResultView: View {
                                       result.collisions),
                     badge: nil
                 )
+                if let score = result.score {
+                    statLine(
+                        icon: "scope",
+                        text: L10n.format("mission.result.scoreFormat", score),
+                        badge: scoreBadge(for: result)
+                    )
+                    statLine(
+                        icon: "flame",
+                        text: L10n.format("mission.result.comboFormat",
+                                          result.maxCombo ?? 0, result.bullseyes ?? 0),
+                        badge: nil
+                    )
+                }
                 if let perfect = stage.starCountForPerfect, perfect > 0 {
                     statLine(
                         icon: "star",
@@ -208,6 +221,14 @@ struct StageResultView: View {
         guard result.stars >= prior.stars else { return nil }
         guard result.completionTime < prior.completionTime else { return nil }
         return L10n.t("mission.result.newBest")
+    }
+
+    /// "NEW BEST" on the score line when this run out-scored the prior
+    /// best (regardless of stars — score is its own ladder).
+    private func scoreBadge(for result: StageResult) -> String? {
+        guard let score = result.score else { return nil }
+        guard let priorScore = priorBest?.score else { return nil }
+        return score > priorScore ? L10n.t("mission.result.newBest") : nil
     }
 
     private func runEntranceAnimation() {

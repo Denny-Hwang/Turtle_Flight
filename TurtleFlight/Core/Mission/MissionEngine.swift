@@ -13,13 +13,51 @@ final class MissionEngine {
     // MARK: - Ring
     struct Ring {
         let node: SCNNode
+        /// Rest position. For `.moving` gates the live centre oscillates
+        /// around this; use `center(at:)` for the hit test.
         let position: SCNVector3
+        /// Nominal radius. `effectiveRadius(at:comboFactor:)` applies the
+        /// shrink dynamics.
         let radius: Float
         /// Unit vector the player is expected to travel along when
         /// flying through this ring. The ring's plane is perpendicular
         /// to it. Horizontal by construction (see `CourseGenerator.normals`).
         let normal: SCNVector3
+        var kind: GateKind = .standard
         var isPassed: Bool = false
+        /// Stage time at which this ring became the target. Drives the
+        /// shrinking gate's countdown. Nil until targeted.
+        var targetedAt: TimeInterval? = nil
+
+        /// Horizontal unit vector across the ring's plane (to the
+        /// player's right when flying through).
+        var sideAxis: SCNVector3 { SCNVector3(-normal.z, 0, normal.x) }
+
+        /// Live centre at stage time `t`.
+        func center(at t: TimeInterval) -> SCNVector3 {
+            guard case .moving(let axis, let amplitude, let period) = kind,
+                  period > 0 else { return position }
+            let phase = Float(t) * (2 * Float.pi) / period
+            let offset = sin(phase) * amplitude
+            switch axis {
+            case .lateral:  return position + sideAxis * offset
+            case .vertical: return SCNVector3(position.x, position.y + offset, position.z)
+            }
+        }
+
+        /// Scale factor from the shrinking dynamics at stage time `t`
+        /// (1 = nominal). Multiplied by the combo factor by the engine.
+        func shrinkScale(at t: TimeInterval) -> Float {
+            guard case .shrinking(let minScale, let duration) = kind,
+                  let since = targetedAt, duration > 0 else { return 1 }
+            let progress = Float(max(0, t - since)) / duration
+            return max(minScale, 1 - (1 - minScale) * min(progress, 1))
+        }
+
+        /// Radius the hit test uses at stage time `t`.
+        func effectiveRadius(at t: TimeInterval, comboFactor: Float) -> Float {
+            radius * shrinkScale(at: t) * comboFactor
+        }
     }
 
     /// Emitted when the player's path crosses a ring's plane. `accuracy`
@@ -73,13 +111,37 @@ final class MissionEngine {
     /// Number of near-misses (plane crossed inside the attempt window but
     /// outside the ring) during the current stage.
     private(set) var ringMisses: Int = 0
+    /// Precision score for the current attempt (Phase 2).
+    private(set) var score = RunScore()
+    /// Judgement of the most recent crossing; pairs with `crossingCount`.
+    private(set) var lastJudgement: GateJudgement?
+    /// Points the most recent crossing earned.
+    private(set) var lastPointsEarned: Int = 0
+
+    /// Per-step radius reduction while `comboShrink` is on, and its floor.
+    static let comboShrinkPerStep: Float = 0.04
+    static let comboShrinkFloor: Float = 0.6
+
+    /// Radius factor from the current combo when the stage's course has
+    /// `comboShrink` enabled; 1 otherwise.
+    var comboRadiusFactor: Float {
+        guard currentStage?.course.comboShrink == true else { return 1 }
+        return max(Self.comboShrinkFloor, 1 - Float(score.combo) * Self.comboShrinkPerStep)
+    }
+
+    /// Radius the target ring is currently judged against, or nil when no
+    /// ring is targeted. HUD / tests read this.
+    var currentEffectiveRadius: Float? {
+        guard currentRingIndex < rings.count else { return nil }
+        return rings[currentRingIndex].effectiveRadius(at: elapsedTime, comboFactor: comboRadiusFactor)
+    }
 
     /// World-space position of the ring the player is currently chasing,
     /// or nil when the stage is over (or hasn't started). Drives the
     /// objective compass arrow on `MissionHUD`.
     var currentRingPosition: SCNVector3? {
         guard currentRingIndex < rings.count else { return nil }
-        return rings[currentRingIndex].position
+        return rings[currentRingIndex].center(at: elapsedTime)
     }
 
     init(parentNode: SCNNode) {
@@ -107,6 +169,9 @@ final class MissionEngine {
         lastCrossing = nil
         crossingCount = 0
         ringMisses = 0
+        score = RunScore()
+        lastJudgement = nil
+        lastPointsEarned = 0
         state = .inProgress
 
         // Clear previous rings + decorations
@@ -119,6 +184,7 @@ final class MissionEngine {
         // air-suspended, not embedded.
         let positions = stage.generateRings()
         let normals = CourseGenerator.normals(for: positions)
+        let kinds = stage.course.gateKinds
         for (i, pos) in positions.enumerated() {
             let safePos: SCNVector3 = {
                 guard let heightFn = terrainHeightAt else { return pos }
@@ -127,14 +193,15 @@ final class MissionEngine {
                 return SCNVector3(pos.x, max(pos.y, minRingY), pos.z)
             }()
             let normal = normals[i]
-            let ringNode = createRingNode(radius: stage.ringRadius, index: i)
+            let kind = i < kinds.count ? kinds[i] : .standard
+            let ringNode = createRingNode(radius: stage.ringRadius, index: i, kind: kind)
             ringNode.position = safePos
             // Face the torus along the course direction so the plane the
             // player has to cross visually matches the plane we test.
             ringNode.eulerAngles.y = atan2(normal.x, normal.z)
             parentNode.addChildNode(ringNode)
             rings.append(Ring(node: ringNode, position: safePos,
-                              radius: stage.ringRadius, normal: normal))
+                              radius: stage.ringRadius, normal: normal, kind: kind))
 
             // Stage 4 ("Mountain Cross"): drop a low-poly mountain pillar
             // anchored to the terrain rising up to the ring's underside.
@@ -183,9 +250,14 @@ final class MissionEngine {
 
         let ring = rings[currentRingIndex]
         if let crossing = Self.crossing(of: ring, index: currentRingIndex,
-                                        from: prev, to: playerPosition) {
+                                        from: prev, to: playerPosition,
+                                        at: elapsedTime,
+                                        comboFactor: comboRadiusFactor) {
             lastCrossing = crossing
             crossingCount += 1
+            let judgement = GateScoring.judge(accuracy: crossing.accuracy)
+            lastJudgement = judgement
+            lastPointsEarned = score.register(judgement)
             if crossing.isPass {
                 passCurrentRing()
             } else {
@@ -226,9 +298,11 @@ final class MissionEngine {
     /// doesn't cross, crosses backwards, or crosses so far from the
     /// centre that it can't be read as an attempt.
     static func crossing(of ring: Ring, index: Int,
-                         from: SCNVector3, to: SCNVector3) -> RingCrossing? {
+                         from: SCNVector3, to: SCNVector3,
+                         at time: TimeInterval = 0,
+                         comboFactor: Float = 1) -> RingCrossing? {
         let n = ring.normal
-        let c = ring.position
+        let c = ring.center(at: time)
         let d0 = (from.x - c.x) * n.x + (from.y - c.y) * n.y + (from.z - c.z) * n.z
         let d1 = (to.x - c.x) * n.x + (to.y - c.y) * n.y + (to.z - c.z) * n.z
         // Forward crossing: start on the near side (d0 < 0), end on or
@@ -245,9 +319,25 @@ final class MissionEngine {
         let radialVec = SCNVector3(offset.x - n.x * along,
                                    offset.y - n.y * along,
                                    offset.z - n.z * along)
-        let radial = radialVec.length
-        guard ring.radius > 0 else { return nil }
-        let accuracy = radial / ring.radius
+        let radius = ring.effectiveRadius(at: time, comboFactor: comboFactor)
+        guard radius > 0 else { return nil }
+
+        let accuracy: Float
+        if case .tilt(let angleDegrees, let slitRatio) = ring.kind {
+            // Project the radial offset onto the ring plane's basis
+            // (side, up), rotate into the slit's frame, and measure
+            // against an ellipse with semi-axes (radius, radius × ratio).
+            let side = ring.sideAxis
+            let u = radialVec.x * side.x + radialVec.y * side.y + radialVec.z * side.z
+            let v = radialVec.y
+            let theta = angleDegrees * Float.pi / 180
+            let uR =  u * cos(theta) + v * sin(theta)
+            let vR = -u * sin(theta) + v * cos(theta)
+            let minor = max(radius * slitRatio, 0.001)
+            accuracy = sqrt((uR / radius) * (uR / radius) + (vR / minor) * (vR / minor))
+        } else {
+            accuracy = radialVec.length / radius
+        }
         guard accuracy <= missAttemptRadiusMultiplier else { return nil }
         return RingCrossing(ringIndex: index, accuracy: accuracy, hitPoint: hit)
     }
@@ -268,6 +358,9 @@ final class MissionEngine {
         lastCrossing = nil
         crossingCount = 0
         ringMisses = 0
+        score = RunScore()
+        lastJudgement = nil
+        lastPointsEarned = 0
     }
 
     // MARK: - Private Methods
@@ -285,7 +378,10 @@ final class MissionEngine {
             starsCollected: starsCollected,
             ringsCompleted: currentRingIndex,
             totalRings: rings.count,
-            date: Date()
+            date: Date(),
+            score: score.points,
+            maxCombo: score.maxCombo,
+            bullseyes: score.bullseyes
         )
 
         state = .completed(result)
@@ -379,26 +475,57 @@ final class MissionEngine {
         return node
     }
 
-    private func createRingNode(radius: Float, index: Int) -> SCNNode {
+    private func createRingNode(radius: Float, index: Int, kind: GateKind = .standard) -> SCNNode {
         let node = SCNNode()
         node.name = "ring_\(index)"
 
+        // Inner "geometry" node carries the per-kind shape (slit
+        // squash / roll); the outer node carries position, yaw and the
+        // live scale animation so the two never fight.
+        let shape = SCNNode()
+        shape.name = "ring_shape"
         let torus = SCNTorus(ringRadius: CGFloat(radius), pipeRadius: CGFloat(radius * 0.05))
         let torusNode = SCNNode(geometry: torus)
         torusNode.eulerAngles.x = .pi / 2  // Face forward
-        torus.firstMaterial?.diffuse.contents = UIColor(
-            red: 0.5, green: 0.86, blue: 1.0, alpha: 0.8
-        )
-        torus.firstMaterial?.emission.contents = UIColor(
-            red: 0.3, green: 0.6, blue: 1.0, alpha: 0.5
-        )
-        node.addChildNode(torusNode)
+        torus.firstMaterial?.diffuse.contents = Self.idleColor(for: kind)
+        torus.firstMaterial?.emission.contents = Self.idleEmission(for: kind)
+        shape.addChildNode(torusNode)
 
+        if case .tilt(let angleDegrees, let slitRatio) = kind {
+            // Squash into a slit, then roll about the course axis (local
+            // Z, since the torus faces +Z after the X rotation above).
+            shape.scale = SCNVector3(1, slitRatio, 1)
+            let roll = SCNNode()
+            roll.eulerAngles.z = -angleDegrees * Float.pi / 180
+            roll.addChildNode(shape)
+            node.addChildNode(roll)
+        } else {
+            node.addChildNode(shape)
+        }
         return node
+    }
+
+    private static func idleColor(for kind: GateKind) -> UIColor {
+        switch kind {
+        case .standard:  return UIColor(red: 0.5, green: 0.86, blue: 1.0, alpha: 0.8)
+        case .shrinking: return UIColor(red: 1.0, green: 0.55, blue: 0.75, alpha: 0.85)
+        case .tilt:      return UIColor(red: 0.75, green: 0.6, blue: 1.0, alpha: 0.85)
+        case .moving:    return UIColor(red: 0.55, green: 1.0, blue: 0.7, alpha: 0.85)
+        }
+    }
+
+    private static func idleEmission(for kind: GateKind) -> UIColor {
+        switch kind {
+        case .standard:  return UIColor(red: 0.3, green: 0.6, blue: 1.0, alpha: 0.5)
+        case .shrinking: return UIColor(red: 0.9, green: 0.3, blue: 0.55, alpha: 0.5)
+        case .tilt:      return UIColor(red: 0.55, green: 0.35, blue: 0.95, alpha: 0.5)
+        case .moving:    return UIColor(red: 0.3, green: 0.85, blue: 0.5, alpha: 0.5)
+        }
     }
 
     private func highlightRing(at index: Int) {
         guard index < rings.count else { return }
+        rings[index].targetedAt = elapsedTime
 
         // Make target ring more visible
         rings[index].node.enumerateChildNodes { node, _ in
@@ -415,9 +542,16 @@ final class MissionEngine {
 
     private func animateTargetRing() {
         guard currentRingIndex < rings.count else { return }
-        let ring = rings[currentRingIndex].node
+        let ring = rings[currentRingIndex]
         let pulse = 1.0 + sin(Float(CACurrentMediaTime()) * 3) * 0.1
-        ring.scale = SCNVector3(pulse, pulse, pulse)
+        // Visual scale tracks the *judged* radius so a shrinking gate or
+        // a combo-tightened ring looks exactly as small as it is.
+        let dynamic = ring.shrinkScale(at: elapsedTime) * comboRadiusFactor
+        let s = pulse * dynamic
+        ring.node.scale = SCNVector3(s, s, s)
+        if case .moving = ring.kind {
+            ring.node.position = ring.center(at: elapsedTime)
+        }
     }
 
     // MARK: - Info

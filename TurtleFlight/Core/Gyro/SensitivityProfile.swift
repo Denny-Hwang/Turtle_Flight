@@ -10,6 +10,9 @@ struct SensitivityProfile {
     let autoLevelDelay: Double? // seconds, nil = disabled
     let minAltitude: Double     // meters
     let stallEnabled: Bool
+    /// Phase 2 energy model: dive to gain speed, climb to lose it. Off
+    /// for Easy so first flights keep a constant airspeed.
+    let energyModelEnabled: Bool
 
     /// Apply response curve based on sensitivity level
     func applyCurve(_ value: Double) -> Double {
@@ -51,7 +54,8 @@ struct SensitivityProfile {
         pitchSpeed: 30,
         autoLevelDelay: 2.0,
         minAltitude: 50,
-        stallEnabled: false
+        stallEnabled: false,
+        energyModelEnabled: false
     )
 
     static let normal = SensitivityProfile(
@@ -63,7 +67,8 @@ struct SensitivityProfile {
         pitchSpeed: 60,
         autoLevelDelay: 4.0,
         minAltitude: 20,
-        stallEnabled: false
+        stallEnabled: false,
+        energyModelEnabled: true
     )
 
     static let expert = SensitivityProfile(
@@ -75,7 +80,8 @@ struct SensitivityProfile {
         pitchSpeed: 120,
         autoLevelDelay: nil,
         minAltitude: 5,
-        stallEnabled: true
+        stallEnabled: true,
+        energyModelEnabled: true
     )
 
     static func profile(for level: SensitivityLevel) -> SensitivityProfile {

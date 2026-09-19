@@ -287,3 +287,18 @@
 "settings.sensitivity.easy.caption"   = "8° Totzone, kubische Reaktion, sanftes Auto-Leveln nach 2 s. Ideal für erste Flüge und jüngere Spieler.";
 "settings.sensitivity.normal.caption" = "4° Totzone, quadratische Reaktion, Auto-Leveln nach 4 s. Ausgewogen — empfohlen.";
 "settings.sensitivity.expert.caption" = "1,5° Totzone, lineare Reaktion, kein Auto-Leveln, Strömungsabriss aktiv. Maximale Kontrolle zum maximalen Preis.";
+
+// MARK: - Phase 2 — Ring-Präzision, Boost-Anzeige, Sofort fliegen
+"gate.judgement.bullseye"   = "VOLLTREFFER!";
+"gate.judgement.great"      = "SUPER";
+"gate.judgement.ok"         = "OK";
+"gate.judgement.miss"       = "VORBEI";
+"hud.score.format"          = "%lld Pkt.";
+"hud.combo.format"          = "x%lld Combo";
+"a11y.hud.score.format"     = "Punkte %lld, Combo %lld";
+"hud.stall"                 = "STRÖMUNGSABRISS";
+"mission.result.scoreFormat" = "Punkte: %lld";
+"mission.result.comboFormat" = "Beste Combo x%lld · Volltreffer %lld";
+"home.quickFly.title"       = "Jetzt fliegen";
+"home.quickFly.subtitle"    = "Freier Flug mit %@";
+"a11y.home.quickFly.hint"   = "Doppeltippen, um sofort einen freien Flug mit deiner aktuellen Figur zu starten";

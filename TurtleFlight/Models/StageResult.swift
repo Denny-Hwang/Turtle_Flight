@@ -9,6 +9,13 @@ struct StageResult: Codable {
     let ringsCompleted: Int
     let totalRings: Int
     let date: Date
+    /// Gate-precision score for the run (Phase 2). Optional so saved
+    /// blobs from before scoring existed still decode; nil reads as "no
+    /// score recorded".
+    var score: Int? = nil
+    /// Longest chain of consecutive passes in the run (Phase 2).
+    var maxCombo: Int? = nil
+    var bullseyes: Int? = nil
 
     var isCompleted: Bool {
         stars > 0

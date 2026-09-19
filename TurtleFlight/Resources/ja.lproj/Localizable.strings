@@ -286,3 +286,18 @@
 "settings.sensitivity.easy.caption"   = "デッドゾーン8°、3次曲線、2秒後にゆるやかな自動水平化。初フライトや小さなお子さま向け。";
 "settings.sensitivity.normal.caption" = "デッドゾーン4°、2次曲線、4秒後に自動水平化。バランス型 — おすすめ。";
 "settings.sensitivity.expert.caption" = "デッドゾーン1.5°、線形応答、自動水平化なし、失速あり。最大の操作性と引きかえに最大の難しさ。";
+
+// MARK: - フェーズ2 — ゲート精度・ブーストゲージ・すぐ飛ぶ
+"gate.judgement.bullseye"   = "ど真ん中！";
+"gate.judgement.great"      = "グレート";
+"gate.judgement.ok"         = "OK";
+"gate.judgement.miss"       = "ミス";
+"hud.score.format"          = "%lld点";
+"hud.combo.format"          = "x%lld コンボ";
+"a11y.hud.score.format"     = "スコア%lld点、コンボ%lld";
+"hud.stall"                 = "失速";
+"mission.result.scoreFormat" = "スコア: %lld";
+"mission.result.comboFormat" = "最大コンボ x%lld · ど真ん中 %lld回";
+"home.quickFly.title"       = "すぐ飛ぶ";
+"home.quickFly.subtitle"    = "%@で自由飛行";
+"a11y.home.quickFly.hint"   = "ダブルタップで今のキャラクターですぐに自由飛行を始めます";

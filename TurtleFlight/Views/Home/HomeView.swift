@@ -20,6 +20,12 @@ struct HomeView: View {
     /// True while the SettingsView sheet is on screen. Surfaces from the
     /// gear button in the top-right.
     @State private var showSettings = false
+    /// Phase 2 "Fly now": one tap from Home straight into a Free Flight
+    /// with the last character / vehicle / theme. The previous shortest
+    /// path was four screens (Mode → Stage → Character → FLY), which is
+    /// three too many for a player who opened the app because they were
+    /// bored on the bus.
+    @State private var showQuickFlight = false
 
     /// Mirror of `AudioManager.shared.isMuted` so the home-screen mute
     /// chip can re-render its glyph each tap. Re-synced when the
@@ -111,6 +117,35 @@ struct HomeView: View {
                     // home screen never showed *who* you were going to
                     // be, only what you were going to do.
                     SelectedCharacterCameo(character: characterVM.selectedCharacter)
+
+                    // Fly now — the primary action.
+                    Button {
+                        AudioManager.shared.playButtonTap()
+                        showQuickFlight = true
+                    } label: {
+                        HStack(spacing: Theme.Spacing.s) {
+                            Image(systemName: "paperplane.fill")
+                                .font(.system(size: 20, weight: .bold))
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(L10n.t("home.quickFly.title"))
+                                    .font(Theme.Typography.button)
+                                Text(L10n.format("home.quickFly.subtitle",
+                                                 characterVM.selectedCharacter.config.name))
+                                    .font(Theme.Typography.caption)
+                                    .opacity(0.8)
+                            }
+                        }
+                        .foregroundColor(Theme.Color.textOnDark)
+                        .padding(.horizontal, Theme.Spacing.xl)
+                        .padding(.vertical, Theme.Spacing.m)
+                        .background(
+                            Capsule()
+                                .fill(Theme.Color.boostOrange)
+                                .shadow(color: Theme.Color.boostOrange.opacity(0.45), radius: 10, y: 4)
+                        )
+                    }
+                    .accessibilityLabel(L10n.t("home.quickFly.title"))
+                    .accessibilityHint(L10n.t("a11y.home.quickFly.hint"))
 
                     Spacer()
 
@@ -219,6 +254,16 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingView(onFinish: { showOnboarding = false })
+        }
+        .fullScreenCover(isPresented: $showQuickFlight) {
+            FlightView(
+                flightVM: flightVM,
+                missionVM: missionVM,
+                character: characterVM.selectedCharacter,
+                vehicle: characterVM.selectedVehicle,
+                flightMode: .freePlay,
+                mapTheme: characterVM.selectedMapTheme
+            )
         }
         .sheet(isPresented: $showSettings, onDismiss: {
             // SettingsView's Audio section may have flipped mute via its
