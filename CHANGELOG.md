@@ -9,6 +9,73 @@ window.
 
 ## [Unreleased]
 
+### Phase 1 — 기반 수리 (foundation repair)
+
+First of the four roadmap phases from the 2026-09 senior review
+("1만명 지속 사용자" plan). This phase fixes what the later phases
+build on; no new player-facing modes yet.
+
+**CI**
+- `.github/workflows/ios-tests.yml` no longer pins `Xcode_15.4.app` /
+  `iPhone 15`. Both had vanished from the hosted image, so every run
+  since Sprint 4 failed in ~20s before building. The workflow now uses
+  the image's default Xcode, picks the newest iPhone simulator at
+  runtime, and formats output with `xcbeautify`.
+
+**Bugs**
+- `PlayerProgress.totalFlightTime` and `bestFreeFlightStars` were never
+  written — the Home stats row read "Best: 0 | 00:00" forever and the
+  Free Flight "New Best!" badge compared every run against zero.
+  `MissionViewModel.recordFreeFlight(flightTime:starsCollected:)` now
+  persists both on Exit / Quit; stage clears and fails add their
+  elapsed time (`failMission(reason:elapsed:)`).
+
+**Ring passage is a plane-crossing test**
+- `MissionEngine` tracks `prevPlayerPosition` and tests the segment
+  against each ring's disc (`MissionEngine.crossing(of:index:from:to:)`).
+  A fly-by 49m beside a 50m ring no longer counts. Each crossing
+  reports `accuracy` (0 = centre, 1 = rim, >1 = miss) via
+  `lastCrossing` / `crossingCount` / `ringMisses` — the hook Phase 2's
+  BULLSEYE / GREAT / OK scoring plugs into.
+- Rings carry a `normal` and the torus node is rotated to face the
+  course direction, so what the player sees is the plane that's tested.
+- Every stage's first ring now starts one spacing ahead of the spawn
+  point instead of on top of it.
+
+**Flight loop runs on the render thread**
+- `SceneKitView.Coordinator` calls `FlightViewModel.tick(at:)`
+  synchronously from `renderer(_:updateAtTime:)`. The old
+  `DispatchQueue.main.async` hop added a frame of input latency and let
+  the rendered position lag the simulation by a frame.
+- `@Published` HUD values are collected into a `HUDFrame`, compared at
+  display granularity (whole km/h, metres, seconds, ~1° arrow buckets)
+  and applied on main at most once per render frame. Level cruise now
+  produces zero SwiftUI invalidations per second instead of ~500.
+- Haptics, audio and the mission-terminal callback route through
+  `onMain(_:)` (synchronous when already on main, so tests are unchanged).
+- The chase camera's `SCNLookAtConstraint` is created once per flight
+  instead of once per frame.
+
+**Data-driven courses**
+- `CourseSpec` (Codable) + `CourseGenerator` replace the five hard-coded
+  `sin` formulas in `StageDefinition`. Same layouts, now expressible as
+  data, seedable (`SeededRandom`, SplitMix64) and jitterable — the
+  foundation for Daily Run and Endless in Phase 3.
+
+**On-device analytics**
+- `Analytics` records funnel events (session, onboarding, flight start,
+  ring pass / miss with accuracy, stage clear / fail, free-flight end)
+  to OSLog and to three `UserDefaults` counters. **Nothing leaves the
+  device**; Reset Progress wipes them. Documented in `PRIVACY.md`.
+  Also the single source of truth for "days played" / streaks.
+
+**Tests**
+- `Tests/RingCrossingTests.swift` (20), `Tests/AnalyticsTests.swift`
+  (8), `Tests/Phase1FoundationTests.swift` (12). Ring-passage tests
+  migrated to `MissionEngine.testPass(ringIndex:)` (two-frame segment
+  through the ring) via `Tests/MissionEngineTestDrive.swift`.
+
+
 ### Added — Localization expansion + full AppIcon set
 
 Closes two long-standing follow-ups: the five backlog locales and the

@@ -1,12 +1,15 @@
 # GitHub Actions — Turtle Flight unit test suite.
 #
-# Runs every XCTest case (currently 169 across 24 files) on every PR
-# and on pushes to main. Uses XcodeGen to regenerate the .xcodeproj
-# from `project.yml` so the CI build is reproducible and contributors
-# can't drift project settings.
+# Runs every XCTest case on every PR and on pushes to main. Uses
+# XcodeGen to regenerate the .xcodeproj from `project.yml` so the CI
+# build is reproducible and contributors can't drift project settings.
 #
-# Required runner: macos-14 (provides Xcode 15.x + iOS 17 simulator).
-# Simulator: iPhone 15 — matches the 60FPS / iOS 16+ target band.
+# Runner: macos-latest. The workflow deliberately does NOT pin a
+# specific Xcode path or simulator name — GitHub rotates both on the
+# hosted images, and the previous hard-coded `Xcode_15.4.app` +
+# `iPhone 15` pair failed within 20 seconds on every run once the
+# image moved on. Instead we use whatever Xcode the image selects by
+# default and pick the newest available iPhone simulator at runtime.
 
 name: iOS Tests
 
@@ -19,7 +22,7 @@ on:
       - main
 
 # Only one CI run per branch — newer pushes cancel in-flight runs so
-# stale Stage 4 checks don't sit holding the merge queue.
+# stale checks don't sit holding the merge queue.
 concurrency:
   group: ios-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -27,74 +30,98 @@ concurrency:
 jobs:
   test:
     name: Build & test
-    runs-on: macos-14
-    timeout-minutes: 25
+    runs-on: macos-latest
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 15.4
+      - name: Show toolchain
         run: |
-          # Pin Xcode version so swift-version drift can't break the
-          # generated project file. macos-14 ships 15.4 by default but
-          # the runner image occasionally swaps it.
-          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
+          swift --version
+          xcrun simctl list runtimes
 
-      - name: Install XcodeGen + xcpretty
+      - name: Install XcodeGen + xcbeautify
         run: |
-          brew install xcodegen
-          gem install xcpretty --no-document
+          brew install xcodegen xcbeautify
 
       - name: Generate Xcode project
         run: |
           xcodegen generate
           test -d TurtleFlight.xcodeproj
 
-      - name: Resolve dependencies
+      - name: Pick simulator
+        id: sim
         run: |
-          xcodebuild -resolvePackageDependencies \
-            -project TurtleFlight.xcodeproj \
-            -scheme TurtleFlight || true
-          # `|| true` because TurtleFlight has no SwiftPM dependencies
-          # today; the resolve step is left here for forward compat so
-          # a future Algorithms/Collections add doesn't fail CI silently.
+          # Newest available iPhone runtime/device on this image. We
+          # parse `simctl list -j` so the step keeps working when the
+          # image ships a new iPhone generation.
+          DEVICE=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          data = json.load(sys.stdin)["devices"]
+          picks = []
+          for runtime, devs in data.items():
+              if "iOS" not in runtime:
+                  continue
+              for d in devs:
+                  name = d["name"]
+                  if name.startswith("iPhone") and "SE" not in name:
+                      picks.append((runtime, name))
+          picks.sort()
+          print(picks[-1][1] if picks else "iPhone 16")
+          ')
+          echo "Using simulator: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
       - name: Build
         run: |
           set -o pipefail
-          xcodebuild build \
+          mkdir -p build/reports
+          # Keep the raw log: xcbeautify's summary drops the file/line of
+          # some compiler diagnostics, and the raw log is what you need
+          # when a run fails without a local Xcode to reproduce it.
+          xcodebuild build-for-testing \
             -project TurtleFlight.xcodeproj \
             -scheme TurtleFlight \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty || (
-              echo "::error::Build failed — see Xcode log above"
-              exit 1
-            )
+            CODE_SIGNING_REQUIRED=NO \
+            2>&1 | tee build/reports/xcodebuild-build.log | xcbeautify --renderer github-actions
+
+      - name: Show compiler errors (raw)
+        if: failure()
+        run: |
+          grep -n -E "error:|warning: unre" build/reports/xcodebuild-build.log | head -80 || true
 
       - name: Run tests
         run: |
           set -o pipefail
-          xcodebuild test \
+          xcodebuild test-without-building \
             -project TurtleFlight.xcodeproj \
             -scheme TurtleFlight \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -configuration Debug \
-            -enableCodeCoverage YES \
+            -resultBundlePath build/reports/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty --report junit --output build/reports/junit.xml || (
-              echo "::error::One or more XCTest cases failed"
-              exit 1
-            )
+            CODE_SIGNING_REQUIRED=NO \
+            2>&1 | tee build/reports/xcodebuild-test.log | xcbeautify --renderer github-actions --report junit --report-path build/reports
+
+      - name: Show test failures (raw)
+        if: failure()
+        run: |
+          grep -n -E "error:|failed|Failing tests" build/reports/xcodebuild-test.log | head -120 || true
 
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: junit-report
-          path: build/reports/junit.xml
+          name: test-report
+          # JUnit + raw logs only; the .xcresult bundle is ~50 MB.
+          path: |
+            build/reports/*.xml
+            build/reports/*.log
           if-no-files-found: warn
           retention-days: 14

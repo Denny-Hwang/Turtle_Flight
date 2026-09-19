@@ -7,7 +7,6 @@ struct StageDefinition {
     let koreanName: String
     let difficulty: Int        // 1-5 stars
     let description: String
-    let ringCount: Int
     let ringRadius: Float
     let timeLimit: TimeInterval?  // nil = no limit
     let star3Time: TimeInterval?  // complete within this for 3 stars
@@ -15,6 +14,13 @@ struct StageDefinition {
     let star3Condition: String
     let star2Condition: String
     let learningGoal: String
+    /// Declarative ring layout. `generateRings()` is a pure function of
+    /// this value, so the same spec always yields the same course.
+    let course: CourseSpec
+
+    /// Number of rings in the course. Derived from `course` so the two
+    /// can never disagree.
+    var ringCount: Int { course.count }
 
     /// Localized stage name shown in the HUD. Looks up `stage.<index>.name`
     /// in Localizable.strings; falls back to the legacy `koreanName` if a
@@ -43,88 +49,20 @@ struct StageDefinition {
         return localized == key ? star3Condition : localized
     }
 
-    /// Generate ring positions for this stage
+    /// Generate ring positions for this stage.
     func generateRings() -> [SCNVector3] {
-        switch index {
-        case 0: return generateSkyWalkRings()
-        case 1: return generateCloudMazeRings()
-        case 2: return generateValleyRunRings()
-        case 3: return generateMountainCrossRings()
-        case 4: return generateSkyRaceRings()
-        default: return []
-        }
-    }
-
-    // MARK: - Ring Generators
-
-    private func generateSkyWalkRings() -> [SCNVector3] {
-        // Stage 1: Simple straight-ish path, 10 rings
-        var rings: [SCNVector3] = []
-        for i in 0..<10 {
-            let angle = Float(i) * 0.3
-            let x = sin(angle) * 100
-            let z = Float(i) * -150
-            let y = Float(400 + i * 20)
-            rings.append(SCNVector3(x, y, z))
-        }
-        return rings
-    }
-
-    private func generateCloudMazeRings() -> [SCNVector3] {
-        // Stage 2: Weaving path, 5 checkpoints
-        var rings: [SCNVector3] = []
-        for i in 0..<5 {
-            let x = Float(i % 2 == 0 ? -80 : 80)
-            let z = Float(i) * -200
-            let y: Float = 500
-            rings.append(SCNVector3(x, y, z))
-        }
-        return rings
-    }
-
-    private func generateValleyRunRings() -> [SCNVector3] {
-        // Stage 3: S-curve low flight
-        var rings: [SCNVector3] = []
-        for i in 0..<8 {
-            let angle = Float(i) * 0.8
-            let x = sin(angle) * 120
-            let z = Float(i) * -180
-            let y: Float = 150 + sin(angle * 0.5) * 50
-            rings.append(SCNVector3(x, y, z))
-        }
-        return rings
-    }
-
-    private func generateMountainCrossRings() -> [SCNVector3] {
-        // Stage 4: Mountain peaks, 7 rings at varying heights
-        var rings: [SCNVector3] = []
-        for i in 0..<7 {
-            let angle = Float(i) * 0.9
-            let x = sin(angle) * 80
-            let z = Float(i) * -200
-            let y = Float(600 + (i % 3) * 200) // Alternating heights
-            rings.append(SCNVector3(x, y, z))
-        }
-        return rings
-    }
-
-    private func generateSkyRaceRings() -> [SCNVector3] {
-        // Stage 5: Tight race course, 20 rings
-        var rings: [SCNVector3] = []
-        for i in 0..<20 {
-            let angle = Float(i) * 0.5
-            let x = sin(angle) * 60 + cos(angle * 0.7) * 40
-            let z = Float(i) * -120
-            let y = Float(400) + sin(angle * 1.5) * 100
-            rings.append(SCNVector3(x, y, z))
-        }
-        return rings
+        CourseGenerator.generate(course)
     }
 }
 
 // MARK: - Stage Presets
 
 extension StageDefinition {
+    /// The five campaign courses. Each `CourseSpec` reproduces the
+    /// original hand-tuned formula, shifted one `spacing` ahead of the
+    /// spawn point so the first ring is never behind (or on top of) the
+    /// player on frame one — which matters now that ring passage is a
+    /// plane-crossing test rather than a sphere-distance check.
     static let allStages: [StageDefinition] = [
         StageDefinition(
             index: 0,
@@ -132,14 +70,18 @@ extension StageDefinition {
             koreanName: "하늘 산책",
             difficulty: 1,
             description: "링 10개 순서대로 통과",
-            ringCount: 10,
             ringRadius: 50,
             timeLimit: nil,
             star3Time: 60,
             starCountForPerfect: nil,
             star3Condition: "60초 이내 완료",
             star2Condition: "완료",
-            learningGoal: "기본 좌우/상하 조종"
+            learningGoal: "기본 좌우/상하 조종",
+            course: CourseSpec(
+                pattern: .weave, count: 10, spacing: 150, startZ: -150,
+                lateralAmplitude: 100, angleStep: 0.3,
+                baseAltitude: 400, altitudeAmplitude: 20
+            )
         ),
         StageDefinition(
             index: 1,
@@ -147,14 +89,18 @@ extension StageDefinition {
             koreanName: "구름 미로",
             difficulty: 2,
             description: "구름 기둥 사이 경로 비행, 체크포인트 5개",
-            ringCount: 5,
             ringRadius: 40,
             timeLimit: 180,
             star3Time: 90,
             starCountForPerfect: nil,
             star3Condition: "접촉 0회 + 90초 이내",
             star2Condition: "완료",
-            learningGoal: "고도 유지 + 좌우 미세 조정"
+            learningGoal: "고도 유지 + 좌우 미세 조정",
+            course: CourseSpec(
+                pattern: .zigzag, count: 5, spacing: 200, startZ: -200,
+                lateralAmplitude: 80, angleStep: 0,
+                baseAltitude: 500, altitudeAmplitude: 0
+            )
         ),
         StageDefinition(
             index: 2,
@@ -162,21 +108,22 @@ extension StageDefinition {
             koreanName: "계곡 비행",
             difficulty: 3,
             description: "구불구불한 계곡 저공비행",
-            ringCount: 8,
             ringRadius: 35,
             timeLimit: 180,
             // Stage 3 introduces the new "collect every star" mechanic.
             // Adding an explicit star3Time (150s) gives players a second
             // legible path to the third star — they can earn ★★★ either
-            // by sweeping the field clean OR by clearing in 150s. The
-            // original design dropped star3Time entirely here, which
-            // made the difficulty cliff vs. Stage 2 (where 90s with
-            // zero collisions was the only path) feel arbitrary.
+            // by sweeping the field clean OR by clearing in 150s.
             star3Time: 150,
             starCountForPerfect: 5,
             star3Condition: "접촉 0회 + 별 5개 전체 수집 또는 150초 이내",
             star2Condition: "완료",
-            learningGoal: "연속 S자 비행"
+            learningGoal: "연속 S자 비행",
+            course: CourseSpec(
+                pattern: .sCurve, count: 8, spacing: 180, startZ: -180,
+                lateralAmplitude: 120, angleStep: 0.8,
+                baseAltitude: 150, altitudeAmplitude: 50
+            )
         ),
         StageDefinition(
             index: 3,
@@ -184,19 +131,20 @@ extension StageDefinition {
             koreanName: "산맥 넘기",
             difficulty: 4,
             description: "산봉우리 7개의 정상 링 통과",
-            ringCount: 7,
             ringRadius: 25,
-            // Bumped time pressure: 150→140s timeLimit, 120→110s
-            // star3Time. Stage 5 used to crash from 120→80s star3 in
-            // one jump; nudging Stage 4 down a touch makes the ramp
-            // 110 → 90 instead of 120 → 80, which reads as a curve
-            // rather than a wall.
+            // 140s limit / 110s star3 keeps the Stage 4 → 5 ramp at
+            // 110 → 90 rather than the old 120 → 80 wall.
             timeLimit: 140,
             star3Time: 110,
             starCountForPerfect: nil,
             star3Condition: "전체 통과 + 110초 이내",
             star2Condition: "완료",
-            learningGoal: "급격한 피치 전환 + 부스터 타이밍"
+            learningGoal: "급격한 피치 전환 + 부스터 타이밍",
+            course: CourseSpec(
+                pattern: .peaks, count: 7, spacing: 200, startZ: -200,
+                lateralAmplitude: 80, angleStep: 0.9,
+                baseAltitude: 600, altitudeAmplitude: 200
+            )
         ),
         StageDefinition(
             index: 4,
@@ -204,19 +152,20 @@ extension StageDefinition {
             koreanName: "스카이 레이스",
             difficulty: 5,
             description: "에어 레이스 코스 완주 (링 20개 + S자 + 급선회)",
-            ringCount: 20,
             ringRadius: 15,
-            // 80s star3 was punishing — that's 4s per ring on a 20-ring
-            // course full of sharp turns. 90s is still tight (4.5s/ring)
-            // but leaves a margin for one mid-course recovery, which
-            // playtesters wanted to feel as "earned hard" rather than
-            // "impossible." Time limit unchanged at 120s.
+            // 90s star3 is tight (4.5s/ring) but leaves room for one
+            // mid-course recovery. Time limit 120s.
             timeLimit: 120,
             star3Time: 90,
             starCountForPerfect: nil,
             star3Condition: "전체 통과 + 90초 이내 + 접촉 0회",
             star2Condition: "완료",
-            learningGoal: "종합 기동"
+            learningGoal: "종합 기동",
+            course: CourseSpec(
+                pattern: .race, count: 20, spacing: 120, startZ: -120,
+                lateralAmplitude: 60, angleStep: 0.5,
+                baseAltitude: 400, altitudeAmplitude: 100
+            )
         )
     ]
 }

@@ -9,6 +9,9 @@ struct TurtleFlightApp: App {
         // payload after install lands. See Core/Observability/
         // MetricsCollector.swift for the rationale + privacy notes.
         MetricsCollector.shared.register()
+        // On-device funnel counters (no network). Records today as a
+        // play day and bumps the session count — see Analytics.swift.
+        Analytics.shared.markSessionStart()
     }
 
     var body: some Scene {

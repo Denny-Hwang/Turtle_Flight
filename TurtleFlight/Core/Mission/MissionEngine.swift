@@ -15,8 +15,37 @@ final class MissionEngine {
         let node: SCNNode
         let position: SCNVector3
         let radius: Float
+        /// Unit vector the player is expected to travel along when
+        /// flying through this ring. The ring's plane is perpendicular
+        /// to it. Horizontal by construction (see `CourseGenerator.normals`).
+        let normal: SCNVector3
         var isPassed: Bool = false
     }
+
+    /// Emitted when the player's path crosses a ring's plane. `accuracy`
+    /// is the radial distance from the ring centre at the crossing point,
+    /// normalised by the ring radius: 0 = dead centre, 1 = the rim,
+    /// > 1 = crossed the plane *outside* the ring (a miss).
+    struct RingCrossing: Equatable {
+        let ringIndex: Int
+        let accuracy: Float
+        let hitPoint: SCNVector3
+        var isPass: Bool { accuracy <= 1 }
+
+        static func == (lhs: RingCrossing, rhs: RingCrossing) -> Bool {
+            lhs.ringIndex == rhs.ringIndex
+                && lhs.accuracy == rhs.accuracy
+                && lhs.hitPoint.x == rhs.hitPoint.x
+                && lhs.hitPoint.y == rhs.hitPoint.y
+                && lhs.hitPoint.z == rhs.hitPoint.z
+        }
+    }
+
+    /// A crossing outside the ring only counts as a *miss* (rather than
+    /// "flew somewhere else entirely") when it lands within this many
+    /// radii of the centre. Beyond that the player wasn't attempting the
+    /// ring and shouldn't be penalised for it.
+    static let missAttemptRadiusMultiplier: Float = 3
 
     // MARK: - Properties
     private(set) var state: MissionState = .notStarted
@@ -31,6 +60,19 @@ final class MissionEngine {
     /// tear them down without scanning the scene graph.
     private(set) var decorations: [SCNNode] = []
     private let parentNode: SCNNode
+
+    /// Player position from the previous `update` call. Plane-crossing
+    /// needs a segment, not a point; nil until the first frame of a stage.
+    private var prevPlayerPosition: SCNVector3?
+    /// Most recent plane crossing of the *target* ring (pass or miss).
+    /// Consumers edge-detect on this (compare to what they last saw).
+    private(set) var lastCrossing: RingCrossing?
+    /// Monotonic counter of crossings so a consumer can cheaply detect a
+    /// new event even when two crossings produce identical payloads.
+    private(set) var crossingCount: Int = 0
+    /// Number of near-misses (plane crossed inside the attempt window but
+    /// outside the ring) during the current stage.
+    private(set) var ringMisses: Int = 0
 
     /// World-space position of the ring the player is currently chasing,
     /// or nil when the stage is over (or hasn't started). Drives the
@@ -61,6 +103,10 @@ final class MissionEngine {
         elapsedTime = 0
         collisions = 0
         starsCollected = 0
+        prevPlayerPosition = nil
+        lastCrossing = nil
+        crossingCount = 0
+        ringMisses = 0
         state = .inProgress
 
         // Clear previous rings + decorations
@@ -72,6 +118,7 @@ final class MissionEngine {
         // terrain *as they pass through* — we want the ring to read as
         // air-suspended, not embedded.
         let positions = stage.generateRings()
+        let normals = CourseGenerator.normals(for: positions)
         for (i, pos) in positions.enumerated() {
             let safePos: SCNVector3 = {
                 guard let heightFn = terrainHeightAt else { return pos }
@@ -79,10 +126,15 @@ final class MissionEngine {
                 let minRingY = groundY + stage.ringRadius + 20
                 return SCNVector3(pos.x, max(pos.y, minRingY), pos.z)
             }()
+            let normal = normals[i]
             let ringNode = createRingNode(radius: stage.ringRadius, index: i)
             ringNode.position = safePos
+            // Face the torus along the course direction so the plane the
+            // player has to cross visually matches the plane we test.
+            ringNode.eulerAngles.y = atan2(normal.x, normal.z)
             parentNode.addChildNode(ringNode)
-            rings.append(Ring(node: ringNode, position: safePos, radius: stage.ringRadius))
+            rings.append(Ring(node: ringNode, position: safePos,
+                              radius: stage.ringRadius, normal: normal))
 
             // Stage 4 ("Mountain Cross"): drop a low-poly mountain pillar
             // anchored to the terrain rising up to the ring's underside.
@@ -117,32 +169,87 @@ final class MissionEngine {
         // Check ring passage
         guard currentRingIndex < rings.count else { return }
 
+        // Plane-crossing test against the segment prev → current. The
+        // old sphere-distance check counted a pass whenever the player
+        // came within `radius` of the centre, which let a fly-by 49m to
+        // the *side* of a 50m ring succeed. Now the player's path has to
+        // actually pierce the disc.
+        let previous = prevPlayerPosition
+        prevPlayerPosition = playerPosition
+        guard let prev = previous else {
+            animateTargetRing()
+            return
+        }
+
         let ring = rings[currentRingIndex]
-        let distance = (ring.position - playerPosition).length
-
-        if distance < ring.radius {
-            rings[currentRingIndex].isPassed = true
-
-            // Ring pass animation
-            let scaleUp = SCNAction.scale(to: 1.5, duration: 0.2)
-            let fadeOut = SCNAction.fadeOut(duration: 0.3)
-            ring.node.runAction(.sequence([scaleUp, fadeOut]))
-
-            currentRingIndex += 1
-
-            // Highlight next ring
-            if currentRingIndex < rings.count {
-                highlightRing(at: currentRingIndex)
-            }
-
-            // Check completion
-            if currentRingIndex >= rings.count {
-                completeStage()
+        if let crossing = Self.crossing(of: ring, index: currentRingIndex,
+                                        from: prev, to: playerPosition) {
+            lastCrossing = crossing
+            crossingCount += 1
+            if crossing.isPass {
+                passCurrentRing()
+            } else {
+                ringMisses += 1
             }
         }
 
         // Animate current target ring
         animateTargetRing()
+    }
+
+    /// Advance past the current target ring: play the pass animation,
+    /// highlight the next ring, and complete the stage if it was the last.
+    private func passCurrentRing() {
+        let ring = rings[currentRingIndex]
+        rings[currentRingIndex].isPassed = true
+
+        // Ring pass animation
+        let scaleUp = SCNAction.scale(to: 1.5, duration: 0.2)
+        let fadeOut = SCNAction.fadeOut(duration: 0.3)
+        ring.node.runAction(.sequence([scaleUp, fadeOut]))
+
+        currentRingIndex += 1
+
+        // Highlight next ring
+        if currentRingIndex < rings.count {
+            highlightRing(at: currentRingIndex)
+        }
+
+        // Check completion
+        if currentRingIndex >= rings.count {
+            completeStage()
+        }
+    }
+
+    /// Pure geometry: does the segment `from → to` cross the ring's plane
+    /// in the forward direction, and where? Returns nil when the segment
+    /// doesn't cross, crosses backwards, or crosses so far from the
+    /// centre that it can't be read as an attempt.
+    static func crossing(of ring: Ring, index: Int,
+                         from: SCNVector3, to: SCNVector3) -> RingCrossing? {
+        let n = ring.normal
+        let c = ring.position
+        let d0 = (from.x - c.x) * n.x + (from.y - c.y) * n.y + (from.z - c.z) * n.z
+        let d1 = (to.x - c.x) * n.x + (to.y - c.y) * n.y + (to.z - c.z) * n.z
+        // Forward crossing: start on the near side (d0 < 0), end on or
+        // past the plane (d1 >= 0). A point exactly on the plane at the
+        // start is treated as "already through".
+        guard d0 < 0, d1 >= 0 else { return nil }
+        let span = d1 - d0
+        let t: Float = span > 0 ? (-d0 / span) : 0
+        let hit = SCNVector3(from.x + (to.x - from.x) * t,
+                             from.y + (to.y - from.y) * t,
+                             from.z + (to.z - from.z) * t)
+        let offset = hit - c
+        let along = offset.x * n.x + offset.y * n.y + offset.z * n.z
+        let radialVec = SCNVector3(offset.x - n.x * along,
+                                   offset.y - n.y * along,
+                                   offset.z - n.z * along)
+        let radial = radialVec.length
+        guard ring.radius > 0 else { return nil }
+        let accuracy = radial / ring.radius
+        guard accuracy <= missAttemptRadiusMultiplier else { return nil }
+        return RingCrossing(ringIndex: index, accuracy: accuracy, hitPoint: hit)
     }
 
     func registerCollision() {
@@ -157,6 +264,10 @@ final class MissionEngine {
         clearRings()
         state = .notStarted
         currentStage = nil
+        prevPlayerPosition = nil
+        lastCrossing = nil
+        crossingCount = 0
+        ringMisses = 0
     }
 
     // MARK: - Private Methods

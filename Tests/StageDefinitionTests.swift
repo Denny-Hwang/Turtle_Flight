@@ -173,10 +173,7 @@ final class StageDefinitionTests: XCTestCase {
         for _ in 0..<5 { engine.registerCollision() }
 
         // Complete all rings
-        for i in 0..<stage.ringCount {
-            let ringPos = engine.rings[i].position
-            engine.update(deltaTime: 0.016, playerPosition: ringPos)
-        }
+        engine.testPassAllRings()
 
         if case .completed(let result) = engine.state {
             XCTAssertEqual(result.stars, 1, "5 collisions = 1 star")
@@ -195,9 +192,7 @@ final class StageDefinitionTests: XCTestCase {
         engine.registerCollision()
         engine.registerCollision()
 
-        for i in 0..<stage.ringCount {
-            engine.update(deltaTime: 0.016, playerPosition: engine.rings[i].position)
-        }
+        engine.testPassAllRings()
 
         if case .completed(let result) = engine.state {
             // 2 collisions → 2 stars (no time pressure since fast)
@@ -216,10 +211,12 @@ final class StageDefinitionTests: XCTestCase {
         // Collect only 4 stars (need 5 for 3-star)
         for _ in 0..<4 { engine.registerStarCollected() }
 
+        // Valley Run also grants ★★★ for a sub-150s clear, so burn past
+        // that window first (limit is 180s) to isolate the star rule.
+        engine.update(deltaTime: 151, playerPosition: SCNVector3(999, 999, 999))
+
         // Complete with no collisions
-        for i in 0..<stage.ringCount {
-            engine.update(deltaTime: 0.016, playerPosition: engine.rings[i].position)
-        }
+        engine.testPassAllRings()
 
         if case .completed(let result) = engine.state {
             // No collisions but only 4 stars → should be 2 stars max
@@ -239,9 +236,7 @@ final class StageDefinitionTests: XCTestCase {
         // Collect all 5 stars with 0 collisions
         for _ in 0..<5 { engine.registerStarCollected() }
 
-        for i in 0..<stage.ringCount {
-            engine.update(deltaTime: 0.016, playerPosition: engine.rings[i].position)
-        }
+        engine.testPassAllRings()
 
         if case .completed(let result) = engine.state {
             XCTAssertEqual(result.stars, 3,

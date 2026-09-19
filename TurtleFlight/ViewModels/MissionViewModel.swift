@@ -78,6 +78,13 @@ final class MissionViewModel: ObservableObject {
         priorBestForLastResult = progress.stageResults[result.stageIndex]
         lastResult = result
         progress.updateStageResult(result)
+        progress.totalFlightTime += result.completionTime
+        Analytics.shared.track(.stageCompleted, [
+            "stage": result.stageIndex,
+            "stars": result.stars,
+            "time": Int(result.completionTime),
+            "collisions": result.collisions
+        ])
         // Auto-promote the cosmetic trail tier if this clear crossed a
         // new star milestone. The next flight visually rewards the
         // achievement without the player having to discover Settings.
@@ -94,9 +101,41 @@ final class MissionViewModel: ObservableObject {
         save()
     }
 
-    func failMission(reason: String) {
+    /// `elapsed` is the mission time spent before failing; it still
+    /// counts toward the lifetime flight-time stat.
+    func failMission(reason: String, elapsed: TimeInterval = 0) {
         missionState = .failed(reason)
+        if elapsed > 0 {
+            progress.totalFlightTime += elapsed
+            save()
+        }
+        Analytics.shared.track(.stageFailed, [
+            "stage": currentStageIndex,
+            "reason": reason,
+            "time": Int(elapsed)
+        ])
         AudioManager.shared.playStageFail()
+    }
+
+    /// Persist a finished Free Flight run. Returns true when the run set
+    /// a new best star count — callers capture this *before* the blob is
+    /// updated so the result screen can badge it. Until Phase 1 nothing
+    /// ever wrote `totalFlightTime` / `bestFreeFlightStars`, so the Home
+    /// stats row was permanently "Best: 0 | 00:00".
+    @discardableResult
+    func recordFreeFlight(flightTime: TimeInterval, starsCollected: Int) -> Bool {
+        let isNewBest = starsCollected > progress.bestFreeFlightStars
+        if isNewBest {
+            progress.bestFreeFlightStars = starsCollected
+        }
+        progress.totalFlightTime += max(0, flightTime)
+        Analytics.shared.track(.freeFlightEnded, [
+            "time": Int(flightTime),
+            "stars": starsCollected,
+            "newBest": isNewBest
+        ])
+        save()
+        return isNewBest
     }
 
     func returnToSelect() {

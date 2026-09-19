@@ -167,8 +167,7 @@ final class Sprint1PolishTests: XCTestCase {
         let stage = StageDefinition.allStages[0]
         engine.startStage(stage)
 
-        let firstRing = engine.rings[0].position
-        engine.update(deltaTime: 0.016, playerPosition: firstRing)
+        engine.testPass(ringIndex: 0)
 
         XCTAssertEqual(engine.currentRingPosition!.x,
                        engine.rings[1].position.x, accuracy: 0.001)
@@ -179,9 +178,7 @@ final class Sprint1PolishTests: XCTestCase {
         let engine = MissionEngine(parentNode: scene.rootNode)
         let stage = StageDefinition.allStages[0]
         engine.startStage(stage)
-        for ring in engine.rings {
-            engine.update(deltaTime: 0.016, playerPosition: ring.position)
-        }
+        engine.testPassAllRings()
         XCTAssertNil(engine.currentRingPosition,
                      "currentRingPosition should be nil once the run is complete")
     }

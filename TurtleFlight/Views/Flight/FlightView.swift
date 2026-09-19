@@ -12,33 +12,20 @@ struct FlightView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var scene = SCNScene()
-    @State private var lastUpdateTime: TimeInterval = 0
     @State private var showGyroAlert = false
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
     @State private var showFreeFlightResult = false
+    /// Captured when the Free Flight run is recorded, *before* the
+    /// progress blob absorbs the new best — otherwise the result view
+    /// would compare the run against itself and never show "New Best".
+    @State private var freeFlightWasNewBest = false
 
     var body: some View {
         ZStack {
-            SceneKitView(
-                scene: scene,
-                flightVM: flightVM,
-                onUpdate: { time in
-                    // Skip the very first frame: with no prior timestamp, any
-                    // assumed delta either stutters (too small) or pops the
-                    // camera (too large). Establish the baseline and bail.
-                    guard lastUpdateTime != 0 else {
-                        lastUpdateTime = time
-                        return
-                    }
-                    let delta = Float(time - lastUpdateTime)
-                    lastUpdateTime = time
-                    // Clamp for tab-switch / debugger pause spikes.
-                    flightVM.update(deltaTime: min(delta, 0.05))
-                }
-            )
-            .ignoresSafeArea()
+            SceneKitView(scene: scene, flightVM: flightVM)
+                .ignoresSafeArea()
 
             HUDOverlay(flightVM: flightVM)
 
@@ -62,6 +49,7 @@ struct FlightView: View {
                     // already have surfaced if they completed it.
                     if flightMode == .freePlay {
                         flightVM.pauseFlight()       // freeze numerics for the summary
+                        recordFreeFlightRun()
                         showFreeFlightResult = true
                     } else {
                         flightVM.stopFlight()
@@ -82,7 +70,7 @@ struct FlightView: View {
                 FreeFlightResultView(
                     flightTime: flightVM.flightTime,
                     starsCollected: flightVM.starsCollected,
-                    isNewBestStars: flightVM.starsCollected > missionVM.progress.bestFreeFlightStars,
+                    isNewBestStars: freeFlightWasNewBest,
                     onHome: {
                         flightVM.stopFlight()
                         dismiss()
@@ -115,6 +103,9 @@ struct FlightView: View {
                         }
                     },
                     onQuit: {
+                        if flightMode == .freePlay {
+                            recordFreeFlightRun()
+                        }
                         flightVM.stopFlight()
                         dismiss()
                     },
@@ -147,7 +138,6 @@ struct FlightView: View {
                 if flightVM.isFlying {
                     flightVM.pauseFlight()
                 }
-                lastUpdateTime = 0
             case .active:
                 // Stay paused — user must tap Resume. If the user never
                 // paused (e.g. control center swipe-up), we still wait for
@@ -234,6 +224,20 @@ struct FlightView: View {
         }
     }
 
+    // MARK: - Free Flight bookkeeping
+
+    /// Persist the Free Flight run (flight time + best star count) once.
+    /// Guarded so Exit → result → Home doesn't double count.
+    private func recordFreeFlightRun() {
+        guard !showFreeFlightResult else { return }
+        // Engine time is exact; the published `flightTime` mirror is
+        // display-granular (whole seconds).
+        freeFlightWasNewBest = missionVM.recordFreeFlight(
+            flightTime: flightVM.flightEngine.state.flightTime,
+            starsCollected: flightVM.starsCollected
+        )
+    }
+
     // MARK: - Scene Setup
 
     private func setupScene() {
@@ -243,12 +247,13 @@ struct FlightView: View {
         // next stage unlocks. Without this bridge the engine ends the
         // mission internally but no visible UI ever changes — the player
         // is left flying forever after clearing all rings.
-        flightVM.onMissionTerminalState = { [missionVM] state in
+        flightVM.onMissionTerminalState = { [missionVM, weak flightVM] state in
             switch state {
             case .completed(let result):
                 missionVM.completeMission(result: result)
             case .failed(let reason):
-                missionVM.failMission(reason: reason)
+                missionVM.failMission(reason: reason,
+                                      elapsed: flightVM?.missionEngine?.elapsedTime ?? 0)
             case .notStarted, .inProgress:
                 break
             }
@@ -375,7 +380,7 @@ struct FlightView: View {
         rays.light?.spotInnerAngle = 20
         rays.light?.spotOuterAngle = 60
         rays.position = SCNVector3(0, 1500, 0)
-        rays.eulerAngles = SCNVector3(-.pi / 2, 0, 0)
+        rays.eulerAngles = SCNVector3(-Float.pi / 2, 0, 0)
         scene.rootNode.addChildNode(rays)
     }
 }
@@ -385,10 +390,9 @@ struct FlightView: View {
 struct SceneKitView: UIViewRepresentable {
     let scene: SCNScene
     let flightVM: FlightViewModel
-    let onUpdate: (TimeInterval) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onUpdate: onUpdate, flightVM: flightVM)
+        Coordinator(flightVM: flightVM)
     }
 
     func makeUIView(context: Context) -> SCNView {
@@ -416,19 +420,19 @@ struct SceneKitView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
     class Coordinator: NSObject, SCNSceneRendererDelegate {
-        var onUpdate: ((TimeInterval) -> Void)?
         let flightVM: FlightViewModel
 
-        init(onUpdate: @escaping (TimeInterval) -> Void,
-             flightVM: FlightViewModel) {
-            self.onUpdate = onUpdate
+        init(flightVM: FlightViewModel) {
             self.flightVM = flightVM
         }
 
+        /// Called by SceneKit on its render thread before each frame.
+        /// The simulation runs *here*, synchronously — see the threading
+        /// notes on `FlightViewModel`. The previous `DispatchQueue.main
+        /// .async` hop delayed every input by a frame and let the
+        /// rendered position lag the simulation.
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-            DispatchQueue.main.async { [weak self] in
-                self?.onUpdate?(time)
-            }
+            flightVM.tick(at: time)
         }
 
         /// Pan-gesture → fallback input. Only fires meaningful samples
