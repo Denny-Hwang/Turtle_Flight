@@ -97,9 +97,7 @@ final class MissionTerminalBridgeTests: XCTestCase {
         XCTAssertEqual(observed.count, 0)
 
         // Drive the engine through every ring so it flips to .completed.
-        for ring in engine.rings {
-            engine.update(deltaTime: 0.016, playerPosition: ring.position)
-        }
+        engine.testPassAllRings()
         if case .completed = engine.state {
             // expected
         } else {
@@ -194,9 +192,7 @@ final class MissionTerminalBridgeTests: XCTestCase {
         XCTAssertNil(missionVM.progress.stageResults[0])
 
         // Pass all rings → engine completes → bridge fires.
-        for ring in engine.rings {
-            engine.update(deltaTime: 0.016, playerPosition: ring.position)
-        }
+        engine.testPassAllRings()
         flightVM.update(deltaTime: 0.016)
 
         // Post-condition: result was persisted, missionState is .completed,

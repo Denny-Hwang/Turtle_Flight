@@ -310,6 +310,9 @@ struct SettingsView: View {
         missionVM.lastResult = nil
         missionVM.priorBestForLastResult = nil
         missionVM.currentStageIndex = 0
+        // On-device funnel counters are part of "everything the app
+        // stores" — wipe them too.
+        Analytics.shared.reset()
         // Banner stays visible briefly so the destructive action reads
         // as confirmed rather than silently working.
         withAnimation(.easeInOut) { resetSuccess = true }

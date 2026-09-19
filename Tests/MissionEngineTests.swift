@@ -57,9 +57,8 @@ final class MissionEngineTests: XCTestCase {
         let stage = StageDefinition.allStages[0] // Sky Walk
         engine.startStage(stage)
 
-        // Move player to first ring position
-        let firstRingPos = engine.rings[0].position
-        engine.update(deltaTime: 0.016, playerPosition: firstRingPos)
+        // Fly straight through the first ring
+        engine.testPass(ringIndex: 0)
 
         XCTAssertEqual(engine.currentRingIndex, 1)
     }
@@ -91,8 +90,7 @@ final class MissionEngineTests: XCTestCase {
     func testProgressTextUpdatesAfterRingPass() {
         let stage = StageDefinition.allStages[0]
         engine.startStage(stage)
-        let firstRingPos = engine.rings[0].position
-        engine.update(deltaTime: 0.016, playerPosition: firstRingPos)
+        engine.testPass(ringIndex: 0)
         XCTAssertTrue(engine.progressText.contains("1/\(stage.ringCount)"),
                       "Progress text should show '1/N' after passing first ring, got: \(engine.progressText)")
     }

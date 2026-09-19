@@ -128,9 +128,7 @@ final class CollisionDetectionTests: XCTestCase {
         engine.registerCollision()
 
         // Pass all rings within the 3-star time window.
-        for ring in engine.rings {
-            engine.update(deltaTime: 0.016, playerPosition: ring.position)
-        }
+        engine.testPassAllRings()
         if case .completed(let result) = engine.state {
             XCTAssertEqual(result.stars, 1,
                            "3+ collisions should cap stars at 1 even on a fast clear")

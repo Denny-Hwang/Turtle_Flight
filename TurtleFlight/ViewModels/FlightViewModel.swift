@@ -4,21 +4,29 @@ import AVFoundation
 import Combine
 import UIKit
 
-/// THREADING INVARIANT — read before touching this type.
+/// THREADING MODEL — read before touching this type.
 ///
-/// Every public method here is expected to be called on the main thread:
-///   • SwiftUI view bodies (HUDOverlay, FlightView) drive most calls and
-///     are @MainActor by virtue of SwiftUI's actor model.
-///   • The SCNView render delegate (`SceneKitView.Coordinator`) hops to
-///     `DispatchQueue.main.async` before forwarding the frame tick to
-///     `update(deltaTime:)`, so the per-frame path is also on main.
-///   • `GyroController` is `@MainActor` and its callbacks fire on `.main`.
-///
-/// We hold off on marking the whole class `@MainActor` to keep the diff
-/// surface small for the v1.0 launch — the chain of changes would cascade
-/// into the SCNView Coordinator and several test fixtures. The invariant
-/// above is the contract; Swift 6 strict-concurrency adoption is a v1.1
-/// follow-up tracked in CHANGELOG.
+///   • `tick(at:)` / `update(deltaTime:)` run on the SceneKit render
+///     thread, called synchronously from `SCNSceneRendererDelegate`
+///     (`SceneKitView.Coordinator`). Phase 1 removed the previous
+///     `DispatchQueue.main.async` hop: it cost a full frame of input
+///     latency and let the simulation drift a frame behind the render.
+///     SceneKit explicitly allows node mutation inside the delegate
+///     callback, so physics, camera, terrain and item updates all stay on
+///     the render thread.
+///   • `@Published` properties are only ever written on the main thread.
+///     The per-frame path collects them into a `HUDFrame` and publishes
+///     through `publish(_:)`, which applies the frame immediately when
+///     already on main (unit tests, previews) and otherwise coalesces
+///     into a single `DispatchQueue.main.async` per render frame. Values
+///     are compared at display granularity first, so a constant-speed
+///     cruise produces zero publishes instead of ~500/s.
+///   • UI side effects (haptics, audio, mission-terminal callbacks) go
+///     through `onMain(_:)` for the same reason.
+///   • `GyroController` publishes on `.main`; the render thread only
+///     *reads* its inputs. That read is technically racy but benign for
+///     a Double snapshot; Swift 6 strict-concurrency adoption is tracked
+///     as a follow-up.
 final class FlightViewModel: ObservableObject {
     // MARK: - Published State
     @Published var speed: Float = 0
@@ -38,6 +46,100 @@ final class FlightViewModel: ObservableObject {
     /// the moment we pause; audio keeps playing under the modal so the
     /// pause overlay reads as "wait" rather than "the world died").
     @Published var isPaused: Bool = false
+
+    // MARK: - Per-frame publishing
+
+    /// Snapshot of every per-frame published value. Built on the render
+    /// thread, applied on main. Compared at *display* granularity so the
+    /// HUD is only invalidated when a visible digit actually changes.
+    struct HUDFrame: Equatable {
+        var speed: Float
+        var altitude: Float
+        var heading: Float
+        var flightTime: TimeInterval
+        var isBoosting: Bool
+        var starsCollected: Int
+        var boostProgress: Float
+        var directionToObjective: Double?
+        var currentRegion: String
+
+        /// True when the two frames would render identically on the HUD.
+        func displaysSame(as other: HUDFrame) -> Bool {
+            Int(speed) == Int(other.speed)
+                && Int(altitude) == Int(other.altitude)
+                && Int(heading) == Int(other.heading)
+                && Int(flightTime) == Int(other.flightTime)
+                && isBoosting == other.isBoosting
+                && starsCollected == other.starsCollected
+                && Int(boostProgress * 100) == Int(other.boostProgress * 100)
+                && Self.quantize(directionToObjective) == Self.quantize(other.directionToObjective)
+                && currentRegion == other.currentRegion
+        }
+
+        private static func quantize(_ radians: Double?) -> Int? {
+            radians.map { Int($0 * 50) }   // ~1.1° buckets
+        }
+    }
+
+    private var lastPublishedFrame: HUDFrame?
+    /// Frame waiting to be applied on main (render-thread path only).
+    private var pendingFrame: HUDFrame?
+    private let pendingFrameLock = NSLock()
+
+    /// Number of times a frame was actually pushed to the published
+    /// properties. Exposed for tests / profiling.
+    private(set) var publishedFrameCount: Int = 0
+
+    /// Run `work` now if on main, else hop asynchronously. Keeps unit
+    /// tests (which drive `update` from main) fully synchronous.
+    func onMain(_ work: @escaping () -> Void) {
+        if Thread.isMainThread {
+            work()
+        } else {
+            DispatchQueue.main.async(execute: work)
+        }
+    }
+
+    /// Publish `frame` to the `@Published` mirrors if anything visible
+    /// changed since the last publish.
+    private func publish(_ frame: HUDFrame) {
+        if let last = lastPublishedFrame, last.displaysSame(as: frame) { return }
+        lastPublishedFrame = frame
+        if Thread.isMainThread {
+            apply(frame)
+            return
+        }
+        pendingFrameLock.lock()
+        let hadPending = pendingFrame != nil
+        pendingFrame = frame
+        pendingFrameLock.unlock()
+        // One hop per render frame at most: if a hop is already queued it
+        // will pick up the newest pending frame.
+        guard !hadPending else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.pendingFrameLock.lock()
+            let next = self.pendingFrame
+            self.pendingFrame = nil
+            self.pendingFrameLock.unlock()
+            if let next { self.apply(next) }
+        }
+    }
+
+    private func apply(_ frame: HUDFrame) {
+        publishedFrameCount += 1
+        if speed != frame.speed { speed = frame.speed }
+        if altitude != frame.altitude { altitude = frame.altitude }
+        if heading != frame.heading { heading = frame.heading }
+        if flightTime != frame.flightTime { flightTime = frame.flightTime }
+        if isBoosting != frame.isBoosting { isBoosting = frame.isBoosting }
+        if starsCollected != frame.starsCollected { starsCollected = frame.starsCollected }
+        if boostProgress != frame.boostProgress { boostProgress = frame.boostProgress }
+        if directionToObjective != frame.directionToObjective {
+            directionToObjective = frame.directionToObjective
+        }
+        if currentRegion != frame.currentRegion { currentRegion = frame.currentRegion }
+    }
 
     // MARK: - Components
     let flightEngine: FlightEngine
@@ -84,6 +186,21 @@ final class FlightViewModel: ObservableObject {
     /// only fires once per integer second, so this is reset on stage
     /// start and updated each frame the engine still has time left.
     private var lastTimerBeepBucket: Int = -1
+
+    /// Render-thread copy of the star count. `starsCollected` (published)
+    /// is a display mirror of this.
+    private var simStarsCollected: Int = 0
+    /// Render-thread copy of the boost request. `activateBoost()` sets it
+    /// from main; the engine consumes it on the next frame.
+    private var boostRequested: Bool = false
+    /// Last `MissionEngine.crossingCount` we reacted to, for edge-detecting
+    /// ring pass / miss events.
+    private var lastSeenCrossingCount: Int = 0
+    /// Reusable chase-camera constraint (allocated once per flight rather
+    /// than once per frame).
+    private var lookAtConstraint: SCNLookAtConstraint?
+    /// Render timestamp of the previous frame; 0 = no baseline yet.
+    private var lastRenderTime: TimeInterval = 0
 
     /// Wall-clock time of the most recent free-flight star respawn.
     /// Debounces respawn so we don't dump a fresh ring every frame the
@@ -216,6 +333,11 @@ final class FlightViewModel: ObservableObject {
         self.lastDisplayedExpression = .default
         self.expressionLatch.reset()
         self.lastObservedMissionStateKey = "notStarted"
+        self.simStarsCollected = 0
+        self.boostRequested = false
+        self.lastSeenCrossingCount = 0
+        self.lastPublishedFrame = nil
+        self.lastRenderTime = 0
 
         // Build per-vehicle trail emitter and attach to scene root (not the
         // billboard) so its world position can track behind the heading.
@@ -250,6 +372,10 @@ final class FlightViewModel: ObservableObject {
         camera.camera?.fieldOfView = Constants.Camera.fieldOfView
         scene.rootNode.addChildNode(camera)
         self.cameraNode = camera
+        let lookAt = SCNLookAtConstraint(target: charNode)
+        lookAt.isGimbalLockEnabled = true
+        camera.constraints = [lookAt]
+        self.lookAtConstraint = lookAt
 
         // Setup terrain with selected theme
         terrainGenerator = TerrainGenerator(parentNode: scene.rootNode, seed: 42, theme: theme)
@@ -265,6 +391,12 @@ final class FlightViewModel: ObservableObject {
         // Start gyro
         gyroController.start()
         isFlying = true
+        Analytics.shared.track(.flightStarted, [
+            "character": character.rawValue,
+            "vehicle": vehicle.rawValue,
+            "theme": theme.rawValue,
+            "sensitivity": effectiveSensitivity.rawValue
+        ])
 
         // Start audio
         let audio = AudioManager.shared
@@ -290,6 +422,9 @@ final class FlightViewModel: ObservableObject {
         directionToObjective = nil
         boostProgress = 0
         lastTimerBeepBucket = -1
+        lastPublishedFrame = nil
+        lookAtConstraint = nil
+        lastRenderTime = 0
     }
 
     /// Start a Step-Goal stage with terrain-aware ring clamping. Wrapper
@@ -315,6 +450,7 @@ final class FlightViewModel: ObservableObject {
         guard isFlying, !isPaused else { return }
         isPaused = true
         gyroController.stop()
+        lastRenderTime = 0
     }
 
     /// Resume from pause. Idempotent. Recalibrates the gyro to the
@@ -325,6 +461,7 @@ final class FlightViewModel: ObservableObject {
         isPaused = false
         gyroController.start()
         gyroController.calibrate()
+        lastRenderTime = 0
     }
 
     /// Restart the current flight in place. The character respawns at
@@ -339,7 +476,12 @@ final class FlightViewModel: ObservableObject {
         heading = 0
         flightTime = 0
         starsCollected = 0
+        simStarsCollected = 0
         isBoosting = false
+        boostRequested = false
+        lastSeenCrossingCount = 0
+        lastPublishedFrame = nil
+        lastRenderTime = 0
         // Reset mission-transition observer so a Retry's terminal state
         // re-fires the bridge (the key was last "completed"/"failed" if the
         // player came from a result screen).
@@ -351,7 +493,22 @@ final class FlightViewModel: ObservableObject {
         gyroController.calibrate()
     }
 
-    /// Main update loop - called every frame from SCNSceneRendererDelegate
+    /// Render-thread entry point. Converts the renderer's absolute time
+    /// into a clamped delta and runs one simulation step. The first frame
+    /// after a start / pause / resume only establishes the baseline.
+    func tick(at time: TimeInterval) {
+        guard lastRenderTime != 0 else {
+            lastRenderTime = time
+            return
+        }
+        let delta = Float(time - lastRenderTime)
+        lastRenderTime = time
+        // Clamp for tab-switch / debugger pause spikes.
+        update(deltaTime: min(max(delta, 0), 0.05))
+    }
+
+    /// Main update loop — one simulation step. Called from `tick(at:)` on
+    /// the render thread, or directly by tests on main.
     func update(deltaTime: Float) {
         guard isFlying else { return }
         // Pause modal frozen the simulation. Skip the entire frame so
@@ -359,23 +516,20 @@ final class FlightViewModel: ObservableObject {
         // doesn't tick down.
         guard !isPaused else { return }
 
-        // Update flight physics
+        // Update flight physics. `boostRequested` is a one-shot flag set
+        // by activateBoost(); the engine ignores it while a boost is
+        // already running, so consuming it here is safe.
+        let wantsBoost = boostRequested
+        boostRequested = false
         flightEngine.update(
             deltaTime: deltaTime,
             rollInput: gyroController.rollInput,
             pitchInput: gyroController.pitchInput,
-            isBoosting: isBoosting,
+            isBoosting: wantsBoost,
             shouldAutoLevel: gyroController.shouldAutoLevel
         )
 
         let flightState = flightEngine.state
-
-        // Update published state
-        speed = flightState.speed
-        altitude = flightState.altitude
-        heading = flightState.heading
-        flightTime = flightState.flightTime
-        self.isBoosting = flightState.isBoosting
 
         // Update character position. Rotation is intentionally NOT applied
         // here: the billboard plane always faces the camera, so eulerAngles
@@ -437,9 +591,9 @@ final class FlightViewModel: ObservableObject {
         // Update items
         if let pos = characterNode?.position {
             let collected = itemSystem?.checkCollection(playerPosition: pos) ?? 0
-            starsCollected += collected
+            simStarsCollected += collected
             if collected > 0 {
-                AudioManager.shared.playStarCollect()
+                onMain { AudioManager.shared.playStarCollect() }
             }
             for _ in 0..<collected {
                 missionEngine?.registerStarCollected()
@@ -460,6 +614,7 @@ final class FlightViewModel: ObservableObject {
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
         }
+        observeRingCrossings()
 
         // Edge-detect mission terminal-state transitions and emit exactly one
         // event per transition. Without this bridge the MissionViewModel
@@ -470,32 +625,59 @@ final class FlightViewModel: ObservableObject {
         // are independent of the facial cue.
         observeMissionTerminalTransition()
 
-        // Refresh derived per-frame published state for the UI (objective
-        // arrow, boost cooldown ring). Cheap to recompute; cheaper than
-        // making the views poll every frame.
-        updateObjectiveDirection(flightState: flightState)
-        updateBoostProgress(flightState: flightState)
-
         // Audio: timer countdown beep buckets (5s / 3s / 1s) and star
-        // respawn for endless Free Flight runs. Both side-effecting, so
-        // run last after the published state has settled.
+        // respawn for endless Free Flight runs.
         emitTimerCountdownBeepIfNeeded()
         respawnStarsIfDepleted()
 
-        // Update region name
-        updateRegionName()
+        // Collect every per-frame published value into one frame and
+        // publish it (coalesced, display-granular — see `publish`).
+        let frame = HUDFrame(
+            speed: flightState.speed,
+            altitude: flightState.altitude,
+            heading: flightState.heading,
+            flightTime: flightState.flightTime,
+            isBoosting: flightState.isBoosting,
+            starsCollected: simStarsCollected,
+            boostProgress: computeBoostProgress(flightState: flightState),
+            directionToObjective: computeObjectiveDirection(flightState: flightState),
+            currentRegion: computeRegionName()
+        )
+        publish(frame)
     }
 
-    /// Refresh `directionToObjective` from the active mission's current
-    /// ring. Returns nil when there's no in-progress mission, so the HUD
-    /// can hide the arrow during Free Flight.
-    private func updateObjectiveDirection(flightState: FlightEngine.FlightState) {
+    /// Edge-detect ring plane crossings from the mission engine and turn
+    /// them into audio + analytics. The engine keeps a monotonic
+    /// `crossingCount`; we react once per increment.
+    private func observeRingCrossings() {
+        guard let engine = missionEngine,
+              engine.crossingCount != lastSeenCrossingCount,
+              let crossing = engine.lastCrossing
+        else { return }
+        lastSeenCrossingCount = engine.crossingCount
+        if crossing.isPass {
+            onMain { AudioManager.shared.playRingPass() }
+            Analytics.shared.track(.ringPassed, [
+                "ring": crossing.ringIndex,
+                "accuracy": Double(crossing.accuracy)
+            ])
+        } else {
+            Analytics.shared.track(.ringMissed, [
+                "ring": crossing.ringIndex,
+                "accuracy": Double(crossing.accuracy)
+            ])
+        }
+    }
+
+    /// Direction to the active mission's current ring, relative to the
+    /// heading. Nil when there's no in-progress mission, so the HUD can
+    /// hide the arrow during Free Flight.
+    private func computeObjectiveDirection(flightState: FlightEngine.FlightState) -> Double? {
         guard let engine = missionEngine,
               case .inProgress = engine.state,
               let ringPos = engine.currentRingPosition
         else {
-            if directionToObjective != nil { directionToObjective = nil }
-            return
+            return nil
         }
         let pos = flightState.position
         let dx = ringPos.x - pos.x
@@ -508,15 +690,15 @@ final class FlightViewModel: ObservableObject {
         // the short way around.
         while relative > .pi  { relative -= 2 * .pi }
         while relative < -.pi { relative += 2 * .pi }
-        directionToObjective = relative
+        return relative
     }
 
-    /// Refresh `boostProgress` (0…1) from the engine's remaining boost
-    /// time. Drives the cooldown ring overlaid on the boost ThumbButton.
-    private func updateBoostProgress(flightState: FlightEngine.FlightState) {
+    /// Boost progress (0…1) from the engine's remaining boost time.
+    /// Drives the cooldown ring overlaid on the boost ThumbButton.
+    private func computeBoostProgress(flightState: FlightEngine.FlightState) -> Float {
         let dur = Float(Constants.Flight.boostDuration)
-        guard dur > 0 else { boostProgress = 0; return }
-        boostProgress = max(0, min(1, flightState.boostTimeRemaining / dur))
+        guard dur > 0 else { return 0 }
+        return max(0, min(1, flightState.boostTimeRemaining / dur))
     }
 
     /// Fire a one-shot countdown chirp on the integer-second boundary
@@ -532,7 +714,7 @@ final class FlightViewModel: ObservableObject {
             return
         }
         lastTimerBeepBucket = bucket
-        AudioManager.shared.playTimerTick()
+        onMain { AudioManager.shared.playTimerTick() }
     }
 
     /// Refill the star pool when only a handful of uncollected stars
@@ -571,7 +753,10 @@ final class FlightViewModel: ObservableObject {
         guard let state = missionEngine?.state else { return }
         switch state {
         case .completed, .failed:
-            onMissionTerminalState?(state)
+            // MissionViewModel mutates @Published state in response, so
+            // the callback must land on main. Synchronous when already
+            // there (tests), async from the render thread.
+            onMain { [weak self] in self?.onMissionTerminalState?(state) }
         case .notStarted, .inProgress:
             break
         }
@@ -612,16 +797,19 @@ final class FlightViewModel: ObservableObject {
         }
         lastCollisionTime = now
         engine.registerCollision()
-        // Heavy haptic + dedicated collision thump so the player feels the
-        // brush. Synth-generated, so no asset cost.
-        let generator = UIImpactFeedbackGenerator(style: .heavy)
-        generator.prepare()
-        generator.impactOccurred()
-        AudioManager.shared.playCollision()
-        // Tick the visible-flash counter so the HUD overlay can flash a
-        // red rim. Pairs the haptic+sound with a visual cue so players
-        // on silent or hard-of-hearing still see the collision.
-        collisionFlashTrigger &+= 1
+        onMain { [weak self] in
+            guard let self else { return }
+            // Heavy haptic + dedicated collision thump so the player feels
+            // the brush. Synth-generated, so no asset cost.
+            let generator = UIImpactFeedbackGenerator(style: .heavy)
+            generator.prepare()
+            generator.impactOccurred()
+            AudioManager.shared.playCollision()
+            // Tick the visible-flash counter so the HUD overlay can flash
+            // a red rim. Pairs the haptic+sound with a visual cue so
+            // players on silent or hard-of-hearing still see it.
+            self.collisionFlashTrigger &+= 1
+        }
     }
 
     /// Pure decision: should a collision be registered given the current
@@ -638,6 +826,7 @@ final class FlightViewModel: ObservableObject {
     // MARK: - Actions
 
     func activateBoost() {
+        boostRequested = true
         isBoosting = true
         AudioManager.shared.playBoost()
     }
@@ -671,7 +860,11 @@ final class FlightViewModel: ObservableObject {
     private func updateCamera(deltaTime: Float) {
         guard let charNode = characterNode, let camNode = cameraNode else { return }
 
-        let headingRad = heading.rad
+        // Read the simulation state directly — the published `heading` /
+        // `boostProgress` mirrors are display-granular and main-thread
+        // only, so they may lag the render thread by a frame.
+        let flightState = flightEngine.state
+        let headingRad = flightState.heading.rad
         // Boost-modulated follow distance + FOV. Pulling the camera back
         // 3m and widening the FOV 8° while the speed is doubled keeps
         // the character's apparent on-screen size roughly constant and
@@ -679,7 +872,7 @@ final class FlightViewModel: ObservableObject {
         // bigger number" alone never delivers. Reduce-Motion users
         // get the resting frame instead — the punch is exactly the
         // kind of camera oscillation that's vestibular-uncomfortable.
-        let boost: Float = reduceMotionEnabled ? 0 : boostProgress
+        let boost: Float = reduceMotionEnabled ? 0 : computeBoostProgress(flightState: flightState)
         let dist = Constants.Camera.followDistance
             + Constants.Camera.boostFollowDistanceDelta * boost
         let height = Constants.Camera.followHeight
@@ -707,23 +900,28 @@ final class FlightViewModel: ObservableObject {
         let t = reduceMotionEnabled ? baseSpeed * 0.45 : baseSpeed
         camNode.position = SCNVector3.lerp(camNode.position, targetPos, t: t)
 
-        // Look at character
-        let lookAt = SCNLookAtConstraint(target: charNode)
-        lookAt.isGimbalLockEnabled = true
-        // Slacken the look-at constraint when Reduce Motion is on so the
-        // camera doesn't jerk toward the character during sharp banks.
-        lookAt.influenceFactor = reduceMotionEnabled ? 0.5 : 0.9
-        camNode.constraints = [lookAt]
+        // Look at character. The constraint is created once in
+        // startFlight and reused; only its influence changes with the
+        // Reduce Motion setting (slackened so the camera doesn't jerk
+        // toward the character during sharp banks).
+        if lookAtConstraint == nil {
+            let lookAt = SCNLookAtConstraint(target: charNode)
+            lookAt.isGimbalLockEnabled = true
+            camNode.constraints = [lookAt]
+            lookAtConstraint = lookAt
+        }
+        let influence: CGFloat = reduceMotionEnabled ? 0.5 : 0.9
+        if lookAtConstraint?.influenceFactor != influence {
+            lookAtConstraint?.influenceFactor = influence
+        }
     }
 
-    private func updateRegionName() {
-        guard let pos = characterNode?.position else { return }
+    private func computeRegionName() -> String {
+        guard let pos = characterNode?.position else { return currentRegion }
         let names = currentMapTheme.regionNames
+        guard !names.isEmpty else { return "" }
         let regionIndex = abs(Int(pos.x / 500) + Int(pos.z / 500) * 7) % names.count
-        let newRegion = names[regionIndex]
-        if newRegion != currentRegion {
-            currentRegion = newRegion
-        }
+        return names[regionIndex]
     }
 
     // MARK: - Persistence

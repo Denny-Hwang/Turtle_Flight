@@ -34,6 +34,7 @@ writes the following keys to `UserDefaults`:
 | `sensitivityLevel` | Your tilt sensitivity choice (`easy` / `normal` / `expert`). | So we honor your control preference each session. |
 | `audio.muted`, `audio.bgmVolume`, `audio.sfxVolume` | Audio toggles. | So music / SFX settings persist. |
 | `onboardingCompleted` | Whether you've already seen the four-card first-run tutorial. | So we don't pester you with the tutorial on every launch. |
+| `analytics.counters.v1`, `analytics.playDays.v1`, `analytics.firstLaunch.v1` | Aggregate counts of in-app events (flights started, rings passed, stages cleared, …), the list of calendar days you opened the app, and the first-launch date. | Lets the app show you your own play history and streak, and lets the team read the funnel off a TestFlight device. **Never uploaded** — there is no network code. Reset Progress deletes them. |
 
 That's the entire on-device storage footprint. None of it is uploaded.
 

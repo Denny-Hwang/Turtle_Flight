@@ -126,6 +126,7 @@ struct OnboardingView: View {
         var state = OnboardingState.load()
         state.completed = true
         state.save()
+        Analytics.shared.track(.onboardingCompleted, ["page": pageIndex])
         onFinish()
     }
 }
