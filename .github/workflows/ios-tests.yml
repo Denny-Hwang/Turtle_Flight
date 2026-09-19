@@ -78,6 +78,10 @@ jobs:
       - name: Build
         run: |
           set -o pipefail
+          mkdir -p build/reports
+          # Keep the raw log: xcbeautify's summary drops the file/line of
+          # some compiler diagnostics, and the raw log is what you need
+          # when a run fails without a local Xcode to reproduce it.
           xcodebuild build-for-testing \
             -project TurtleFlight.xcodeproj \
             -scheme TurtleFlight \
@@ -85,12 +89,16 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            2>&1 | xcbeautify --renderer github-actions
+            2>&1 | tee build/reports/xcodebuild-build.log | xcbeautify --renderer github-actions
+
+      - name: Show compiler errors (raw)
+        if: failure()
+        run: |
+          grep -n -E "error:|warning: unre" build/reports/xcodebuild-build.log | head -80 || true
 
       - name: Run tests
         run: |
           set -o pipefail
-          mkdir -p build/reports
           xcodebuild test-without-building \
             -project TurtleFlight.xcodeproj \
             -scheme TurtleFlight \
@@ -99,7 +107,12 @@ jobs:
             -resultBundlePath build/reports/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            2>&1 | xcbeautify --renderer github-actions --report junit --report-path build/reports
+            2>&1 | tee build/reports/xcodebuild-test.log | xcbeautify --renderer github-actions --report junit --report-path build/reports
+
+      - name: Show test failures (raw)
+        if: failure()
+        run: |
+          grep -n -E "error:|failed|Failing tests" build/reports/xcodebuild-test.log | head -120 || true
 
       - name: Upload test report
         if: always()

@@ -55,21 +55,21 @@ struct OnboardingView: View {
                     OnboardingCard(
                         illustration: .image("turbo_default"),
                         title: L10n.t("onboarding.welcome.title"),
-                        body:  L10n.t("onboarding.welcome.body")
+                        message: L10n.t("onboarding.welcome.body")
                     )
                     .tag(0)
 
                     OnboardingCard(
                         illustration: .symbol("iphone.gen3"),
                         title: L10n.t("onboarding.calibrate.title"),
-                        body:  L10n.t("onboarding.calibrate.body")
+                        message: L10n.t("onboarding.calibrate.body")
                     )
                     .tag(1)
 
                     OnboardingCard(
                         illustration: .symbol("arrow.left.arrow.right"),
                         title: L10n.t("onboarding.tilt.title"),
-                        body:  L10n.t("onboarding.tilt.body")
+                        message: L10n.t("onboarding.tilt.body")
                     )
                     .tag(2)
 
@@ -145,7 +145,11 @@ struct OnboardingCard: View {
 
     let illustration: Illustration
     let title: String
-    let body: String
+    /// Explanatory copy under the title. Named `message` rather than
+    /// `body` — a stored `body` collides with SwiftUI's `View.body`
+    /// requirement ("invalid redeclaration of 'body'"), which is what
+    /// broke the build on every CI run before Phase 1.
+    let message: String
 
     var body: some View {
         VStack(spacing: Theme.Spacing.l) {
@@ -162,7 +166,7 @@ struct OnboardingCard: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Theme.Spacing.xl)
 
-            Text(body)
+            Text(message)
                 .font(Theme.Typography.bodyDynamic)
                 .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
                 .multilineTextAlignment(.center)
