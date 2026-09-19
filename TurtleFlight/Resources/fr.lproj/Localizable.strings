@@ -285,3 +285,18 @@
 "settings.sensitivity.easy.caption"   = "Zone morte de 8°, réponse cubique, remise à l'horizontale douce après 2 s. Idéal pour les premiers vols et les jeunes joueurs.";
 "settings.sensitivity.normal.caption" = "Zone morte de 4°, réponse quadratique, remise à l'horizontale après 4 s. Équilibré — recommandé.";
 "settings.sensitivity.expert.caption" = "Zone morte de 1,5°, réponse linéaire, pas de remise à l'horizontale, décrochage activé. Contrôle maximal au prix fort.";
+
+// MARK: - Phase 2 — précision des anneaux, jauge de turbo, vol immédiat
+"gate.judgement.bullseye"   = "EN PLEIN CENTRE !";
+"gate.judgement.great"      = "SUPER";
+"gate.judgement.ok"         = "OK";
+"gate.judgement.miss"       = "RATÉ";
+"hud.score.format"          = "%lld pts";
+"hud.combo.format"          = "x%lld combo";
+"a11y.hud.score.format"     = "Score %lld points, combo %lld";
+"hud.stall"                 = "DÉCROCHAGE";
+"mission.result.scoreFormat" = "Score : %lld";
+"mission.result.comboFormat" = "Meilleur combo x%lld · Plein centre %lld";
+"home.quickFly.title"       = "Voler maintenant";
+"home.quickFly.subtitle"    = "Vol libre avec %@";
+"a11y.home.quickFly.hint"   = "Touchez deux fois pour lancer tout de suite un vol libre avec ton personnage actuel";

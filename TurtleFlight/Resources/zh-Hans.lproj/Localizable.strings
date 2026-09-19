@@ -286,3 +286,18 @@
 "settings.sensitivity.easy.caption"   = "8° 死区，三次方响应，2 秒后温和自动回正。适合初次飞行和年幼玩家。";
 "settings.sensitivity.normal.caption" = "4° 死区，二次方响应，4 秒后自动回正。均衡——推荐。";
 "settings.sensitivity.expert.caption" = "1.5° 死区，线性响应，无自动回正，开启失速。极致操控，代价也极高。";
+
+// MARK: - 第二阶段 — 门环精度、加速槽、立即起飞
+"gate.judgement.bullseye"   = "正中！";
+"gate.judgement.great"      = "很棒";
+"gate.judgement.ok"         = "通过";
+"gate.judgement.miss"       = "错过";
+"hud.score.format"          = "%lld分";
+"hud.combo.format"          = "x%lld 连击";
+"a11y.hud.score.format"     = "得分 %lld 分，连击 %lld";
+"hud.stall"                 = "失速";
+"mission.result.scoreFormat" = "得分：%lld";
+"mission.result.comboFormat" = "最高连击 x%lld · 正中 %lld 次";
+"home.quickFly.title"       = "立即起飞";
+"home.quickFly.subtitle"    = "用%@自由飞行";
+"a11y.home.quickFly.hint"   = "双击立即用当前角色开始自由飞行";

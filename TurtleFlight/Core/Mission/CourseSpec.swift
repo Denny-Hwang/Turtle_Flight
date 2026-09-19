@@ -53,6 +53,12 @@ struct CourseSpec: Codable, Equatable {
     /// Seed for the jitter RNG. Zero disables jitter entirely so the
     /// campaign stages stay byte-identical to their formula.
     var seed: UInt64
+    /// Which gate kinds appear, and where. See `GateRecipe`.
+    var gateRecipe: GateRecipe
+    /// When true the effective ring radius shrinks as the player's combo
+    /// grows (see `MissionEngine.comboRadiusFactor`), so a hot streak
+    /// keeps raising the bar on its own.
+    var comboShrink: Bool
 
     init(pattern: Pattern,
          count: Int,
@@ -63,7 +69,9 @@ struct CourseSpec: Codable, Equatable {
          baseAltitude: Float,
          altitudeAmplitude: Float,
          jitter: Float = 0,
-         seed: UInt64 = 0) {
+         seed: UInt64 = 0,
+         gateRecipe: GateRecipe = .standard,
+         comboShrink: Bool = false) {
         self.pattern = pattern
         self.count = count
         self.spacing = spacing
@@ -74,7 +82,12 @@ struct CourseSpec: Codable, Equatable {
         self.altitudeAmplitude = altitudeAmplitude
         self.jitter = jitter
         self.seed = seed
+        self.gateRecipe = gateRecipe
+        self.comboShrink = comboShrink
     }
+
+    /// Gate kind per ring, from the recipe.
+    var gateKinds: [GateKind] { gateRecipe.kinds(count: count) }
 }
 
 enum CourseGenerator {

@@ -56,7 +56,8 @@ struct FlightView: View {
                         dismiss()
                     }
                 },
-                boostProgress: flightVM.boostProgress
+                boostProgress: flightVM.boostProgress,
+                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999
             )
 
             // Step Goal — full-screen StageResultView when the mission

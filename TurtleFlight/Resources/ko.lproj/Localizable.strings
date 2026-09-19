@@ -289,3 +289,18 @@
 "settings.sensitivity.normal.caption" = "4° 데드존, 2차 반응, 4초 후 자동 수평. 균형 — 일반 권장.";
 "settings.sensitivity.expert.caption" = "1.5° 데드존, 선형 반응, 자동 수평 없음, 실속 활성. 최대 컨트롤, 최대 난이도.";
 
+
+// MARK: - 2단계 — 게이트 정밀도, 부스트 게이지, 즉시 비행
+"gate.judgement.bullseye"   = "명중!";
+"gate.judgement.great"      = "훌륭해";
+"gate.judgement.ok"         = "통과";
+"gate.judgement.miss"       = "놓침";
+"hud.score.format"          = "%lld점";
+"hud.combo.format"          = "x%lld 콤보";
+"a11y.hud.score.format"     = "점수 %lld점, 콤보 %lld";
+"hud.stall"                 = "실속";
+"mission.result.scoreFormat" = "점수: %lld";
+"mission.result.comboFormat" = "최고 콤보 x%lld · 명중 %lld회";
+"home.quickFly.title"       = "지금 비행";
+"home.quickFly.subtitle"    = "%@(으)로 자유 비행";
+"a11y.home.quickFly.hint"   = "두 번 탭하여 현재 캐릭터로 바로 자유 비행을 시작합니다";

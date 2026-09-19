@@ -99,7 +99,10 @@ extension StageDefinition {
             course: CourseSpec(
                 pattern: .zigzag, count: 5, spacing: 200, startZ: -200,
                 lateralAmplitude: 80, angleStep: 0,
-                baseAltitude: 500, altitudeAmplitude: 0
+                baseAltitude: 500, altitudeAmplitude: 0,
+                // Cloud Maze introduces the shrinking gate: hesitate on
+                // the approach and the hole closes on you.
+                gateRecipe: .shrinkingEveryThird
             )
         ),
         StageDefinition(
@@ -122,7 +125,8 @@ extension StageDefinition {
             course: CourseSpec(
                 pattern: .sCurve, count: 8, spacing: 180, startZ: -180,
                 lateralAmplitude: 120, angleStep: 0.8,
-                baseAltitude: 150, altitudeAmplitude: 50
+                baseAltitude: 150, altitudeAmplitude: 50,
+                gateRecipe: .shrinkingEveryThird
             )
         ),
         StageDefinition(
@@ -143,7 +147,10 @@ extension StageDefinition {
             course: CourseSpec(
                 pattern: .peaks, count: 7, spacing: 200, startZ: -200,
                 lateralAmplitude: 80, angleStep: 0.9,
-                baseAltitude: 600, altitudeAmplitude: 200
+                baseAltitude: 600, altitudeAmplitude: 200,
+                // Mountain Cross introduces the tilted slit on every
+                // other summit.
+                gateRecipe: .tiltAlternate
             )
         ),
         StageDefinition(
@@ -164,7 +171,11 @@ extension StageDefinition {
             course: CourseSpec(
                 pattern: .race, count: 20, spacing: 120, startZ: -120,
                 lateralAmplitude: 60, angleStep: 0.5,
-                baseAltitude: 400, altitudeAmplitude: 100
+                baseAltitude: 400, altitudeAmplitude: 100,
+                // The race mixes every gate kind after a three-ring
+                // warm-up, and the rings tighten as the combo climbs.
+                gateRecipe: .mixedAfterWarmup,
+                comboShrink: true
             )
         )
     ]

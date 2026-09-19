@@ -14,6 +14,9 @@ struct ControlButtons: View {
     /// duration just-fired. Drains as the boost timer counts down so the
     /// player can read remaining boost at a glance.
     var boostProgress: Float = 0
+    /// True when the boost gauge is full and a tap will fire. Tints the
+    /// ring gold so "ready" reads at a glance from the corner of the eye.
+    var boostReady: Bool = true
 
     var body: some View {
         VStack {
@@ -59,6 +62,7 @@ struct ControlButtons: View {
                     label: L10n.t("flight.control.boost"),
                     color: Theme.Color.boostOrange,
                     progress: boostProgress,
+                    ringColor: boostReady ? Theme.Color.starGold : Color.white.opacity(0.92),
                     action: onBoost
                 )
                 .padding(.leading, Constants.Controls.buttonPadding)
@@ -110,6 +114,9 @@ struct ThumbButton: View {
     /// player can read remaining time at a glance. Used by the boost
     /// button — the fire button just leaves it at the default.
     var progress: Float = 0
+    /// Stroke colour of the progress ring. White by default; the boost
+    /// button passes gold when the gauge is full.
+    var ringColor: Color = Color.white.opacity(0.92)
     let action: () -> Void
 
     @State private var isPressed = false
@@ -154,7 +161,7 @@ struct ThumbButton: View {
             Circle()
                 .trim(from: 0, to: CGFloat(min(max(progress, 0), 1)))
                 .stroke(
-                    Color.white.opacity(0.92),
+                    ringColor,
                     style: StrokeStyle(lineWidth: 4, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))

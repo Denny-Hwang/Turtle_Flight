@@ -9,6 +9,62 @@ window.
 
 ## [Unreleased]
 
+### Phase 2 — 코어 재미 (core fun loop)
+
+Second roadmap phase: turns "flying through hoops" into a precision game
+with a skill ceiling. Builds directly on Phase 1's plane-crossing
+`RingCrossing.accuracy`.
+
+**Gate judgement + combo scoring**
+- Every crossing is judged by centre accuracy: **BULLSEYE** (≤ 20 % of
+  the radius, ×3), **GREAT** (≤ 60 %, ×2), **OK** (inside the rim, ×1),
+  **MISS** (plane crossed outside, combo reset). `GateScoring` /
+  `RunScore` (pure, tested); `MissionEngine.score`, `lastJudgement`,
+  `lastPointsEarned`. Combo adds +10 % per step up to +100 %.
+- `StageResult` gains optional `score`, `maxCombo`, `bullseyes` (old
+  saved blobs still decode). `StageResultView` shows them with a
+  score-line "New Best!" badge.
+- HUD: centre-screen judgement callout with points, score chip, combo
+  chip (from x2), VoiceOver announcement; rigid haptic on bullseye,
+  warning haptic on miss.
+
+**Gate kinds** (`GateKind`, assigned per course by `GateRecipe`)
+- `shrinking` — from full size when it becomes the target down to 50 %
+  over 6 s. Hesitate and the hole closes.
+- `tilt` — an elliptical slit (45 %, rolled 45°). Lateral *and* vertical
+  precision at once. Rendered by squashing + rolling the torus.
+- `moving` — centre oscillates ±40 m laterally with a 4 s period; the
+  hit test uses the live centre.
+- Combo shrink (`CourseSpec.comboShrink`): the judged radius tightens
+  4 % per combo step down to 60 %, and the ring is drawn at exactly
+  that size.
+- Campaign: Cloud Maze + Valley Run get shrinking gates every third
+  ring, Mountain Cross alternates tilted slits, Sky Race mixes all four
+  after a 3-ring warm-up and has combo shrink on. Sky Walk stays plain.
+
+**Flight energy model** (`SensitivityProfile.energyModelEnabled`)
+- Normal / Expert: diving trades altitude for speed (0.6 km/h per s per
+  m/s), climbing bleeds it, drag relaxes toward cruise (2 s half-life),
+  clamped 60–380 km/h. Easy keeps constant airspeed.
+- Expert stall is now real: below 100 km/h the nose drops 25 m/s and
+  turn authority falls to 35 % until a dive restores speed. HUD shows a
+  red STALL chip; `FlightEngine.isStalling` finally means something.
+
+**Boost gauge**
+- Boost needs a full gauge and drains it; each star restores 20 %
+  (5 stars = a boost) and it trickles back over 40 s. The button ring
+  now shows charge when idle (gold when ready) and remaining burst when
+  boosting. Stars have a purpose.
+
+**Fly now**
+- Home gets a primary "Fly now" button: one tap into Free Flight with
+  the current character / vehicle / theme. The old shortest path was
+  four screens.
+
+**L10n:** 13 new keys × 7 locales (226 each).
+**Tests:** `GateScoringTests` (17), `EnergyModelTests` (10).
+
+
 ### Phase 1 — 기반 수리 (foundation repair)
 
 First of the four roadmap phases from the 2026-09 senior review

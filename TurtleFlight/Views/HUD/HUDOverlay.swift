@@ -74,6 +74,15 @@ struct HUDOverlay: View {
                         )
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(L10n.format("a11y.hud.speed.format", Int(flightVM.speed)))
+                        if flightVM.isStalled {
+                            Text(L10n.t("hud.stall"))
+                                .font(Theme.Typography.labelSmall)
+                                .foregroundColor(Theme.Color.textOnDark)
+                                .padding(.horizontal, Theme.Spacing.s)
+                                .padding(.vertical, Theme.Spacing.xxs + 1)
+                                .background(Capsule().fill(Theme.Color.expertRed))
+                                .accessibilityLabel(L10n.t("hud.stall"))
+                        }
                         Text("Lv.\(flightVM.sensitivityLevel.levelNumber)")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundColor(sensitivityColor)

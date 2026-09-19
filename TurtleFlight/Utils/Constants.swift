@@ -31,6 +31,29 @@ enum Constants {
         static let boostDuration: TimeInterval = 3.0
         static let maxAltitude: Float = 10000.0
         static let gravity: Float = 9.8
+
+        // Phase 2 — energy model (Normal / Expert only; see
+        // `SensitivityProfile.energyModelEnabled`).
+        /// km/h gained per second per m/s of descent (and lost per m/s of
+        /// climb). At Expert's 120 m/s max climb that's -72 km/h per
+        /// second: about 1.4s of full climb from cruise to the stall line.
+        static let energyExchangeRate: Float = 0.6
+        /// Fraction of the speed excess/deficit vs cruise that drag
+        /// removes per second. 0.5 → a dive's speed decays with ~2s
+        /// half-life once the player levels off.
+        static let energyDrag: Float = 0.5
+        static let minEnergySpeed: Float = 60
+        static let maxEnergySpeed: Float = 380
+        /// Below this (km/h) an Expert flight stalls.
+        static let stallSpeed: Float = 100
+        /// Forced descent rate (m/s) while stalled.
+        static let stallSinkRate: Float = 25
+
+        // Phase 2 — boost gauge.
+        /// Gauge fraction one star restores (5 stars = a full boost).
+        static let boostChargePerStar: Float = 0.2
+        /// Passive refill per second while not boosting (full in 40s).
+        static let boostRechargePerSecond: Float = 0.025
     }
 
     // MARK: - Camera
