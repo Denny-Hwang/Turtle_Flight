@@ -293,8 +293,8 @@ final class TerrainGenerator {
             let star = makeSpaceStar()
             star.position = SCNVector3(sx, sy, sz)
             let twinkle = SCNAction.sequence([
-                SCNAction.fadeAlpha(to: 0.3, duration: Double(h % 2) + 0.5),
-                SCNAction.fadeAlpha(to: 1.0, duration: Double(h % 2) + 0.5)
+                SCNAction.fadeOpacity(to: 0.3, duration: Double(h % 2) + 0.5),
+                SCNAction.fadeOpacity(to: 1.0, duration: Double(h % 2) + 0.5)
             ])
             star.runAction(.repeatForever(twinkle))
             node.addChildNode(star)
@@ -701,7 +701,7 @@ final class TerrainGenerator {
             let tail = SCNNode(geometry: SCNSphere(radius: CGFloat(2 - Float(i) * 0.3)))
             tail.position = SCNVector3(Float(i) * 2.5, 0, 0)
             tail.geometry?.firstMaterial?.diffuse.contents =
-                UIColor(red: 1, green: 0.7, blue: 0.2, alpha: Float(1) - Float(i) * 0.2)
+                UIColor(red: 1, green: 0.7, blue: 0.2, alpha: CGFloat(1 - Float(i) * 0.2))
             node.addChildNode(tail)
         }
         return node
@@ -733,14 +733,15 @@ final class TerrainGenerator {
         let branchCount = 3 + seed % 3
         for i in 0..<branchCount {
             let angle = Float(i) / Float(branchCount) * .pi * 2
-            let branch = SCNNode(geometry: SCNCylinder(radius: 0.4, height: CGFloat(4 + seed % 3)))
+            let branchHeight = Float(4 + seed % 3)
+            let branch = SCNNode(geometry: SCNCylinder(radius: 0.4, height: CGFloat(branchHeight)))
             branch.position = SCNVector3(cos(angle) * 1.5, 2, sin(angle) * 1.5)
             branch.eulerAngles = SCNVector3(cos(angle) * 0.3, 0, sin(angle) * 0.3)
             branch.geometry?.firstMaterial?.diffuse.contents = color
             node.addChildNode(branch)
             // Tip bulb
             let tip = SCNNode(geometry: SCNSphere(radius: 0.8))
-            tip.position = SCNVector3(cos(angle) * 1.5, CGFloat(4 + seed % 3) + 2, sin(angle) * 1.5)
+            tip.position = SCNVector3(cos(angle) * 1.5, branchHeight + 2, sin(angle) * 1.5)
             tip.geometry?.firstMaterial?.diffuse.contents = color
             node.addChildNode(tip)
         }
