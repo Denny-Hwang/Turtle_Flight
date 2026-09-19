@@ -36,6 +36,7 @@ writes the following keys to `UserDefaults`:
 | `onboardingCompleted` | Whether you've already seen the four-card first-run tutorial. | So we don't pester you with the tutorial on every launch. |
 | `quests.v1`, `quests.v1.seconds.<day>` | Today's three daily quests, their progress and whether the bonus was claimed. | Daily goals need to survive a relaunch. Local only; reset with Reset Progress. |
 | *Application Support/ghosts/\*.json* | Your best flight path per course (time + position samples at 10 Hz). | Drawn as a translucent "ghost" of your own best run. Never leaves the device; Reset Progress deletes them. |
+| `playerProgress` (also `masteryXP`, `cloudSyncEnabled`, `clipRecordingEnabled` inside it) | Per-character mastery XP and the two Phase 4 opt-in switches. | Mastery levels are shown on the character tiles; the switches remember your choice. |
 | `analytics.counters.v1`, `analytics.playDays.v1`, `analytics.firstLaunch.v1` | Aggregate counts of in-app events (flights started, rings passed, stages cleared, …), the list of calendar days you opened the app, and the first-launch date. | Lets the app show you your own play history and streak, and lets the team read the funnel off a TestFlight device. **Never uploaded** — there is no network code. Reset Progress deletes them. |
 
 That's the entire on-device storage footprint. None of it is uploaded.
@@ -78,6 +79,17 @@ for audio playback.
   and achievements to Apple's leaderboards. Turn the toggle off and the
   app stops submitting. Apple's Game Center privacy policy applies to
   that data; the app itself still stores nothing about your account.
+- **No iCloud unless you turn it on.** Settings → "iCloud progress sync"
+  (off by default) mirrors the `playerProgress` blob to *your own*
+  iCloud account through Apple's Key-Value Storage so a new phone gets
+  your stars back. The app never sees any other account's data and only
+  accepts a remote copy that is further along than the local one.
+- **No screen recording unless you turn it on.** Settings → "Record
+  clips" (off by default) uses Apple's ReplayKit to record your flights
+  so you can share a clip from the result screen. iOS shows its own
+  permission prompt; the microphone is never enabled; recordings are
+  handled by Apple's preview sheet and are discarded unless you save or
+  share them.
 - **No notifications unless you turn them on.** The optional daily
   reminder is a *local* notification scheduled on your device (one per
   day, plus a one-shot streak nudge). No push service, no device token.

@@ -338,3 +338,17 @@
 "reminder.title"              = "Turtle Flight";
 "reminder.daily.body"         = "Today's course is ready. 90 seconds, same course for everyone.";
 "reminder.streak.body"        = "Your streak ends tonight. One quick flight keeps it alive.";
+
+// MARK: - Phase 4 — clips, iCloud sync, mastery
+"settings.online.cloud"       = "iCloud progress sync";
+"settings.online.cloud.hint"  = "Keeps your stars and unlocks on all your devices through your iCloud account";
+"settings.online.clips"       = "Record clips";
+"settings.online.clips.hint"  = "Records your flights so you can share a clip from the result screen";
+"result.shareClip"            = "Share clip";
+"a11y.result.shareClip.hint"  = "Double-tap to trim and share a video of this flight";
+"mastery.level.format"        = "Lv.%lld";
+"mastery.title.1"             = "Hatchling";
+"mastery.title.2"             = "Fledgling";
+"mastery.title.3"             = "Sky Pilot";
+"mastery.title.4"             = "Ace";
+"mastery.title.5"             = "Sky Legend";

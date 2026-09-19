@@ -61,6 +61,28 @@ final class MissionViewModel: ObservableObject {
     /// `completeMission`; read by the result screen).
     @Published private(set) var lastSpecialWasNewBest: Bool = false
 
+    /// Character of the flight in progress (Phase 4 mastery attribution).
+    var lastFlownCharacter: CharacterType?
+    /// New mastery level reached by the last completion, if any.
+    @Published private(set) var lastMasteryLevelUp: Int?
+
+    /// Record a flight start for mastery. Returns a level-up if any.
+    @discardableResult
+    func recordFlightStart(character: CharacterType) -> Int? {
+        lastFlownCharacter = character
+        let up = progress.addMastery(.flightStarted, to: character)
+        save()
+        return up
+    }
+
+    /// Gate XP is batched by the flight view model and flushed here.
+    func recordGateXP(passes: Int, bullseyes: Int) {
+        guard let character = lastFlownCharacter, passes > 0 else { return }
+        for _ in 0..<max(0, passes - bullseyes) { progress.addMastery(.gatePassed(bullseye: false), to: character) }
+        for _ in 0..<bullseyes { progress.addMastery(.gatePassed(bullseye: true), to: character) }
+        save()
+    }
+
     func isStageUnlocked(_ index: Int) -> Bool {
         if index == 0 { return true }
         return progress.maxUnlockedStage >= index
@@ -120,6 +142,13 @@ final class MissionViewModel: ObservableObject {
             QuestTracker.shared.record(.comboReached(combo))
         }
         GameCenterManager.shared.report(result: result, stage: currentStage, progress: progress)
+        // Mastery: course clear + minutes flown, to whichever character
+        // flew it (FlightView sets `lastFlownCharacter` at flight start).
+        if let character = lastFlownCharacter {
+            lastMasteryLevelUp = progress.addMastery(.courseCleared(clean: result.collisions == 0), to: character)
+            let minutes = Int(result.completionTime / 60)
+            if minutes > 0 { progress.addMastery(.minutesFlown(minutes), to: character) }
+        }
         Analytics.shared.track(.stageCompleted, [
             "stage": result.stageIndex,
             "stars": result.stars,
@@ -206,9 +235,21 @@ final class MissionViewModel: ObservableObject {
             let data = try JSONEncoder().encode(progress)
             UserDefaults.standard.set(data, forKey: "playerProgress")
             lastPersistenceError = nil
+            if progress.cloudSyncEnabled {
+                CloudSync.shared.push(progress)
+            }
         } catch {
             log.error("Failed to encode PlayerProgress: \(error.localizedDescription, privacy: .public)")
             lastPersistenceError = error.localizedDescription
+        }
+    }
+
+    /// Replace the in-memory progress with a blob accepted from iCloud
+    /// and persist it locally (without pushing it straight back).
+    func acceptRemoteProgress(_ remote: PlayerProgress) {
+        progress = remote
+        if let data = try? JSONEncoder().encode(progress) {
+            UserDefaults.standard.set(data, forKey: "playerProgress")
         }
     }
 

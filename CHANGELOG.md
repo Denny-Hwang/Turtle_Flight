@@ -9,6 +9,41 @@ window.
 
 ## [Unreleased]
 
+### Phase 4 — 완성도 (polish)
+
+Last roadmap phase. Everything here is either opt-in or invisible
+until a player has earned it.
+
+**Audio**
+- Bundled-asset hook: `AudioManager.assetURL(named:)` looks for
+  `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` in m4a / caf / wav /
+  mp3 before falling back to synthesis, so real recordings can be
+  dropped in with no code change and a partial drop still works.
+- Synth BGM rewritten: a four-bar progression per theme with a triangle
+  pad, plucked arpeggio and low-passed wind bed, looping cleanly at 32 s,
+  replacing the single static chord that fatigued by the third run.
+
+**Clip sharing (opt-in)** — `ClipRecorder`
+- Settings → "Record clips" starts a ReplayKit recording at flight
+  start (mic off); result screens gain "Share clip", which opens Apple's
+  trim/share preview. Home / Retry discard the recording.
+
+**iCloud progress sync (opt-in)** — `CloudSync`
+- Mirrors the progress blob through iCloud Key-Value Storage. Merge
+  rule: a remote copy is accepted only when strictly ahead (campaign
+  stars, then bonus stars, then flight time), so an old device can
+  never clobber a newer one. Entitlement via `project.yml`.
+
+**Character mastery** — `CharacterMastery`
+- Per-character XP from flights (start, gates, bullseyes, clears, minutes)
+  → 10 levels with five titles. Level badge on the character tile and
+  the Home cameo. Pairs with the `flyCharacter` quest.
+
+**Docs** — README (tooling, CI, features), SDD §3.5/§3.7, CLAUDE.md
+roadmap closure, PRIVACY.md (iCloud, ReplayKit).
+**L10n:** 12 keys × 7 locales (273 each). **Tests:** `Phase4PolishTests` (13).
+
+
 ### Phase 3 — 리텐션 (retention loop)
 
 Third roadmap phase: the reasons to open the app *today*.

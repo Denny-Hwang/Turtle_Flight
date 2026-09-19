@@ -1,5 +1,6 @@
 import SwiftUI
 import SceneKit
+import ReplayKit
 
 struct FlightView: View {
     @ObservedObject var flightVM: FlightViewModel
@@ -21,6 +22,9 @@ struct FlightView: View {
     /// progress blob absorbs the new best — otherwise the result view
     /// would compare the run against itself and never show "New Best".
     @State private var freeFlightWasNewBest = false
+    /// ReplayKit preview handed back by `ClipRecorder.stop`; presenting
+    /// it is the "Share clip" flow (Phase 4).
+    @State private var clipPreview: RPPreviewViewController?
 
     var body: some View {
         ZStack {
@@ -73,6 +77,7 @@ struct FlightView: View {
                     starsCollected: flightVM.starsCollected,
                     isNewBestStars: freeFlightWasNewBest,
                     onHome: {
+                        ClipRecorder.shared.discard()
                         flightVM.stopFlight()
                         dismiss()
                     },
@@ -81,7 +86,8 @@ struct FlightView: View {
                         // the flight in place and dismiss the result modal.
                         showFreeFlightResult = false
                         flightVM.restartFlight()
-                    }
+                    },
+                    onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil
                 )
                 .transition(.opacity)
             }
@@ -157,6 +163,10 @@ struct FlightView: View {
             Text(L10n.t("flight.gyro.unavailable.message"))
         }
         .statusBar(hidden: true)
+        .fullScreenCover(item: $clipPreview) { preview in
+            ReplayPreview(controller: preview) { clipPreview = nil }
+                .ignoresSafeArea()
+        }
     }
 
     // MARK: - Stage Result overlay
@@ -183,6 +193,7 @@ struct FlightView: View {
                         priorBest: missionVM.priorBestForLastResult,
                         hasNextStage: missionVM.hasNextStage,
                         onHome: {
+                            ClipRecorder.shared.discard()
                             missionVM.returnToSelect()
                             flightVM.stopFlight()
                             dismiss()
@@ -197,7 +208,8 @@ struct FlightView: View {
                                 flightVM.startStage(next)
                                 missionVM.startMission()
                             }
-                        }
+                        },
+                        onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil
                     )
                     .transition(.opacity)
                 }
@@ -222,6 +234,17 @@ struct FlightView: View {
             case .selecting, .playing:
                 EmptyView()
             }
+        }
+    }
+
+    // MARK: - Clip sharing (Phase 4)
+
+    /// Stop the ReplayKit recording and present Apple's preview /
+    /// share sheet. The flight stays paused underneath.
+    private func shareClip() {
+        flightVM.pauseFlight()
+        ClipRecorder.shared.stop { preview in
+            clipPreview = preview
         }
     }
 
@@ -251,6 +274,8 @@ struct FlightView: View {
         flightVM.onMissionTerminalState = { [missionVM, weak flightVM] state in
             switch state {
             case .completed(let result):
+                missionVM.recordGateXP(passes: flightVM?.runGatePasses ?? 0,
+                                       bullseyes: flightVM?.runBullseyes ?? 0)
                 missionVM.completeMission(result: result)
             case .failed(let reason):
                 missionVM.failMission(reason: reason,
@@ -305,6 +330,8 @@ struct FlightView: View {
                              vehicle: vehicle,
                              theme: mapTheme,
                              trailTier: tierToApply)
+        missionVM.recordFlightStart(character: character)
+        ClipRecorder.shared.startIfEnabled(missionVM.progress.clipRecordingEnabled)
 
         // Check gyro availability after starting flight
         if !flightVM.gyroController.isAvailable {

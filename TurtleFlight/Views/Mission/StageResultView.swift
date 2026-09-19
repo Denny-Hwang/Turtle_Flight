@@ -27,6 +27,8 @@ struct StageResultView: View {
     let onHome: () -> Void
     let onRetry: () -> Void
     let onNext: () -> Void
+    /// Phase 4: present the ReplayKit preview. Nil hides the button.
+    var onShareClip: (() -> Void)? = nil
 
     @State private var displayedStars: Int = 0
     @State private var showButtons: Bool = false
@@ -211,6 +213,14 @@ struct StageResultView: View {
                     color: Theme.Color.brandPrimary,
                     action: onNext
                 )
+            }
+            if let onShareClip {
+                ResultButton(
+                    title: L10n.t("result.shareClip"),
+                    color: Color(hex: 0x6C5CE7),
+                    action: onShareClip
+                )
+                .accessibilityHint(L10n.t("a11y.result.shareClip.hint"))
             }
         }
     }

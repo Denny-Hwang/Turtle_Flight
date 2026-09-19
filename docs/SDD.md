@@ -231,6 +231,26 @@ TurtleFlight/
 **Stage 4: 산맥 넘기** ★★★★☆ - 산봉우리 7개의 정상 링 통과
 **Stage 5: 스카이 레이스** ★★★★★ - 에어 레이스 코스 완주
 
+#### 3.5.3 Today's Course / Sky Run (2026-09, Phase 3)
+
+- **Today's Course** (`DailyRun`): 날짜 문자열의 안정 해시를 시드로 12개 게이트 코스를 생성. 전 세계 동일 코스, 120초 제한, 75초 이내 ★★★. 일자별 최고 기록은 `PlayerProgress.dailyResults`.
+- **Sky Run** (`EndlessCourse`): 24개씩 청크 생성, 통과한 링 제거, 거리에 따라 반경·간격 축소. 3회 MISS 시 종료(완료로 처리, 통과 게이트 수가 결과).
+
+### 3.5.4 게이트 판정 (Phase 2)
+
+| 중심 거리 | 판정 | 배수 |
+|---|---|---|
+| ≤ 20 % 반경 | BULLSEYE | ×3 |
+| ≤ 60 % | GREAT | ×2 |
+| ≤ 100 % | OK | ×1 |
+| 평면 통과했으나 링 밖 | MISS | 콤보 리셋 |
+
+콤보 1스텝당 +10 % (최대 +100 %). 게이트 종류: 기본 / 축소(6초에 50 %) / 기울기 슬릿(45 %, 45°) / 이동(±40 m, 4초). `CourseSpec.comboShrink` 가 켜지면 콤보에 따라 판정 반경이 4 %씩(바닥 60 %) 줄어든다. 판정은 `MissionEngine.crossing(of:index:from:to:at:comboFactor:)` 의 세그먼트-원판 교차로 계산한다.
+
+### 3.5.5 리텐션 시스템 (Phase 3–4)
+
+일일 퀘스트 3개(`QuestSystem`, 보너스 별 → 트레일 티어), 연속 출석(`Analytics.currentStreak`), 고스트 리플레이(`GhostStore`), 캐릭터 숙련도(`CharacterMastery`). 옵트인: Game Center, 로컬 알림, iCloud KVS 동기화, ReplayKit 클립.
+
 ### 3.6 HUD
 
 | 요소 | 위치 | 표시 내용 |

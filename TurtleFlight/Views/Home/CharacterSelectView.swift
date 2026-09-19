@@ -86,7 +86,8 @@ struct CharacterSelectView: View {
                         ForEach(CharacterType.allCases, id: \.self) { character in
                             CharacterTile(
                                 character: character,
-                                isSelected: characterVM.selectedCharacter == character
+                                isSelected: characterVM.selectedCharacter == character,
+                                masteryLevel: missionVM.progress.masteryLevel(for: character)
                             ) {
                                 characterVM.selectCharacter(character)
                             }
@@ -240,6 +241,8 @@ struct CharacterPreviewView: View {
 struct CharacterTile: View {
     let character: CharacterType
     let isSelected: Bool
+    /// Phase 4 mastery level shown as a small badge (1 = none yet).
+    var masteryLevel: Int = 1
     let action: () -> Void
 
     var body: some View {
@@ -252,6 +255,14 @@ struct CharacterTile: View {
                     .adaptiveFrame(compactWidth: 44, compactHeight: 44)
                 Text(character.config.name)
                     .font(Theme.Typography.tileLabel)
+                if masteryLevel > 1 {
+                    Text(L10n.format("mastery.level.format", masteryLevel))
+                        .font(.system(size: 8, weight: .bold, design: .rounded))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(Capsule().fill(Theme.Color.starGold.opacity(0.85)))
+                        .foregroundColor(Theme.Color.textPrimary)
+                }
             }
             .adaptiveFrame(compactWidth: 64, compactHeight: 72)
             .background(

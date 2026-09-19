@@ -337,3 +337,17 @@
 "reminder.title"              = "Turtle Flight";
 "reminder.daily.body"         = "Le parcours du jour est prêt. 90 secondes, le même pour tous.";
 "reminder.streak.body"        = "Ta série s'arrête ce soir. Un vol rapide suffit à la garder.";
+
+// MARK: - Phase 4 — clips, synchronisation iCloud, maîtrise
+"settings.online.cloud"       = "Synchronisation iCloud";
+"settings.online.cloud.hint"  = "Garde tes étoiles et déblocages sur tous tes appareils via ton compte iCloud";
+"settings.online.clips"       = "Enregistrer des clips";
+"settings.online.clips.hint"  = "Enregistre tes vols pour partager un clip depuis l'écran de résultat";
+"result.shareClip"            = "Partager le clip";
+"a11y.result.shareClip.hint"  = "Touchez deux fois pour couper et partager une vidéo de ce vol";
+"mastery.level.format"        = "Niv.%lld";
+"mastery.title.1"             = "Poussin";
+"mastery.title.2"             = "Apprenti";
+"mastery.title.3"             = "Pilote du ciel";
+"mastery.title.4"             = "As";
+"mastery.title.5"             = "Légende du ciel";

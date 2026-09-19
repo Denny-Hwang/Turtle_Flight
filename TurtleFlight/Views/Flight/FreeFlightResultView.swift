@@ -13,6 +13,9 @@ struct FreeFlightResultView: View {
     let isNewBestStars: Bool
     let onHome: () -> Void
     let onAgain: () -> Void
+    /// Phase 4: present the ReplayKit preview. Nil hides the button
+    /// (recording disabled or unavailable).
+    var onShareClip: (() -> Void)? = nil
 
     @State private var showButtons: Bool = false
 
@@ -59,6 +62,7 @@ struct FreeFlightResultView: View {
 
                 Spacer().frame(height: Theme.Spacing.s)
 
+                VStack(spacing: Theme.Spacing.m) {
                 HStack(spacing: Theme.Spacing.m) {
                     ResultActionButton(
                         title: L10n.t("common.home"),
@@ -94,6 +98,15 @@ struct FreeFlightResultView: View {
                         action: onAgain
                     )
                 }
+                if let onShareClip {
+                    ResultActionButton(
+                        title: L10n.t("result.shareClip"),
+                        color: Color(hex: 0x6C5CE7),
+                        action: onShareClip
+                    )
+                    .accessibilityHint(L10n.t("a11y.result.shareClip.hint"))
+                }
+                }   // VStack (buttons)
                 .opacity(showButtons ? 1 : 0)
                 .offset(y: showButtons ? 0 : 16)
             }

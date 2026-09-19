@@ -184,6 +184,33 @@ struct SettingsView: View {
                 }
             ))
             .accessibilityHint(L10n.t("settings.online.reminders.hint"))
+
+            Toggle(L10n.t("settings.online.cloud"), isOn: Binding(
+                get: { missionVM.progress.cloudSyncEnabled },
+                set: { enabled in
+                    missionVM.progress.cloudSyncEnabled = enabled
+                    missionVM.save()
+                    if enabled {
+                        CloudSync.shared.onRemoteProgress = { remote in
+                            missionVM.acceptRemoteProgress(remote)
+                        }
+                        CloudSync.shared.start(local: missionVM.progress)
+                    } else {
+                        CloudSync.shared.stop()
+                    }
+                }
+            ))
+            .accessibilityHint(L10n.t("settings.online.cloud.hint"))
+
+            Toggle(L10n.t("settings.online.clips"), isOn: Binding(
+                get: { missionVM.progress.clipRecordingEnabled },
+                set: { enabled in
+                    missionVM.progress.clipRecordingEnabled = enabled
+                    missionVM.save()
+                }
+            ))
+            .disabled(!ClipRecorder.shared.isAvailable)
+            .accessibilityHint(L10n.t("settings.online.clips.hint"))
         } header: {
             Text(L10n.t("settings.section.online"))
         } footer: {
