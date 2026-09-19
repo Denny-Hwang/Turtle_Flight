@@ -599,7 +599,7 @@ struct TrailParameters {
     let velocity: CGFloat            // emit speed (scene units / sec)
     let velocityVariation: CGFloat
     let spreadingAngle: CGFloat      // degrees
-    let blendMode: SCNBlendMode
+    let blendMode: SCNParticleBlendMode
 }
 
 extension CharacterRegistry {

@@ -380,7 +380,7 @@ struct FlightView: View {
         rays.light?.spotInnerAngle = 20
         rays.light?.spotOuterAngle = 60
         rays.position = SCNVector3(0, 1500, 0)
-        rays.eulerAngles = SCNVector3(-.pi / 2, 0, 0)
+        rays.eulerAngles = SCNVector3(-Float.pi / 2, 0, 0)
         scene.rootNode.addChildNode(rays)
     }
 }
