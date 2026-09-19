@@ -362,3 +362,22 @@ Instruments + Xcode Archive** 가 필요하며 Sprint 4 범위가 아닙니다.
 - **Daily Challenge 모드** (G1 retention math 격차 해소)
 - **링 plane-intersection 충돌** (테스트 호환성 필요)
 - **CharacterRegistry primitive geometry 600+ LOC 제거** (실기기 fallback 검증 필요)
+
+---
+
+## 10. Closure log — 2026-09 roadmap + App Store readiness (PR #49–#53)
+
+| 항목 | 후속 처리 |
+|------|----------|
+| CI가 한 번도 성공한 적 없음 (Xcode 15.4 / iPhone 15 고정) | unpin + 원본 로그 보존 + Release 빌드 게이트 (#49, #53) |
+| `main` 컴파일 오류 5건 (CI 부재로 미발견) | 수정 (#49) |
+| `totalFlightTime` / `bestFreeFlightStars` 미저장 | 저장 경로 추가 (#49) |
+| 링 sphere-distance 측면 통과 | 세그먼트-원판 교차 + 중심 정확도 (#49) |
+| 렌더 콜백 main 홉 + 60 Hz `@Published` | 렌더 스레드 시뮬레이션 + 표시 단위 병합 발행 (#49) |
+| 스킬 천장 없음 | 게이트 판정/콤보, 게이트 종류, 에너지 모델, 부스트 게이지 (#50) |
+| 재방문 이유 없음 / 15★ vs 50★ 격차 | 오늘의 코스, 스카이런, 퀘스트 보너스 별, 연속 출석, 고스트 (#51) |
+| CharacterRegistry primitive 600 LOC | 제거, 빌보드/트레일 API만 유지 (#53) |
+| 로케일별 권한 문구 부재 | `InfoPlist.strings` ×7 (#53) |
+| 제출 절차 문서 부재 | `docs/APP_STORE_SUBMISSION.md`, `docs/store/*.md`, `scripts/preflight.sh` (#53) |
+
+**테스트 카운트**: 169 → 390+. 실기기 Instruments 패스(§5.2)와 TestFlight 튜닝은 여전히 계정/기기가 필요한 항목으로, 절차는 `docs/APP_STORE_SUBMISSION.md` §5.

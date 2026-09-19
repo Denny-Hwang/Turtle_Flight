@@ -135,6 +135,7 @@ automatically. Hit `⌘R` to build and run.
 |------|---------|---------|
 | XcodeGen | Reproducible `.xcodeproj` from `project.yml` | `brew install xcodegen` |
 | xcbeautify | Pretty xcodebuild logs (used by CI) | `brew install xcbeautify` |
+| `scripts/preflight.sh` | Pre-archive gate: plist / privacy manifest / localization parity checks, Release build, full test run | `scripts/preflight.sh` |
 | librsvg + ImageMagick | Regenerate raster icons from SVG (`scripts/build_assets.sh`) | `brew install librsvg imagemagick` |
 
 ## Continuous Integration
@@ -160,7 +161,10 @@ same key set, no empty values, and matching format specifiers. See
 ## Documentation
 
 - [`docs/SDD.md`](docs/SDD.md) — Software Development Document (architecture, roadmap, technical spec)
-- [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) — Pre-submission validation report (109+ XCTest cases, bug fixes)
+- [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) — Pre-submission validation report (historical snapshot)
+- [`docs/APP_STORE_SUBMISSION.md`](docs/APP_STORE_SUBMISSION.md) — Submission checklist: capabilities, Game Center IDs, privacy labels, review notes, screenshots
+- [`docs/store/`](docs/store/) — App Store marketing copy for all seven locales
+- [`PRIVACY.md`](PRIVACY.md) — Privacy policy (host it at the URL in `SettingsView.privacyURL`)
 
 ## License
 

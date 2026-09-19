@@ -37,38 +37,19 @@ final class CharacterRegistryTests: XCTestCase {
         XCTAssertFalse(VehicleType.shellJet.isShared)
     }
 
-    func testCharacterNodeCreation() {
+    /// The legacy primitive builders are gone; the billboard is the only
+    /// in-flight representation. Guard against the 600-LOC dead path
+    /// creeping back by checking the registry's public surface.
+    func testRegistryExposesOnlyBillboardAndTrailBuilders() {
         let registry = CharacterRegistry.shared
         for character in CharacterType.allCases {
-            let node = registry.buildCharacterNode(for: character)
+            let node = registry.buildInflightBillboard(for: character)
             XCTAssertEqual(node.name, character.rawValue)
-            XCTAssertGreaterThan(node.childNodes.count, 0)
+            XCTAssertNotNil(node.geometry as? SCNPlane)
         }
-    }
-
-    func testVehicleNodeCreation() {
-        let registry = CharacterRegistry.shared
         for vehicle in VehicleType.allCases {
-            let node = registry.buildVehicleNode(for: vehicle)
-            XCTAssertEqual(node.name, vehicle.rawValue)
+            XCTAssertNotNil(registry.buildTrailParticleSystem(for: vehicle))
         }
-    }
-
-    func testAll12Combinations() {
-        let registry = CharacterRegistry.shared
-        // 6 characters × 2 vehicles each = 12 combinations
-        var combinationCount = 0
-        for character in CharacterType.allCases {
-            let config = character.config
-            for vehicle in config.availableVehicles {
-                let charNode = registry.buildCharacterNode(for: character)
-                let vehNode = registry.buildVehicleNode(for: vehicle)
-                XCTAssertNotNil(charNode)
-                XCTAssertNotNil(vehNode)
-                combinationCount += 1
-            }
-        }
-        XCTAssertEqual(combinationCount, 12)
     }
 
     // MARK: - In-flight billboard

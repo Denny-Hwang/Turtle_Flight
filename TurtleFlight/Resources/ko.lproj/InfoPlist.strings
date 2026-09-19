@@ -1,0 +1,3 @@
+/* Localized Info.plist usage descriptions (ko) — shown by iOS in the permission prompts. */
+"NSMotionUsageDescription" = "Turtle Flight는 기기의 자이로스코프로 캐릭터를 조종합니다. 기기를 기울여 조종하세요! 모션 데이터는 기기 안에서만 처리되며 수집되거나 전송되지 않습니다.";
+"NSPhotoLibraryAddUsageDescription" = "공유 시트에서 저장을 선택하면 녹화한 비행 클립을 사진에 저장합니다. 설정에서 클립 녹화를 켠 경우에만 사용됩니다.";

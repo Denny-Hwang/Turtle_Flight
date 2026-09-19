@@ -96,6 +96,30 @@ jobs:
         run: |
           grep -n -E "error:|warning: unre" build/reports/xcodebuild-build.log | head -80 || true
 
+      - name: Build (Release configuration)
+        # The archive that goes to App Store Connect is a Release build.
+        # Optimised builds occasionally surface diagnostics Debug hides
+        # (e.g. unused results, whole-module type-check limits), so gate
+        # on it here rather than discovering it in Xcode → Archive.
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project TurtleFlight.xcodeproj \
+            -scheme TurtleFlight \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            2>&1 | tee build/reports/xcodebuild-release.log | xcbeautify --renderer github-actions
+
+      - name: Show Release compiler errors (raw)
+        if: failure()
+        run: |
+          grep -n -E "error:" build/reports/xcodebuild-release.log | head -40 || true
+
+      - name: Preflight checks (plist, privacy manifest, localization files)
+        run: bash scripts/preflight.sh --no-build
+
       - name: Run tests
         run: |
           set -o pipefail

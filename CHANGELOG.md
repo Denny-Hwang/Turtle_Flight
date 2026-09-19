@@ -9,6 +9,33 @@ window.
 
 ## [Unreleased]
 
+### Phase 5 — App Store readiness
+
+Closes every item the repository can close before an upload.
+
+- **Dead code:** the ~600-LOC low-poly `SCNSphere`/`SCNCapsule` character
+  and vehicle builders in `CharacterRegistry` are gone. Nothing outside
+  their own tests could reach them since the atlas billboard landed in
+  PR #36. The registry now exposes only `buildInflightBillboard` and
+  the trail particle builder.
+- **Usage strings:** `NSPhotoLibraryAddUsageDescription` (ReplayKit's
+  "Save" in the share sheet) added; `InfoPlist.strings` in all seven
+  locales carry the motion + photo-library descriptions so permission
+  prompts are localized.
+- **CI:** a Release-configuration build now gates every PR (optimised
+  builds surface diagnostics Debug hides), and `scripts/preflight.sh
+  --no-build` runs the static submission checks.
+- **`scripts/preflight.sh`:** local pre-archive gate — Info.plist keys,
+  privacy manifest, localization parity (both `.strings` files), icon
+  slot, entitlements, then Release build + full tests.
+- **Docs:** `docs/APP_STORE_SUBMISSION.md` (capabilities, exact Game
+  Center IDs, privacy labels, export compliance, review notes,
+  screenshot plan, tuning knobs) and `docs/store/<locale>.md` marketing
+  copy (name, subtitle, promo, description, keywords, what's new) for
+  en/ko/ja/zh-Hans/es/fr/de. README, CLAUDE.md, I18N and
+  VALIDATION_REPORT refreshed.
+
+
 ### Phase 4 — 완성도 (polish)
 
 Last roadmap phase. Everything here is either opt-in or invisible
