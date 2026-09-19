@@ -62,6 +62,8 @@
 	</array>
 	<key>NSMotionUsageDescription</key>
 	<string>Turtle Flight uses your device's gyroscope to control character flight. Tilt your device to steer! Motion data is processed locally and never collected or transmitted.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Lets you save a recorded flight clip to your Photos when you choose Save in the share sheet. Only used if you turn on clip recording in Settings.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

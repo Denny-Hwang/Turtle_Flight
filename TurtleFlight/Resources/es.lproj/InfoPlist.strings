@@ -1,0 +1,3 @@
+/* Localized Info.plist usage descriptions (es) — shown by iOS in the permission prompts. */
+"NSMotionUsageDescription" = "Turtle Flight usa el giroscopio de tu dispositivo para controlar el vuelo del personaje. ¡Inclina el dispositivo para dirigirlo! Los datos de movimiento se procesan localmente y nunca se recogen ni se transmiten.";
+"NSPhotoLibraryAddUsageDescription" = "Permite guardar un clip de vuelo grabado en Fotos cuando eliges Guardar en la hoja de compartir. Solo se usa si activas la grabación de clips en Ajustes.";

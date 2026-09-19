@@ -56,8 +56,12 @@ targets:
       - path: TurtleFlight/Resources
       - path: TurtleFlight/Assets.xcassets
       - path: TurtleFlight/PrivacyInfo.xcprivacy
-    info:
-      path: TurtleFlight/Info.plist
+    # NOTE: no `info:` block on purpose. XcodeGen *writes* the plist named
+    # by `info.path` on every `xcodegen generate` (merging its own keys with
+    # `info.properties`), which silently dropped the hand-authored
+    # NSMotionUsageDescription / launch screen / orientation keys — caught by
+    # scripts/preflight.sh in CI. Pointing INFOPLIST_FILE at the file instead
+    # (see settings.base below) makes Xcode read it verbatim.
     # Game Center (Phase 3, opt-in in Settings). XcodeGen writes the
     # .entitlements file from these properties on every generate.
     entitlements:
@@ -70,11 +74,13 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app
         PRODUCT_NAME: $(TARGET_NAME)
-        # We ship a hand-authored Info.plist (the file referenced by
-        # `info.path` above) — orientation, capabilities, motion-usage
-        # description, and launch screen all live there. Do NOT add
-        # INFOPLIST_KEY_* build settings here; XcodeGen would generate
-        # a second Info.plist and the two would conflict.
+        # We ship a hand-authored Info.plist — orientation, capabilities,
+        # motion / photo-library usage descriptions, and launch screen all
+        # live there. Referenced directly so XcodeGen never regenerates it.
+        # Do NOT add INFOPLIST_KEY_* build settings here; they would
+        # conflict with the file.
+        INFOPLIST_FILE: TurtleFlight/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1,2"  # iPhone + iPad
         DEVELOPMENT_TEAM: ""           # set per-contributor via .xcconfig override
         CODE_SIGN_STYLE: Automatic

@@ -1,0 +1,3 @@
+/* Localized Info.plist usage descriptions (zh-Hans) — shown by iOS in the permission prompts. */
+"NSMotionUsageDescription" = "Turtle Flight 使用设备的陀螺仪来控制角色飞行。倾斜设备即可操控！运动数据仅在本地处理，绝不收集或传输。";
+"NSPhotoLibraryAddUsageDescription" = "在分享面板中选择保存时，把录制的飞行片段保存到照片。仅在设置中开启片段录制后使用。";

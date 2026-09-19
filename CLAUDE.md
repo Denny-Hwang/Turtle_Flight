@@ -5,7 +5,8 @@
 
 ## Key Documents
 - `docs/SDD.md` — SW 개발 문서
-- `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (네이티브 Swift 기준, 109개 테스트, 6 critical 버그 수정 완료)
+- `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (historical snapshot; 현재 테스트 390+)
+- `docs/APP_STORE_SUBMISSION.md` — 앱스토어 제출 체크리스트 (계정에서 해야 할 일, Game Center ID, 프라이버시 라벨, 리뷰 노트). 마케팅 카피는 `docs/store/<locale>.md`
 
 ## Tech Stack — Native iOS only
 Swift 5.9+, SwiftUI+UIKit, SceneKit, CoreMotion, AVFoundation. iOS 16.0+, Landscape only.
@@ -72,8 +73,10 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 ## Build (Sprint 4 이후)
 `TurtleFlight.xcodeproj` 는 커밋하지 않습니다 — `project.yml` 에서
 재생성: `brew install xcodegen && xcodegen generate`. GitHub Actions가
-PR마다 169 XCTest를 실행합니다. 자세한 절차는 `README.md` Getting
-Started / Tooling / CI 섹션 참조.
+PR마다 Debug 빌드 + 전체 XCTest(390+) + Release 빌드 + `scripts/preflight.sh
+--no-build` 를 실행합니다. 업로드 전에는 `scripts/preflight.sh` (정적 검사 +
+Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `README.md` 와
+`docs/APP_STORE_SUBMISSION.md` 참조.
 
 ## 2026-09 로드맵 (4 phase, 모두 머지됨)
 | Phase | PR | 핵심 |
@@ -82,6 +85,7 @@ Started / Tooling / CI 섹션 참조.
 | 2 코어 재미 | #50 | BULLSEYE/GREAT/OK/MISS 판정 + 콤보, 축소/기울기/이동 게이트, 에너지 모델 + 실속, 부스트 게이지, 즉시 비행 |
 | 3 리텐션 | #51 | 오늘의 코스(`DailyRun`), 스카이런(`EndlessCourse`), 퀘스트 + 연속 출석, 고스트, 옵트인 Game Center/알림 |
 | 4 완성도 | #52 | 오디오 에셋 훅 + BGM 재작성, ReplayKit 클립, iCloud KVS 동기화, 캐릭터 숙련도, 문서 |
+| 5 제출 준비 | #53 | CharacterRegistry 프리미티브 600 LOC 제거, 로케일별 `InfoPlist.strings`, Release 빌드 CI 게이트, `scripts/preflight.sh`, 제출 체크리스트 + 7개 로케일 마케팅 카피 |
 
 **설계 원칙 (유지할 것)**
 - 시뮬레이션은 SceneKit 렌더 스레드에서 돌고 `@Published` 는 main 에서만 쓴다 (`FlightViewModel` 상단 주석). 테스트는 main 에서 동기 호출.
@@ -90,8 +94,8 @@ Started / Tooling / CI 섹션 참조.
 - 링 통과 관련 테스트는 `MissionEngine.testPass(ringIndex:)` 로 2프레임 세그먼트를 날린다.
 - 외부로 나가는 것(Game Center, 알림, iCloud, 녹화)은 전부 옵트인 + 기본 OFF, `PRIVACY.md` 에 기록.
 
-## 남은 백로그
-- **CharacterRegistry primitive geometry 600+ LOC 제거**: atlas billboard가 default이므로 dead weight. 실기기 fallback 검증 후 삭제
+## 남은 백로그 (저장소 밖 또는 선택 사항)
+- **Apple 계정 작업**: App ID capability(Game Center, iCloud KVS), App Store Connect 리더보드/업적 생성, 프라이버시 정책 URL 호스팅 — 절차와 정확한 ID는 `docs/APP_STORE_SUBMISSION.md`
 - **실제 오디오 에셋**: `AudioManager.assetURL` 훅은 준비됨. `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` 파일만 번들에 넣으면 됨
-- **App Store Connect**: Game Center 리더보드/업적 ID(`GameCenterManager` 참조), iCloud KVS 컨테이너, 5개 로케일 마케팅 카피
-- **Swift 6 strict concurrency** 채택
+- **실기기 튜닝**: TestFlight 후 `GateScoring`, `Constants.Flight.energy*`, `EndlessCourse.radius(at:)` 상수 조정
+- **Swift 6 strict concurrency** 채택 (제출 요건 아님)
