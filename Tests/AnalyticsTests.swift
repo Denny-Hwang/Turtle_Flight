@@ -89,6 +89,27 @@ final class AnalyticsTests: XCTestCase {
         XCTAssertEqual(analytics.currentStreak(asOf: date("2026-09-19")), 1)
     }
 
+    func testStreakSurvivesOneRestDay() {
+        let analytics = Analytics(defaults: defaults)
+        // Played 15, 16, (rest 17), 18, 19.
+        for day in ["2026-09-15", "2026-09-16", "2026-09-18", "2026-09-19"] {
+            analytics.now = { self.date(day) }
+            analytics.markSessionStart()
+        }
+        XCTAssertEqual(analytics.currentStreak(asOf: date("2026-09-19")), 4,
+                       "one missed day is forgiven and not counted")
+    }
+
+    func testStreakAllowsOnlyOneRestDay() {
+        let analytics = Analytics(defaults: defaults)
+        // Played 13, (rest 14), 15, (rest 16), 17.
+        for day in ["2026-09-13", "2026-09-15", "2026-09-17"] {
+            analytics.now = { self.date(day) }
+            analytics.markSessionStart()
+        }
+        XCTAssertEqual(analytics.currentStreak(asOf: date("2026-09-17")), 2)
+    }
+
     func testResetClearsEverything() {
         let analytics = Analytics(defaults: defaults)
         analytics.now = { self.date("2026-09-19") }

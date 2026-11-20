@@ -59,7 +59,9 @@ final class LocalizationCoverageTests: XCTestCase {
     }
 
     func testEachThemeHasEightRegionNames() {
-        for theme in MapTheme.allCases {
+        // The three original worlds have hand-written regions; the
+        // world-tour worlds name places through their landmarks instead.
+        for theme in [MapTheme.sky, .space, .ocean] {
             let names = theme.regionNames
             XCTAssertEqual(names.count, 8,
                            "Theme '\(theme.rawValue)' should expose 8 region names")

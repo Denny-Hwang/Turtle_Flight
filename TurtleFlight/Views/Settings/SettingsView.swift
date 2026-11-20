@@ -29,6 +29,7 @@ struct SettingsView: View {
 
     // MARK: - Local audio mirror
 
+    @State private var touchControls: Bool = GyroController.touchControlEnabled
     @State private var isMuted: Bool
     @State private var bgmVolume: Float
     @State private var sfxVolume: Float
@@ -54,6 +55,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 audioSection
+                controlsSection
                 trailColorSection
                 sensitivityGuideSection
                 onlineSection
@@ -132,6 +134,19 @@ struct SettingsView: View {
     /// among the ones they've earned. The footer caption tells the
     /// player what they still need for the next tier so the count has
     /// a tangible target.
+    private var controlsSection: some View {
+        Section {
+            Toggle(L10n.t("settings.controls.touch"), isOn: $touchControls)
+                .onChange(of: touchControls) { newValue in
+                    GyroController.touchControlEnabled = newValue
+                }
+        } header: {
+            Text(L10n.t("settings.section.controls"))
+        } footer: {
+            Text(L10n.t("settings.controls.touch.caption"))
+        }
+    }
+
     private var trailColorSection: some View {
         Section {
             ForEach(TrailColorTier.allCases, id: \.self) { tier in
@@ -395,6 +410,7 @@ struct SettingsView: View {
         Analytics.shared.reset()
         QuestTracker.shared.reset()
         GhostStore.shared.deleteAll()
+        PostcardAlbum.shared.reset()
         // Banner stays visible briefly so the destructive action reads
         // as confirmed rather than silently working.
         withAnimation(.easeInOut) { resetSuccess = true }

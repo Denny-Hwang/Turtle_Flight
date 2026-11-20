@@ -361,3 +361,63 @@
 "sensitivity.easy"                  = "かんたん";
 "sensitivity.normal"                = "ふつう";
 "sensitivity.expert"                = "エキスパート";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "操作";
+"settings.controls.touch"         = "タッチ操作";
+"settings.controls.touch.caption" = "本体を傾ける代わりに、画面をドラッグして操縦します。寝転んでいるとき、車の中、傾け操作がつらいときに。";
+"flight.control.view"             = "表示";
+"a11y.cleanView.label"            = "計器の表示・非表示を切り替え";
+
+// MARK: - World tour (2026-11) — new worlds, landmarks, postcards
+"theme.desert.displayName" = "砂漠の遺跡";
+"theme.desert.subtitle" = "ピラミッドとオアシス";
+"theme.city.displayName" = "光の街";
+"theme.city.subtitle" = "塔と橋";
+"theme.seoul.displayName" = "ソウルの空";
+"theme.seoul.subtitle" = "丘と韓屋";
+"theme.wild.displayName" = "大自然";
+"theme.wild.subtitle" = "滝とオーロラ";
+"landmark.floatingCastle.name" = "雲のお城";
+"landmark.rainbowGate.name" = "虹の門";
+"landmark.windmillHill.name" = "風車の丘";
+"landmark.greatPyramids.name" = "砂の大ピラミッド";
+"landmark.sandGuardian.name" = "砂の守り神";
+"landmark.palmOasis.name" = "ヤシのオアシス";
+"landmark.sunObelisk.name" = "太陽のオベリスク";
+"landmark.ironLaceTower.name" = "鉄レースの塔";
+"landmark.grandArch.name" = "大きなアーチ";
+"landmark.riverBridge.name" = "川あかりの橋";
+"landmark.skyWheel.name" = "空の観覧車";
+"landmark.hilltopTower.name" = "丘の上のタワー";
+"landmark.palaceGate.name" = "王宮の門";
+"landmark.hanokVillage.name" = "韓屋の村";
+"landmark.moonBridge.name" = "月あかりの橋";
+"landmark.greatFalls.name" = "かみなり滝";
+"landmark.canyonArch.name" = "峡谷のアーチ";
+"landmark.auroraPeak.name" = "オーロラの峰";
+"landmark.giantTree.name" = "おじいさんの木";
+"landmark.ringPlanet.name" = "輪っかの惑星";
+"landmark.spaceStation.name" = "星のステーション";
+"landmark.moonBase.name" = "月面基地";
+"landmark.shipwreck.name" = "沈んだ船";
+"landmark.seaVolcano.name" = "海底火山";
+"landmark.shellPalace.name" = "貝がらの宮殿";
+"postcard.toast.new" = "新しい絵はがき：%@";
+"postcard.toast.stamp" = "新しいスタンプ：%@";
+"hello.toast" = "やあ！ +1 ★";
+"landmark.hint.format" = "%@ · %lldm";
+"home.album.title" = "絵はがき";
+"album.title" = "空の絵はがき";
+"album.progress.format" = "%lld / %lld 発見";
+"album.empty.hint" = "フリーフライトで名所の近くを飛ぶと絵はがきが手に入ります。なかまごとにスタンプを押せます。";
+"album.undiscovered" = "まだ見つけていない";
+"a11y.album.hint" = "絵はがきコレクションを開きます";
+
+// MARK: - Character specialties
+"specialty.turtle" = "ロングバーン：ブーストが50%長い";
+"specialty.penguin" = "ダッシュ：短いけれど最速のブースト";
+"specialty.hamster" = "クイックチャージ：ゲージがはやくたまる";
+"specialty.cat" = "スターマグネット：遠くの星も集める";
+"specialty.frog" = "スカイホップ：ブーストで上にはねる";
+"specialty.bunny" = "ど真ん中バッテリー：ど真ん中でブースト回復";

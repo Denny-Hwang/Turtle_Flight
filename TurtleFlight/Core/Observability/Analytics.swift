@@ -24,6 +24,7 @@ enum AnalyticsEvent: String, CaseIterable {
     case stageFailed
     case freeFlightEnded
     case settingsOpened
+    case landmarkDiscovered
 }
 
 /// Point-in-time read of the counters, for UI / tests.
@@ -150,9 +151,23 @@ final class Analytics {
                   days.contains(Self.dayString(yesterday)) else { return 0 }
             cursor = yesterday
         }
+        // One "rest day" per streak: a single missed day between two
+        // played days does not break the chain (it is not counted
+        // either). A young player who skips a day should not be
+        // punished by losing everything. Two missed days in a row, or a
+        // second gap, still end it.
         var streak = 0
-        while days.contains(Self.dayString(cursor)) {
-            streak += 1
+        var restDayUsed = false
+        while true {
+            if days.contains(Self.dayString(cursor)) {
+                streak += 1
+            } else if !restDayUsed,
+                      let before = calendar.date(byAdding: .day, value: -1, to: cursor),
+                      days.contains(Self.dayString(before)) {
+                restDayUsed = true
+            } else {
+                break
+            }
             guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
             cursor = previous
         }

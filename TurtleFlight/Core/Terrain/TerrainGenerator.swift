@@ -9,14 +9,28 @@ final class TerrainGenerator {
     }
 
     private var loadedChunks: [ChunkCoord: SCNNode] = [:]
+    private var farNode: SCNNode?
+    private var farCentre: SIMD2<Float>?
     private let parentNode: SCNNode
-    private let seed: Int
+    let seed: Int
     private(set) var theme: MapTheme
+    let profile: WorldProfile
 
     init(parentNode: SCNNode, seed: Int = 42, theme: MapTheme = .sky) {
         self.parentNode = parentNode
         self.seed = seed
         self.theme = theme
+        self.profile = WorldProfile.profile(for: theme)
+    }
+
+    /// Node name given to friendly creatures and craft (balloons,
+    /// whales, UFOs, camels, …). Flying close to one says hello — see
+    /// `FlightViewModel.checkFriendlyFlyBys`.
+    static let friendName = "friend"
+
+    /// Friends in the currently loaded chunks that have not been greeted.
+    func ungreetedFriends() -> [SCNNode] {
+        loadedChunks.values.flatMap { $0.childNodes.filter { $0.name == Self.friendName } }
     }
 
     // MARK: - Public
@@ -48,6 +62,74 @@ final class TerrainGenerator {
             parentNode.addChildNode(chunkNode)
             loadedChunks[coord] = chunkNode
         }
+        updateFarTerrain(playerPosition: playerPosition)
+    }
+
+    // MARK: - Far terrain
+    //
+    // The detailed chunks only reach ~300 units, which was fine while
+    // nothing stood on the horizon. Landmarks are visible from a cell
+    // away, so they need ground under them: one coarse mesh
+    // (`farCells`² quads of `farCellSize`) centred on the player and
+    // rebuilt when they move a few cells. ~3k triangles, no decorations.
+
+    static let farCellSize: Float = 100
+    static let farCells = 44
+    /// Rebuild when the player is this far from the mesh centre.
+    static let farSnap: Float = 400
+
+    private func updateFarTerrain(playerPosition: SCNVector3) {
+        let snap = Self.farSnap
+        let cx = (playerPosition.x / snap).rounded() * snap
+        let cz = (playerPosition.z / snap).rounded() * snap
+        if let centre = farCentre, centre.x == cx, centre.y == cz { return }
+        farCentre = SIMD2<Float>(cx, cz)
+        farNode?.removeFromParentNode()
+
+        let n = Self.farCells
+        let size = Self.farCellSize
+        let half = Float(n) * size / 2
+        var vertices: [SCNVector3] = []
+        var colors: [SCNVector3] = []
+        var indices: [Int32] = []
+        vertices.reserveCapacity((n + 1) * (n + 1))
+        for row in 0...n {
+            for col in 0...n {
+                let x = cx - half + Float(col) * size
+                let z = cz - half + Float(row) * size
+                let h = terrainHeight(x: x, z: z)
+                // Sits a little low so the detailed chunks always win.
+                vertices.append(SCNVector3(x, h - 6, z))
+                colors.append(profile.color(forHeight: h))
+            }
+        }
+        for row in 0..<n {
+            for col in 0..<n {
+                let tl = Int32(row * (n + 1) + col)
+                let tr = tl + 1
+                let bl = Int32((row + 1) * (n + 1) + col)
+                let br = bl + 1
+                indices.append(contentsOf: [tl, bl, tr, tr, bl, br])
+            }
+        }
+        let colorData = Data(bytes: colors, count: colors.count * MemoryLayout<SCNVector3>.size)
+        let colorSource = SCNGeometrySource(
+            data: colorData, semantic: .color,
+            vectorCount: colors.count, usesFloatComponents: true,
+            componentsPerVector: 3, bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: 0, dataStride: MemoryLayout<SCNVector3>.size
+        )
+        let normals = [SCNVector3](repeating: SCNVector3(0, 1, 0), count: vertices.count)
+        let geometry = SCNGeometry(
+            sources: [SCNGeometrySource(vertices: vertices), SCNGeometrySource(normals: normals), colorSource],
+            elements: [SCNGeometryElement(indices: indices, primitiveType: .triangles)])
+        let material = SCNMaterial()
+        material.isDoubleSided = true
+        geometry.materials = [material]
+        let node = SCNNode(geometry: geometry)
+        node.name = "far_terrain"
+        parentNode.addChildNode(node)
+        farNode = node
     }
 
     func clearAllChunks() {
@@ -56,6 +138,9 @@ final class TerrainGenerator {
             node.removeFromParentNode()
         }
         loadedChunks.removeAll()
+        farNode?.removeFromParentNode()
+        farNode = nil
+        farCentre = nil
     }
 
     /// Recursively `removeAllActions()` for a node and its descendants.
@@ -144,43 +229,19 @@ final class TerrainGenerator {
 
     // MARK: - Height
 
-    private func terrainHeight(x: Float, z: Float) -> Float {
-        let scale: Float = 0.005
+    func terrainHeight(x: Float, z: Float) -> Float {
+        let scale = profile.noiseScale
         let noise = MathHelpers.fractalNoise(
             x: x * scale, y: z * scale,
             octaves: 4, persistence: 0.5, lacunarity: 2.0, seed: seed
         )
-        return noise * Constants.Terrain.maxHeight
+        return profile.height(fromNoise: noise)
     }
 
     // MARK: - Theme Colors
 
     private func colorForHeight(_ height: Float) -> SCNVector3 {
-        switch theme {
-        case .sky:
-            if height < Constants.Terrain.waterLevel  { return SCNVector3(0.33, 0.53, 0.87) }
-            if height < Constants.Terrain.sandLevel   { return SCNVector3(0.93, 0.87, 0.68) }
-            if height < Constants.Terrain.grassLevel  { return SCNVector3(0.30, 0.69, 0.31) }
-            if height < Constants.Terrain.rockLevel   { return SCNVector3(0.55, 0.43, 0.33) }
-            if height < Constants.Terrain.snowLevel   { return SCNVector3(0.45, 0.35, 0.28) }
-            return SCNVector3(0.95, 0.95, 0.97)
-
-        case .space:
-            if height < Constants.Terrain.waterLevel  { return SCNVector3(0.05, 0.02, 0.20) }
-            if height < Constants.Terrain.sandLevel   { return SCNVector3(0.20, 0.10, 0.35) }
-            if height < Constants.Terrain.grassLevel  { return SCNVector3(0.30, 0.15, 0.50) }
-            if height < Constants.Terrain.rockLevel   { return SCNVector3(0.40, 0.20, 0.60) }
-            if height < Constants.Terrain.snowLevel   { return SCNVector3(0.55, 0.35, 0.75) }
-            return SCNVector3(0.80, 0.70, 1.00)
-
-        case .ocean:
-            if height < Constants.Terrain.waterLevel  { return SCNVector3(0.05, 0.20, 0.50) }
-            if height < Constants.Terrain.sandLevel   { return SCNVector3(0.10, 0.40, 0.65) }
-            if height < Constants.Terrain.grassLevel  { return SCNVector3(0.15, 0.60, 0.55) }
-            if height < Constants.Terrain.rockLevel   { return SCNVector3(0.20, 0.65, 0.45) }
-            if height < Constants.Terrain.snowLevel   { return SCNVector3(0.60, 0.85, 0.70) }
-            return SCNVector3(0.90, 0.98, 0.95)
-        }
+        profile.color(forHeight: height)
     }
 
     // MARK: - Decorations
@@ -191,6 +252,8 @@ final class TerrainGenerator {
         case .sky:   addSkyDecorations(to: node, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
         case .space: addSpaceDecorations(to: node, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
         case .ocean: addOceanDecorations(to: node, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
+        case .desert, .city, .seoul, .wild:
+            addWorldTourDecorations(to: node, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
         }
     }
 
@@ -255,6 +318,7 @@ final class TerrainGenerator {
             let bx = offsetX + Float(h % Int(chunkSize))
             let bz = offsetZ + Float((h * 13) % Int(chunkSize))
             let balloon = makeHotAirBalloon()
+            balloon.name = Self.friendName
             balloon.position = SCNVector3(bx, Float(350 + h % 150), bz)
             let bob = SCNAction.sequence([
                 SCNAction.moveBy(x: 0, y: 10, z: 0, duration: 3),
@@ -328,6 +392,7 @@ final class TerrainGenerator {
         if abs(coord.x * 7 + coord.z) % 4 == 0 {
             let h = abs(coord.x * 7 + coord.z + seed)
             let alien = makeAlien()
+            alien.name = Self.friendName
             alien.position = SCNVector3(
                 offsetX + Float(h % Int(chunkSize)),
                 Float(300 + h % 200),
@@ -345,6 +410,7 @@ final class TerrainGenerator {
         if abs(coord.x + coord.z * 5) % 7 == 0 {
             let h = abs(coord.x + coord.z * 5 + seed)
             let ufo = makeUFO()
+            ufo.name = Self.friendName
             ufo.position = SCNVector3(
                 offsetX + chunkSize / 3,
                 Float(450 + h % 100),
@@ -448,6 +514,7 @@ final class TerrainGenerator {
         if abs(coord.x * 3 + coord.z * 7) % 9 == 0 {
             let h = abs(coord.x * 3 + coord.z * 7 + seed)
             let whale = makeWhale()
+            whale.name = Self.friendName
             whale.position = SCNVector3(
                 offsetX + chunkSize / 2,
                 Float(350 + h % 100),
@@ -465,6 +532,7 @@ final class TerrainGenerator {
         if abs(coord.x * 5 + coord.z) % 5 == 0 {
             let h = abs(coord.x * 5 + coord.z + seed)
             let turtle = makeSeaTurtle()
+            turtle.name = Self.friendName
             turtle.position = SCNVector3(
                 offsetX + Float(h % Int(chunkSize)),
                 Float(250 + h % 100),
@@ -477,7 +545,7 @@ final class TerrainGenerator {
 
     // MARK: - Sky NPC Builders
 
-    private func makeFluffyCloud() -> SCNNode {
+    func makeFluffyCloud() -> SCNNode {
         let node = SCNNode()
         let configs: [(Float, Float, Float, Float)] = [
             (8, 0, 0, 0), (6, -5, 1, 2), (5, 4, -1, -2), (4, 2, 2, 3)
@@ -513,7 +581,7 @@ final class TerrainGenerator {
         return node
     }
 
-    private func makeRoundTree(at position: SCNVector3) -> SCNNode {
+    func makeRoundTree(at position: SCNVector3) -> SCNNode {
         let node = SCNNode()
         node.position = position
         let trunk = SCNNode(geometry: SCNCylinder(radius: 0.5, height: 5))
@@ -528,7 +596,7 @@ final class TerrainGenerator {
         return node
     }
 
-    private func makeBird(color: UIColor) -> SCNNode {
+    func makeBird(color: UIColor) -> SCNNode {
         let node = SCNNode()
         let body = SCNNode(geometry: SCNSphere(radius: 1.2))
         body.geometry?.firstMaterial?.diffuse.contents = color
@@ -548,7 +616,7 @@ final class TerrainGenerator {
         return node
     }
 
-    private func makeHotAirBalloon() -> SCNNode {
+    func makeHotAirBalloon() -> SCNNode {
         let node = SCNNode()
         // Balloon envelope
         let balloon = SCNNode(geometry: SCNSphere(radius: 10))

@@ -160,7 +160,7 @@
 "theme.ocean.region.0" = "珊瑚城堡";
 "theme.ocean.region.1" = "气泡大道";
 "theme.ocean.region.2" = "海藻森林";
-"theme.ocean.region.3" = "珍珠湾";
+"theme.ocean.region.3" = "珍珠小海湾";
 "theme.ocean.region.4" = "水母草原";
 "theme.ocean.region.5" = "宝藏礁";
 "theme.ocean.region.6" = "鲸歌湾";
@@ -361,3 +361,63 @@
 "sensitivity.easy"                  = "简单";
 "sensitivity.normal"                = "普通";
 "sensitivity.expert"                = "专家";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "操控";
+"settings.controls.touch"         = "触屏操控";
+"settings.controls.touch.caption" = "拖动屏幕来操控，不用倾斜设备。适合躺着玩、坐车时，或觉得倾斜不舒服的时候。";
+"flight.control.view"             = "视图";
+"a11y.cleanView.label"            = "隐藏或显示飞行仪表";
+
+// MARK: - World tour (2026-11) — new worlds, landmarks, postcards
+"theme.desert.displayName" = "沙漠遗迹";
+"theme.desert.subtitle" = "金字塔与绿洲";
+"theme.city.displayName" = "灯光之城";
+"theme.city.subtitle" = "高塔与桥梁";
+"theme.seoul.displayName" = "首尔天空";
+"theme.seoul.subtitle" = "山丘与韩屋";
+"theme.wild.displayName" = "大自然";
+"theme.wild.subtitle" = "瀑布与极光";
+"landmark.floatingCastle.name" = "云中城堡";
+"landmark.rainbowGate.name" = "彩虹之门";
+"landmark.windmillHill.name" = "风车山丘";
+"landmark.greatPyramids.name" = "沙之大金字塔";
+"landmark.sandGuardian.name" = "沙之守护者";
+"landmark.palmOasis.name" = "棕榈绿洲";
+"landmark.sunObelisk.name" = "太阳方尖碑";
+"landmark.ironLaceTower.name" = "铁艺花边塔";
+"landmark.grandArch.name" = "宏伟拱门";
+"landmark.riverBridge.name" = "河光大桥";
+"landmark.skyWheel.name" = "天空摩天轮";
+"landmark.hilltopTower.name" = "山顶之塔";
+"landmark.palaceGate.name" = "宫殿大门";
+"landmark.hanokVillage.name" = "韩屋村";
+"landmark.moonBridge.name" = "月光大桥";
+"landmark.greatFalls.name" = "雷鸣瀑布";
+"landmark.canyonArch.name" = "峡谷拱门";
+"landmark.auroraPeak.name" = "极光之峰";
+"landmark.giantTree.name" = "老爷爷树";
+"landmark.ringPlanet.name" = "光环行星";
+"landmark.spaceStation.name" = "星星空间站";
+"landmark.moonBase.name" = "月球基地";
+"landmark.shipwreck.name" = "沉船";
+"landmark.seaVolcano.name" = "海底火山";
+"landmark.shellPalace.name" = "贝壳宫殿";
+"postcard.toast.new" = "新明信片：%@";
+"postcard.toast.stamp" = "新印章：%@";
+"hello.toast" = "你好！+1 ★";
+"landmark.hint.format" = "%@ · %lld 米";
+"home.album.title" = "明信片";
+"album.title" = "天空明信片";
+"album.progress.format" = "已发现 %lld / %lld";
+"album.empty.hint" = "在自由飞行中靠近地标飞过，就能收集明信片。每位伙伴都能盖上自己的印章。";
+"album.undiscovered" = "尚未发现";
+"a11y.album.hint" = "打开你的明信片收藏";
+
+// MARK: - Character specialties
+"specialty.turtle" = "长燃：加速多持续 50%";
+"specialty.penguin" = "冲刺：加速更短，但速度最快";
+"specialty.hamster" = "快速充能：加速槽恢复更快";
+"specialty.cat" = "星星磁铁：能吸到更远的星星";
+"specialty.frog" = "天空跳：加速时还会向上跃起";
+"specialty.bunny" = "正中电池：命中正中可为加速充能";

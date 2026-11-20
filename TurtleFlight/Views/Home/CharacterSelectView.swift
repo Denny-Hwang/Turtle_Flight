@@ -101,9 +101,14 @@ struct CharacterSelectView: View {
                 .padding(.vertical, Theme.Spacing.xs)
                 .background(Capsule().fill(Theme.Color.surfaceOverlayStrong))
 
-            Text(characterVM.currentConfig.description)
-                .font(Theme.Typography.label)
-                .foregroundColor(Theme.Color.textOnDark)
+            VStack(spacing: Theme.Spacing.xxs) {
+                Text(characterVM.currentConfig.description)
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textOnDark)
+                Label(characterVM.selectedCharacter.specialtyText, systemImage: "bolt.fill")
+                    .font(Theme.Typography.labelSmall)
+                    .foregroundColor(Theme.Color.starGold)
+            }
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, Theme.Spacing.m)
@@ -120,7 +125,7 @@ struct CharacterSelectView: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             // ── CHARACTER ──
             sectionLabel("characterSelect.section.character", systemImage: "pawprint.fill")
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64 * tileScale), spacing: Theme.Spacing.m)],
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64 * tileScale), spacing: Theme.Spacing.s * tileScale)],
                       spacing: Theme.Spacing.s) {
                 ForEach(CharacterType.allCases, id: \.self) { character in
                     CharacterTile(
@@ -151,19 +156,24 @@ struct CharacterSelectView: View {
 
             // ── MAP THEME ──
             sectionLabel("characterSelect.section.map", systemImage: "map.fill")
-            HStack(spacing: Theme.Spacing.m - 2) {
-                ForEach(MapTheme.allCases, id: \.self) { theme in
-                    MapThemeCard(
-                        theme: theme,
-                        isSelected: characterVM.selectedMapTheme == theme
-                    ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            characterVM.selectMapTheme(theme)
+            // Seven worlds: a swipeable row of fixed-width cards.
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Theme.Spacing.m - 2) {
+                    ForEach(MapTheme.allCases, id: \.self) { theme in
+                        MapThemeCard(
+                            theme: theme,
+                            isSelected: characterVM.selectedMapTheme == theme
+                        ) {
+                            withAnimation(.spring(response: 0.3)) {
+                                characterVM.selectMapTheme(theme)
+                            }
                         }
+                        .frame(width: 118 * tileScale)
                     }
                 }
+                .padding(.horizontal, Theme.Spacing.xs)
+                .padding(.vertical, Theme.Spacing.s)
             }
-            .padding(.horizontal, Theme.Spacing.xs)
         }
         .padding(.top, Theme.Spacing.xs)
     }

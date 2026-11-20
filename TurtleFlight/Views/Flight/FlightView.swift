@@ -14,6 +14,7 @@ struct FlightView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var scene = SCNScene()
     @State private var showGyroAlert = false
+    @AppStorage("flight.cleanView") private var cleanView = false
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
@@ -31,7 +32,15 @@ struct FlightView: View {
             SceneKitView(scene: scene, flightVM: flightVM)
                 .ignoresSafeArea()
 
-            HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+            // Free Flight "clean view": gauges off, just the sky. Missions
+            // always show the HUD (the player needs ring / score info).
+            if !(flightMode == .freePlay && cleanView) {
+                HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+            }
+
+            if flightMode == .freePlay {
+                SightseeingOverlay(flightVM: flightVM)
+            }
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
                 MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
@@ -61,7 +70,9 @@ struct FlightView: View {
                     }
                 },
                 boostProgress: flightVM.boostProgress,
-                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999
+                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999,
+                onToggleCleanView: flightMode == .freePlay ? { cleanView.toggle() } : nil,
+                cleanViewOn: cleanView
             )
 
             // Step Goal — full-screen StageResultView when the mission
@@ -285,30 +296,45 @@ struct FlightView: View {
             }
         }
 
-        scene.background.contents = mapTheme.backgroundColor
+        // Time of day for this flight (open-sky worlds only).
+        var mood = SkyMood.forFlight(number: Analytics.shared.snapshot().count(.flightStarted),
+                                     world: mapTheme)
+        #if DEBUG
+        if ScreenshotDirector.isActive {
+            mood = UserDefaults.standard.string(forKey: "TFMood").flatMap(SkyMood.init(rawValue:)) ?? .day
+        }
+        #endif
+        let skyColor = mood.skyColor(base: mapTheme.backgroundColor)
+        scene.background.contents = skyColor
+        // Distance haze: landmarks and the far terrain fade into the sky
+        // instead of popping in at the edge of the loaded area.
+        scene.fogColor = skyColor
+        scene.fogStartDistance = 1100
+        scene.fogEndDistance = 2300
+        scene.fogDensityExponent = 1.5
 
         // Ambient light
         let ambient = SCNNode()
         ambient.light = SCNLight()
         ambient.light?.type = .ambient
-        ambient.light?.intensity = mapTheme.ambientLightIntensity
-        ambient.light?.color = mapTheme.ambientLightColor
+        ambient.light?.intensity = mapTheme.ambientLightIntensity * mood.lightScale
+        ambient.light?.color = mood.lightColor ?? mapTheme.ambientLightColor
         scene.rootNode.addChildNode(ambient)
 
         // Directional light (sun / star)
         let sun = SCNNode()
         sun.light = SCNLight()
         sun.light?.type = .directional
-        sun.light?.intensity = mapTheme.sunLightIntensity
-        sun.light?.color = mapTheme.sunLightColor
+        sun.light?.intensity = mapTheme.sunLightIntensity * mood.lightScale
+        sun.light?.color = mood.lightColor ?? mapTheme.sunLightColor
         sun.light?.castsShadow = true
         sun.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 4, 0)
         scene.rootNode.addChildNode(sun)
 
         // Theme-specific extras
         switch mapTheme {
-        case .sky:
-            addSunSphere()
+        case .sky, .desert, .city, .seoul, .wild:
+            if mood.showsStars { addStarDome() } else { addSunSphere() }
         case .space:
             addStarDome()
         case .ocean:

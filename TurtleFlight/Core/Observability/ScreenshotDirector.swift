@@ -25,9 +25,13 @@ enum ScreenshotScene: String {
     // QA-only scenes (scripts/screenshots/qa_matrix.sh) — every other
     // screen, so layout can be checked per device and per language.
     case settings
+    case album
     case onboarding
     case pause
     case freeflight
+    /// Free Flight flown by the autopilot to the nearest landmark,
+    /// frozen `tourFreezeDistance` short of it.
+    case tour
     case stage
     case stageResult = "stage-result"
 }
@@ -41,7 +45,7 @@ enum ScreenshotDirector {
     /// Flight scenes fly themselves.
     static var autopilot: Bool {
         switch scene {
-        case .daily, .dailyResult, .skyrun, .pause, .stage, .stageResult: return true
+        case .daily, .dailyResult, .skyrun, .pause, .stage, .stageResult, .tour: return true
         default: return false
         }
     }
@@ -61,5 +65,11 @@ enum ScreenshotDirector {
     /// Seconds to keep flying after the freeze-trigger bullseye, so the
     /// character has cleared the ring and the next gates are in view.
     static let freezeDelay: Double = 0.18
+
+    /// `tour`: stop this far from the landmark so it fills the frame.
+    static var tourFreezeDistance: Float {
+        let v = UserDefaults.standard.float(forKey: "TFTourDistance")
+        return v > 0 ? v : 420
+    }
 }
 #endif

@@ -362,3 +362,63 @@
 "sensitivity.easy"                  = "Leicht";
 "sensitivity.normal"                = "Normal";
 "sensitivity.expert"                = "Experte";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "Steuerung";
+"settings.controls.touch"         = "Touch-Steuerung";
+"settings.controls.touch.caption" = "Zum Steuern über den Bildschirm ziehen statt das Gerät zu neigen. Praktisch im Liegen, im Auto oder wenn Neigen unangenehm ist.";
+"flight.control.view"             = "Ansicht";
+"a11y.cleanView.label"            = "Fluganzeigen aus- oder einblenden";
+
+// MARK: - World tour (2026-11) — new worlds, landmarks, postcards
+"theme.desert.displayName" = "Wüstenruinen";
+"theme.desert.subtitle" = "Pyramiden & Oase";
+"theme.city.displayName" = "Stadt der Lichter";
+"theme.city.subtitle" = "Türme & Brücken";
+"theme.seoul.displayName" = "Himmel über Seoul";
+"theme.seoul.subtitle" = "Hügel & Hanok";
+"theme.wild.displayName" = "Wilde Natur";
+"theme.wild.subtitle" = "Wasserfälle & Polarlicht";
+"landmark.floatingCastle.name" = "Wolkenschloss";
+"landmark.rainbowGate.name" = "Regenbogentor";
+"landmark.windmillHill.name" = "Windmühlenhügel";
+"landmark.greatPyramids.name" = "Große Sandpyramiden";
+"landmark.sandGuardian.name" = "Sandwächter";
+"landmark.palmOasis.name" = "Palmenoase";
+"landmark.sunObelisk.name" = "Sonnenobelisk";
+"landmark.ironLaceTower.name" = "Eisenspitzenturm";
+"landmark.grandArch.name" = "Großer Bogen";
+"landmark.riverBridge.name" = "Flusslichtbrücke";
+"landmark.skyWheel.name" = "Himmelsrad";
+"landmark.hilltopTower.name" = "Hügelturm";
+"landmark.palaceGate.name" = "Palasttor";
+"landmark.hanokVillage.name" = "Hanok-Dorf";
+"landmark.moonBridge.name" = "Mondlichtbrücke";
+"landmark.greatFalls.name" = "Donnerfälle";
+"landmark.canyonArch.name" = "Canyonbogen";
+"landmark.auroraPeak.name" = "Polarlichtgipfel";
+"landmark.giantTree.name" = "Großvaterbaum";
+"landmark.ringPlanet.name" = "Ringplanet";
+"landmark.spaceStation.name" = "Sternenstation";
+"landmark.moonBase.name" = "Mondbasis";
+"landmark.shipwreck.name" = "Versunkenes Schiff";
+"landmark.seaVolcano.name" = "Meeresvulkan";
+"landmark.shellPalace.name" = "Muschelpalast";
+"postcard.toast.new" = "Neue Postkarte: %@";
+"postcard.toast.stamp" = "Neuer Stempel: %@";
+"hello.toast" = "Hallo! +1 ★";
+"landmark.hint.format" = "%@ · %lld m";
+"home.album.title" = "Postkarten";
+"album.title" = "Himmelspostkarten";
+"album.progress.format" = "%lld von %lld gefunden";
+"album.empty.hint" = "Flieg im Freien Flug nah an einen Ort heran, um seine Postkarte zu sammeln. Jeder Freund kann seinen Stempel hinzufügen.";
+"album.undiscovered" = "Noch nicht gefunden";
+"a11y.album.hint" = "Öffnet deine Postkartensammlung";
+
+// MARK: - Character specialties
+"specialty.turtle" = "Langer Schub: Boost hält 50 % länger";
+"specialty.penguin" = "Sprint: kürzerer Boost, der schnellste";
+"specialty.hamster" = "Schnell geladen: Boost füllt sich schneller";
+"specialty.cat" = "Sternmagnet: sammelt Sterne aus größerer Entfernung";
+"specialty.frog" = "Himmelshüpfer: Boost hebt dich nach oben";
+"specialty.bunny" = "Volltreffer-Akku: Volltreffer laden den Boost";

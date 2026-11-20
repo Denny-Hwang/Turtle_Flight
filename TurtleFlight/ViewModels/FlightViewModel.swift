@@ -178,6 +178,19 @@ final class FlightViewModel: ObservableObject {
     let gyroController: GyroController
     let characterAnimator = CharacterAnimator()
     var terrainGenerator: TerrainGenerator?
+
+    // MARK: - Sightseeing (Free Flight) — see FlightViewModel+Sightseeing
+    var landmarkField: LandmarkField?
+    /// Nearest landmark this character has not visited (nil in missions
+    /// or when everything nearby is already stamped).
+    @Published var landmarkHint: LandmarkHint?
+    /// Latest one-shot banner (postcard found / hello).
+    @Published var flightToast: FlightToast?
+    var sightseeingAccumulator: Float = 0
+    var lastSimLandmarkHint: LandmarkHint?
+    var toastCounter = 0
+    /// A greeted friend hands over one star.
+    func awardHelloStar() { simStarsCollected += 1 }
     var itemSystem: ItemSystem?
     var missionEngine: MissionEngine?
 
@@ -197,6 +210,25 @@ final class FlightViewModel: ObservableObject {
     /// Last-applied expression — used to skip redundant per-frame UV
     /// transitions when the latched / boost / idle state hasn't flipped.
     private var lastDisplayedExpression: CharacterExpression = .default
+
+    /// "Whoosh" after a clean gate pass, 1 → 0 over `gatePulseDuration`.
+    /// Thickens the trail and eases the camera back a touch so a good
+    /// pass is felt, not only read. Deliberately not an FOV change —
+    /// repeated FOV jumps are what make chase cameras nauseating.
+    private(set) var gatePulse: Float = 0
+    static let gatePulseDuration: Float = 0.45
+    static let gatePulseCameraPull: Float = 1.6
+    static let gatePulseTrailGain: CGFloat = 2.0
+
+    /// Pulse strength for a pass: bullseye is the full hit, a GREAT half,
+    /// an OK none (it should feel like there is something better).
+    static func gatePulseStrength(for judgement: GateJudgement) -> Float {
+        switch judgement {
+        case .bullseye: return 1.0
+        case .great:    return 0.5
+        default:        return 0
+        }
+    }
 
     /// Pure state-machine that decides which expression to show each frame
     /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
@@ -378,6 +410,7 @@ final class FlightViewModel: ObservableObject {
         // turns "all six vehicles fly identically" into "the carrot jet
         // really does turn sharper than the cushion balloon."
         flightEngine.vehicleHandling = vehicle.handling
+        flightEngine.specialty = character.specialty
 
         // Build the atlas-textured billboard. Vehicle is baked into the
         // flying-pose art, so a single billboard subsumes both per spec
@@ -405,6 +438,7 @@ final class FlightViewModel: ObservableObject {
         self.judgementEvent = nil
         self.score = 0
         self.combo = 0
+        self.gatePulse = 0
         self.isStalled = false
         self.lastPublishedFrame = nil
         self.lastRenderTime = 0
@@ -450,6 +484,18 @@ final class FlightViewModel: ObservableObject {
         // Setup terrain with selected theme
         terrainGenerator = TerrainGenerator(parentNode: scene.rootNode, seed: 42, theme: theme)
         terrainGenerator?.updateChunks(playerPosition: charNode.position)
+
+        // Landmarks: built for every flight, dropped again by
+        // `startStage` — missions keep the airspace clear for the rings.
+        let terrain = terrainGenerator
+        landmarkField = LandmarkField(parentNode: scene.rootNode, world: theme, seed: 42) { x, z in
+            terrain?.heightAt(x: x, z: z) ?? 0
+        }
+        landmarkField?.update(playerPosition: charNode.position)
+        sightseeingAccumulator = 0
+        lastSimLandmarkHint = nil
+        landmarkHint = nil
+        flightToast = nil
 
         // Setup items
         itemSystem = ItemSystem(parentNode: scene.rootNode)
@@ -509,6 +555,9 @@ final class FlightViewModel: ObservableObject {
     /// don't carry over from the previous run.
     func startStage(_ stage: StageDefinition) {
         lastTimerBeepBucket = -1
+        landmarkField?.clear()
+        landmarkField = nil
+        landmarkHint = nil
         AudioManager.shared.playVoice(.go)
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
@@ -697,11 +746,14 @@ final class FlightViewModel: ObservableObject {
             // character as it flies on.
             trailNode.eulerAngles.y = -Float(h)
         }
+        if gatePulse > 0 {
+            gatePulse = max(0, gatePulse - deltaTime / Self.gatePulseDuration)
+        }
         if let trail = trailParticleSystem {
             characterAnimator.setTrailBoosting(
                 trail,
                 boosting: flightState.isBoosting,
-                baseBirthRate: baseTrailBirthRate
+                baseBirthRate: baseTrailBirthRate * (1 + Self.gatePulseTrailGain * CGFloat(gatePulse))
             )
         }
 
@@ -731,7 +783,8 @@ final class FlightViewModel: ObservableObject {
 
         // Update items
         if let pos = characterNode?.position {
-            let collected = itemSystem?.checkCollection(playerPosition: pos) ?? 0
+            let collected = itemSystem?.checkCollection(playerPosition: pos,
+                                                        radiusMultiplier: flightEngine.specialty.starMagnet) ?? 0
             simStarsCollected += collected
             if collected > 0 {
                 onMain { AudioManager.shared.playStarCollect() }
@@ -758,6 +811,7 @@ final class FlightViewModel: ObservableObject {
         // Update mission
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
+            updateSightseeing(deltaTime: deltaTime, position: pos, heading: flightState.heading)
         }
         observeRingCrossings()
         #if DEBUG
@@ -830,6 +884,8 @@ final class FlightViewModel: ObservableObject {
             runGatePasses += 1
             if judgement == .bullseye { runBullseyes += 1 }
             simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
+            gatePulse = max(gatePulse, Self.gatePulseStrength(for: judgement))
+            if judgement == .bullseye { flightEngine.addBoostCharge(flightEngine.specialty.bullseyeCharge) }
             #if DEBUG
             if let target = ScreenshotDirector.freezeCombo, screenshotFreezeAt == nil,
                judgement == .bullseye, engine.score.combo >= target {
@@ -893,7 +949,7 @@ final class FlightViewModel: ObservableObject {
     /// ring visibly refills from stars and reads "ready" when full.
     private func computeBoostProgress(flightState: FlightEngine.FlightState) -> Float {
         if flightState.isBoosting {
-            let dur = Float(Constants.Flight.boostDuration)
+            let dur = Float(Constants.Flight.boostDuration) * flightEngine.specialty.boostDuration
             guard dur > 0 else { return 0 }
             return max(0, min(1, flightState.boostTimeRemaining / dur))
         }
@@ -1072,7 +1128,15 @@ final class FlightViewModel: ObservableObject {
     /// (replacing this frame's physics move), so every crossing is a
     /// genuine dead-centre pass judged by `MissionEngine`.
     private func screenshotAutopilotStep(from p: SCNVector3, deltaTime: Float) {
-        guard let target = missionEngine?.currentRingPosition else { return }
+        var ringTarget = missionEngine?.currentRingPosition
+        if ringTarget == nil, ScreenshotDirector.scene == .tour,
+           let nearest = landmarkField?.nearest(to: p) {
+            if nearest.distance < ScreenshotDirector.tourFreezeDistance { screenshotFrozen = true; return }
+            // Approach slightly above the focus so the camera looks down on it.
+            let f = nearest.placement.focus
+            ringTarget = SCNVector3(f.x, f.y + 60, f.z)
+        }
+        guard let target = ringTarget else { return }
         let state = flightEngine.state
         let d = SCNVector3(target.x - p.x, target.y - p.y, target.z - p.z)
         let dist = sqrt(d.x * d.x + d.y * d.y + d.z * d.z)
@@ -1105,6 +1169,7 @@ final class FlightViewModel: ObservableObject {
         let boost: Float = reduceMotionEnabled ? 0 : computeBoostProgress(flightState: flightState)
         let dist = Constants.Camera.followDistance
             + Constants.Camera.boostFollowDistanceDelta * boost
+            + (reduceMotionEnabled ? 0 : Self.gatePulseCameraPull * gatePulse)
         let height = Constants.Camera.followHeight
         let targetFOV = Constants.Camera.fieldOfView
             + Constants.Camera.boostFOVDelta * CGFloat(boost)
