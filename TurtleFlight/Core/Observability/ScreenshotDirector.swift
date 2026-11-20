@@ -26,6 +26,9 @@ enum ScreenshotScene: String {
     // screen, so layout can be checked per device and per language.
     case settings
     case album
+    case shop
+    /// Character select for a route course (shows the course briefing).
+    case briefing
     case onboarding
     case pause
     case freeflight

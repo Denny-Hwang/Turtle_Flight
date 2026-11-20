@@ -78,9 +78,10 @@ final class GameCenterManager: NSObject {
             } else if stage.isEndless {
                 submit(score: result.score ?? 0, to: .endless)
                 if result.ringsCompleted >= 50 { unlock(.endless50) }
-            } else {
+            } else if !stage.isKids {
                 submit(score: progress.totalStars, to: .campaignStars)
-                if progress.totalStars >= StageDefinition.allStages.count * 3 {
+                let campaignStars = StageDefinition.allStages.reduce(0) { $0 + (progress.stageResults[$1.index]?.stars ?? 0) }
+                if campaignStars >= StageDefinition.allStages.count * 3 {
                     unlock(.campaignComplete)
                 }
             }

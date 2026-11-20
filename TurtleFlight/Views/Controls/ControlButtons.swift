@@ -137,8 +137,7 @@ struct ThumbButton: View {
     var body: some View {
         Button(action: {
             // Haptic feedback
-            let impact = UIImpactFeedbackGenerator(style: .medium)
-            impact.impactOccurred()
+            Haptics.shared.play(.tap)
             action()
         }) {
             VStack(spacing: Theme.Spacing.xs) {

@@ -126,8 +126,8 @@
 "stage.0.star3Condition" = "Termine en moins de 60 secondes";
 "stage.1.star3Condition" = "Zéro choc, termine en moins de 90 s";
 "stage.2.star3Condition" = "Zéro choc, récupère les 5 étoiles";
-"stage.3.star3Condition" = "Tous les anneaux, termine en moins de 120 s";
-"stage.4.star3Condition" = "Tous les anneaux, en moins de 80 s, zéro choc";
+"stage.3.star3Condition" = "Tous les anneaux, termine en moins de 110 s";
+"stage.4.star3Condition" = "Tous les anneaux, en moins de 90 s, zéro choc";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Royaume du Ciel";
@@ -199,9 +199,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Choisis un niveau";
-"stageSelect.progress.format"        = "%lld / %lld étoiles";
 "stageSelect.objective.format"       = "Objectif ★★★ : %@";
-"stageSelect.locked.body"            = "Réussis le niveau précédent pour débloquer celui-ci.";
 "stageSelect.card.hint.unlocked"     = "Touche deux fois pour choisir ce niveau";
 "stageSelect.card.hint.locked"       = "Réussis d'abord le niveau précédent";
 "stageSelect.card.label.unlocked"    = "Niveau %lld, %@, %lld étoiles obtenues";
@@ -420,3 +418,62 @@
 "specialty.cat" = "Aimant à étoiles : attrape les étoiles de plus loin";
 "specialty.frog" = "Saut céleste : le boost te fait aussi monter";
 "specialty.bunny" = "Batterie plein centre : viser juste recharge le boost";
+
+// MARK: - Routes, kids mode, rewards, shop, secret codes
+"settings.controls.haptics" = "Vibrations";
+"route.skySchool.name" = "École du ciel";
+"route.sunRoad.name" = "Route du soleil";
+"route.eastTrail.name" = "Sentier de l’Est";
+"route.deepBlue.name" = "Grand Bleu";
+"route.starRoad.name" = "Route des étoiles";
+"route.course.nameFormat" = "%1$@ %2$lld";
+"route.course.descFormat" = "Traverse %lld anneaux";
+"route.course.kidsDescFormat" = "Enfants : %lld grands anneaux, sans chrono";
+"route.course.star3Format" = "Termine en %lld s sans choc";
+"route.course.kidsStar3" = "Traverse tous les anneaux";
+"route.locked.finale" = "Termine les quatre autres routes pour l’ouvrir, ou utilise un code secret.";
+"route.openEarly.format" = "Ouvrir pour %lld étoiles";
+"route.openEarly.confirmTitle" = "Ouvrir ce parcours en avance ?";
+"route.openEarly.balance" = "Tu as %lld étoiles.";
+"route.openEarly.notEnough" = "Tu as %1$lld étoiles sur %2$lld. Termine des parcours pour en gagner.";
+"route.kids.toggle" = "Mode enfants";
+"route.kids.caption" = "Anneaux plus grands, moins nombreux, sans chrono. Personne ne perd.";
+"code.title" = "Code secret";
+"code.enter" = "Saisir un code";
+"code.placeholder" = "Saisis un code";
+"code.redeem" = "Utiliser";
+"code.caption" = "Tu as reçu un code ? Saisis-le ici pour un cadeau gratuit.";
+"code.result.unknown" = "Ce code ne fonctionne pas.";
+"code.result.used" = "Tu as déjà utilisé ce code.";
+"code.reward.route" = "%@ est ouverte !";
+"code.reward.stars" = "+%lld étoiles";
+"code.reward.treats" = "+%lld friandises pour chaque ami";
+"code.reward.comet" = "Traînée Comète débloquée pour tous";
+"code.reward.starter" = "+%1$lld étoiles et +%2$lld friandises pour chaque ami";
+"treat.turtle.name" = "Laitue";
+"treat.penguin.name" = "Poisson";
+"treat.hamster.name" = "Graine de tournesol";
+"treat.cat.name" = "Pelote";
+"treat.frog.name" = "Luciole";
+"treat.bunny.name" = "Carotte";
+"shop.title" = "Boutique";
+"shop.tab.stars" = "Boutique d’étoiles";
+"shop.tab.treats" = "Boutique de friandises";
+"shop.stars.caption" = "Termine des parcours pour gagner des étoiles. Elles servent à choisir le ciel du Vol libre et à ouvrir un parcours en avance.";
+"shop.treats.caption" = "Vole avec cet ami pour récolter : %@. Les friandises achètent ses propres traînées.";
+"shop.sky.auto" = "Ciel surprise";
+"shop.sky.morning" = "Ciel du matin";
+"shop.sky.sunset" = "Ciel du couchant";
+"shop.sky.night" = "Ciel de nuit";
+"shop.flair.nameFormat" = "%2$@ %1$@";
+"shop.flair.tier1" = "Étincelle";
+"shop.flair.tier2" = "Lueur";
+"shop.flair.tier3" = "Aurore";
+"shop.flair.comet" = "Traînée Comète";
+"shop.flair.none" = "Traînée du véhicule";
+"shop.equip" = "Utiliser";
+"shop.equipped" = "Utilisé";
+"shop.wallet.a11y" = "%lld étoiles à dépenser";
+"shop.buy.a11y" = "Acheter %1$@ pour %2$lld";
+"shop.notEnough" = "Tu as %1$lld sur %2$lld";
+"reward.earned" = "Gagné";

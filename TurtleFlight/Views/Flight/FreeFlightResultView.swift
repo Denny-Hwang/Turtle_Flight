@@ -11,6 +11,8 @@ struct FreeFlightResultView: View {
     let flightTime: TimeInterval
     let starsCollected: Int
     let isNewBestStars: Bool
+    /// Treats this flight paid into the wallet.
+    var reward = RewardGrant()
     let onHome: () -> Void
     let onAgain: () -> Void
     /// Phase 4: present the ReplayKit preview. Nil hides the button
@@ -52,6 +54,11 @@ struct FreeFlightResultView: View {
                         value: "\(starsCollected)",
                         badge: isNewBestStars ? L10n.t("mission.result.newBest") : nil
                     )
+                    if !reward.isEmpty {
+                        statRow(icon: "gift", label: L10n.t("reward.earned"),
+                                value: reward.summary, badge: nil)
+                            .accessibilityLabel(reward.accessibilityText)
+                    }
                 }
                 .padding(Theme.Spacing.l)
                 .frame(maxWidth: 320)
@@ -88,7 +95,7 @@ struct FreeFlightResultView: View {
                             )
                     }
                     .simultaneousGesture(TapGesture().onEnded {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        Haptics.shared.play(.tap)
                     })
                     .accessibilityLabel(L10n.t("freeFlight.result.share"))
 
@@ -160,7 +167,7 @@ private struct ResultActionButton: View {
 
     var body: some View {
         Button(action: {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Haptics.shared.play(.tap)
             action()
         }) {
             Text(title)

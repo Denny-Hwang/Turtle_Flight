@@ -129,8 +129,8 @@
 "stage.0.star3Condition" = "60초 이내 완료";
 "stage.1.star3Condition" = "접촉 0회 + 90초 이내";
 "stage.2.star3Condition" = "접촉 0회 + 별 5개 전체 수집";
-"stage.3.star3Condition" = "전체 통과 + 120초 이내";
-"stage.4.star3Condition" = "전체 통과 + 80초 이내 + 접촉 0회";
+"stage.3.star3Condition" = "전체 통과 + 110초 이내";
+"stage.4.star3Condition" = "전체 통과 + 90초 이내 + 접촉 0회";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "하늘 왕국";
@@ -202,9 +202,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "스테이지 선택";
-"stageSelect.progress.format"        = "%lld / %lld 별";
 "stageSelect.objective.format"       = "★★★ 조건: %@";
-"stageSelect.locked.body"            = "이전 스테이지를 클리어하면 잠금이 풀려요.";
 "stageSelect.card.hint.unlocked"     = "두 번 탭하여 이 스테이지로 이동합니다";
 "stageSelect.card.hint.locked"       = "이전 스테이지를 먼저 클리어해야 합니다";
 "stageSelect.card.label.unlocked"    = "스테이지 %lld, %@, 별 %lld개 획득";
@@ -424,3 +422,62 @@
 "specialty.cat" = "별 자석: 멀리 있는 별도 끌어와요";
 "specialty.frog" = "스카이 홉: 부스트하면 위로 솟아올라요";
 "specialty.bunny" = "명중 배터리: 명중하면 부스트가 충전돼요";
+
+// MARK: - Routes, kids mode, rewards, shop, secret codes
+"settings.controls.haptics" = "진동";
+"route.skySchool.name" = "하늘 학교";
+"route.sunRoad.name" = "태양의 길";
+"route.eastTrail.name" = "동쪽 오솔길";
+"route.deepBlue.name" = "깊고 푸른 바다";
+"route.starRoad.name" = "별의 길";
+"route.course.nameFormat" = "%1$@ %2$lld";
+"route.course.descFormat" = "링 %lld개를 통과해요";
+"route.course.kidsDescFormat" = "키즈: 큰 링 %lld개, 시간 제한 없음";
+"route.course.star3Format" = "%lld초 안에 부딪히지 않고 완주";
+"route.course.kidsStar3" = "모든 링을 통과해요";
+"route.locked.finale" = "다른 네 루트를 모두 끝내면 열려요. 시크릿 코드로도 열 수 있어요.";
+"route.openEarly.format" = "별 %lld개로 열기";
+"route.openEarly.confirmTitle" = "이 코스를 미리 열까요?";
+"route.openEarly.balance" = "별 %lld개를 가지고 있어요.";
+"route.openEarly.notEnough" = "별이 %1$lld/%2$lld개예요. 코스를 클리어해서 더 모아요.";
+"route.kids.toggle" = "키즈 모드";
+"route.kids.caption" = "링은 더 크고 더 적게, 시간 제한도 없어요. 실패가 없어요.";
+"code.title" = "시크릿 코드";
+"code.enter" = "코드 입력";
+"code.placeholder" = "코드를 입력하세요";
+"code.redeem" = "사용";
+"code.caption" = "코드를 받으셨나요? 여기에 입력하면 무료 선물을 받아요.";
+"code.result.unknown" = "맞는 코드가 아니에요.";
+"code.result.used" = "이미 사용한 코드예요.";
+"code.reward.route" = "%@ 루트가 열렸어요!";
+"code.reward.stars" = "별 +%lld";
+"code.reward.treats" = "모든 친구에게 간식 +%lld";
+"code.reward.comet" = "모든 친구의 혜성 트레일이 열렸어요";
+"code.reward.starter" = "별 +%1$lld, 모든 친구에게 간식 +%2$lld";
+"treat.turtle.name" = "상추";
+"treat.penguin.name" = "물고기";
+"treat.hamster.name" = "해바라기씨";
+"treat.cat.name" = "털실";
+"treat.frog.name" = "반딧불";
+"treat.bunny.name" = "당근";
+"shop.title" = "상점";
+"shop.tab.stars" = "별 상점";
+"shop.tab.treats" = "간식 상점";
+"shop.stars.caption" = "코스를 클리어하면 별을 받아요. 별로 자유 비행의 하늘을 고르고 코스를 미리 열 수 있어요.";
+"shop.treats.caption" = "이 친구와 비행하면 간식(%@)이 쌓여요. 간식으로 이 친구만의 트레일을 사요.";
+"shop.sky.auto" = "깜짝 하늘";
+"shop.sky.morning" = "아침 하늘";
+"shop.sky.sunset" = "노을 하늘";
+"shop.sky.night" = "밤하늘";
+"shop.flair.nameFormat" = "%1$@ %2$@";
+"shop.flair.tier1" = "반짝이";
+"shop.flair.tier2" = "은은한 빛";
+"shop.flair.tier3" = "오로라";
+"shop.flair.comet" = "혜성 트레일";
+"shop.flair.none" = "기본 트레일";
+"shop.equip" = "사용";
+"shop.equipped" = "사용 중";
+"shop.wallet.a11y" = "쓸 수 있는 별 %lld개";
+"shop.buy.a11y" = "%1$@ 구매, 가격 %2$lld";
+"shop.notEnough" = "%2$lld개 중 %1$lld개 있어요";
+"reward.earned" = "받은 보상";

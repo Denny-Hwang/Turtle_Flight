@@ -21,6 +21,7 @@ struct HomeView: View {
     /// gear button in the top-right.
     @State private var showSettings = false
     @State private var showAlbum = false
+    @State private var showShop = false
     @State private var postcardCount = PostcardAlbum.shared.postcardCount
     /// Phase 2 "Fly now": one tap from Home straight into a Free Flight
     /// with the last character / vehicle / theme. The previous shortest
@@ -206,6 +207,10 @@ struct HomeView: View {
         .sheet(isPresented: $showAlbum) {
             PostcardAlbumView(isPresented: $showAlbum)
         }
+        .sheet(isPresented: $showShop) {
+            ShopView(isPresented: $showShop, missionVM: missionVM,
+                     character: characterVM.selectedCharacter)
+        }
         .sheet(isPresented: $showSettings, onDismiss: {
             // SettingsView's Audio section may have flipped mute via its
             // own toggle / volume sliders. Re-sync the home-screen icon
@@ -239,7 +244,7 @@ struct HomeView: View {
                 CloudSync.shared.onRemoteProgress = { remote in
                     missionVM.acceptRemoteProgress(remote)
                 }
-                CloudSync.shared.start(local: missionVM.progress)
+                CloudSync.shared.start(local: { missionVM.progress })
             }
             #if DEBUG
             if ScreenshotDirector.isActive {
@@ -395,8 +400,8 @@ struct HomeView: View {
                 // flips to the running score. The total cap
                 // stays dynamic via `stages.count * 3`.
                 subtitle: missionVM.progress.totalStars > 0
-                    ? "\(missionVM.progress.totalStars)/\(missionVM.stages.count * 3)★"
-                    : L10n.format("flight.mode.stepGoal.subtitle.firstRun", missionVM.stages.count),
+                    ? "\(missionVM.progress.totalStars)/\(RouteCatalog.allCourses.count * 3)★"
+                    : L10n.format("flight.mode.stepGoal.subtitle.firstRun", RouteCatalog.allCourses.count),
                 icon: "target",
                 // brandPrimary (Turbo mint) so the button
                 // doesn't compete with the star-gold colour
@@ -454,6 +459,19 @@ struct HomeView: View {
                     .background(Capsule().fill(.ultraThinMaterial))
             }
             .accessibilityHint(L10n.t("a11y.album.hint"))
+            Button {
+                AudioManager.shared.playButtonTap()
+                showShop = true
+            } label: {
+                Label("⭐ \(missionVM.progress.starBalance)  \(characterVM.selectedCharacter.treatEmoji) \(missionVM.progress.treatBalance(characterVM.selectedCharacter))",
+                      systemImage: "bag.fill")
+                    .foregroundColor(Theme.Color.textPrimary)
+                    .padding(.horizontal, Theme.Spacing.s + 2)
+                    .padding(.vertical, Theme.Spacing.xs + 1)
+                    .background(Capsule().fill(.ultraThinMaterial))
+            }
+            .accessibilityLabel(L10n.t("shop.title"))
+            .accessibilityValue(L10n.format("shop.wallet.a11y", missionVM.progress.starBalance))
 
             Label(
                 L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
@@ -471,6 +489,8 @@ struct HomeView: View {
             .foregroundColor(Theme.Color.hudCyan)
         }
         .font(Theme.Typography.label)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
         .padding(.bottom, compactHeight ? Theme.Spacing.s : Theme.Spacing.xxl)
     }
 
@@ -498,6 +518,12 @@ struct HomeView: View {
                 showSettings = true
             case .album:
                 showAlbum = true
+            case .shop:
+                showShop = true
+            case .briefing:
+                missionVM.selectCourse(10)
+                selectedMode = .stepGoal
+                showCharacterSelect = true
             case .onboarding:
                 showOnboarding = true
             case .freeflight, .tour:

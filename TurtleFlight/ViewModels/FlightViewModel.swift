@@ -401,10 +401,12 @@ final class FlightViewModel: ObservableObject {
                      character: CharacterType,
                      vehicle: VehicleType,
                      theme: MapTheme = .sky,
-                     trailTier: TrailColorTier = .vehicle) {
+                     trailTier: TrailColorTier = .vehicle,
+                     flair: TrailLook? = nil) {
         currentCharacter = character
         currentVehicle = vehicle
         currentMapTheme = theme
+        Haptics.shared.prepare()
 
         // Push per-vehicle handling into the physics engine. This is what
         // turns "all six vehicles fly identically" into "the carrot jet
@@ -451,7 +453,11 @@ final class FlightViewModel: ObservableObject {
         // colour. Tiers other than `.vehicle` overwrite particleColor
         // (or, for `.rainbow`, push the colour variation up to a full
         // hue range so each particle picks its own hue).
-        if let override = trailTier.overrideColor {
+        if let flair {
+            // A trail bought in the shop wins over the star-tier colour.
+            trailSystem.particleColor = flair.color
+            trailSystem.particleColorVariation = SCNVector4(flair.hueSpread, 0.15, 0, 0)
+        } else if let override = trailTier.overrideColor {
             trailSystem.particleColor = override
         } else if trailTier.useRainbow {
             // Full-hue variation, modest saturation/brightness wobble.
@@ -591,7 +597,7 @@ final class FlightViewModel: ObservableObject {
     static func courseKey(for stage: StageDefinition) -> String {
         if stage.isDailyRun { return "daily-" + DailyRun.key(for: Date()) }
         if stage.isEndless { return "endless" }
-        return "stage-\(stage.index)"
+        return "stage-\(stage.index)" + (stage.isKids ? "-kids" : "")
     }
 
     private func tearDownGhost() {
@@ -787,7 +793,7 @@ final class FlightViewModel: ObservableObject {
                                                         radiusMultiplier: flightEngine.specialty.starMagnet) ?? 0
             simStarsCollected += collected
             if collected > 0 {
-                onMain { AudioManager.shared.playStarCollect() }
+                onMain { AudioManager.shared.playStarCollect(); Haptics.shared.play(.pickup) }
             }
             for _ in 0..<collected {
                 missionEngine?.registerStarCollected()
@@ -897,10 +903,8 @@ final class FlightViewModel: ObservableObject {
             onMain {
                 AudioManager.shared.playRingPass()
                 if let callout { AudioManager.shared.playVoice(callout) }
-                if judgement == .bullseye {
-                    let generator = UIImpactFeedbackGenerator(style: .rigid)
-                    generator.impactOccurred()
-                }
+                Haptics.shared.play(Haptics.event(forCrossingAccuracy: crossing.accuracy,
+                                                  judgement: judgement))
             }
             Analytics.shared.track(.ringPassed, [
                 "ring": crossing.ringIndex,
@@ -909,9 +913,11 @@ final class FlightViewModel: ObservableObject {
                 "combo": engine.score.combo
             ])
         } else {
+            let bump = Haptics.event(forCrossingAccuracy: crossing.accuracy, judgement: judgement)
             onMain {
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.warning)
+                Haptics.shared.play(bump)
+                // Clipping the rim sounds like a bump, not just a miss.
+                if bump == .ringRim { AudioManager.shared.playCollision() }
             }
             Analytics.shared.track(.ringMissed, [
                 "ring": crossing.ringIndex,
@@ -1059,9 +1065,7 @@ final class FlightViewModel: ObservableObject {
             guard let self else { return }
             // Heavy haptic + dedicated collision thump so the player feels
             // the brush. Synth-generated, so no asset cost.
-            let generator = UIImpactFeedbackGenerator(style: .heavy)
-            generator.prepare()
-            generator.impactOccurred()
+            Haptics.shared.play(.groundHit)
             AudioManager.shared.playCollision()
             // Tick the visible-flash counter so the HUD overlay can flash
             // a red rim. Pairs the haptic+sound with a visual cue so
@@ -1087,9 +1091,10 @@ final class FlightViewModel: ObservableObject {
         // The engine only honours the request with a full gauge; don't
         // play the whoosh (or flip the mirror) for a tap that can't fire.
         guard flightEngine.canBoost else {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Haptics.shared.play(.boostDenied)
             return
         }
+        Haptics.shared.play(.boostStart)
         boostRequested = true
         isBoosting = true
         AudioManager.shared.playBoost()

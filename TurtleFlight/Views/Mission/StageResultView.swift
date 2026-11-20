@@ -29,6 +29,8 @@ struct StageResultView: View {
     let onNext: () -> Void
     /// Phase 4: present the ReplayKit preview. Nil hides the button.
     var onShareClip: (() -> Void)? = nil
+    /// Stars and treats this clear paid into the wallet.
+    var reward = RewardGrant()
 
     @State private var displayedStars: Int = 0
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -158,6 +160,10 @@ struct StageResultView: View {
                                           result.maxCombo ?? 0, result.bullseyes ?? 0),
                         badge: nil
                     )
+                }
+                if !reward.isEmpty {
+                    statLine(icon: "gift", text: reward.summary, badge: nil)
+                        .accessibilityLabel(reward.accessibilityText)
                 }
                 if let perfect = stage.starCountForPerfect, perfect > 0 {
                     statLine(
@@ -309,7 +315,7 @@ private struct ResultButton: View {
 
     var body: some View {
         Button(action: {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Haptics.shared.play(.tap)
             action()
         }) {
             Text(title)

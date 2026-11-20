@@ -80,7 +80,7 @@ struct CharacterSelectView: View {
                 character: characterVM.selectedCharacter,
                 vehicle: characterVM.selectedVehicle,
                 flightMode: flightMode,
-                mapTheme: characterVM.selectedMapTheme
+                mapTheme: fixedWorld ?? characterVM.selectedMapTheme
             )
         }
     }
@@ -117,8 +117,33 @@ struct CharacterSelectView: View {
                     RoundedRectangle(cornerRadius: Theme.Radius.m)
                         .fill(Theme.Color.surfaceOverlay)
                 )
+
+            if flightMode == .stepGoal, let course = missionVM.currentStage, !course.isSpecial {
+                courseBriefing(course)
+            }
         }
         .padding(.bottom, Theme.Spacing.s)
+    }
+
+    /// What the selected course asks for, and what three stars take.
+    private func courseBriefing(_ course: StageDefinition) -> some View {
+        VStack(spacing: Theme.Spacing.xxs) {
+            Text(course.displayName)
+                .font(Theme.Typography.label)
+                .foregroundColor(Theme.Color.textOnDark)
+            Text(course.displayDescription)
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(Theme.Color.textOnDark)
+            Text(L10n.format("stageSelect.objective.format", course.displayStar3Condition))
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(Theme.Color.starGold)
+        }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, Theme.Spacing.m)
+        .padding(.vertical, Theme.Spacing.s)
+        .background(RoundedRectangle(cornerRadius: Theme.Radius.m).fill(Theme.Color.surfaceOverlayStrong))
+        .accessibilityElement(children: .combine)
     }
 
     private var choicesColumn: some View {
@@ -154,7 +179,8 @@ struct CharacterSelectView: View {
                 }
             }
 
-            // ── MAP THEME ──
+            // ── MAP THEME ── (route courses come with their own world)
+            if fixedWorld == nil {
             sectionLabel("characterSelect.section.map", systemImage: "map.fill")
             // Seven worlds: a swipeable row of fixed-width cards.
             ScrollView(.horizontal, showsIndicators: false) {
@@ -174,9 +200,17 @@ struct CharacterSelectView: View {
                 .padding(.horizontal, Theme.Spacing.xs)
                 .padding(.vertical, Theme.Spacing.s)
             }
+            }
         }
         .padding(.top, Theme.Spacing.xs)
     }
+
+    /// World of the selected course when it has one of its own.
+    private var fixedWorld: MapTheme? {
+        flightMode == .stepGoal ? missionVM.currentStage?.world : nil
+    }
+
+    private var shownWorld: MapTheme { fixedWorld ?? characterVM.selectedMapTheme }
 
     private func sectionLabel(_ key: String, systemImage: String) -> some View {
         Label(L10n.t(key), systemImage: systemImage)
@@ -191,14 +225,14 @@ struct CharacterSelectView: View {
 
     private var themeBackground: some View {
         LinearGradient(
-            colors: characterVM.selectedMapTheme.uiGradient,
+            colors: shownWorld.uiGradient,
             startPoint: .top,
             endPoint: .bottom
         )
     }
 
     private var themeAccentColor: Color {
-        characterVM.selectedMapTheme.uiAccent
+        shownWorld.uiAccent
     }
 
     private func startFlight() {

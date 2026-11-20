@@ -36,10 +36,29 @@ final class MissionViewModel: ObservableObject {
     /// When set it overrides `currentStage`; cleared by `returnToSelect`.
     @Published var specialStage: StageDefinition?
 
+    /// Course picked on the route map. Unlike `specialStage` it survives
+    /// `returnToSelect()`, so going "Home" from a result and starting
+    /// again flies the same course.
+    @Published private(set) var selectedCourseIndex: Int?
+
     var currentStage: StageDefinition? {
         if let specialStage { return specialStage }
-        guard currentStageIndex < stages.count else { return nil }
-        return stages[currentStageIndex]
+        let base: StageDefinition?
+        if let selectedCourseIndex, let course = RouteCatalog.course(index: selectedCourseIndex) {
+            base = course
+        } else {
+            base = currentStageIndex < stages.count ? stages[currentStageIndex] : nil
+        }
+        // Kids mode swaps in the no-fail version of whatever is selected.
+        return progress.kidsMode ? base?.kidsVariant() : base
+    }
+
+    /// Forget the picked course (progress reset).
+    func clearSelection() {
+        selectedCourseIndex = nil
+        specialStage = nil
+        currentStageIndex = 0
+        lastReward = RewardGrant()
     }
 
     /// Select today's Daily Run as the active course.
@@ -85,24 +104,121 @@ final class MissionViewModel: ObservableObject {
 
     func isStageUnlocked(_ index: Int) -> Bool {
         if index == 0 { return true }
-        return progress.maxUnlockedStage >= index
+        if index < stages.count, progress.maxUnlockedStage >= index { return true }
+        return progress.isCourseUnlocked(index)
     }
 
+    // MARK: - Routes
+
+    /// Pick any course on any route (Sky School included). In Kids mode
+    /// the course is swapped for its no-fail version.
+    @discardableResult
+    func selectCourse(_ index: Int) -> Bool {
+        guard isStageUnlocked(index), let course = RouteCatalog.course(index: index) else { return false }
+        activate(course)
+        return true
+    }
+
+    private func activate(_ course: StageDefinition) {
+        specialStage = nil
+        selectedCourseIndex = course.index
+        if course.index < stages.count { currentStageIndex = course.index }
+    }
+
+    /// The course after the current one on its route.
+    private var nextCourse: StageDefinition? {
+        guard let current = currentStage, !current.isSpecial else { return nil }
+        return RouteCatalog.next(after: current.index)
+    }
+
+    func setKidsMode(_ on: Bool) {
+        progress.kidsMode = on
+        save()
+    }
+
+    // MARK: - Rewards, shop and codes
+
+    /// What the most recent flight paid out (result screens read this).
+    @Published private(set) var lastReward = RewardGrant()
+
+    private func pay(stars: Int, treats: Int) {
+        let character = lastFlownCharacter
+        progress.earnStars(stars)
+        if let character { progress.earnTreats(treats, for: character) }
+        lastReward = RewardGrant(stars: stars, treats: character == nil ? 0 : treats, character: character)
+    }
+
+    @discardableResult
+    func buy(_ item: ShopItem) -> Bool {
+        guard progress.buy(item) else {
+            Haptics.shared.play(.codeRejected)
+            return false
+        }
+        // New things are put on straight away.
+        switch item.kind {
+        case .sky(let mood): progress.pinSky(mood)
+        case .flair(_, let character):
+            if let character { progress.equipFlair(item, for: character) }
+        }
+        Haptics.shared.play(.purchase)
+        Analytics.shared.track(.itemPurchased, ["item": item.id])
+        save()
+        return true
+    }
+
+    func equipFlair(_ item: ShopItem?, for character: CharacterType) {
+        progress.equipFlair(item, for: character)
+        save()
+    }
+
+    func pinSky(_ mood: SkyMood?) {
+        progress.pinSky(mood)
+        save()
+    }
+
+    @discardableResult
+    func openCourseEarly(_ index: Int) -> Bool {
+        guard progress.openCourseEarly(index) else {
+            Haptics.shared.play(.codeRejected)
+            return false
+        }
+        Haptics.shared.play(.purchase)
+        Analytics.shared.track(.itemPurchased, ["item": "course.\(index)"])
+        save()
+        return true
+    }
+
+    func redeemCode(_ raw: String) -> SecretCodes.Outcome {
+        let outcome = SecretCodes.redeem(raw, into: &progress)
+        if case .accepted = outcome {
+            Haptics.shared.play(.codeAccepted)
+            Analytics.shared.track(.codeRedeemed)
+            save()
+        } else {
+            Haptics.shared.play(.codeRejected)
+        }
+        return outcome
+    }
+
+    /// Best stars at the difficulty currently being played.
     func stageStars(_ index: Int) -> Int {
-        progress.stageResults[index]?.stars ?? 0
+        progress.bestStars(index, kids: progress.kidsMode)
     }
 
     func selectStage(_ index: Int) {
-        guard isStageUnlocked(index) else { return }
-        currentStageIndex = index
+        // Same path as the route map, so a course left over from an
+        // earlier flight can never stay selected.
+        selectCourse(index)
     }
 
     /// True iff there's a stage after the current one. The MissionHUD uses
     /// this to decide whether to render the "Next" button on the
     /// stage-clear overlay.
     var hasNextStage: Bool {
-        guard specialStage == nil else { return false }
-        return currentStageIndex + 1 < stages.count
+        // "Next" restarts in the same scene, so it is only offered while
+        // the next course stays in the same world.
+        guard let current = currentStage, let next = nextCourse else { return false }
+        return next.world == current.world
     }
 
     /// Advance to the next stage if one exists. Returns true on success so
@@ -110,8 +226,8 @@ final class MissionViewModel: ObservableObject {
     /// flow vs. spinning up the next mission.
     @discardableResult
     func advanceToNextStage() -> Bool {
-        guard hasNextStage else { return false }
-        currentStageIndex += 1
+        guard hasNextStage, let next = nextCourse else { return false }
+        activate(next)
         return true
     }
 
@@ -131,8 +247,17 @@ final class MissionViewModel: ObservableObject {
         } else {
             // Capture prior best BEFORE merging the new result — drives the
             // "New Best!" badge in StageResultView.
-            priorBestForLastResult = progress.stageResults[result.stageIndex]
-            progress.updateStageResult(result)
+            let kids = currentStage?.isKids == true
+            priorBestForLastResult = kids ? progress.kidsResults[result.stageIndex]
+                                          : progress.stageResults[result.stageIndex]
+            progress.updateStageResult(result, kids: kids)
+        }
+        if specialStage?.isEndless == true {
+            pay(stars: 0, treats: RewardRules.treats(forEndlessRings: result.ringsCompleted))
+        } else {
+            let isNewBest = result.stars > (priorBestForLastResult?.stars ?? 0)
+            pay(stars: RewardRules.stars(forCourse: result, isNewBest: isNewBest),
+                treats: RewardRules.treats(forCourse: result))
         }
         progress.totalFlightTime += result.completionTime
         QuestTracker.shared.record(.courseCleared(collisions: result.collisions,
@@ -168,6 +293,7 @@ final class MissionViewModel: ObservableObject {
         }
         missionState = .completed
         AudioManager.shared.playStageClear()
+        Haptics.shared.play(.stageClear)
         AudioManager.shared.playVoice(.stageClear)
         save()
     }
@@ -182,11 +308,12 @@ final class MissionViewModel: ObservableObject {
             save()
         }
         Analytics.shared.track(.stageFailed, [
-            "stage": currentStageIndex,
+            "stage": currentStage?.index ?? currentStageIndex,
             "reason": reason,
             "time": Int(elapsed)
         ])
         AudioManager.shared.playStageFail()
+        Haptics.shared.play(.stageFail)
         AudioManager.shared.playVoice(.stageFail)
     }
 
@@ -201,6 +328,7 @@ final class MissionViewModel: ObservableObject {
         if isNewBest {
             progress.bestFreeFlightStars = starsCollected
         }
+        pay(stars: 0, treats: RewardRules.treats(forFreeFlightStars: starsCollected))
         progress.totalFlightTime += max(0, flightTime)
         QuestTracker.shared.record(.flightTime(seconds: max(0, flightTime)))
         Analytics.shared.track(.freeFlightEnded, [
@@ -222,6 +350,7 @@ final class MissionViewModel: ObservableObject {
     func addBonusStars(_ stars: Int) {
         guard stars > 0 else { return }
         progress.bonusStars += stars
+        progress.earnStars(stars)
         let earned = TrailColorTier.highestUnlocked(totalStars: progress.effectiveStars)
         if earned.unlockStarThreshold > progress.lastSeenTrailTierThreshold {
             progress.lastSeenTrailTierThreshold = earned.unlockStarThreshold
@@ -283,6 +412,9 @@ final class MissionViewModel: ObservableObject {
     func setSelectedTrailTier(_ tier: TrailColorTier) {
         guard tier.isUnlocked(totalStars: progress.effectiveStars) else { return }
         progress.selectedTrailTier = tier
+        // The latest choice wins: a shop trail would otherwise keep
+        // covering the colour picked here.
+        progress.equippedFlair.removeAll()
         save()
     }
 }

@@ -87,6 +87,7 @@ struct FlightView: View {
                     flightTime: flightVM.flightTime,
                     starsCollected: flightVM.starsCollected,
                     isNewBestStars: freeFlightWasNewBest,
+                    reward: missionVM.lastReward,
                     onHome: {
                         ClipRecorder.shared.discard()
                         flightVM.stopFlight()
@@ -220,7 +221,8 @@ struct FlightView: View {
                                 missionVM.startMission()
                             }
                         },
-                        onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil
+                        onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil,
+                        reward: missionVM.lastReward
                     )
                     .transition(.opacity)
                 }
@@ -299,6 +301,10 @@ struct FlightView: View {
         // Time of day for this flight (open-sky worlds only).
         var mood = SkyMood.forFlight(number: Analytics.shared.snapshot().count(.flightStarted),
                                      world: mapTheme)
+        // A sky bought in the shop can be pinned for Free Flight.
+        if flightMode == .freePlay, mapTheme.hasOpenSky, let pinned = missionVM.progress.pinnedSky {
+            mood = pinned
+        }
         #if DEBUG
         if ScreenshotDirector.isActive {
             mood = UserDefaults.standard.string(forKey: "TFMood").flatMap(SkyMood.init(rawValue:)) ?? .day
@@ -355,7 +361,8 @@ struct FlightView: View {
                              character: character,
                              vehicle: vehicle,
                              theme: mapTheme,
-                             trailTier: tierToApply)
+                             trailTier: tierToApply,
+                             flair: missionVM.progress.equippedFlair(for: character)?.trailLook)
         missionVM.recordFlightStart(character: character)
         ClipRecorder.shared.startIfEnabled(missionVM.progress.clipRecordingEnabled)
 

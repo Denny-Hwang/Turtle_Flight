@@ -52,3 +52,6 @@ marketing/screenshots/
 marketing/store/
 marketing/promo/
 __pycache__/
+
+# Secret code plaintext (the app ships hashes only)
+marketing/secret_codes.md

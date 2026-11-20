@@ -126,8 +126,8 @@
 "stage.0.star3Condition" = "Termina en 60 segundos";
 "stage.1.star3Condition" = "Cero golpes, termina en 90 s";
 "stage.2.star3Condition" = "Cero golpes, reúne las 5 estrellas";
-"stage.3.star3Condition" = "Todos los aros, termina en 120 s";
-"stage.4.star3Condition" = "Todos los aros, en 80 s, cero golpes";
+"stage.3.star3Condition" = "Todos los aros, termina en 110 s";
+"stage.4.star3Condition" = "Todos los aros, en 90 s, cero golpes";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Reino del Cielo";
@@ -199,9 +199,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Elige un nivel";
-"stageSelect.progress.format"        = "%lld / %lld estrellas";
 "stageSelect.objective.format"       = "Meta ★★★: %@";
-"stageSelect.locked.body"            = "Supera el nivel anterior para desbloquear este.";
 "stageSelect.card.hint.unlocked"     = "Toca dos veces para elegir este nivel";
 "stageSelect.card.hint.locked"       = "Supera primero el nivel anterior";
 "stageSelect.card.label.unlocked"    = "Nivel %lld, %@, %lld estrellas conseguidas";
@@ -420,3 +418,62 @@
 "specialty.cat" = "Imán de estrellas: las recoge desde más lejos";
 "specialty.frog" = "Salto al cielo: el turbo también te eleva";
 "specialty.bunny" = "Batería de diana: las dianas recargan el turbo";
+
+// MARK: - Routes, kids mode, rewards, shop, secret codes
+"settings.controls.haptics" = "Vibración";
+"route.skySchool.name" = "Escuela del Cielo";
+"route.sunRoad.name" = "Ruta del Sol";
+"route.eastTrail.name" = "Sendero del Este";
+"route.deepBlue.name" = "Azul Profundo";
+"route.starRoad.name" = "Camino de Estrellas";
+"route.course.nameFormat" = "%1$@ %2$lld";
+"route.course.descFormat" = "Atraviesa %lld aros";
+"route.course.kidsDescFormat" = "Peques: %lld aros grandes, sin reloj";
+"route.course.star3Format" = "Termina en %lld s sin chocar";
+"route.course.kidsStar3" = "Atraviesa todos los aros";
+"route.locked.finale" = "Termina las otras cuatro rutas para abrirla, o usa un código secreto.";
+"route.openEarly.format" = "Abrir con %lld estrellas";
+"route.openEarly.confirmTitle" = "¿Abrir este recorrido antes?";
+"route.openEarly.balance" = "Tienes %lld estrellas.";
+"route.openEarly.notEnough" = "Tienes %1$lld de %2$lld estrellas. Supera recorridos para ganar más.";
+"route.kids.toggle" = "Modo peques";
+"route.kids.caption" = "Aros más grandes, menos aros y sin reloj. Nadie pierde.";
+"code.title" = "Código secreto";
+"code.enter" = "Introducir código";
+"code.placeholder" = "Escribe un código";
+"code.redeem" = "Usar";
+"code.caption" = "¿Tienes un código nuestro? Escríbelo aquí y recibe un regalo gratis.";
+"code.result.unknown" = "Ese código no funciona.";
+"code.result.used" = "Ya usaste ese código.";
+"code.reward.route" = "¡%@ está abierta!";
+"code.reward.stars" = "+%lld estrellas";
+"code.reward.treats" = "+%lld premios para cada amigo";
+"code.reward.comet" = "Estela Cometa desbloqueada para todos";
+"code.reward.starter" = "+%1$lld estrellas y +%2$lld premios para cada amigo";
+"treat.turtle.name" = "Lechuga";
+"treat.penguin.name" = "Pescado";
+"treat.hamster.name" = "Pipa";
+"treat.cat.name" = "Ovillo";
+"treat.frog.name" = "Luciérnaga";
+"treat.bunny.name" = "Zanahoria";
+"shop.title" = "Tienda";
+"shop.tab.stars" = "Tienda de estrellas";
+"shop.tab.treats" = "Tienda de premios";
+"shop.stars.caption" = "Supera recorridos para ganar estrellas. Sirven para elegir el cielo del Vuelo libre y abrir recorridos antes.";
+"shop.treats.caption" = "Vuela con este amigo para reunir %@. Con los premios compras sus propias estelas.";
+"shop.sky.auto" = "Cielo sorpresa";
+"shop.sky.morning" = "Cielo de mañana";
+"shop.sky.sunset" = "Cielo de atardecer";
+"shop.sky.night" = "Cielo nocturno";
+"shop.flair.nameFormat" = "%2$@ de %1$@";
+"shop.flair.tier1" = "Destello";
+"shop.flair.tier2" = "Brillo";
+"shop.flair.tier3" = "Aurora";
+"shop.flair.comet" = "Estela Cometa";
+"shop.flair.none" = "Estela del vehículo";
+"shop.equip" = "Usar";
+"shop.equipped" = "En uso";
+"shop.wallet.a11y" = "%lld estrellas para gastar";
+"shop.buy.a11y" = "Comprar %1$@ por %2$lld";
+"shop.notEnough" = "Tienes %1$lld de %2$lld";
+"reward.earned" = "Ganado";
