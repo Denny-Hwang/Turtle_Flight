@@ -54,7 +54,31 @@ final class CharacterRegistryTests: XCTestCase {
 
     // MARK: - In-flight billboard
 
-    func testBillboardNodeForEveryCharacter() {
+/// Every character ships two atlases: riding its own vehicle and
+    /// riding the shared Cloud Surf. A missing one would silently fall
+    /// back to the wrong art (or magenta).
+    func testEveryCharacterShipsOwnVehicleAndCloudSurfAtlases() {
+        for character in CharacterType.allCases {
+            let own = CharacterRegistry.atlasName(for: character, vehicle: character.config.defaultVehicle)
+            let cloud = CharacterRegistry.atlasName(for: character, vehicle: .cloudSurf)
+            XCTAssertEqual(own, "\(character.assetPrefix)_atlas")
+            XCTAssertEqual(cloud, "\(character.assetPrefix)_cloud_atlas")
+            for name in [own, cloud] {
+                let image = UIImage(named: name)
+                XCTAssertNotNil(image, "missing atlas imageset \(name)")
+                XCTAssertEqual(image?.size.width, image?.size.height, "\(name) must be a square 2×2 grid")
+            }
+        }
+    }
+
+    func testBillboardIsLargeEnoughToReadFromTheChaseCamera() {
+        let node = CharacterRegistry.shared.buildInflightBillboard(for: .turtle, vehicle: .cloudSurf)
+        let plane = node.geometry as? SCNPlane
+        XCTAssertEqual(plane?.width, CharacterRegistry.inflightBillboardSize)
+        XCTAssertGreaterThanOrEqual(CharacterRegistry.inflightBillboardSize, 3.0)
+    }
+
+        func testBillboardNodeForEveryCharacter() {
         let registry = CharacterRegistry.shared
         for character in CharacterType.allCases {
             let node = registry.buildInflightBillboard(for: character)
@@ -77,10 +101,11 @@ final class CharacterRegistryTests: XCTestCase {
         //   default = top-left, joy = top-right,
         //   scared = bottom-left, speed = bottom-right.
         let cases: [(CharacterExpression, Float, Float)] = [
-            (.default, 0.0, 0.5),  // col 0, row 1 (top)
-            (.joy,     0.5, 0.5),
-            (.scared,  0.0, 0.0),  // col 0, row 0 (bottom)
-            (.speed,   0.5, 0.0),
+            // Texture v runs top → bottom, so the top row has ty = 0.
+            (.default, 0.0, 0.0),
+            (.joy,     0.5, 0.0),
+            (.scared,  0.0, 0.5),
+            (.speed,   0.5, 0.5),
         ]
         for (expr, expectedTx, expectedTy) in cases {
             let m = CharacterRegistry.uvTransform(forCell: expr.atlasCell)
@@ -99,11 +124,11 @@ final class CharacterRegistryTests: XCTestCase {
         // Default after creation
         let initial = node.geometry!.firstMaterial!.diffuse.contentsTransform
         XCTAssertEqual(initial.m41, 0.0, accuracy: 1e-6)
-        XCTAssertEqual(initial.m42, 0.5, accuracy: 1e-6)
+        XCTAssertEqual(initial.m42, 0.0, accuracy: 1e-6)
 
         animator.setExpression(.speed, on: node, duration: 0)
         let after = node.geometry!.firstMaterial!.diffuse.contentsTransform
         XCTAssertEqual(after.m41, 0.5, accuracy: 1e-6, "speed cell should sit in col 1")
-        XCTAssertEqual(after.m42, 0.0, accuracy: 1e-6, "speed cell should sit in row 0")
+        XCTAssertEqual(after.m42, 0.5, accuracy: 1e-6, "speed cell is the bottom row")
     }
 }

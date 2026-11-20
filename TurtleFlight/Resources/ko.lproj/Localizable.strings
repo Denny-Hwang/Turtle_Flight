@@ -18,6 +18,7 @@
 "settings.audio.mute"                     = "음소거";
 "settings.audio.bgm"                      = "배경음 볼륨";
 "settings.audio.sfx"                      = "효과음 볼륨";
+"settings.audio.voice"                   = "응원 음성";
 
 "settings.section.progress"               = "진행 상황";
 "settings.progress.reset"                 = "진행 기록 초기화";
@@ -355,3 +356,11 @@
 "mastery.title.3"             = "하늘 조종사";
 "mastery.title.4"             = "에이스";
 "mastery.title.5"             = "하늘의 전설";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "1일 연속";
+"a11y.streak.format.one"            = "1일 연속으로 플레이했습니다";
+"characterSelect.section.character" = "캐릭터";
+"sensitivity.easy"                  = "쉬움";
+"sensitivity.normal"                = "보통";
+"sensitivity.expert"                = "전문가";

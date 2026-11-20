@@ -30,6 +30,9 @@ struct PauseView: View {
     var sensitivityLevel: Binding<SensitivityLevel>? = nil
 
     @State private var showRestartConfirm = false
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var compact: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ZStack {
@@ -39,76 +42,24 @@ struct PauseView: View {
             Color.black.opacity(0.55)
                 .ignoresSafeArea()
 
-            VStack(spacing: Theme.Spacing.l) {
-                Image(systemName: "pause.circle.fill")
-                    .resizable()
-                    .frame(width: 56, height: 56)
-                    .foregroundColor(Theme.Color.textOnDark)
-
-                Text(L10n.t("flight.pause.title"))
-                    .font(Theme.Typography.displayMedium)
-                    .foregroundColor(Theme.Color.textOnDark)
-
-                Text(L10n.t("flight.pause.subtitle"))
-                    .font(Theme.Typography.bodyDynamic)
-                    .foregroundColor(Theme.Color.textOnDarkMuted)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xl)
-
-                VStack(spacing: Theme.Spacing.m) {
-                    PauseButton(
-                        title: L10n.t("flight.pause.resume"),
-                        systemImage: "play.fill",
-                        color: Theme.Color.brandPrimary,
-                        action: onResume
-                    )
-                    .accessibilityHint(L10n.t("flight.pause.resume.hint"))
-
-                    PauseButton(
-                        title: L10n.t("flight.pause.restart"),
-                        systemImage: "arrow.counterclockwise",
-                        color: Theme.Color.boostOrange,
-                        action: {
-                            if restartRequiresConfirmation {
-                                showRestartConfirm = true
-                            } else {
-                                onRestart()
-                            }
-                        }
-                    )
-                    .accessibilityHint(L10n.t("flight.pause.restart.hint"))
-
-                    PauseButton(
-                        title: L10n.t("flight.pause.quit"),
-                        systemImage: "xmark",
-                        color: Theme.Color.surfaceOverlayStrong,
-                        action: onQuit
-                    )
-                    .accessibilityHint(L10n.t("flight.pause.quit.hint"))
-                }
-                .padding(.horizontal, Theme.Spacing.xl)
-
-                // In-flight sensitivity selector. Surfaced only when the
-                // caller passed a binding — previews and tests that omit
-                // it get the original 3-button modal. The point of
-                // surfacing this here is that swapping Easy↔Normal mid-
-                // mission previously required Exit → Home → Settings →
-                // 5 more taps; for a kids-rated game the "this feels
-                // too sensitive" reaction needs to be 1 tap from where
-                // the player is right now.
-                if let sensitivityLevel {
-                    SensitivityRow(selection: sensitivityLevel)
-                        .padding(.horizontal, Theme.Spacing.xl)
-                }
+            // A landscape iPhone has ~390pt of height: the tall stack
+            // (icon + title + 3 buttons + sensitivity) ran off both the
+            // top and the bottom there. Compact height drops the icon
+            // and puts Restart / Quit side by side; the ScrollView is
+            // the last resort for large Dynamic Type.
+            ViewThatFits(in: .vertical) {
+                panelContent
+                ScrollView(.vertical, showsIndicators: false) { panelContent }
             }
             .padding(Theme.Spacing.xl)
-            .frame(maxWidth: 380)
+            .frame(maxWidth: compact ? 460 : 380)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.xl)
                     .fill(Theme.Color.surfacePanel)
                     .elevation(Theme.Elevation.cardHigh)
             )
             .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, Theme.Spacing.s)
         }
         .confirmationDialog(
             L10n.t("flight.pause.restart.confirm.title"),
@@ -123,6 +74,90 @@ struct PauseView: View {
         } message: {
             Text(L10n.t("flight.pause.restart.confirm.message"))
         }
+    }
+
+    // MARK: - Panel
+
+    private var panelContent: some View {
+        VStack(spacing: compact ? Theme.Spacing.m : Theme.Spacing.l) {
+            if !compact {
+                Image(systemName: "pause.circle.fill")
+                    .resizable()
+                    .frame(width: 56, height: 56)
+                    .foregroundColor(Theme.Color.textOnDark)
+            }
+
+            Text(L10n.t("flight.pause.title"))
+                .font(compact ? Theme.Typography.title : Theme.Typography.displayMedium)
+                .foregroundColor(Theme.Color.textOnDark)
+
+            Text(L10n.t("flight.pause.subtitle"))
+                .font(Theme.Typography.bodyDynamic)
+                .foregroundColor(Theme.Color.textOnDarkMuted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, Theme.Spacing.xl)
+
+            VStack(spacing: Theme.Spacing.m) {
+                resumeButton
+                if compact {
+                    HStack(spacing: Theme.Spacing.m) {
+                        restartButton
+                        quitButton
+                    }
+                } else {
+                    restartButton
+                    quitButton
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.xl)
+
+            // In-flight sensitivity selector. Surfaced only when the
+            // caller passed a binding. Swapping Easy↔Normal mid-mission
+            // otherwise needs Exit → Home → Settings → 5 more taps; for
+            // a kids-rated game "this feels too sensitive" has to be one
+            // tap from where the player is.
+            if let sensitivityLevel {
+                SensitivityRow(selection: sensitivityLevel)
+                    .padding(.horizontal, Theme.Spacing.xl)
+            }
+        }
+    }
+
+    private var resumeButton: some View {
+        PauseButton(
+            title: L10n.t("flight.pause.resume"),
+            systemImage: "play.fill",
+            color: Theme.Color.brandPrimary,
+            action: onResume
+        )
+        .accessibilityHint(L10n.t("flight.pause.resume.hint"))
+    }
+
+    private var restartButton: some View {
+        PauseButton(
+            title: L10n.t("flight.pause.restart"),
+            systemImage: "arrow.counterclockwise",
+            color: Theme.Color.boostOrange,
+            action: {
+                if restartRequiresConfirmation {
+                    showRestartConfirm = true
+                } else {
+                    onRestart()
+                }
+            }
+        )
+        .accessibilityHint(L10n.t("flight.pause.restart.hint"))
+    }
+
+    private var quitButton: some View {
+        PauseButton(
+            title: L10n.t("flight.pause.quit"),
+            systemImage: "xmark",
+            color: Theme.Color.surfaceOverlayStrong,
+            action: onQuit
+        )
+        .accessibilityHint(L10n.t("flight.pause.quit.hint"))
     }
 }
 

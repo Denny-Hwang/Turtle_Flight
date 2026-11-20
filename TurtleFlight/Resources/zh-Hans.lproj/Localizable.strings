@@ -16,6 +16,7 @@
 "settings.audio.mute"                     = "静音";
 "settings.audio.bgm"                      = "背景音乐音量";
 "settings.audio.sfx"                      = "音效音量";
+"settings.audio.voice"                   = "解说语音";
 
 "settings.section.progress"               = "进度";
 "settings.progress.reset"                 = "重置进度";
@@ -352,3 +353,11 @@
 "mastery.title.3"             = "天空飞行员";
 "mastery.title.4"             = "王牌";
 "mastery.title.5"             = "天空传奇";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "连续 1 天";
+"a11y.streak.format.one"            = "你已连续玩了 1 天";
+"characterSelect.section.character" = "角色";
+"sensitivity.easy"                  = "简单";
+"sensitivity.normal"                = "普通";
+"sensitivity.expert"                = "专家";

@@ -81,12 +81,29 @@ ok "project.yml entitlements present; xcodeproj not committed"
 [ -f docs/APP_STORE_SUBMISSION.md ] || fail "docs/APP_STORE_SUBMISSION.md missing"
 ok "PRIVACY.md and submission checklist present"
 
+# ---- 7. Voice callouts: manifest valid; clips reported, not required ---------
+python3 - <<'PY2' || fail "scripts/audio/voice-lines.json is invalid (see above)"
+import json, os, re, sys
+m = json.load(open('scripts/audio/voice-lines.json'))
+voice = m['voice']['name']
+if not re.fullmatch(r'[a-z]{2}-[A-Z]{2}-(Neural2|Wavenet)-[A-Z]', voice):
+    sys.exit(f"voice {voice} must be Neural2/WaveNet (no generative voices in a 4+ app)")
+keys = [l['key'] for l in m['lines']]
+missing = [k for k in keys if not os.path.exists(f'TurtleFlight/Resources/Audio/voice_{k}.m4a')]
+if missing:
+    print(f"   ⚠️  {len(missing)}/{len(keys)} voice clips not generated yet ({', '.join(missing)}); "
+          "those callouts stay silent. Owner: scripts/audio/generate_voice.sh")
+else:
+    print(f"   {len(keys)} voice clips bundled ({voice})")
+PY2
+ok "Voice-line manifest valid"
+
 if [ "${1:-}" = "--no-build" ]; then
   echo "Static preflight passed (build skipped)."
   exit 0
 fi
 
-# ---- 7. Release build + tests (macOS with Xcode) ------------------------------
+# ---- 8. Release build + tests (macOS with Xcode) ------------------------------
 command -v xcodegen >/dev/null || fail "xcodegen not installed (brew install xcodegen)"
 xcodegen generate
 DEVICE=$(xcrun simctl list devices available | grep -E "iPhone [0-9]+" | tail -1 | sed -E 's/^ *([^(]+) \(.*/\1/' | xargs)
@@ -97,6 +114,7 @@ xcodebuild build -project TurtleFlight.xcodeproj -scheme TurtleFlight \
   CODE_SIGNING_ALLOWED=NO -quiet
 ok "Release build succeeded"
 xcodebuild test -project TurtleFlight.xcodeproj -scheme TurtleFlight \
-  -destination "platform=iOS Simulator,name=$DEVICE" -quiet
+  -destination "platform=iOS Simulator,name=$DEVICE" \
+  CODE_SIGNING_ALLOWED=NO -quiet
 ok "All tests passed"
 echo "Preflight passed. Next: Xcode → Product → Archive (see docs/APP_STORE_SUBMISSION.md)."

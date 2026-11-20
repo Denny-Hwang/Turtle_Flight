@@ -30,9 +30,9 @@ final class CharacterRegistry {
 //
 // The atlas (`{name}_atlas` imageset, 2048×2048) is laid out in a 2×2 grid:
 //   ┌──────────────┬──────────────┐
-//   │  default     │  joy         │  ← row 1 (top)
+//   │  default     │  joy         │  ← row 0 (top; texture v = 0…0.5)
 //   ├──────────────┼──────────────┤
-//   │  scared      │  speed       │  ← row 0 (bottom)
+//   │  scared      │  speed       │  ← row 1 (bottom; v = 0.5…1)
 //   └──────────────┴──────────────┘
 //   col 0 (left)     col 1 (right)
 //
@@ -46,34 +46,52 @@ enum CharacterExpression: String, CaseIterable {
     case scared
     case speed
 
-    /// Cell coordinates in the 2×2 atlas. col 0 = left half, col 1 = right;
-    /// row 0 = bottom half (scared/speed), row 1 = top half (default/joy).
+    /// Cell coordinates in the 2×2 atlas. SceneKit's texture space has
+    /// its origin at the TOP-left of a UIImage, so row 0 is the image's
+    /// top half (default / joy) and row 1 its bottom half (scared /
+    /// speed). The rows were the other way round until 2026-11, which
+    /// showed "scared" during normal flight and "speed" on a bullseye.
     var atlasCell: (col: Int, row: Int) {
         switch self {
-        case .default: return (0, 1)
-        case .joy:     return (1, 1)
-        case .scared:  return (0, 0)
-        case .speed:   return (1, 0)
+        case .default: return (0, 0)
+        case .joy:     return (1, 0)
+        case .scared:  return (0, 1)
+        case .speed:   return (1, 1)
         }
     }
 }
 
 extension CharacterRegistry {
 
+    /// World-space side of the in-flight billboard. 2.0 put the character
+    /// at ~4% of screen height (5.0 is ~13%) from the chase camera — too small to read
+    /// the art or the expression. Gate scoring uses the flight position,
+    /// not this plane, so the size is purely visual.
+    static let inflightBillboardSize: CGFloat = 5.0
+
+    /// Atlas imageset for a character on a given vehicle. Each character's
+    /// own vehicle is drawn into `{name}_atlas`; the shared Cloud Surf has
+    /// its own `{name}_cloud_atlas` so the art matches the selection.
+    static func atlasName(for character: CharacterType, vehicle: VehicleType?) -> String {
+        vehicle == .cloudSurf
+            ? "\(character.assetPrefix)_cloud_atlas"
+            : "\(character.assetPrefix)_atlas"
+    }
+
     /// Build the in-flight character node — a billboarded SCNPlane textured
-    /// with the character's expression atlas. The flying-pose art already
-    /// integrates the vehicle, so this single node replaces the previous
-    /// (charNode + vehNode) primitive pair for in-flight rendering.
+    /// with the expression atlas for this character + vehicle (the vehicle
+    /// is part of the art, so one node covers both).
     ///
     /// `size` is the world-space side length of the square plane.
     func buildInflightBillboard(for character: CharacterType,
-                                size: CGFloat = 2.0) -> SCNNode {
+                                vehicle: VehicleType? = nil,
+                                size: CGFloat = CharacterRegistry.inflightBillboardSize) -> SCNNode {
         let plane = SCNPlane(width: size, height: size)
         let mat = plane.firstMaterial ?? SCNMaterial()
 
-        let atlasName = "\(character.assetPrefix)_atlas"
         #if canImport(UIKit)
-        if let img = UIImage(named: atlasName) {
+        if let img = UIImage(named: Self.atlasName(for: character, vehicle: vehicle))
+            ?? UIImage(named: Self.atlasName(for: character, vehicle: nil)) {
             mat.diffuse.contents = img
         } else {
             // Asset missing — surface visually so it's caught in QA, not
@@ -164,6 +182,10 @@ extension CharacterRegistry {
         p.particleAngularVelocityVariation = 30
         p.blendMode = params.blendMode
         p.isLightingEnabled = false
+        // Without an image SceneKit draws every particle as a hard-edged
+        // square quad — at trail density that stacked into an opaque
+        // white block covering the character.
+        p.particleImage = Self.softParticleImage
         p.particleColor = params.color
         p.particleSize = params.particleSize
         p.particleSizeVariation = params.particleSizeVariation
@@ -173,6 +195,27 @@ extension CharacterRegistry {
         p.particleVelocityVariation = params.velocityVariation
         return p
     }
+
+    /// Round, feathered dot shared by every trail (tinted per vehicle by
+    /// `particleColor`). Drawn once; 64px is plenty for a 0.2–0.7 unit
+    /// particle seen from the chase camera.
+    static let softParticleImage: UIImage = {
+        let side: CGFloat = 64
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        return UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format).image { ctx in
+            let colors = [UIColor.white.cgColor,
+                          UIColor.white.withAlphaComponent(0.55).cgColor,
+                          UIColor.white.withAlphaComponent(0).cgColor] as CFArray
+            guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                                            colors: colors,
+                                            locations: [0, 0.45, 1]) else { return }
+            let c = CGPoint(x: side / 2, y: side / 2)
+            ctx.cgContext.drawRadialGradient(gradient, startCenter: c, startRadius: 0,
+                                             endCenter: c, endRadius: side / 2, options: [])
+        }
+    }()
 
     /// Per-vehicle parameter table — public for tests and so the boost
     /// modulator (CharacterAnimator.setTrailBoosting) can read the base

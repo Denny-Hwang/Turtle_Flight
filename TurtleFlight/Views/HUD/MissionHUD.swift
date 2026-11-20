@@ -36,6 +36,10 @@ struct MissionHUD: View {
                         }
                     }
                     let id = event.id
+                    #if DEBUG
+                    // Screenshot mode: hold the callout for the capture.
+                    if ScreenshotDirector.freezeCombo != nil { return }
+                    #endif
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
                         guard calloutEvent?.id == id else { return }
                         withAnimation(.easeOut(duration: 0.25)) { calloutVisible = false }
@@ -51,7 +55,9 @@ struct MissionHUD: View {
 
                     if let stage = missionVM.currentStage {
                         VStack(spacing: Theme.Spacing.xs) {
-                            Text(L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
+                            Text(stage.isSpecial
+                                 ? stage.displayName
+                                 : L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName))
                                 .font(Theme.Typography.label)
                                 .foregroundColor(Theme.Color.textOnDark)
                                 .accessibilityAddTraits(.isHeader)

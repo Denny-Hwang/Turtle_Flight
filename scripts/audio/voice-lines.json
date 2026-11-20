@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "engine": "google-cloud-text-to-speech",
+  "voice": { "languageCode": "en-US", "name": "en-US-Neural2-F" },
+  "audioConfig": { "speakingRate": 1.08, "pitch": 2.0 },
+  "note": "Neural2/WaveNet only. Chirp, Journey, Studio and Gemini voices are generative under Google's Service Specific Terms, which bar Generative AI Services from services likely used by people under 18 (this app is rated 4+). Keys must match VoiceLine.rawValue (VoiceLineTests).",
+  "lines": [
+    { "key": "go",          "text": "Ready... fly!" },
+    { "key": "bullseye",    "text": "Bullseye!" },
+    { "key": "great",       "text": "Great!" },
+    { "key": "combo_5",     "text": "Five in a row!" },
+    { "key": "combo_10",    "text": "Ten combo! Amazing!" },
+    { "key": "combo_20",    "text": "Twenty! Unstoppable!" },
+    { "key": "boost",       "text": "Boost!" },
+    { "key": "stage_clear", "text": "Nice flying!" },
+    { "key": "stage_fail",  "text": "So close! Try again!" }
+  ]
+}

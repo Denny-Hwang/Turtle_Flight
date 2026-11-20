@@ -7,9 +7,9 @@ enum SensitivityLevel: String, CaseIterable, Codable {
 
     var displayName: String {
         switch self {
-        case .easy:   return "Easy"
-        case .normal: return "Normal"
-        case .expert: return "Expert"
+        case .easy:   return L10n.t("sensitivity.easy")
+        case .normal: return L10n.t("sensitivity.normal")
+        case .expert: return L10n.t("sensitivity.expert")
         }
     }
 

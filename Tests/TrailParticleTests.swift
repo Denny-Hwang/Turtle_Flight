@@ -94,4 +94,15 @@ final class TrailParticleTests: XCTestCase {
         animator.setTrailBoosting(sys, boosting: true, baseBirthRate: base)
         XCTAssertEqual(sys.birthRate, after1, accuracy: 1e-9)
     }
+
+    /// Regression: with no particle image SceneKit renders square quads,
+    /// which piled up into an opaque block over the character.
+    func testEveryTrailUsesTheSoftRoundParticle() {
+        for v in VehicleType.allCases {
+            let system = CharacterRegistry.shared.buildTrailParticleSystem(for: v)
+            XCTAssertNotNil(system.particleImage, "\(v) trail would render as squares")
+        }
+        let image = CharacterRegistry.softParticleImage
+        XCTAssertEqual(image.size.width, image.size.height)
+    }
 }

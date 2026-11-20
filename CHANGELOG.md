@@ -9,6 +9,75 @@ window.
 
 ## [Unreleased]
 
+### Launch polish — character redesign, layout QA (2026-11-20)
+
+- **Character art redesigned** (all six + app icon). Sources are now a
+  deterministic generator, `scripts/characters/generate.py` (shared eye,
+  shading and outline system in `kit.py`, one module per character) →
+  `assets/characters/**.svg` → `scripts/build_assets.sh`. Palettes are
+  unchanged; every character gets a silhouette-level trait (Turbo's
+  shell + goggles + scarf, Hoppy's flopped ear, …).
+- **The vehicle is visible in flight.** The in-flight atlas is now
+  "riding the vehicle × 4 expressions" (`{name}_atlas`), with a second
+  `{name}_cloud_atlas` for Cloud Surf
+  (`CharacterRegistry.atlasName(for:vehicle:)`). Billboard 2.0 → 5.0
+  world units (~4% → ~13% of screen height).
+- **Fixed: expressions were vertically flipped.** Texture space starts
+  at the top of the image, so the game showed "scared" in normal flight
+  and "speed" on a bullseye. `CharacterExpression.atlasCell` corrected.
+- **Fixed: trail particles rendered as opaque squares** over the
+  character (no particle image). Soft round sprite; the emitter moved to
+  the art's lower edge.
+- **Layout (found by `scripts/screenshots/qa_matrix.sh`: 3 devices × 7
+  languages × 9 screens):** pause panel no longer runs off a landscape
+  iPhone; Home and Character Select are two-column on short screens so
+  the mode cards, sensitivity and the character tiles are visible
+  without scrolling; stage cards fit with their description; white
+  labels on the pale end of the Sky gradient got dark chips.
+- **Strings (7 locales):** singular streak ("1 Tag in Folge", not
+  "1 Tage"), sensitivity names localized (were hard-coded English),
+  `characterSelect.section.character`. Long German labels shrink
+  instead of breaking mid-word.
+- Tests: per-vehicle atlases ship for every character, billboard size,
+  atlas rows, trail particle image. 399 tests.
+
+### Launch prep — voice callouts, US launch settings
+
+- **Voice callouts** — `VoiceLine` (9 lines: go, bullseye, great,
+  combo 5/10/20, boost, stage clear, stage fail) played on one
+  priority channel in `AudioManager.playVoice`: a line only cuts in
+  when strictly more important, OK passes stay silent, combo
+  milestones beat the judgement. Follows Mute and SFX volume, silent
+  under VoiceOver, new Settings toggle "Announcer voice"
+  (`settings.audio.voice`, 7 locales). Clips are bundled only — a
+  missing clip is silent, nothing is fetched at runtime.
+- **`scripts/audio/generate_voice.sh`** + `voice-lines.json` — Google
+  Cloud Text-to-Speech Neural2 (`en-US-Neural2-F`) → AAC m4a.
+  `--dry-run` for agents/CI; a real run is refused inside Claude Code
+  or CI and uses Application Default Credentials only. Generative
+  voices are refused (4+ app; Google Service Specific Terms).
+- **Preflight** validates the voice manifest and reports missing clips.
+- **Submission doc** — US-only availability, automatic release,
+  privacy/support URLs, current screenshot sizes (6.9" + 13"),
+  voice-clip runbook (§9). **Tests:** `VoiceLineTests` (7).
+- **Automated store screenshots** — Debug-only `ScreenshotDirector`
+  (autopilot through real ring centres, freeze on a combo bullseye),
+  `scripts/screenshots/capture.sh` (iPhone 6.9" + iPad 13", status bar
+  9:41, Dynamic Island removed), `compose.py` (captioned store shots +
+  social / square / story promo images) → `marketing/` (gitignored).
+- **Layout fixes found by the captures** (all iPhones in landscape):
+  Home, Character Select and Stage Select were taller than the screen —
+  Character Select's FLY button and Stage Select's back button were
+  off-screen; they now scroll under a pinned header. Plus / Pro Max
+  landscape no longer gets the iPad 1.4× tile scale (`AdaptiveSize`
+  needs regular *height* too). In-flight: the ALT gauge sat under the
+  Calibrate / Pause / Exit row, and in Step Goal the course title box
+  covered the compass clock — ALT moves below the row, the free-flight
+  readout hides in Step Goal. Daily / Sky Run titles were the Korean
+  fallback ("Stage 101: 오늘의 코스") in every language; they now use
+  the localized "Today's Course" / "Sky Run". **Tests:**
+  `LaunchPolishTests` (2).
+
 ### Phase 5 — App Store readiness
 
 Closes every item the repository can close before an upload.

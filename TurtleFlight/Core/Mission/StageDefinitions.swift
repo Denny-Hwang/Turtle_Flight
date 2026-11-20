@@ -26,6 +26,9 @@ struct StageDefinition {
     /// in Localizable.strings; falls back to the legacy `koreanName` if a
     /// new stage is added without a matching entry.
     var displayName: String {
+        // Special courses share their Home-button names.
+        if isDailyRun { return L10n.t("daily.title") }
+        if isEndless { return L10n.t("endless.title") }
         let key = "stage.\(index).name"
         let localized = NSLocalizedString(key, comment: key)
         return localized == key ? koreanName : localized

@@ -39,6 +39,9 @@ struct HomeView: View {
     /// SettingsView sheet dismisses (where the player may have toggled
     /// mute via the Audio section) so the icon stays consistent.
     @State private var isMuted: Bool = AudioManager.shared.isMuted
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var compactHeight: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         NavigationStack {
@@ -105,197 +108,55 @@ struct HomeView: View {
                     Spacer()
                 }
 
-                VStack(spacing: Theme.Spacing.xxl) {
-                    // Title
-                    VStack(spacing: Theme.Spacing.s) {
-                        Text("Turtle Flight")
-                            .font(Theme.Typography.displayLarge)
-                            .foregroundColor(Theme.Color.textPrimary)
-
-                        Text(L10n.t("home.subtitle"))
-                            .font(.system(.body, design: .rounded).weight(.medium))
-                            .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
-                    }
-                    .padding(.top, Theme.Spacing.xxxl)
-
-                    // Currently-selected character cameo. Surfaces the
-                    // identity the player will fly with the next time
-                    // they tap a mode — until this chip existed, the
-                    // home screen never showed *who* you were going to
-                    // be, only what you were going to do.
-                    SelectedCharacterCameo(
-                        character: characterVM.selectedCharacter,
-                        masteryLevel: missionVM.progress.masteryLevel(for: characterVM.selectedCharacter)
-                    )
-
-                    // Fly now — the primary action.
-                    Button {
-                        AudioManager.shared.playButtonTap()
-                        showQuickFlight = true
-                    } label: {
-                        HStack(spacing: Theme.Spacing.s) {
-                            Image(systemName: "paperplane.fill")
-                                .font(.system(size: 20, weight: .bold))
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text(L10n.t("home.quickFly.title"))
-                                    .font(Theme.Typography.button)
-                                Text(L10n.format("home.quickFly.subtitle",
-                                                 characterVM.selectedCharacter.config.name))
-                                    .font(Theme.Typography.caption)
-                                    .opacity(0.8)
-                            }
-                        }
-                        .foregroundColor(Theme.Color.textOnDark)
-                        .padding(.horizontal, Theme.Spacing.xl)
-                        .padding(.vertical, Theme.Spacing.m)
-                        .background(
-                            Capsule()
-                                .fill(Theme.Color.boostOrange)
-                                .shadow(color: Theme.Color.boostOrange.opacity(0.45), radius: 10, y: 4)
-                        )
-                    }
-                    .accessibilityLabel(L10n.t("home.quickFly.title"))
-                    .accessibilityHint(L10n.t("a11y.home.quickFly.hint"))
-
-                    // Daily Run + Sky Run — the two "why open the app
-                    // today" hooks, side by side under Fly now.
-                    HStack(spacing: Theme.Spacing.m) {
-                        SpecialCourseButton(
-                            title: L10n.t("daily.title"),
-                            subtitle: dailySubtitle,
-                            icon: "calendar.badge.clock",
-                            color: Theme.Color.brandPrimary
-                        ) {
-                            AudioManager.shared.playButtonTap()
-                            characterVM.save()
-                            missionVM.selectDailyRun()
-                            showSpecialFlight = true
-                        }
-                        .accessibilityHint(L10n.t("a11y.daily.hint"))
-
-                        SpecialCourseButton(
-                            title: L10n.t("endless.title"),
-                            subtitle: endlessSubtitle,
-                            icon: "infinity",
-                            color: Color(hex: 0x6C5CE7)
-                        ) {
-                            AudioManager.shared.playButtonTap()
-                            characterVM.save()
-                            missionVM.selectEndless()
-                            showSpecialFlight = true
-                        }
-                        .accessibilityHint(L10n.t("a11y.endless.hint"))
-                    }
-
-                    // Quests + streak strip
-                    QuestStrip(quests: quests, streak: streak) { quest in
-                        let stars = QuestTracker.shared.claim(quest.id)
-                        if stars > 0 {
-                            missionVM.addBonusStars(stars)
-                            questToast = L10n.format("quest.claimed.format", stars)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                withAnimation { questToast = nil }
-                            }
-                        }
-                        quests = QuestTracker.shared.todaysQuests()
-                    }
-                    if let questToast {
-                        Text(questToast)
-                            .font(Theme.Typography.label)
-                            .foregroundColor(Theme.Color.textOnDark)
-                            .padding(.horizontal, Theme.Spacing.m)
-                            .padding(.vertical, Theme.Spacing.xs + 2)
-                            .background(Capsule().fill(Theme.Color.starGold.opacity(0.85)))
-                            .transition(.opacity)
-                    }
-
-                    Spacer()
-
-                    // Mode Selection
-                    HStack(spacing: Theme.Spacing.xl) {
-                        ModeButton(
-                            title: L10n.t("flight.mode.freePlay"),
-                            subtitle: L10n.t("flight.mode.freePlay.subtitle"),
-                            icon: "cloud.sun.fill",
-                            color: Theme.Color.brandSky
-                        ) {
-                            selectedMode = .freePlay
-                            showCharacterSelect = true
-                        }
-                        .accessibilityLabel(L10n.t("flight.mode.freePlay"))
-                        .accessibilityHint(L10n.t("a11y.mode.freePlay.hint"))
-
-                        ModeButton(
-                            title: L10n.t("flight.mode.stepGoal"),
-                            // Pre-progress players see a literal mission
-                            // count ("5 missions") so the chip reads as a
-                            // promise of content rather than a cryptic
-                            // "0/15". Once they earn any star the chip
-                            // flips to the running score. The total cap
-                            // stays dynamic via `stages.count * 3`.
-                            subtitle: missionVM.progress.totalStars > 0
-                                ? "\(missionVM.progress.totalStars)/\(missionVM.stages.count * 3)★"
-                                : L10n.format("flight.mode.stepGoal.subtitle.firstRun", missionVM.stages.count),
-                            icon: "target",
-                            // brandPrimary (Turbo mint) so the button
-                            // doesn't compete with the star-gold colour
-                            // used for actual rewards across the HUD.
-                            color: Theme.Color.brandPrimary
-                        ) {
-                            selectedMode = .stepGoal
-                            // Step Goal goes through StageSelect first so
-                            // the player explicitly picks which stage to
-                            // fly. CharacterSelect is then pushed from
-                            // inside StageSelect.
-                            showStageSelect = true
-                        }
-                        .accessibilityLabel(L10n.t("flight.mode.stepGoal"))
-                        .accessibilityHint(L10n.t("a11y.mode.stepGoal.hint"))
-                    }
-
-                    // Sensitivity Selection
-                    VStack(spacing: Theme.Spacing.m) {
-                        Text(L10n.t("home.sensitivity.label"))
-                            .font(Theme.Typography.bodyLarge)
-                            .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
-
-                        HStack(spacing: Theme.Spacing.m) {
-                            ForEach(SensitivityLevel.allCases, id: \.self) { level in
-                                SensitivityButton(
-                                    level: level,
-                                    isSelected: flightVM.sensitivityLevel == level
-                                ) {
-                                    flightVM.sensitivityLevel = level
+                // A landscape iPhone is ~390pt tall: stacked in one
+                // column the mode cards and sensitivity row sat below the
+                // fold, so compact height uses two columns and shows
+                // everything at once. iPad keeps the single column. The
+                // ScrollView only moves when Dynamic Type makes it need to.
+                GeometryReader { geo in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        Group {
+                            // Also the smaller iPads (mini 744pt, 11" 834pt):
+                            // the single column needs ~880pt.
+                            if compactHeight || geo.size.height < 900 {
+                                VStack(spacing: Theme.Spacing.s) {
+                                    HStack(alignment: .center, spacing: Theme.Spacing.l) {
+                                        VStack(spacing: Theme.Spacing.m) {
+                                            titleBlock
+                                            cameoBlock
+                                            quickFlyButton
+                                            specialCoursesRow
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        VStack(spacing: Theme.Spacing.m) {
+                                            modeRow
+                                            sensitivityBlock
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        // Clear of the mute / settings buttons.
+                                        .padding(.top, 40)
+                                    }
+                                    .frame(maxHeight: .infinity)
+                                    questBlock
+                                    statsRow
                                 }
-                                .accessibilityLabel(L10n.t("a11y.sensitivity.\(level.rawValue).label"))
-                                .accessibilityHint(L10n.t("a11y.sensitivity.hint"))
-                                .accessibilityAddTraits(flightVM.sensitivityLevel == level ? .isSelected : [])
+                            } else {
+                                VStack(spacing: Theme.Spacing.xl) {
+                                    titleBlock
+                                    cameoBlock
+                                    quickFlyButton
+                                    specialCoursesRow
+                                    questBlock
+                                    Spacer(minLength: 0)
+                                    modeRow
+                                    sensitivityBlock
+                                    Spacer(minLength: 0)
+                                    statsRow
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity, minHeight: geo.size.height)
                     }
-                    .padding(.horizontal, Theme.Spacing.xxxl)
-
-                    Spacer()
-
-                    // Stats
-                    HStack {
-                        Label(
-                            L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
-                            systemImage: "star.fill"
-                        )
-                        .foregroundColor(Theme.Color.starGold)
-
-                        Text("|")
-                            .foregroundColor(.gray)
-
-                        Label(
-                            L10n.format("home.stats.flightTime", missionVM.progress.totalFlightTime.mmss),
-                            systemImage: "clock"
-                        )
-                        .foregroundColor(Theme.Color.hudCyan)
-                    }
-                    .font(Theme.Typography.label)
-                    .padding(.bottom, Theme.Spacing.xxl)
                 }
             }
             .navigationDestination(isPresented: $showCharacterSelect) {
@@ -375,12 +236,265 @@ struct HomeView: View {
                 }
                 CloudSync.shared.start(local: missionVM.progress)
             }
+            #if DEBUG
+            if ScreenshotDirector.isActive {
+                runScreenshotScene()
+                return
+            }
+            #endif
             // Show onboarding on first launch only.
             if !OnboardingState.load().completed {
                 showOnboarding = true
             }
         }
     }
+
+
+    // MARK: - Home sections
+
+    @ViewBuilder private var titleBlock: some View {
+        // Title
+        VStack(spacing: Theme.Spacing.s) {
+            Text("Turtle Flight")
+                .font(Theme.Typography.displayLarge)
+                .foregroundColor(Theme.Color.textPrimary)
+
+            Text(L10n.t("home.subtitle"))
+                .font(.system(.body, design: .rounded).weight(.medium))
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+        .padding(.top, compactHeight ? Theme.Spacing.xs : Theme.Spacing.xl)
+    }
+
+    @ViewBuilder private var cameoBlock: some View {
+        // Currently-selected character cameo. Surfaces the
+        // identity the player will fly with the next time
+        // they tap a mode — until this chip existed, the
+        // home screen never showed *who* you were going to
+        // be, only what you were going to do.
+        SelectedCharacterCameo(
+            character: characterVM.selectedCharacter,
+            masteryLevel: missionVM.progress.masteryLevel(for: characterVM.selectedCharacter)
+        )
+    }
+
+    @ViewBuilder private var quickFlyButton: some View {
+        // Fly now — the primary action.
+        Button {
+            AudioManager.shared.playButtonTap()
+            showQuickFlight = true
+        } label: {
+            HStack(spacing: Theme.Spacing.s) {
+                Image(systemName: "paperplane.fill")
+                    .font(.system(size: 20, weight: .bold))
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(L10n.t("home.quickFly.title"))
+                        .font(Theme.Typography.button)
+                    Text(L10n.format("home.quickFly.subtitle",
+                                     characterVM.selectedCharacter.config.name))
+                        .font(Theme.Typography.caption)
+                        .opacity(0.8)
+                }
+            }
+            .foregroundColor(Theme.Color.textOnDark)
+            .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, Theme.Spacing.m)
+            .background(
+                Capsule()
+                    .fill(Theme.Color.boostOrange)
+                    .shadow(color: Theme.Color.boostOrange.opacity(0.45), radius: 10, y: 4)
+            )
+        }
+        .accessibilityLabel(L10n.t("home.quickFly.title"))
+        .accessibilityHint(L10n.t("a11y.home.quickFly.hint"))
+    }
+
+    @ViewBuilder private var specialCoursesRow: some View {
+        // Daily Run + Sky Run — the two "why open the app
+        // today" hooks, side by side under Fly now.
+        HStack(spacing: Theme.Spacing.m) {
+            SpecialCourseButton(
+                title: L10n.t("daily.title"),
+                subtitle: dailySubtitle,
+                icon: "calendar.badge.clock",
+                color: Theme.Color.brandPrimary
+            ) {
+                AudioManager.shared.playButtonTap()
+                characterVM.save()
+                missionVM.selectDailyRun()
+                showSpecialFlight = true
+            }
+            .accessibilityHint(L10n.t("a11y.daily.hint"))
+
+            SpecialCourseButton(
+                title: L10n.t("endless.title"),
+                subtitle: endlessSubtitle,
+                icon: "infinity",
+                color: Color(hex: 0x6C5CE7)
+            ) {
+                AudioManager.shared.playButtonTap()
+                characterVM.save()
+                missionVM.selectEndless()
+                showSpecialFlight = true
+            }
+            .accessibilityHint(L10n.t("a11y.endless.hint"))
+        }
+    }
+
+    @ViewBuilder private var questBlock: some View {
+        // Quests + streak strip
+        QuestStrip(quests: quests, streak: streak) { quest in
+            let stars = QuestTracker.shared.claim(quest.id)
+            if stars > 0 {
+                missionVM.addBonusStars(stars)
+                questToast = L10n.format("quest.claimed.format", stars)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation { questToast = nil }
+                }
+            }
+            quests = QuestTracker.shared.todaysQuests()
+        }
+        if let questToast {
+            Text(questToast)
+                .font(Theme.Typography.label)
+                .foregroundColor(Theme.Color.textOnDark)
+                .padding(.horizontal, Theme.Spacing.m)
+                .padding(.vertical, Theme.Spacing.xs + 2)
+                .background(Capsule().fill(Theme.Color.starGold.opacity(0.85)))
+                .transition(.opacity)
+        }
+    }
+
+    @ViewBuilder private var modeRow: some View {
+        // Mode Selection
+        HStack(spacing: Theme.Spacing.xl) {
+            ModeButton(
+                title: L10n.t("flight.mode.freePlay"),
+                subtitle: L10n.t("flight.mode.freePlay.subtitle"),
+                icon: "cloud.sun.fill",
+                color: Theme.Color.brandSky
+            ) {
+                selectedMode = .freePlay
+                showCharacterSelect = true
+            }
+            .accessibilityLabel(L10n.t("flight.mode.freePlay"))
+            .accessibilityHint(L10n.t("a11y.mode.freePlay.hint"))
+
+            ModeButton(
+                title: L10n.t("flight.mode.stepGoal"),
+                // Pre-progress players see a literal mission
+                // count ("5 missions") so the chip reads as a
+                // promise of content rather than a cryptic
+                // "0/15". Once they earn any star the chip
+                // flips to the running score. The total cap
+                // stays dynamic via `stages.count * 3`.
+                subtitle: missionVM.progress.totalStars > 0
+                    ? "\(missionVM.progress.totalStars)/\(missionVM.stages.count * 3)★"
+                    : L10n.format("flight.mode.stepGoal.subtitle.firstRun", missionVM.stages.count),
+                icon: "target",
+                // brandPrimary (Turbo mint) so the button
+                // doesn't compete with the star-gold colour
+                // used for actual rewards across the HUD.
+                color: Theme.Color.brandPrimary
+            ) {
+                selectedMode = .stepGoal
+                // Step Goal goes through StageSelect first so
+                // the player explicitly picks which stage to
+                // fly. CharacterSelect is then pushed from
+                // inside StageSelect.
+                showStageSelect = true
+            }
+            .accessibilityLabel(L10n.t("flight.mode.stepGoal"))
+            .accessibilityHint(L10n.t("a11y.mode.stepGoal.hint"))
+        }
+    }
+
+    @ViewBuilder private var sensitivityBlock: some View {
+        // Sensitivity Selection
+        VStack(spacing: compactHeight ? Theme.Spacing.xs : Theme.Spacing.m) {
+            Text(L10n.t("home.sensitivity.label"))
+                .font(compactHeight ? Theme.Typography.label : Theme.Typography.bodyLarge)
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
+
+            HStack(spacing: Theme.Spacing.m) {
+                ForEach(SensitivityLevel.allCases, id: \.self) { level in
+                    SensitivityButton(
+                        level: level,
+                        isSelected: flightVM.sensitivityLevel == level
+                    ) {
+                        flightVM.sensitivityLevel = level
+                    }
+                    .accessibilityLabel(L10n.t("a11y.sensitivity.\(level.rawValue).label"))
+                    .accessibilityHint(L10n.t("a11y.sensitivity.hint"))
+                    .accessibilityAddTraits(flightVM.sensitivityLevel == level ? .isSelected : [])
+                }
+            }
+        }
+        .padding(.horizontal, Theme.Spacing.l)
+    }
+
+    @ViewBuilder private var statsRow: some View {
+        // Stats
+        HStack {
+            Label(
+                L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
+                systemImage: "star.fill"
+            )
+            .foregroundColor(Theme.Color.starGold)
+
+            Text("|")
+                .foregroundColor(.gray)
+
+            Label(
+                L10n.format("home.stats.flightTime", missionVM.progress.totalFlightTime.mmss),
+                systemImage: "clock"
+            )
+            .foregroundColor(Theme.Color.hudCyan)
+        }
+        .font(Theme.Typography.label)
+        .padding(.bottom, compactHeight ? Theme.Spacing.s : Theme.Spacing.xxl)
+    }
+
+    #if DEBUG
+    /// App Store screenshot mode (see `ScreenshotDirector`).
+    private func runScreenshotScene() {
+        guard let scene = ScreenshotDirector.scene else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            switch scene {
+            case .home:
+                break
+            case .characters:
+                selectedMode = .freePlay
+                showCharacterSelect = true
+            case .stages:
+                selectedMode = .stepGoal
+                showStageSelect = true
+            case .daily, .dailyResult:
+                missionVM.selectDailyRun()
+                showSpecialFlight = true
+            case .skyrun:
+                missionVM.selectEndless()
+                showSpecialFlight = true
+            case .settings:
+                showSettings = true
+            case .onboarding:
+                showOnboarding = true
+            case .freeflight:
+                showQuickFlight = true
+            case .stage, .stageResult:
+                missionVM.selectStage(0)
+                showSpecialFlight = true
+            case .pause:
+                missionVM.selectDailyRun()
+                showSpecialFlight = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+                    flightVM.pauseFlight()
+                }
+            }
+        }
+    }
+    #endif
 
     // MARK: - Phase 3 helpers
 
@@ -455,14 +569,14 @@ private struct QuestStrip: View {
                 HStack(spacing: 3) {
                     Image(systemName: "flame.fill")
                         .foregroundColor(Theme.Color.boostOrange)
-                    Text(L10n.format("streak.format", streak))
+                    Text(streak == 1 ? L10n.t("streak.format.one") : L10n.format("streak.format", streak))
                         .font(Theme.Typography.labelSmall)
                         .foregroundColor(Theme.Color.textPrimary)
                 }
                 .padding(.horizontal, Theme.Spacing.s + 2)
                 .padding(.vertical, Theme.Spacing.xs + 1)
                 .background(Capsule().fill(.ultraThinMaterial))
-                .accessibilityLabel(L10n.format("a11y.streak.format", streak))
+                .accessibilityLabel(streak == 1 ? L10n.t("a11y.streak.format.one") : L10n.format("a11y.streak.format", streak))
             }
             ForEach(quests) { quest in
                 Button {

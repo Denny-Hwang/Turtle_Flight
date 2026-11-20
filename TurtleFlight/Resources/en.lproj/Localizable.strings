@@ -15,6 +15,7 @@
 "settings.audio.mute"                     = "Mute";
 "settings.audio.bgm"                      = "BGM volume";
 "settings.audio.sfx"                      = "SFX volume";
+"settings.audio.voice"                   = "Announcer voice";
 
 "settings.section.progress"               = "Progress";
 "settings.progress.reset"                 = "Reset progress";
@@ -352,3 +353,11 @@
 "mastery.title.3"             = "Sky Pilot";
 "mastery.title.4"             = "Ace";
 "mastery.title.5"             = "Sky Legend";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "1-day streak";
+"a11y.streak.format.one"            = "You have played 1 day in a row";
+"characterSelect.section.character" = "Character";
+"sensitivity.easy"                  = "Easy";
+"sensitivity.normal"                = "Normal";
+"sensitivity.expert"                = "Expert";

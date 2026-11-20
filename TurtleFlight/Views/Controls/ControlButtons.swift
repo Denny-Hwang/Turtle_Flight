@@ -184,8 +184,13 @@ struct SmallButton: View {
             VStack(spacing: Theme.Spacing.xxs) {
                 Image(systemName: icon)
                     .font(.system(size: 14))
+                // One line always: long labels (de "Kalibrieren",
+                // fr "Calibrer") shrink instead of wrapping mid-word.
                 Text(label)
                     .font(.system(size: 9))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .padding(.horizontal, 3)
             }
             .foregroundColor(Theme.Color.textOnDark)
             .frame(width: 44, height: 44)

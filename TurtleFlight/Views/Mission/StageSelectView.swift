@@ -32,13 +32,19 @@ struct StageSelectView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: Theme.Spacing.l) {
+            VStack(spacing: Theme.Spacing.s) {
                 header
-                progressBar
-                stageRow
-                Spacer(minLength: Theme.Spacing.xxl)
-                description
-                Spacer(minLength: Theme.Spacing.xxl)
+                // Header pinned; the rest scrolls when an iPhone in
+                // landscape is too short for it.
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: Theme.Spacing.l) {
+                        progressBar
+                        stageRow
+                        description
+                    }
+                    .padding(.vertical, Theme.Spacing.s)
+                    .frame(maxWidth: .infinity)
+                }
             }
         }
         .navigationBarHidden(true)
@@ -113,6 +119,9 @@ struct StageSelectView: View {
                 }
             }
             .padding(.horizontal, Theme.Spacing.l)
+            // Room for the selected card's 1.05× scale, border and
+            // shadow — a horizontal ScrollView clips at its own height.
+            .padding(.vertical, Theme.Spacing.m)
         }
     }
 
@@ -171,6 +180,10 @@ private struct StageCard: View {
                     .foregroundColor(unlocked ? Theme.Color.textPrimary : Theme.Color.textPrimary.opacity(0.45))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
+                    // Long single words (de "Himmelsspaziergang") shrink
+                    // rather than break mid-word.
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, Theme.Spacing.xs)
                     .frame(height: 36)
 
                 // Difficulty (★☆☆☆☆)
@@ -179,7 +192,7 @@ private struct StageCard: View {
                 // Earned stars (out of 3) — small below
                 earnedStarsRow
             }
-            .adaptiveFrame(compactWidth: 130, compactHeight: 220)
+            .adaptiveFrame(compactWidth: 130, compactHeight: 168)
             .padding(.vertical, Theme.Spacing.m)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)

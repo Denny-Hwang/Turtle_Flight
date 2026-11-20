@@ -32,6 +32,7 @@ struct SettingsView: View {
     @State private var isMuted: Bool
     @State private var bgmVolume: Float
     @State private var sfxVolume: Float
+    @State private var isVoiceEnabled: Bool
     @State private var showResetConfirm = false
     @State private var showCredits = false
     @State private var resetSuccess = false
@@ -46,6 +47,7 @@ struct SettingsView: View {
         self._isMuted = State(initialValue: audio.isMuted)
         self._bgmVolume = State(initialValue: audio.bgmVolume)
         self._sfxVolume = State(initialValue: audio.sfxVolume)
+        self._isVoiceEnabled = State(initialValue: audio.isVoiceEnabled)
     }
 
     var body: some View {
@@ -94,6 +96,13 @@ struct SettingsView: View {
                     AudioManager.shared.setMuted(newValue)
                 }
                 .accessibilityHint(L10n.t("settings.audio.mute"))
+
+            Toggle(L10n.t("settings.audio.voice"), isOn: $isVoiceEnabled)
+                .onChange(of: isVoiceEnabled) { newValue in
+                    AudioManager.shared.setVoiceEnabled(newValue)
+                    if newValue { AudioManager.shared.playVoice(.great) }
+                }
+                .disabled(isMuted)
 
             volumeRow(
                 icon: "music.note",

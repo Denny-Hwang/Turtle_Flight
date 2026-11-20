@@ -17,6 +17,7 @@
 "settings.audio.mute"                     = "Stumm";
 "settings.audio.bgm"                      = "Musiklautstärke";
 "settings.audio.sfx"                      = "Effektlautstärke";
+"settings.audio.voice"                   = "Ansagestimme";
 
 "settings.section.progress"               = "Fortschritt";
 "settings.progress.reset"                 = "Fortschritt zurücksetzen";
@@ -353,3 +354,11 @@
 "mastery.title.3"             = "Himmelspilot";
 "mastery.title.4"             = "Ass";
 "mastery.title.5"             = "Himmelslegende";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "1 Tag in Folge";
+"a11y.streak.format.one"            = "Du hast 1 Tag in Folge gespielt";
+"characterSelect.section.character" = "Charakter";
+"sensitivity.easy"                  = "Leicht";
+"sensitivity.normal"                = "Normal";
+"sensitivity.expert"                = "Experte";

@@ -31,6 +31,11 @@ struct StageResultView: View {
     var onShareClip: (() -> Void)? = nil
 
     @State private var displayedStars: Int = 0
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    private var compact: Bool { verticalSizeClass == .compact }
+    private var isPad: Bool { horizontalSizeClass == .regular && verticalSizeClass == .regular }
     @State private var showButtons: Bool = false
 
     var body: some View {
@@ -41,7 +46,7 @@ struct StageResultView: View {
             Color.black.opacity(0.7)
                 .ignoresSafeArea()
 
-            VStack(spacing: Theme.Spacing.l) {
+            VStack(spacing: compact ? Theme.Spacing.s : Theme.Spacing.l) {
                 // Headline
                 Text(headline)
                     .font(Theme.Typography.displayMedium)
@@ -60,7 +65,7 @@ struct StageResultView: View {
                     failureBody(reason: reason)
                 }
 
-                Spacer().frame(height: Theme.Spacing.s)
+                if !compact { Spacer().frame(height: Theme.Spacing.s) }
 
                 // Action buttons (delayed entrance so the score can
                 // resolve before the user is offered a choice).
@@ -68,8 +73,18 @@ struct StageResultView: View {
                     .opacity(showButtons ? 1 : 0)
                     .offset(y: showButtons ? 0 : 16)
             }
-            .padding(Theme.Spacing.xl)
+            .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, compact ? Theme.Spacing.m : Theme.Spacing.xl)
             .frame(maxWidth: 460)
+            // Solid card: over the bare dim, the HUD chips behind showed
+            // through between the stat lines.
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.xl)
+                    .fill(Theme.Color.surfacePanel)
+                    .elevation(Theme.Elevation.cardHigh)
+            )
+            // iPad: the 460pt card looked lost on a 13" screen.
+            .scaleEffect(isPad ? Theme.iPadScale : 1)
         }
         .onAppear { runEntranceAnimation() }
     }

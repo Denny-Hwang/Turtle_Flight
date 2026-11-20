@@ -45,8 +45,17 @@ Capabilities) — or export `DEVELOPMENT_TEAM=XXXXXXXXXX` and add it to
 | Bundle ID | `com.turtleflight.app` |
 | SKU | `turtleflight-ios` |
 | Category | Games → Simulation (secondary: Family) |
-| Age rating | 4+ (no objectionable content; answer "No" to all) |
+| Age rating | 4+ (current questionnaire; answer "No" / "None" to every item) |
 | Price | Free, no IAP |
+| Availability | **United States only** (Pricing and Availability → deselect all, select United States) |
+| Version release | **Automatically release this version** (goes live as soon as review approves) |
+| Privacy Policy URL | `https://github.com/Denny-Hwang/Turtle_Flight/blob/main/PRIVACY.md` (same URL as Settings → Privacy) |
+| Support URL | `https://github.com/Denny-Hwang/Turtle_Flight/issues` (same as Settings → Support) |
+
+Owner decisions 2026-11-19: US storefront only, automatic release after
+approval. The separate `Turtle-Flight-privacy` GitHub Pages site predates
+Game Center / iCloud / clips and is **not** the policy URL; use the
+`PRIVACY.md` link above so the store and the app point at one document.
 
 Marketing copy for all seven locales is in `docs/store/<locale>.md`
 (name, subtitle, promotional text, description, keywords, what's new).
@@ -123,21 +132,79 @@ likely to move after real-hand feedback are all constants:
 > sync, daily reminder and clip recording are all off by default and can
 > be enabled in Settings → "Game Center & Reminders". Landscape only.
 
-## 7. Screenshots (6.7", 6.5", 5.5", iPad 12.9")
+## 7. Screenshots (iPhone 6.9" + iPad 13", landscape)
 
-Capture in this order — each one shows a hook, not a menu:
+App Store Connect now needs only the largest size per device family and
+scales it down for the rest:
 
-1. Free flight with a BULLSEYE callout mid-screen.
-2. Sky Race with a tilted slit gate and the combo chip visible.
-3. Home: Fly now + Today's Course + Sky Run + quest strip.
-4. Result screen with score, best combo, "New Best!".
-5. Character select with mastery badges.
-6. Settings → Game Center & Reminders (shows the opt-in posture).
+| Slot | Landscape pixels | Capture on |
+|---|---|---|
+| iPhone 6.9" (required) | 2868 × 1320 (or 2796 × 1290) | iPhone 16/17 Pro Max simulator or device |
+| iPhone 6.5" (only if no 6.9") | 2778 × 1284 or 2688 × 1242 | — |
+| iPad 13" (required: the app runs on iPad) | 2752 × 2064 (or 2732 × 2048) | iPad Pro 13" simulator |
+
+Screenshots are generated, not hand-captured:
+
+```bash
+scripts/screenshots/capture.sh     # ~6 min: iPhone 17 Pro Max + iPad Pro 13" simulators
+python3 scripts/screenshots/compose.py
+```
+
+- `marketing/screenshots/<device>/` — raw captures (2868×1320 / 2752×2064),
+  upload-ready as they are.
+- `marketing/store/<device>/` — the same with a headline, sky backdrop and
+  character stickers, same pixel size. **Upload these**, in file order.
+- `marketing/promo/` — 1200×630 social card, 1080×1080 square, 1080×1920 story.
+
+How: a Debug-only screenshot mode (`ScreenshotDirector`, compiled out of
+Release) skips onboarding and lets an autopilot fly the real flight engine
+through each ring's centre, so judgements, score, combo, the result screen,
+quests and mastery on screen are genuinely produced by the game. The
+capture script erases each simulator, pins the status bar to 9:41, and
+paints out the Dynamic Island pill the Simulator draws (real-device
+screenshots don't contain it). Store order: flight + BULLSEYE, characters,
+Sky Run, result, Home, Stage Select. `marketing/` outputs are gitignored —
+rerun the two commands after UI changes.
 
 ## 8. What is still not in the repo
 
-- Real audio recordings. `AudioManager.assetURL` picks up
-  `bgm_<theme>` / `vehicle_<name>` / `sfx_<event>` (m4a/caf/wav/mp3)
-  automatically; the synthesised fallback ships otherwise.
-- The privacy policy must be reachable at a public URL.
+- **Voice callout clips** (owner, ~5 minutes, < $0.01). See §9.
+- Real BGM / SFX recordings remain optional: `AudioManager.assetURL`
+  picks up `bgm_<theme>` / `vehicle_<name>` / `sfx_<event>`
+  (m4a/caf/wav/mp3) automatically; the synthesised fallback ships
+  otherwise. (Google's only music generator, Lyria, is a Generative AI
+  Service and is off-limits for a 4+ app — same rule as the voices.)
 - Swift 6 strict-concurrency mode (not required for submission).
+
+## 9. Voice callouts (Google Cloud Text-to-Speech)
+
+Nine short English callouts ("Ready... fly!", "Bullseye!", "Great!",
+combo 5/10/20, "Boost!", "Nice flying!", "So close! Try again!") play
+over the synthesised SFX. The app ships and works without them (each
+missing clip is silent); `scripts/preflight.sh` lists which are missing.
+
+Voice: `en-US-Neural2-F`, rate 1.08, pitch +2 (`scripts/audio/voice-lines.json`).
+Only Neural2/WaveNet voices are allowed: Chirp, Journey, Studio and
+Gemini voices are Generative AI Services, which Google's Service
+Specific Terms bar from services likely used by under-18s. The script,
+the tests and preflight all refuse them.
+
+Run in **your own terminal, not Claude Code** (the script refuses inside
+Claude Code / CI so credentials never touch an agent shell):
+
+```bash
+# once: a Google Cloud project with "Cloud Text-to-Speech API" enabled and billing on
+gcloud auth application-default login
+cd ~/workspace/Turtle_Flight
+scripts/audio/generate_voice.sh --dry-run                    # 9 lines, ~119 characters
+scripts/audio/generate_voice.sh --project <your-gcp-project-id>
+gcloud auth application-default revoke                       # done with credentials
+```
+
+Clips land in `TurtleFlight/Resources/Audio/voice_<key>.m4a` (AAC 64 kbps
+mono, ~10 KB each, silence trimmed when ffmpeg is present). Then
+`xcodegen generate`, run on a device, and listen: Settings → Audio →
+"Announcer voice" toggles them; they follow Mute and the SFX slider and
+stay silent under VoiceOver. To audition another voice:
+`--voice en-US-Neural2-H --only bullseye,great`, then put the keeper in
+the manifest and regenerate all lines. Commit the `.m4a` files.

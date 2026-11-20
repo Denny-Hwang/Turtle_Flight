@@ -2,6 +2,15 @@ import SwiftUI
 
 struct HUDOverlay: View {
     @ObservedObject var flightVM: FlightViewModel
+    /// Centre compass + flight clock. Step Goal hides it because
+    /// `MissionHUD` puts the course title and countdown in the same
+    /// top-centre slot (they overlapped before).
+    var showsCenterReadout: Bool = true
+
+    /// Vertical room the top-right Calibrate / Pause / Exit row
+    /// (`ControlButtons`) occupies, so the altitude gauge sits below it
+    /// instead of underneath the buttons.
+    static let controlRowClearance: CGFloat = 44 + Theme.Spacing.s * 2
 
     /// Pulsing scale applied to the star counter on each pickup. Starts
     /// at 1.0, springs to 1.4 on collection, then settles back. Driven
@@ -98,6 +107,7 @@ struct HUDOverlay: View {
                     Spacer()
 
                     // Center: Compass + Flight Time
+                    if showsCenterReadout {
                     VStack(spacing: Theme.Spacing.xxs) {
                         Text(compassText)
                             .font(Theme.Typography.hudCompass)
@@ -115,6 +125,7 @@ struct HUDOverlay: View {
                     )
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.format("a11y.hud.compass.format", MathHelpers.compassDirection(from: flightVM.heading), Int(flightVM.heading), flightVM.flightTime.mmss))
+                    }
 
                     Spacer()
 
@@ -126,6 +137,7 @@ struct HUDOverlay: View {
                     )
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.format("a11y.hud.altitude.format", Int(flightVM.altitude)))
+                    .padding(.top, Self.controlRowClearance)
                 }
                 .padding(.horizontal, horizontalInset)
                 .padding(.top, max(proxy.safeAreaInsets.top, Theme.Spacing.s))
