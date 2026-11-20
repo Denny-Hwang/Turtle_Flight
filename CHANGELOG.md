@@ -36,7 +36,7 @@ window.
   Free Flight **clean view**, and a **streak rest day** (one missed day
   no longer breaks the streak).
 - Renamed an ocean region that read as "Pearl Harbor" (en/ko/zh).
-- Tests: `WorldTourTests` + additions.  tests.
+- Tests: `WorldTourTests` + additions. 419 tests.
 
 ### Launch polish — character redesign, layout QA (2026-11-20)
 
