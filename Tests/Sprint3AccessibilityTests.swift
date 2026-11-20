@@ -141,4 +141,24 @@ final class Sprint3AccessibilityTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: docPath.path),
                       "docs/I18N.md should ship with Sprint 3 — it's the i18n contract")
     }
+
+    // MARK: - Touch controls preference
+
+    func testTouchControlPreferencePersistsAndDefaultsOff() {
+        let key = GyroController.touchControlKey
+        let saved = UserDefaults.standard.object(forKey: key)
+        defer { UserDefaults.standard.set(saved, forKey: key) }
+        UserDefaults.standard.removeObject(forKey: key)
+        XCTAssertFalse(GyroController.touchControlEnabled, "tilt stays the default")
+        GyroController.touchControlEnabled = true
+        XCTAssertTrue(GyroController.touchControlEnabled)
+        XCTAssertTrue(GyroController().usesTouchInput)
+    }
+
+    func testGatePulseOnlyRewardsCleanPasses() {
+        XCTAssertEqual(FlightViewModel.gatePulseStrength(for: .bullseye), 1.0)
+        XCTAssertGreaterThan(FlightViewModel.gatePulseStrength(for: .great), 0)
+        XCTAssertEqual(FlightViewModel.gatePulseStrength(for: .ok), 0)
+        XCTAssertEqual(FlightViewModel.gatePulseStrength(for: .miss), 0)
+    }
 }

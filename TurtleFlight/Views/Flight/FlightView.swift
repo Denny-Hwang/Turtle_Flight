@@ -14,6 +14,7 @@ struct FlightView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var scene = SCNScene()
     @State private var showGyroAlert = false
+    @AppStorage("flight.cleanView") private var cleanView = false
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
@@ -31,7 +32,11 @@ struct FlightView: View {
             SceneKitView(scene: scene, flightVM: flightVM)
                 .ignoresSafeArea()
 
-            HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+            // Free Flight "clean view": gauges off, just the sky. Missions
+            // always show the HUD (the player needs ring / score info).
+            if !(flightMode == .freePlay && cleanView) {
+                HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+            }
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
                 MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
@@ -61,7 +66,9 @@ struct FlightView: View {
                     }
                 },
                 boostProgress: flightVM.boostProgress,
-                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999
+                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999,
+                onToggleCleanView: flightMode == .freePlay ? { cleanView.toggle() } : nil,
+                cleanViewOn: cleanView
             )
 
             // Step Goal — full-screen StageResultView when the mission

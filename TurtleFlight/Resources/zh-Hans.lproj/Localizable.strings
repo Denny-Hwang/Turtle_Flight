@@ -361,3 +361,10 @@
 "sensitivity.easy"                  = "简单";
 "sensitivity.normal"                = "普通";
 "sensitivity.expert"                = "专家";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "操控";
+"settings.controls.touch"         = "触屏操控";
+"settings.controls.touch.caption" = "拖动屏幕来操控，不用倾斜设备。适合躺着玩、坐车时，或觉得倾斜不舒服的时候。";
+"flight.control.view"             = "视图";
+"a11y.cleanView.label"            = "隐藏或显示飞行仪表";

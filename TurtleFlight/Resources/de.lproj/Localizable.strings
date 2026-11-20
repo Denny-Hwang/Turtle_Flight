@@ -362,3 +362,10 @@
 "sensitivity.easy"                  = "Leicht";
 "sensitivity.normal"                = "Normal";
 "sensitivity.expert"                = "Experte";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "Steuerung";
+"settings.controls.touch"         = "Touch-Steuerung";
+"settings.controls.touch.caption" = "Zum Steuern über den Bildschirm ziehen statt das Gerät zu neigen. Praktisch im Liegen, im Auto oder wenn Neigen unangenehm ist.";
+"flight.control.view"             = "Ansicht";
+"a11y.cleanView.label"            = "Fluganzeigen aus- oder einblenden";

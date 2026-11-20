@@ -17,6 +17,10 @@ struct ControlButtons: View {
     /// True when the boost gauge is full and a tap will fire. Tints the
     /// ring gold so "ready" reads at a glance from the corner of the eye.
     var boostReady: Bool = true
+    /// Free Flight only: toggles the gauges off for an uncluttered,
+    /// just-enjoy-the-sky view. Nil hides the button.
+    var onToggleCleanView: (() -> Void)? = nil
+    var cleanViewOn: Bool = false
 
     var body: some View {
         VStack {
@@ -25,6 +29,15 @@ struct ControlButtons: View {
                 Spacer()
 
                 HStack(spacing: Theme.Spacing.m) {
+                    if let onToggleCleanView {
+                        SmallButton(icon: cleanViewOn ? "eye.slash" : "eye",
+                                    label: L10n.t("flight.control.view")) {
+                            onToggleCleanView()
+                        }
+                        .accessibilityLabel(L10n.t("a11y.cleanView.label"))
+                        .accessibilityAddTraits(cleanViewOn ? .isSelected : [])
+                    }
+
                     // Calibrate button
                     SmallButton(icon: "scope", label: L10n.t("flight.control.calibrate")) {
                         onCalibrate()

@@ -16,6 +16,21 @@ final class GyroController: ObservableObject {
     @Published var isAvailable: Bool = false
     @Published var timeSinceLastInput: TimeInterval = 0
 
+    /// Player preference (Settings → Controls): steer by dragging on the
+    /// screen instead of tilting. Tilt can be uncomfortable — or simply
+    /// impossible lying down or in a car — and a large screen makes it
+    /// worse, so the drag path is a first-class option rather than a
+    /// Simulator-only fallback. Persisted; default off.
+    static let touchControlKey = "controls.touchEnabled"
+    static var touchControlEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: touchControlKey) }
+        set { UserDefaults.standard.set(newValue, forKey: touchControlKey) }
+    }
+
+    /// True when drag input should drive the flight: no gyro, or the
+    /// player chose touch controls.
+    var usesTouchInput: Bool { !isAvailable || Self.touchControlEnabled }
+
     // MARK: - Properties
     private let motionManager = CMMotionManager()
     private var referenceAttitude: CMAttitude?
@@ -73,7 +88,7 @@ final class GyroController: ObservableObject {
     /// providing samples we ignore manual injection so an accidental
     /// touch on a connected device doesn't fight the sensor.
     func injectFallback(rollNormalized: Double, pitchNormalized: Double) {
-        guard !isAvailable else { return }
+        guard usesTouchInput else { return }
 
         let clampedRoll  = rollNormalized.clamped(to: -1...1)
         let clampedPitch = pitchNormalized.clamped(to: -1...1)
@@ -108,7 +123,7 @@ final class GyroController: ObservableObject {
     /// their finger off the SCNView so the auto-level path can kick in
     /// after the configured delay.
     func releaseFallback() {
-        guard !isAvailable else { return }
+        guard usesTouchInput else { return }
         // Don't slam to zero — let the smoothing decay so the camera
         // doesn't jump back to neutral instantly.
         let alpha = profile.smoothingAlpha
@@ -121,6 +136,9 @@ final class GyroController: ObservableObject {
     // MARK: - Private Methods
 
     private func processMotion(_ motion: CMDeviceMotion) {
+        // Touch controls own the input; ignoring the sensor here keeps
+        // the two from fighting.
+        guard !Self.touchControlEnabled else { return }
         // Set reference attitude on first reading or after calibration
         if referenceAttitude == nil {
             referenceAttitude = motion.attitude.copy() as? CMAttitude

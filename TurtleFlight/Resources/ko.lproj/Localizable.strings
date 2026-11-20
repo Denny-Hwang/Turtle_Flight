@@ -364,3 +364,10 @@
 "sensitivity.easy"                  = "쉬움";
 "sensitivity.normal"                = "보통";
 "sensitivity.expert"                = "전문가";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "조종";
+"settings.controls.touch"         = "터치 조종";
+"settings.controls.touch.caption" = "기기를 기울이는 대신 화면을 드래그해서 조종해요. 누워서 하거나 차 안에서, 또는 기울이기가 불편할 때 좋아요.";
+"flight.control.view"             = "화면";
+"a11y.cleanView.label"            = "비행 계기 숨기기 또는 보이기";

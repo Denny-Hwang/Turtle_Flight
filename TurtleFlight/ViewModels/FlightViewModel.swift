@@ -198,6 +198,25 @@ final class FlightViewModel: ObservableObject {
     /// transitions when the latched / boost / idle state hasn't flipped.
     private var lastDisplayedExpression: CharacterExpression = .default
 
+    /// "Whoosh" after a clean gate pass, 1 → 0 over `gatePulseDuration`.
+    /// Thickens the trail and eases the camera back a touch so a good
+    /// pass is felt, not only read. Deliberately not an FOV change —
+    /// repeated FOV jumps are what make chase cameras nauseating.
+    private(set) var gatePulse: Float = 0
+    static let gatePulseDuration: Float = 0.45
+    static let gatePulseCameraPull: Float = 1.6
+    static let gatePulseTrailGain: CGFloat = 2.0
+
+    /// Pulse strength for a pass: bullseye is the full hit, a GREAT half,
+    /// an OK none (it should feel like there is something better).
+    static func gatePulseStrength(for judgement: GateJudgement) -> Float {
+        switch judgement {
+        case .bullseye: return 1.0
+        case .great:    return 0.5
+        default:        return 0
+        }
+    }
+
     /// Pure state-machine that decides which expression to show each frame
     /// (latched joy/scared > speed > default). See ExpressionLatch.swift.
     private var expressionLatch = ExpressionLatch()
@@ -405,6 +424,7 @@ final class FlightViewModel: ObservableObject {
         self.judgementEvent = nil
         self.score = 0
         self.combo = 0
+        self.gatePulse = 0
         self.isStalled = false
         self.lastPublishedFrame = nil
         self.lastRenderTime = 0
@@ -697,11 +717,14 @@ final class FlightViewModel: ObservableObject {
             // character as it flies on.
             trailNode.eulerAngles.y = -Float(h)
         }
+        if gatePulse > 0 {
+            gatePulse = max(0, gatePulse - deltaTime / Self.gatePulseDuration)
+        }
         if let trail = trailParticleSystem {
             characterAnimator.setTrailBoosting(
                 trail,
                 boosting: flightState.isBoosting,
-                baseBirthRate: baseTrailBirthRate
+                baseBirthRate: baseTrailBirthRate * (1 + Self.gatePulseTrailGain * CGFloat(gatePulse))
             )
         }
 
@@ -830,6 +853,7 @@ final class FlightViewModel: ObservableObject {
             runGatePasses += 1
             if judgement == .bullseye { runBullseyes += 1 }
             simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
+            gatePulse = max(gatePulse, Self.gatePulseStrength(for: judgement))
             #if DEBUG
             if let target = ScreenshotDirector.freezeCombo, screenshotFreezeAt == nil,
                judgement == .bullseye, engine.score.combo >= target {
@@ -1105,6 +1129,7 @@ final class FlightViewModel: ObservableObject {
         let boost: Float = reduceMotionEnabled ? 0 : computeBoostProgress(flightState: flightState)
         let dist = Constants.Camera.followDistance
             + Constants.Camera.boostFollowDistanceDelta * boost
+            + (reduceMotionEnabled ? 0 : Self.gatePulseCameraPull * gatePulse)
         let height = Constants.Camera.followHeight
         let targetFOV = Constants.Camera.fieldOfView
             + Constants.Camera.boostFOVDelta * CGFloat(boost)

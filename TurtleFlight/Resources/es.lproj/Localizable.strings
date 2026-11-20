@@ -360,3 +360,10 @@
 "sensitivity.easy"                  = "Fácil";
 "sensitivity.normal"                = "Normal";
 "sensitivity.expert"                = "Experto";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "Controles";
+"settings.controls.touch"         = "Control táctil";
+"settings.controls.touch.caption" = "Arrastra en la pantalla para pilotar en lugar de inclinar el dispositivo. Ideal tumbado, en el coche o si inclinar resulta incómodo.";
+"flight.control.view"             = "Vista";
+"a11y.cleanView.label"            = "Ocultar o mostrar los indicadores de vuelo";

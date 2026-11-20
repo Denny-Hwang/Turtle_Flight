@@ -361,3 +361,10 @@
 "sensitivity.easy"                  = "かんたん";
 "sensitivity.normal"                = "ふつう";
 "sensitivity.expert"                = "エキスパート";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "操作";
+"settings.controls.touch"         = "タッチ操作";
+"settings.controls.touch.caption" = "本体を傾ける代わりに、画面をドラッグして操縦します。寝転んでいるとき、車の中、傾け操作がつらいときに。";
+"flight.control.view"             = "表示";
+"a11y.cleanView.label"            = "計器の表示・非表示を切り替え";

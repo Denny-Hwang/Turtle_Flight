@@ -361,3 +361,10 @@
 "sensitivity.easy"                  = "Easy";
 "sensitivity.normal"                = "Normal";
 "sensitivity.expert"                = "Expert";
+
+// MARK: - Flight delight (2026-11) — touch controls, clean view
+"settings.section.controls"       = "Controls";
+"settings.controls.touch"         = "Touch controls";
+"settings.controls.touch.caption" = "Drag on the screen to steer instead of tilting. Good for lying down, car rides, or if tilting feels uncomfortable.";
+"flight.control.view"             = "View";
+"a11y.cleanView.label"            = "Hide or show the flight gauges";
