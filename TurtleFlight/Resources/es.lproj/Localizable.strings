@@ -15,6 +15,7 @@
 "settings.audio.mute"                     = "Silenciar";
 "settings.audio.bgm"                      = "Volumen de música";
 "settings.audio.sfx"                      = "Volumen de efectos";
+"settings.audio.voice"                   = "Voz del locutor";
 
 "settings.section.progress"               = "Progreso";
 "settings.progress.reset"                 = "Restablecer progreso";
@@ -351,3 +352,11 @@
 "mastery.title.3"             = "Piloto del cielo";
 "mastery.title.4"             = "As";
 "mastery.title.5"             = "Leyenda del cielo";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "Racha de 1 día";
+"a11y.streak.format.one"            = "Llevas 1 día seguido jugando";
+"characterSelect.section.character" = "Personaje";
+"sensitivity.easy"                  = "Fácil";
+"sensitivity.normal"                = "Normal";
+"sensitivity.expert"                = "Experto";

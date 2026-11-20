@@ -228,6 +228,13 @@ final class FlightViewModel: ObservableObject {
     /// Last `MissionEngine.crossingCount` we reacted to, for edge-detecting
     /// ring pass / miss events.
     private var lastSeenCrossingCount: Int = 0
+
+    #if DEBUG
+    /// Screenshot mode (`ScreenshotDirector`): mission clock value at
+    /// which to freeze, and whether the freeze has happened.
+    private var screenshotFreezeAt: Double?
+    private var screenshotFrozen = false
+    #endif
     /// Render-thread copy of the latest judgement, mirrored into the
     /// published `judgementEvent` through the HUD frame.
     private var simJudgementEvent: JudgementEvent?
@@ -376,7 +383,7 @@ final class FlightViewModel: ObservableObject {
         // flying-pose art, so a single billboard subsumes both per spec
         // (docs/CHARACTER_DESIGN_PROMPT.md §Technical Notes / 2).
         let registry = CharacterRegistry.shared
-        let charNode = registry.buildInflightBillboard(for: character)
+        let charNode = registry.buildInflightBillboard(for: character, vehicle: vehicle)
 
         // Place in scene
         charNode.position = SCNVector3(0, 500, 0)
@@ -390,6 +397,10 @@ final class FlightViewModel: ObservableObject {
         self.simStarsCollected = 0
         self.boostRequested = false
         self.lastSeenCrossingCount = 0
+        #if DEBUG
+        self.screenshotFreezeAt = nil
+        self.screenshotFrozen = false
+        #endif
         self.simJudgementEvent = nil
         self.judgementEvent = nil
         self.score = 0
@@ -498,6 +509,7 @@ final class FlightViewModel: ObservableObject {
     /// don't carry over from the previous run.
     func startStage(_ stage: StageDefinition) {
         lastTimerBeepBucket = -1
+        AudioManager.shared.playVoice(.go)
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
         }
@@ -630,12 +642,18 @@ final class FlightViewModel: ObservableObject {
         // position/heading/speed don't drift and the mission timer
         // doesn't tick down.
         guard !isPaused else { return }
+        #if DEBUG
+        if screenshotFrozen { return }
+        #endif
 
         // Update flight physics. `boostRequested` is a one-shot flag set
         // by activateBoost(); the engine ignores it while a boost is
         // already running, so consuming it here is safe.
         let wantsBoost = boostRequested
         boostRequested = false
+        #if DEBUG
+        let poseBeforePhysics = flightEngine.state.position
+        #endif
         flightEngine.update(
             deltaTime: deltaTime,
             rollInput: gyroController.rollInput,
@@ -643,6 +661,11 @@ final class FlightViewModel: ObservableObject {
             isBoosting: wantsBoost,
             shouldAutoLevel: gyroController.shouldAutoLevel
         )
+        #if DEBUG
+        if ScreenshotDirector.autopilot {
+            screenshotAutopilotStep(from: poseBeforePhysics, deltaTime: deltaTime)
+        }
+        #endif
 
         let flightState = flightEngine.state
 
@@ -661,7 +684,10 @@ final class FlightViewModel: ObservableObject {
             let backOffset: Float = 1.2
             trailNode.position = SCNVector3(
                 flightState.position.x - sin(Float(h)) * backOffset,
-                flightState.position.y - 0.4,
+                // Start at the art's lower edge (thrusters / cloud base):
+                // the trail streams toward the chase camera, so emitting
+                // from the centre painted it over the character's face.
+                flightState.position.y - Float(CharacterRegistry.inflightBillboardSize) * 0.36,
                 flightState.position.z + cos(Float(h)) * backOffset
             )
             // Rotate the emitter so its local +Z (the emittingDirection)
@@ -734,6 +760,11 @@ final class FlightViewModel: ObservableObject {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
         }
         observeRingCrossings()
+        #if DEBUG
+        if let at = screenshotFreezeAt, let t = missionEngine?.elapsedTime, t >= at {
+            screenshotFrozen = true
+        }
+        #endif
 
         // Ghost: record this run, replay the stored one, both keyed on
         // the mission clock so a pause freezes both.
@@ -799,8 +830,17 @@ final class FlightViewModel: ObservableObject {
             runGatePasses += 1
             if judgement == .bullseye { runBullseyes += 1 }
             simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
+            #if DEBUG
+            if let target = ScreenshotDirector.freezeCombo, screenshotFreezeAt == nil,
+               judgement == .bullseye, engine.score.combo >= target {
+                screenshotFreezeAt = engine.elapsedTime + ScreenshotDirector.freezeDelay
+            }
+            #endif
+            let callout = VoiceLine.forGatePass(judgement: judgement,
+                                                comboAfterPass: engine.score.combo)
             onMain {
                 AudioManager.shared.playRingPass()
+                if let callout { AudioManager.shared.playVoice(callout) }
                 if judgement == .bullseye {
                     let generator = UIImpactFeedbackGenerator(style: .rigid)
                     generator.impactOccurred()
@@ -997,6 +1037,7 @@ final class FlightViewModel: ObservableObject {
         boostRequested = true
         isBoosting = true
         AudioManager.shared.playBoost()
+        AudioManager.shared.playVoice(.boost)
     }
 
     func fireItem() {
@@ -1024,6 +1065,27 @@ final class FlightViewModel: ObservableObject {
     }
 
     // MARK: - Camera
+
+    #if DEBUG
+    /// Screenshot autopilot: from the pre-physics position, fly straight
+    /// at the live centre of the current ring at the engine's own speed
+    /// (replacing this frame's physics move), so every crossing is a
+    /// genuine dead-centre pass judged by `MissionEngine`.
+    private func screenshotAutopilotStep(from p: SCNVector3, deltaTime: Float) {
+        guard let target = missionEngine?.currentRingPosition else { return }
+        let state = flightEngine.state
+        let d = SCNVector3(target.x - p.x, target.y - p.y, target.z - p.z)
+        let dist = sqrt(d.x * d.x + d.y * d.y + d.z * d.z)
+        guard dist > 0.001 else { return }
+        let step = state.speed / 3.6 * deltaTime
+        let k = step / dist
+        let next = SCNVector3(p.x + d.x * k, p.y + d.y * k, p.z + d.z * k)
+        // heading 0 = facing -Z; degrees, clockwise.
+        var heading = atan2(d.x, -d.z) * 180 / .pi
+        if heading < 0 { heading += 360 }
+        flightEngine.debugSetPose(position: next, heading: heading)
+    }
+    #endif
 
     private func updateCamera(deltaTime: Float) {
         guard let charNode = characterNode, let camNode = cameraNode else { return }

@@ -98,10 +98,36 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app.tests
+        # The test bundle has no hand-written plist; without this, Xcode
+        # refuses to sign it (local `xcodebuild test` / ⌘U on Xcode 26).
+        GENERATE_INFOPLIST_FILE: YES
         BUNDLE_LOADER: "$(TEST_HOST)"
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TurtleFlight.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TurtleFlight"
 
+  # Screenshot tooling only (scripts/screenshots/capture.sh). Not in the
+  # TurtleFlight scheme, so CI and ⌘U never run it.
+  TurtleFlightScreenshotTests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ScreenshotTests
+    dependencies:
+      - target: TurtleFlight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.turtleflight.app.screenshottests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: TurtleFlight
+
 schemes:
+  TurtleFlightScreenshots:
+    build:
+      targets:
+        TurtleFlightScreenshotTests: [test]
+    test:
+      config: Debug
+      targets:
+        - TurtleFlightScreenshotTests
   TurtleFlight:
     build:
       targets:

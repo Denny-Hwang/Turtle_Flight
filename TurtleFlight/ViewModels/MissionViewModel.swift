@@ -168,6 +168,7 @@ final class MissionViewModel: ObservableObject {
         }
         missionState = .completed
         AudioManager.shared.playStageClear()
+        AudioManager.shared.playVoice(.stageClear)
         save()
     }
 
@@ -186,6 +187,7 @@ final class MissionViewModel: ObservableObject {
             "time": Int(elapsed)
         ])
         AudioManager.shared.playStageFail()
+        AudioManager.shared.playVoice(.stageFail)
     }
 
     /// Persist a finished Free Flight run. Returns true when the run set

@@ -31,7 +31,7 @@ struct FlightView: View {
             SceneKitView(scene: scene, flightVM: flightVM)
                 .ignoresSafeArea()
 
-            HUDOverlay(flightVM: flightVM)
+            HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
 
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
                 MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
@@ -336,6 +336,9 @@ struct FlightView: View {
         // Check gyro availability after starting flight
         if !flightVM.gyroController.isAvailable {
             showGyroAlert = true
+            #if DEBUG
+            if ScreenshotDirector.isActive { showGyroAlert = false }
+            #endif
         }
 
         if flightMode == .stepGoal, let stage = missionVM.currentStage {

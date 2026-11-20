@@ -1,14 +1,20 @@
 import Foundation
 import AVFoundation
+import UIKit
 
-/// Manages all game audio — BGM, vehicle SFX, and UI sounds.
-/// Uses synthesized audio tones since asset files are generated at runtime.
+/// Manages all game audio — BGM, vehicle SFX, UI sounds, and spoken
+/// callouts. BGM and SFX are synthesised at runtime unless a bundled
+/// asset overrides them; callouts are bundled clips only (`VoiceLine`).
 final class AudioManager {
     static let shared = AudioManager()
 
     private var bgmPlayer: AVAudioPlayer?
     private var sfxPlayers: [String: AVAudioPlayer] = [:]
     private var activeLoopPlayer: AVAudioPlayer?
+    /// Single channel for spoken callouts (`VoiceLine`) so two lines never
+    /// overlap; `currentVoiceLine` decides whether a new one may cut in.
+    private var voicePlayer: AVAudioPlayer?
+    private var currentVoiceLine: VoiceLine?
 
     /// Cached WAV blobs keyed by deterministic (kind, parameters) so we don't
     /// re-synthesise the same 30s BGM (~1.3 MB) every time a flight starts.
@@ -43,10 +49,21 @@ final class AudioManager {
         }
     }
 
+    /// Spoken callouts on/off (Settings → Audio). Default on; they also
+    /// follow Mute and the SFX volume, and stay silent under VoiceOver,
+    /// which already announces the same judgements.
+    private(set) var isVoiceEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isVoiceEnabled, forKey: Keys.voiceEnabled)
+            if !isVoiceEnabled { stopVoice() }
+        }
+    }
+
     private enum Keys {
         static let muted = "audio.muted"
         static let bgmVolume = "audio.bgmVolume"
         static let sfxVolume = "audio.sfxVolume"
+        static let voiceEnabled = "audio.voiceEnabled"
     }
 
     /// Default volumes used on first launch. Pulled out so the SettingsView
@@ -63,6 +80,7 @@ final class AudioManager {
         let storedSFX = UserDefaults.standard.object(forKey: Keys.sfxVolume) as? Float
         bgmVolume = storedBGM ?? Self.defaultBGMVolume
         sfxVolume = storedSFX ?? Self.defaultSFXVolume
+        isVoiceEnabled = UserDefaults.standard.object(forKey: Keys.voiceEnabled) as? Bool ?? true
         configureAudioSession()
         registerSessionObservers()
     }
@@ -78,6 +96,10 @@ final class AudioManager {
     /// Set SFX volume in [0, 1].
     func setSFXVolume(_ value: Float) {
         sfxVolume = max(0, min(1, value))
+    }
+
+    func setVoiceEnabled(_ enabled: Bool) {
+        isVoiceEnabled = enabled
     }
 
     // MARK: - Audio Session
@@ -292,6 +314,50 @@ final class AudioManager {
         playOneShot(data: data, volume: sfxVolume * 0.3)
     }
 
+    // MARK: - Voice callouts
+
+    /// Speak a bundled callout. Runs on main (hops there if called from
+    /// the render thread) so the one-channel check can't race. Silent when muted, disabled, at zero SFX volume,
+    /// under VoiceOver, or when the clip isn't bundled yet. A line that
+    /// isn't more important than the one playing is dropped rather than
+    /// queued — a late "Great!" is worse than none.
+    func playVoice(_ line: VoiceLine) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in self?.playVoice(line) }
+            return
+        }
+        guard !isMuted, isVoiceEnabled, sfxVolume > 0,
+              !UIAccessibility.isVoiceOverRunning else { return }
+        if let playing = voicePlayer, playing.isPlaying,
+           !VoiceLine.shouldInterrupt(current: currentVoiceLine, with: line) {
+            return
+        }
+        let key = "voice:\(line.rawValue)"
+        let data: Data
+        if let cached = wavCache[key] {
+            data = cached
+        } else {
+            guard let url = Self.assetURL(named: line.assetName),
+                  let bytes = try? Data(contentsOf: url) else { return }
+            wavCache[key] = bytes
+            data = bytes
+        }
+        guard let player = try? AVAudioPlayer(data: data) else { return }
+        voicePlayer?.stop()
+        player.volume = min(1, sfxVolume * 1.2)
+        player.numberOfLoops = 0
+        player.prepareToPlay()
+        player.play()
+        voicePlayer = player
+        currentVoiceLine = line
+    }
+
+    private func stopVoice() {
+        voicePlayer?.stop()
+        voicePlayer = nil
+        currentVoiceLine = nil
+    }
+
     // MARK: - Controls
 
     func setMuted(_ muted: Bool) {
@@ -299,6 +365,7 @@ final class AudioManager {
         if muted {
             bgmPlayer?.pause()
             activeLoopPlayer?.pause()
+            stopVoice()
         } else {
             // Re-engage what was last requested. If players exist, just resume;
             // otherwise re-spawn them via the same code path that built the
@@ -322,6 +389,7 @@ final class AudioManager {
         activeLoopPlayer = nil
         sfxPlayers.values.forEach { $0.stop() }
         sfxPlayers.removeAll()
+        stopVoice()
     }
 
     // MARK: - Private Helpers

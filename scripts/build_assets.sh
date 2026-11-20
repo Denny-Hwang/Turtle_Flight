@@ -30,9 +30,12 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC_DIR="$ROOT/assets/characters"
-OUT_DIR="$ROOT/TurtleFlight/Assets.xcassets/Characters"
+# OUT_DIR / APPICON_OUT_DIR can be overridden to render somewhere else
+# (e.g. a scratch folder for review) without touching the asset catalog:
+#   OUT_DIR=build/x/Characters APPICON_OUT_DIR=build/x/AppIcon.appiconset bash scripts/build_assets.sh
+OUT_DIR="${OUT_DIR:-$ROOT/TurtleFlight/Assets.xcassets/Characters}"
 APPICON_SVG="$ROOT/assets/ui/app-icon/app_icon.svg"
-APPICON_OUT_DIR="$ROOT/TurtleFlight/Assets.xcassets/AppIcon.appiconset"
+APPICON_OUT_DIR="${APPICON_OUT_DIR:-$ROOT/TurtleFlight/Assets.xcassets/AppIcon.appiconset}"
 
 CHARS=(turbo pip nutty mochi bounce hoppy)
 
@@ -44,8 +47,14 @@ PDF_VARIANTS=(icon silhouette vehicle_only default)
 # the per-character atlas; expression frames go into the 2×2 atlas grid.
 PNG_VARIANTS=(flying)
 ATLAS_FRAMES=(default joy scared speed)
-ATLAS_SIZE_PX=2048      # 2×2 grid, each cell 1024×1024
-ATLAS_CELL_PX=1024
+# Two in-flight atlases per character, both 2×2 in the same cell order:
+#   <name>_atlas        ← <name>_fly_<frame>.svg    (riding its own vehicle)
+#   <name>_cloud_atlas  ← <name>_cloud_<frame>.svg  (riding the shared Cloud Surf)
+# The billboard is ~120–250 px on screen, so 512 px cells (1024² atlas) are
+# already oversampled and keep the twelve atlases small.
+ATLAS_SETS=("atlas:fly" "cloud_atlas:cloud")
+ATLAS_SIZE_PX=1024      # 2×2 grid, each cell 512×512
+ATLAS_CELL_PX=512
 TEXTURE_HI_PX=1024      # in-flight billboard, primary
 TEXTURE_LO_PX=512       # LOD for older devices
 
@@ -123,18 +132,8 @@ JSON
     echo "  ✓ ${char}_${variant}.png (${TEXTURE_LO_PX}/${TEXTURE_HI_PX})"
   done
 
-  # 3) Expression atlas (2×2 grid: default/joy/scared/speed)
-  #    We render each cell separately into a temp dir, then composite.
-  atlas="$OUT_DIR/${char}_atlas.imageset/${char}_atlas.png"
-  mkdir -p "$(dirname "$atlas")"
-  tmp="$(mktemp -d)"
-  trap 'rm -rf "$tmp"' EXIT
-  for frame in "${ATLAS_FRAMES[@]}"; do
-    src="$src_char_dir/${char}_${frame}.svg"
-    [ -f "$src" ] || { echo "  ! atlas: missing $src — atlas will be skipped"; continue 2; }
-    svg_to_png "$src" "$tmp/${frame}.png" "$ATLAS_CELL_PX"
-  done
-  # Support ImageMagick 7 (`magick montage …`) or 6 (`montage …`)
+  # 3) Expression atlases (2×2 grid: default/joy/scared/speed), one per
+  #    ATLAS_SETS entry. Each cell is rendered separately, then composited.
   if command -v magick >/dev/null 2>&1; then
     montage_cmd=(magick montage)
   elif command -v montage >/dev/null 2>&1; then
@@ -142,25 +141,47 @@ JSON
   else
     montage_cmd=()
   fi
-  if [ "${#montage_cmd[@]}" -gt 0 ]; then
-    "${montage_cmd[@]}" \
-      "$tmp/default.png" "$tmp/joy.png" \
-      "$tmp/scared.png"  "$tmp/speed.png" \
-      -tile 2x2 -geometry "${ATLAS_CELL_PX}x${ATLAS_CELL_PX}+0+0" \
-      -background none "$atlas"
-    cat > "$(dirname "$atlas")/Contents.json" <<JSON
+  for set in "${ATLAS_SETS[@]}"; do
+    suffix="${set%%:*}"; prefix="${set#*:}"
+    atlas="$OUT_DIR/${char}_${suffix}.imageset/${char}_${suffix}.png"
+    mkdir -p "$(dirname "$atlas")"
+    tmp="$(mktemp -d)"
+    missing=0
+    for frame in "${ATLAS_FRAMES[@]}"; do
+      src="$src_char_dir/${char}_${prefix}_${frame}.svg"
+      [ -f "$src" ] || { echo "  ! ${suffix}: missing $src — skipped"; missing=1; break; }
+      svg_to_png "$src" "$tmp/${frame}.png" "$ATLAS_CELL_PX"
+    done
+    if [ "$missing" = 0 ] && [ "${#montage_cmd[@]}" -gt 0 ]; then
+      "${montage_cmd[@]}" \
+        "$tmp/default.png" "$tmp/joy.png" \
+        "$tmp/scared.png"  "$tmp/speed.png" \
+        -tile 2x2 -geometry "${ATLAS_CELL_PX}x${ATLAS_CELL_PX}+0+0" \
+        -background none -strip -define png:exclude-chunks=date,time "$atlas"
+      cat > "$(dirname "$atlas")/Contents.json" <<JSON
 {
-  "images" : [ { "filename" : "${char}_atlas.png", "idiom" : "universal", "scale" : "2x" } ],
+  "images" : [ { "filename" : "${char}_${suffix}.png", "idiom" : "universal", "scale" : "2x" } ],
   "info" : { "author" : "xcode", "version" : 1 }
 }
 JSON
-    echo "  ✓ ${char}_atlas.png (${ATLAS_SIZE_PX}²)"
-  else
-    echo "  · skip ${char}_atlas (install ImageMagick to enable)"
-  fi
-  rm -rf "$tmp"
-  trap - EXIT
+      echo "  ✓ ${char}_${suffix}.png (${ATLAS_SIZE_PX}²)"
+    elif [ "$missing" = 0 ]; then
+      echo "  · skip ${char}_${suffix} (install ImageMagick to enable)"
+    fi
+    rm -rf "$tmp"
+  done
 done
+
+# ---------------------------------------------------------------- shared
+# The Cloud Surf vehicle belongs to no single character.
+cloud_src="$SRC_DIR/shared/cloud_vehicle_only.svg"
+if [ -f "$cloud_src" ]; then
+  imageset="$OUT_DIR/cloud_vehicle_only.imageset"
+  mkdir -p "$imageset"
+  svg_to_pdf "$cloud_src" "$imageset/cloud_vehicle_only.pdf"
+  emit_imageset_contents "$imageset" "cloud_vehicle_only" pdf
+  echo "  ✓ cloud_vehicle_only.pdf"
+fi
 
 # ---------------------------------------------------------------- app icon
 if [ -f "$APPICON_SVG" ]; then

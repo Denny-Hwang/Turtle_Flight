@@ -221,12 +221,17 @@ extension Theme {
 /// than as oversized iPhone layouts.
 struct AdaptiveSize: ViewModifier {
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     let compactWidth: CGFloat
     let compactHeight: CGFloat
 
     func body(content: Content) -> some View {
-        let scale = (sizeClass == .regular) ? Theme.iPadScale : 1.0
+        // iPad = regular in both directions. A Plus / Pro Max iPhone in
+        // landscape is regular-width but compact-height, and scaling
+        // there pushed Stage Select's header off the top of the screen.
+        let isPad = sizeClass == .regular && verticalSizeClass == .regular
+        let scale = isPad ? Theme.iPadScale : 1.0
         return content.frame(
             width: compactWidth * scale,
             height: compactHeight * scale

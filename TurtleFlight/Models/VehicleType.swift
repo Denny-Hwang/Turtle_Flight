@@ -51,7 +51,7 @@ enum VehicleType: String, CaseIterable, Codable {
         case .cushionBalloon:  return "mochi_vehicle_only"
         case .balloonBody:     return "bounce_vehicle_only"
         case .carrotJet:       return "hoppy_vehicle_only"
-        case .cloudSurf:       return nil
+        case .cloudSurf:       return "cloud_vehicle_only"
         }
     }
 

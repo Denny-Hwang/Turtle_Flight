@@ -16,6 +16,7 @@
 "settings.audio.mute"                     = "ミュート";
 "settings.audio.bgm"                      = "BGM音量";
 "settings.audio.sfx"                      = "効果音音量";
+"settings.audio.voice"                   = "実況ボイス";
 
 "settings.section.progress"               = "進行状況";
 "settings.progress.reset"                 = "進行状況をリセット";
@@ -352,3 +353,11 @@
 "mastery.title.3"             = "スカイパイロット";
 "mastery.title.4"             = "エース";
 "mastery.title.5"             = "空の伝説";
+
+// MARK: - Launch polish (2026-11) — singular streak, visible sensitivity names
+"streak.format.one"                 = "1日連続";
+"a11y.streak.format.one"            = "1日連続でプレイしています";
+"characterSelect.section.character" = "キャラクター";
+"sensitivity.easy"                  = "かんたん";
+"sensitivity.normal"                = "ふつう";
+"sensitivity.expert"                = "エキスパート";

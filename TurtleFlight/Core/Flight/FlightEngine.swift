@@ -177,4 +177,15 @@ final class FlightEngine {
         guard profile.stallEnabled else { return false }
         return state.isStalled
     }
+
+    #if DEBUG
+    /// Screenshot autopilot only (`ScreenshotDirector`): place the
+    /// character after the physics step. Compiled out of Release.
+    func debugSetPose(position: SCNVector3, heading: Float) {
+        state.position = position
+        state.altitude = position.y
+        state.verticalSpeed = 0
+        state.heading = heading
+    }
+    #endif
 }

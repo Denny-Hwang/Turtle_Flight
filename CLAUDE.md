@@ -96,6 +96,8 @@ Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `
 
 ## 남은 백로그 (저장소 밖 또는 선택 사항)
 - **Apple 계정 작업**: App ID capability(Game Center, iCloud KVS), App Store Connect 리더보드/업적 생성, 프라이버시 정책 URL 호스팅 — 절차와 정확한 ID는 `docs/APP_STORE_SUBMISSION.md`
-- **실제 오디오 에셋**: `AudioManager.assetURL` 훅은 준비됨. `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` 파일만 번들에 넣으면 됨
+- **음성 콜아웃 클립 생성 (오너)**: `VoiceLine` 9종 + 재생 경로는 머지됨. Google Cloud TTS Neural2 (`en-US-Neural2-F`) 로 `scripts/audio/generate_voice.sh` 를 **오너 터미널에서** 실행 (Claude Code/CI 안에서는 거부, 에이전트는 `--dry-run` 만). 생성형 음성(Chirp/Journey/Studio/Gemini, Lyria 음악)은 4+ 앱이라 Google 약관상 금지. 절차는 `docs/APP_STORE_SUBMISSION.md` §9
+- **실제 오디오 에셋 (선택)**: `AudioManager.assetURL` 훅은 준비됨. `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` 파일만 번들에 넣으면 됨. 없으면 합성음 사용
+- **출시 설정 (오너 결정 2026-11-19)**: 미국 스토어만, 심사 통과 후 자동 출시
 - **실기기 튜닝**: TestFlight 후 `GateScoring`, `Constants.Flight.energy*`, `EndlessCourse.radius(at:)` 상수 조정
 - **Swift 6 strict concurrency** 채택 (제출 요건 아님)
