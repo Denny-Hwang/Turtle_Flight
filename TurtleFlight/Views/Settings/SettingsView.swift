@@ -410,6 +410,7 @@ struct SettingsView: View {
         Analytics.shared.reset()
         QuestTracker.shared.reset()
         GhostStore.shared.deleteAll()
+        PostcardAlbum.shared.reset()
         // Banner stays visible briefly so the destructive action reads
         // as confirmed rather than silently working.
         withAnimation(.easeInOut) { resetSuccess = true }

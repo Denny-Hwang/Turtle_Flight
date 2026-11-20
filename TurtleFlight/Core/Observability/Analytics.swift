@@ -24,6 +24,7 @@ enum AnalyticsEvent: String, CaseIterable {
     case stageFailed
     case freeFlightEnded
     case settingsOpened
+    case landmarkDiscovered
 }
 
 /// Point-in-time read of the counters, for UI / tests.

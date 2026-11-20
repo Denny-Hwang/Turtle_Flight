@@ -38,6 +38,10 @@ struct FlightView: View {
                 HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
             }
 
+            if flightMode == .freePlay {
+                SightseeingOverlay(flightVM: flightVM)
+            }
+
             if flightMode == .stepGoal, let engine = flightVM.missionEngine {
                 MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
             }
@@ -293,6 +297,12 @@ struct FlightView: View {
         }
 
         scene.background.contents = mapTheme.backgroundColor
+        // Distance haze: landmarks and the far terrain fade into the sky
+        // instead of popping in at the edge of the loaded area.
+        scene.fogColor = mapTheme.backgroundColor
+        scene.fogStartDistance = 1100
+        scene.fogEndDistance = 2300
+        scene.fogDensityExponent = 1.5
 
         // Ambient light
         let ambient = SCNNode()
@@ -314,7 +324,7 @@ struct FlightView: View {
 
         // Theme-specific extras
         switch mapTheme {
-        case .sky:
+        case .sky, .desert, .city, .seoul, .wild:
             addSunSphere()
         case .space:
             addStarDome()

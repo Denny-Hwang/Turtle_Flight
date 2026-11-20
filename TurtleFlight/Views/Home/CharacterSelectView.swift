@@ -151,19 +151,24 @@ struct CharacterSelectView: View {
 
             // ── MAP THEME ──
             sectionLabel("characterSelect.section.map", systemImage: "map.fill")
-            HStack(spacing: Theme.Spacing.m - 2) {
-                ForEach(MapTheme.allCases, id: \.self) { theme in
-                    MapThemeCard(
-                        theme: theme,
-                        isSelected: characterVM.selectedMapTheme == theme
-                    ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            characterVM.selectMapTheme(theme)
+            // Seven worlds: a swipeable row of fixed-width cards.
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: Theme.Spacing.m - 2) {
+                    ForEach(MapTheme.allCases, id: \.self) { theme in
+                        MapThemeCard(
+                            theme: theme,
+                            isSelected: characterVM.selectedMapTheme == theme
+                        ) {
+                            withAnimation(.spring(response: 0.3)) {
+                                characterVM.selectMapTheme(theme)
+                            }
                         }
+                        .frame(width: 118 * tileScale)
                     }
                 }
+                .padding(.horizontal, Theme.Spacing.xs)
+                .padding(.vertical, Theme.Spacing.s)
             }
-            .padding(.horizontal, Theme.Spacing.xs)
         }
         .padding(.top, Theme.Spacing.xs)
     }

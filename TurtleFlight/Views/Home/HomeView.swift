@@ -20,6 +20,8 @@ struct HomeView: View {
     /// True while the SettingsView sheet is on screen. Surfaces from the
     /// gear button in the top-right.
     @State private var showSettings = false
+    @State private var showAlbum = false
+    @State private var postcardCount = PostcardAlbum.shared.postcardCount
     /// Phase 2 "Fly now": one tap from Home straight into a Free Flight
     /// with the last character / vehicle / theme. The previous shortest
     /// path was four screens (Mode → Stage → Character → FLY), which is
@@ -200,6 +202,9 @@ struct HomeView: View {
                 flightMode: .stepGoal,
                 mapTheme: characterVM.selectedMapTheme
             )
+        }
+        .sheet(isPresented: $showAlbum) {
+            PostcardAlbumView(isPresented: $showAlbum)
         }
         .sheet(isPresented: $showSettings, onDismiss: {
             // SettingsView's Audio section may have flipped mute via its
@@ -437,6 +442,19 @@ struct HomeView: View {
     @ViewBuilder private var statsRow: some View {
         // Stats
         HStack {
+            Button {
+                AudioManager.shared.playButtonTap()
+                showAlbum = true
+            } label: {
+                Label("\(L10n.t("home.album.title")) \(postcardCount)/\(PostcardAlbum.totalPostcards)",
+                      systemImage: "photo.on.rectangle.angled")
+                    .foregroundColor(Theme.Color.textPrimary)
+                    .padding(.horizontal, Theme.Spacing.s + 2)
+                    .padding(.vertical, Theme.Spacing.xs + 1)
+                    .background(Capsule().fill(.ultraThinMaterial))
+            }
+            .accessibilityHint(L10n.t("a11y.album.hint"))
+
             Label(
                 L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
                 systemImage: "star.fill"
@@ -478,9 +496,11 @@ struct HomeView: View {
                 showSpecialFlight = true
             case .settings:
                 showSettings = true
+            case .album:
+                showAlbum = true
             case .onboarding:
                 showOnboarding = true
-            case .freeflight:
+            case .freeflight, .tour:
                 showQuickFlight = true
             case .stage, .stageResult:
                 missionVM.selectStage(0)
@@ -500,6 +520,7 @@ struct HomeView: View {
 
     private func refreshRetention() {
         quests = QuestTracker.shared.todaysQuests()
+        postcardCount = PostcardAlbum.shared.postcardCount
         streak = Analytics.shared.currentStreak()
     }
 

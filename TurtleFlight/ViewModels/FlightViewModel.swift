@@ -178,6 +178,19 @@ final class FlightViewModel: ObservableObject {
     let gyroController: GyroController
     let characterAnimator = CharacterAnimator()
     var terrainGenerator: TerrainGenerator?
+
+    // MARK: - Sightseeing (Free Flight) — see FlightViewModel+Sightseeing
+    var landmarkField: LandmarkField?
+    /// Nearest landmark this character has not visited (nil in missions
+    /// or when everything nearby is already stamped).
+    @Published var landmarkHint: LandmarkHint?
+    /// Latest one-shot banner (postcard found / hello).
+    @Published var flightToast: FlightToast?
+    var sightseeingAccumulator: Float = 0
+    var lastSimLandmarkHint: LandmarkHint?
+    var toastCounter = 0
+    /// A greeted friend hands over one star.
+    func awardHelloStar() { simStarsCollected += 1 }
     var itemSystem: ItemSystem?
     var missionEngine: MissionEngine?
 
@@ -471,6 +484,18 @@ final class FlightViewModel: ObservableObject {
         terrainGenerator = TerrainGenerator(parentNode: scene.rootNode, seed: 42, theme: theme)
         terrainGenerator?.updateChunks(playerPosition: charNode.position)
 
+        // Landmarks: built for every flight, dropped again by
+        // `startStage` — missions keep the airspace clear for the rings.
+        let terrain = terrainGenerator
+        landmarkField = LandmarkField(parentNode: scene.rootNode, world: theme, seed: 42) { x, z in
+            terrain?.heightAt(x: x, z: z) ?? 0
+        }
+        landmarkField?.update(playerPosition: charNode.position)
+        sightseeingAccumulator = 0
+        lastSimLandmarkHint = nil
+        landmarkHint = nil
+        flightToast = nil
+
         // Setup items
         itemSystem = ItemSystem(parentNode: scene.rootNode)
         itemSystem?.spawnStars(around: charNode.position)
@@ -529,6 +554,9 @@ final class FlightViewModel: ObservableObject {
     /// don't carry over from the previous run.
     func startStage(_ stage: StageDefinition) {
         lastTimerBeepBucket = -1
+        landmarkField?.clear()
+        landmarkField = nil
+        landmarkHint = nil
         AudioManager.shared.playVoice(.go)
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
@@ -781,6 +809,7 @@ final class FlightViewModel: ObservableObject {
         // Update mission
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
+            updateSightseeing(deltaTime: deltaTime, position: pos, heading: flightState.heading)
         }
         observeRingCrossings()
         #if DEBUG
@@ -1096,7 +1125,15 @@ final class FlightViewModel: ObservableObject {
     /// (replacing this frame's physics move), so every crossing is a
     /// genuine dead-centre pass judged by `MissionEngine`.
     private func screenshotAutopilotStep(from p: SCNVector3, deltaTime: Float) {
-        guard let target = missionEngine?.currentRingPosition else { return }
+        var ringTarget = missionEngine?.currentRingPosition
+        if ringTarget == nil, ScreenshotDirector.scene == .tour,
+           let nearest = landmarkField?.nearest(to: p) {
+            if nearest.distance < ScreenshotDirector.tourFreezeDistance { screenshotFrozen = true; return }
+            // Approach slightly above the focus so the camera looks down on it.
+            let f = nearest.placement.focus
+            ringTarget = SCNVector3(f.x, f.y + 60, f.z)
+        }
+        guard let target = ringTarget else { return }
         let state = flightEngine.state
         let d = SCNVector3(target.x - p.x, target.y - p.y, target.z - p.z)
         let dist = sqrt(d.x * d.x + d.y * d.y + d.z * d.z)
