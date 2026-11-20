@@ -9,6 +9,35 @@ window.
 
 ## [Unreleased]
 
+### World tour & flight delight (2026-11-20)
+
+- **Four new worlds** — Desert Ruins, City of Lights, Seoul Sky, Wild
+  Nature (`MapTheme` now has 7). Terrain shape and colour are data
+  (`WorldProfile`: rolling / dunes / plain), each world has its own
+  props, and a coarse far-terrain mesh plus distance haze give every
+  world a horizon.
+- **25 landmarks** (`LandmarkKind`, `LandmarkFactory`, `LandmarkField`)
+  — original, primitive-built places on a deterministic grid, 3–4 per
+  world including the original three. They are "inspired by a kind of
+  place", never a model of a real monument, with our own names.
+  Free Flight only; missions keep the airspace clear.
+- **Sky Postcards** — fly within 150 m of a landmark to collect its
+  postcard; every character can add a stamp (`PostcardAlbum`, on-device
+  only, cleared by Reset Progress). Compass chip to the nearest place
+  this character has not visited; album on the Home screen.
+- **Hello fly-bys** — passing close to a balloon, whale, UFO, camel
+  caravan, river boat, cable car or eagle earns +1 star and a hop back.
+- **Sky mood** — open-sky worlds pick morning / day / sunset / night
+  per flight (`SkyMood`, deterministic, cosmetic only).
+- **Character specialties** (`FlightSpecialty`) — Turbo long boost, Pip
+  fastest dash, Nutty quick refill, Mochi star magnet, Bounce boost
+  lift, Hoppy bullseye refund. Shown on Character Select.
+- **Touch controls** (Settings → Controls), **gate-pass pulse**,
+  Free Flight **clean view**, and a **streak rest day** (one missed day
+  no longer breaks the streak).
+- Renamed an ocean region that read as "Pearl Harbor" (en/ko/zh).
+- Tests: `WorldTourTests` + additions.  tests.
+
 ### Launch polish — character redesign, layout QA (2026-11-20)
 
 - **Character art redesigned** (all six + app icon). Sources are now a

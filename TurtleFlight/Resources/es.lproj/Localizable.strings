@@ -412,3 +412,11 @@
 "album.empty.hint" = "Vuela cerca de un lugar en Vuelo libre para conseguir su postal. Cada amigo puede añadir su sello.";
 "album.undiscovered" = "Aún sin encontrar";
 "a11y.album.hint" = "Abre tu colección de postales";
+
+// MARK: - Character specialties
+"specialty.turtle" = "Larga combustión: el turbo dura un 50 % más";
+"specialty.penguin" = "Sprint: turbo más corto, el más rápido";
+"specialty.hamster" = "Recarga rápida: el turbo se llena antes";
+"specialty.cat" = "Imán de estrellas: las recoge desde más lejos";
+"specialty.frog" = "Salto al cielo: el turbo también te eleva";
+"specialty.bunny" = "Batería de diana: las dianas recargan el turbo";

@@ -296,10 +296,19 @@ struct FlightView: View {
             }
         }
 
-        scene.background.contents = mapTheme.backgroundColor
+        // Time of day for this flight (open-sky worlds only).
+        var mood = SkyMood.forFlight(number: Analytics.shared.snapshot().count(.flightStarted),
+                                     world: mapTheme)
+        #if DEBUG
+        if ScreenshotDirector.isActive {
+            mood = UserDefaults.standard.string(forKey: "TFMood").flatMap(SkyMood.init(rawValue:)) ?? .day
+        }
+        #endif
+        let skyColor = mood.skyColor(base: mapTheme.backgroundColor)
+        scene.background.contents = skyColor
         // Distance haze: landmarks and the far terrain fade into the sky
         // instead of popping in at the edge of the loaded area.
-        scene.fogColor = mapTheme.backgroundColor
+        scene.fogColor = skyColor
         scene.fogStartDistance = 1100
         scene.fogEndDistance = 2300
         scene.fogDensityExponent = 1.5
@@ -308,16 +317,16 @@ struct FlightView: View {
         let ambient = SCNNode()
         ambient.light = SCNLight()
         ambient.light?.type = .ambient
-        ambient.light?.intensity = mapTheme.ambientLightIntensity
-        ambient.light?.color = mapTheme.ambientLightColor
+        ambient.light?.intensity = mapTheme.ambientLightIntensity * mood.lightScale
+        ambient.light?.color = mood.lightColor ?? mapTheme.ambientLightColor
         scene.rootNode.addChildNode(ambient)
 
         // Directional light (sun / star)
         let sun = SCNNode()
         sun.light = SCNLight()
         sun.light?.type = .directional
-        sun.light?.intensity = mapTheme.sunLightIntensity
-        sun.light?.color = mapTheme.sunLightColor
+        sun.light?.intensity = mapTheme.sunLightIntensity * mood.lightScale
+        sun.light?.color = mood.lightColor ?? mapTheme.sunLightColor
         sun.light?.castsShadow = true
         sun.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 4, 0)
         scene.rootNode.addChildNode(sun)
@@ -325,7 +334,7 @@ struct FlightView: View {
         // Theme-specific extras
         switch mapTheme {
         case .sky, .desert, .city, .seoul, .wild:
-            addSunSphere()
+            if mood.showsStars { addStarDome() } else { addSunSphere() }
         case .space:
             addStarDome()
         case .ocean:

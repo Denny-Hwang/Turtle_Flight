@@ -413,3 +413,11 @@
 "album.empty.hint" = "Fly close to a landmark in Free Flight to collect its postcard. Every friend can add their own stamp.";
 "album.undiscovered" = "Not found yet";
 "a11y.album.hint" = "Opens your postcard collection";
+
+// MARK: - Character specialties
+"specialty.turtle" = "Long burn: boost lasts 50% longer";
+"specialty.penguin" = "Dash: shorter boost, fastest of all";
+"specialty.hamster" = "Quick refill: boost gauge fills faster";
+"specialty.cat" = "Star magnet: grabs stars from farther away";
+"specialty.frog" = "Sky hop: boosting also lifts you up";
+"specialty.bunny" = "Bullseye battery: bullseyes refill boost";

@@ -413,3 +413,11 @@
 "album.empty.hint" = "フリーフライトで名所の近くを飛ぶと絵はがきが手に入ります。なかまごとにスタンプを押せます。";
 "album.undiscovered" = "まだ見つけていない";
 "a11y.album.hint" = "絵はがきコレクションを開きます";
+
+// MARK: - Character specialties
+"specialty.turtle" = "ロングバーン：ブーストが50%長い";
+"specialty.penguin" = "ダッシュ：短いけれど最速のブースト";
+"specialty.hamster" = "クイックチャージ：ゲージがはやくたまる";
+"specialty.cat" = "スターマグネット：遠くの星も集める";
+"specialty.frog" = "スカイホップ：ブーストで上にはねる";
+"specialty.bunny" = "ど真ん中バッテリー：ど真ん中でブースト回復";

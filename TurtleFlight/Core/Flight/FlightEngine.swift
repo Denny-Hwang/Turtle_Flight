@@ -52,6 +52,15 @@ final class FlightEngine {
         energySpeed = Constants.Flight.defaultSpeed
     }
 
+    /// Per-character boost behaviour (see `FlightSpecialty`).
+    var specialty = FlightSpecialty.neutral
+
+    /// Top up the gauge by a fraction (bullseye refund).
+    func addBoostCharge(_ fraction: Float) {
+        guard fraction > 0, !state.isBoosting else { return }
+        state.boostCharge = min(1, state.boostCharge + fraction)
+    }
+
     /// A collected star tops up the boost gauge.
     func registerStarCollected() {
         state.boostCharge = min(1, state.boostCharge + Constants.Flight.boostChargePerStar)
@@ -77,7 +86,7 @@ final class FlightEngine {
         // chase stars and a rhythm to when they can punch it again.
         if isBoosting && state.boostTimeRemaining <= 0 && state.boostCharge >= 1 {
             state.isBoosting = true
-            state.boostTimeRemaining = Float(Constants.Flight.boostDuration)
+            state.boostTimeRemaining = Float(Constants.Flight.boostDuration) * specialty.boostDuration
             state.boostCharge = 0
         }
         if state.boostTimeRemaining > 0 {
@@ -87,15 +96,15 @@ final class FlightEngine {
             }
         } else {
             state.boostCharge = min(1, state.boostCharge
-                                    + Constants.Flight.boostRechargePerSecond * deltaTime)
+                                    + Constants.Flight.boostRechargePerSecond * specialty.recharge * deltaTime)
         }
 
-        let speedMultiplier: Float = state.isBoosting ? Constants.Flight.boostMultiplier : 1.0
+        let speedMultiplier: Float = state.isBoosting ? Constants.Flight.boostMultiplier * specialty.boostSpeed : 1.0
 
         // Vertical speed from pitch input, with per-vehicle pitch multiplier
         // (e.g. balloon body has the highest lift at 1.15).
         let pitchRate = Float(profile.pitchSpeed) * vehicleHandling.pitch * Float(pitchInput)
-        state.verticalSpeed = pitchRate
+        state.verticalSpeed = pitchRate + (state.isBoosting ? specialty.boostLift : 0)
 
         // Auto-level
         if shouldAutoLevel {

@@ -413,3 +413,11 @@
 "album.empty.hint" = "在自由飞行中靠近地标飞过，就能收集明信片。每位伙伴都能盖上自己的印章。";
 "album.undiscovered" = "尚未发现";
 "a11y.album.hint" = "打开你的明信片收藏";
+
+// MARK: - Character specialties
+"specialty.turtle" = "长燃：加速多持续 50%";
+"specialty.penguin" = "冲刺：加速更短，但速度最快";
+"specialty.hamster" = "快速充能：加速槽恢复更快";
+"specialty.cat" = "星星磁铁：能吸到更远的星星";
+"specialty.frog" = "天空跳：加速时还会向上跃起";
+"specialty.bunny" = "正中电池：命中正中可为加速充能";

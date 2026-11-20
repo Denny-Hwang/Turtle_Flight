@@ -142,7 +142,9 @@ final class LandmarkField {
         if cell == SIMD2<Int32>(0, 0) { return nil }
         var rng = SeededRandom(seed: Int(cell.x) &* 73_856_093 ^ Int(cell.y) &* 19_349_663 ^ seed &* 83_492_791)
         // Walk the list by cell so neighbours differ, then jitter.
-        let index = Int(((Int(cell.x) &* 2 &+ Int(cell.y) &* 3) % kinds.count + kinds.count) % kinds.count)
+        // x + 2y steps through the list so that, for 3 or 4 kinds, the
+        // east and south neighbours are always a different place.
+        let index = ((Int(cell.x) &+ Int(cell.y) &* 2) % kinds.count + kinds.count) % kinds.count
         let kind = kinds[index]
         let jitter = cellSize * 0.28
         let x = (Float(cell.x) + 0.5) * cellSize + rng.nextFloat(in: -1...1) * jitter

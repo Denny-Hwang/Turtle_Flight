@@ -59,9 +59,9 @@ final class ItemSystem {
     }
 
     /// Check for star collection near player
-    func checkCollection(playerPosition: SCNVector3) -> Int {
+    func checkCollection(playerPosition: SCNVector3, radiusMultiplier: Float = 1) -> Int {
         var collected = 0
-        let collectionRadius = Constants.Items.starCollectionRadius
+        let collectionRadius = Constants.Items.starCollectionRadius * radiusMultiplier
 
         for i in 0..<stars.count {
             guard !stars[i].isCollected else { continue }

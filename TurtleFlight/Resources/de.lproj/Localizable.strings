@@ -414,3 +414,11 @@
 "album.empty.hint" = "Flieg im Freien Flug nah an einen Ort heran, um seine Postkarte zu sammeln. Jeder Freund kann seinen Stempel hinzufügen.";
 "album.undiscovered" = "Noch nicht gefunden";
 "a11y.album.hint" = "Öffnet deine Postkartensammlung";
+
+// MARK: - Character specialties
+"specialty.turtle" = "Langer Schub: Boost hält 50 % länger";
+"specialty.penguin" = "Sprint: kürzerer Boost, der schnellste";
+"specialty.hamster" = "Schnell geladen: Boost füllt sich schneller";
+"specialty.cat" = "Sternmagnet: sammelt Sterne aus größerer Entfernung";
+"specialty.frog" = "Himmelshüpfer: Boost hebt dich nach oben";
+"specialty.bunny" = "Volltreffer-Akku: Volltreffer laden den Boost";

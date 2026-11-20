@@ -412,3 +412,11 @@
 "album.empty.hint" = "Vole près d’un lieu en Vol libre pour obtenir sa carte postale. Chaque ami peut y ajouter son tampon.";
 "album.undiscovered" = "Pas encore trouvé";
 "a11y.album.hint" = "Ouvre ta collection de cartes postales";
+
+// MARK: - Character specialties
+"specialty.turtle" = "Longue poussée : le boost dure 50 % de plus";
+"specialty.penguin" = "Sprint : boost plus court, le plus rapide";
+"specialty.hamster" = "Recharge rapide : la jauge se remplit plus vite";
+"specialty.cat" = "Aimant à étoiles : attrape les étoiles de plus loin";
+"specialty.frog" = "Saut céleste : le boost te fait aussi monter";
+"specialty.bunny" = "Batterie plein centre : viser juste recharge le boost";

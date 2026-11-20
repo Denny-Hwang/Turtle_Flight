@@ -410,6 +410,7 @@ final class FlightViewModel: ObservableObject {
         // turns "all six vehicles fly identically" into "the carrot jet
         // really does turn sharper than the cushion balloon."
         flightEngine.vehicleHandling = vehicle.handling
+        flightEngine.specialty = character.specialty
 
         // Build the atlas-textured billboard. Vehicle is baked into the
         // flying-pose art, so a single billboard subsumes both per spec
@@ -782,7 +783,8 @@ final class FlightViewModel: ObservableObject {
 
         // Update items
         if let pos = characterNode?.position {
-            let collected = itemSystem?.checkCollection(playerPosition: pos) ?? 0
+            let collected = itemSystem?.checkCollection(playerPosition: pos,
+                                                        radiusMultiplier: flightEngine.specialty.starMagnet) ?? 0
             simStarsCollected += collected
             if collected > 0 {
                 onMain { AudioManager.shared.playStarCollect() }
@@ -883,6 +885,7 @@ final class FlightViewModel: ObservableObject {
             if judgement == .bullseye { runBullseyes += 1 }
             simMaxComboSeen = max(simMaxComboSeen, engine.score.combo)
             gatePulse = max(gatePulse, Self.gatePulseStrength(for: judgement))
+            if judgement == .bullseye { flightEngine.addBoostCharge(flightEngine.specialty.bullseyeCharge) }
             #if DEBUG
             if let target = ScreenshotDirector.freezeCombo, screenshotFreezeAt == nil,
                judgement == .bullseye, engine.score.combo >= target {
@@ -946,7 +949,7 @@ final class FlightViewModel: ObservableObject {
     /// ring visibly refills from stars and reads "ready" when full.
     private func computeBoostProgress(flightState: FlightEngine.FlightState) -> Float {
         if flightState.isBoosting {
-            let dur = Float(Constants.Flight.boostDuration)
+            let dur = Float(Constants.Flight.boostDuration) * flightEngine.specialty.boostDuration
             guard dur > 0 else { return 0 }
             return max(0, min(1, flightState.boostTimeRemaining / dur))
         }

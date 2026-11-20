@@ -416,3 +416,11 @@
 "album.empty.hint" = "자유 비행에서 명소 가까이 날아가면 엽서를 모을 수 있어요. 친구마다 자기 도장을 찍을 수 있어요.";
 "album.undiscovered" = "아직 못 찾음";
 "a11y.album.hint" = "엽서 모음을 엽니다";
+
+// MARK: - Character specialties
+"specialty.turtle" = "롱 번: 부스트가 50% 더 오래가요";
+"specialty.penguin" = "대시: 짧지만 가장 빠른 부스트";
+"specialty.hamster" = "빠른 충전: 부스트 게이지가 빨리 차요";
+"specialty.cat" = "별 자석: 멀리 있는 별도 끌어와요";
+"specialty.frog" = "스카이 홉: 부스트하면 위로 솟아올라요";
+"specialty.bunny" = "명중 배터리: 명중하면 부스트가 충전돼요";
