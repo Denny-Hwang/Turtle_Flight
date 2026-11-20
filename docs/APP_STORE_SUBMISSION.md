@@ -131,6 +131,14 @@ likely to move after real-hand feedback are all constants:
 > steer (touch fallback). No account, no purchases. Game Center, iCloud
 > sync, daily reminder and clip recording are all off by default and can
 > be enabled in Settings → "Game Center & Reminders". Landscape only.
+> Settings → "Secret code" accepts free promotional codes we hand out on
+> social media. Codes are never sold, are checked on the device, and
+> everything a code gives (a trail colour, in-game stars, early access
+> to the last route) can also be earned by simply playing. Stars and
+> treats are earned in play only; there is nothing to buy.
+
+If App Review still objects to the code field (guideline 3.1.1), set
+`SecretCodes.isEnabled = false` and resubmit — nothing else depends on it.
 
 ## 7. Screenshots (iPhone 6.9" + iPad 13", landscape)
 

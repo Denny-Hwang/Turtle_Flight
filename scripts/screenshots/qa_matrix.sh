@@ -13,7 +13,7 @@ cd "$(dirname "$0")/../.."
 IFS=',' read -r -a DEVICE_LIST <<<"${DEVICES:-iPhone 17e,iPhone 17 Pro Max,iPad mini (A17 Pro)}"
 LOCALES=${LOCALES:-"en ko ja zh-Hans es fr de"}
 # scene:seconds-to-wait
-SCENES=${SCENES:-"home:6 characters:6 stages:6 settings:6 onboarding:6 freeflight:7 pause:13 stage:24 daily:26"}
+SCENES=${SCENES:-"home:6 characters:6 stages:6 shop:6 settings:6 onboarding:6 freeflight:7 pause:13 stage:24 daily:26"}
 OUT_ROOT=build/qa-matrix
 DERIVED=build/screenshots-dd
 BUNDLE_ID=com.turtleflight.app

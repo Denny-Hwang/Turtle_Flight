@@ -111,6 +111,8 @@ final class MissionEngine {
     /// Number of near-misses (plane crossed inside the attempt window but
     /// outside the ring) during the current stage.
     private(set) var ringMisses: Int = 0
+    /// Rings a Kids course moved past without a pass (never a failure).
+    private(set) var ringsSkipped: Int = 0
     /// Precision score for the current attempt (Phase 2).
     private(set) var score = RunScore()
     /// Judgement of the most recent crossing; pairs with `crossingCount`.
@@ -181,6 +183,7 @@ final class MissionEngine {
         lastCrossing = nil
         crossingCount = 0
         ringMisses = 0
+        ringsSkipped = 0
         score = RunScore()
         lastJudgement = nil
         lastPointsEarned = 0
@@ -273,6 +276,25 @@ final class MissionEngine {
         }
 
         let ring = rings[currentRingIndex]
+        if stage.isKids {
+            // Kids courses never send the player back: going past a
+            // ring — through it or around it — moves on to the next one.
+            let through = Self.crossing(of: ring, index: currentRingIndex,
+                                        from: prev, to: playerPosition, at: elapsedTime)
+            if let through, through.isPass {
+                lastCrossing = through
+                crossingCount += 1
+                let judgement = GateScoring.judge(accuracy: through.accuracy)
+                lastJudgement = judgement
+                lastPointsEarned = score.register(judgement)
+                passCurrentRing()
+            } else if Self.planeCrossed(of: ring, from: prev, to: playerPosition, at: elapsedTime) {
+                ringsSkipped += 1
+                passCurrentRing(skipped: true)
+            }
+            animateTargetRing()
+            return
+        }
         if let crossing = Self.crossing(of: ring, index: currentRingIndex,
                                         from: prev, to: playerPosition,
                                         at: elapsedTime,
@@ -305,15 +327,17 @@ final class MissionEngine {
 
     /// Advance past the current target ring: play the pass animation,
     /// highlight the next ring, and complete the stage if it was the last.
-    private func passCurrentRing() {
+    private func passCurrentRing(skipped: Bool = false) {
         let ring = rings[currentRingIndex]
-        rings[currentRingIndex].isPassed = true
+        rings[currentRingIndex].isPassed = !skipped
 
         // Ring pass animation. Endless runs also detach the node so the
         // scene never accumulates hundreds of passed tori.
         let scaleUp = SCNAction.scale(to: 1.5, duration: 0.2)
         let fadeOut = SCNAction.fadeOut(duration: 0.3)
-        if isEndless {
+        if skipped {
+            ring.node.runAction(.fadeOut(duration: 0.4))
+        } else if isEndless {
             ring.node.runAction(.sequence([scaleUp, fadeOut, .removeFromParentNode()]))
         } else {
             ring.node.runAction(.sequence([scaleUp, fadeOut]))
@@ -417,6 +441,17 @@ final class MissionEngine {
         return RingCrossing(ringIndex: index, accuracy: accuracy, hitPoint: hit)
     }
 
+    /// True when the segment `from → to` passes the ring's plane going
+    /// forward, however far from the ring.
+    static func planeCrossed(of ring: Ring, from: SCNVector3, to: SCNVector3,
+                             at time: TimeInterval = 0) -> Bool {
+        let n = ring.normal
+        let c = ring.center(at: time)
+        let d0 = (from.x - c.x) * n.x + (from.y - c.y) * n.y + (from.z - c.z) * n.z
+        let d1 = (to.x - c.x) * n.x + (to.y - c.y) * n.y + (to.z - c.z) * n.z
+        return d0 < 0 && d1 >= 0
+    }
+
     func registerCollision() {
         collisions += 1
     }
@@ -433,6 +468,7 @@ final class MissionEngine {
         lastCrossing = nil
         crossingCount = 0
         ringMisses = 0
+        ringsSkipped = 0
         score = RunScore()
         lastJudgement = nil
         lastPointsEarned = 0
@@ -451,7 +487,7 @@ final class MissionEngine {
             completionTime: elapsedTime,
             collisions: collisions,
             starsCollected: starsCollected,
-            ringsCompleted: currentRingIndex,
+            ringsCompleted: currentRingIndex - ringsSkipped,
             totalRings: isEndless ? currentRingIndex : rings.count,
             date: Date(),
             score: score.points,
@@ -463,6 +499,11 @@ final class MissionEngine {
     }
 
     private func calculateStars(stage: StageDefinition) -> Int {
+        if stage.isKids {
+            // Always a clear; the stars only say how many rings were hit.
+            if ringsSkipped == 0 { return 3 }
+            return ringsSkipped * 2 <= rings.count ? 2 : 1
+        }
         // Base: 1 star for completion
         var stars = 1
 
@@ -636,7 +677,7 @@ final class MissionEngine {
         if isEndless {
             return L10n.format("mission.progress.endlessFormat", currentRingIndex)
         }
-        return L10n.format("mission.progress.ringFormat", currentRingIndex, stage.ringCount)
+        return L10n.format("mission.progress.ringFormat", currentRingIndex - ringsSkipped, stage.ringCount)
     }
 
     var remainingTime: TimeInterval? {

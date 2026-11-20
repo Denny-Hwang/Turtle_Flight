@@ -30,6 +30,7 @@ struct SettingsView: View {
     // MARK: - Local audio mirror
 
     @State private var touchControls: Bool = GyroController.touchControlEnabled
+    @State private var hapticsOn: Bool = Haptics.shared.isEnabled
     @State private var isMuted: Bool
     @State private var bgmVolume: Float
     @State private var sfxVolume: Float
@@ -56,6 +57,8 @@ struct SettingsView: View {
             Form {
                 audioSection
                 controlsSection
+                kidsSection
+                if SecretCodes.isEnabled { codeSection }
                 trailColorSection
                 sensitivityGuideSection
                 onlineSection
@@ -140,10 +143,35 @@ struct SettingsView: View {
                 .onChange(of: touchControls) { newValue in
                     GyroController.touchControlEnabled = newValue
                 }
+            Toggle(L10n.t("settings.controls.haptics"), isOn: $hapticsOn)
+                .onChange(of: hapticsOn) { newValue in
+                    Haptics.shared.isEnabled = newValue
+                    Haptics.shared.play(.ringGreat)
+                }
         } header: {
             Text(L10n.t("settings.section.controls"))
         } footer: {
             Text(L10n.t("settings.controls.touch.caption"))
+        }
+    }
+
+    private var kidsSection: some View {
+        Section {
+            Toggle("🧸  " + L10n.t("route.kids.toggle"),
+                   isOn: Binding(get: { missionVM.progress.kidsMode },
+                                 set: { missionVM.setKidsMode($0) }))
+        } footer: {
+            Text(L10n.t("route.kids.caption"))
+        }
+    }
+
+    private var codeSection: some View {
+        Section {
+            SecretCodeField(missionVM: missionVM)
+        } header: {
+            Text(L10n.t("code.title"))
+        } footer: {
+            Text(L10n.t("code.caption"))
         }
     }
 

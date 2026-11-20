@@ -26,6 +26,7 @@ enum ScreenshotScene: String {
     // screen, so layout can be checked per device and per language.
     case settings
     case album
+    case shop
     case onboarding
     case pause
     case freeflight

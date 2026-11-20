@@ -65,6 +65,10 @@ for audio playback.
 
 ## What we do not do
 
+- No purchases. Stars, treats and shop items are earned by playing.
+  Secret codes are checked on your device; the code you type is never
+  sent anywhere.
+
 - No advertising, no ad SDK, no IDFA / SKAdNetwork beyond what the App
   Store binary signs by default (none are read by the app code).
 - No analytics, no crash reporting beyond Apple's first-party
@@ -175,6 +179,8 @@ Turtle Flight는 1인용 자이로 비행 게임입니다. **수집하는 정보
 합성 오디오 재생을 위해 **AVFoundation**을 사용합니다 (마이크 접근 없음, 녹음 없음).
 
 ## 하지 않는 것
+
+- 결제 없음. 별·간식·상점 아이템은 모두 플레이로 얻습니다. 시크릿 코드는 기기 안에서만 확인하며, 입력한 코드는 어디로도 전송되지 않습니다.
 
 - 광고 없음. 광고 SDK 없음.
 - 분석 없음. Apple 1차 **MetricKit** 외 외부 크래시 리포팅 없음. MetricKit 리포트는 iOS 시스템 설정의 "앱 개발자와 공유" 설정에 따라 Apple이 직접 개발자에게 전달합니다 (앱이 직접 보내지 않음).

@@ -73,7 +73,7 @@ extension FlightViewModel {
                     Analytics.shared.track(.landmarkDiscovered, ["landmark": nearest.placement.kind.rawValue])
                     onMain {
                         AudioManager.shared.playStageClear()
-                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        Haptics.shared.play(.discovery)
                     }
                 }
             } else {
@@ -98,7 +98,7 @@ extension FlightViewModel {
             emitToast(.hello)
             onMain {
                 AudioManager.shared.playStarCollect()
-                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                Haptics.shared.play(.pickup)
             }
         }
     }

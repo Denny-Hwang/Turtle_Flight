@@ -97,6 +97,9 @@ Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `
 ## 월드 투어 (2026-11-20)
 월드 7개(`MapTheme`: sky/desert/city/seoul/wild/space/ocean). 지형·색은 `WorldProfile` 데이터, 랜드마크 25개는 `LandmarkFactory` 가 SceneKit 기본 도형으로 생성(모델 파일 없음). **랜드마크는 실제 건축물 모델이 아니라 "명소풍" 오리지널 + 자체 이름** — 실존 명소를 그대로 재현하거나 실명으로 바꾸지 말 것(상표·저작권). 랜드마크/엽서/인사 비행은 자유 비행 전용. 새 월드·랜드마크 추가 시 `WorldTourTests` 가 이름·소속·빌드를 강제. 진행표와 남은 아이디어는 `docs/LAUNCH_POLISH_PLAN.md`.
 
+## 루트 · Kids · 보상 · 햅틱 · 시크릿 코드 (2026-11-20)
+설계와 진행표는 `docs/ROUTES_REWARDS_PLAN.md`. 캠페인은 루트 5개(`RouteCatalog`, 코스 21개)이고 기존 5개 스테이지는 Sky School 루트(index 0–4 유지). 루트 코스는 index 10/20/30/40 대역 + 고정 월드. 잠금 규칙은 `PlayerProgress.isCourseUnlocked` 한 곳. Kids 모드는 `StageDefinition.kidsVariant()` + `MissionEngine` 의 `isKids` 분기(실패 없음). 진동은 반드시 `Haptics.shared.play(_:)` 로 (직접 `UIImpactFeedbackGenerator` 쓰지 말 것). 화폐는 별 지갑(`starsBanked − starsSpent`)과 캐릭터별 간식(`treats`), 상품은 `Shop`. **저장소가 public 이라 시크릿 코드 원문은 절대 커밋하지 말 것** — `SecretCodes` 에는 솔트 해시만, 원문은 gitignore 된 `marketing/secret_codes.md`. 테스트도 대역 코드로만 검증.
+
 ## 남은 백로그 (저장소 밖 또는 선택 사항)
 - **Apple 계정 작업**: App ID capability(Game Center, iCloud KVS), App Store Connect 리더보드/업적 생성, 프라이버시 정책 URL 호스팅 — 절차와 정확한 ID는 `docs/APP_STORE_SUBMISSION.md`
 - **음성 콜아웃 클립 생성 (오너)**: `VoiceLine` 9종 + 재생 경로는 머지됨. Google Cloud TTS Neural2 (`en-US-Neural2-F`) 로 `scripts/audio/generate_voice.sh` 를 **오너 터미널에서** 실행 (Claude Code/CI 안에서는 거부, 에이전트는 `--dry-run` 만). 생성형 음성(Chirp/Journey/Studio/Gemini, Lyria 음악)은 4+ 앱이라 Google 약관상 금지. 절차는 `docs/APP_STORE_SUBMISSION.md` §9

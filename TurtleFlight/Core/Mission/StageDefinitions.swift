@@ -7,16 +7,20 @@ struct StageDefinition {
     let koreanName: String
     let difficulty: Int        // 1-5 stars
     let description: String
-    let ringRadius: Float
-    let timeLimit: TimeInterval?  // nil = no limit
-    let star3Time: TimeInterval?  // complete within this for 3 stars
-    let starCountForPerfect: Int? // nil = no star collection requirement
+    var ringRadius: Float
+    var timeLimit: TimeInterval?  // nil = no limit
+    var star3Time: TimeInterval?  // complete within this for 3 stars
+    var starCountForPerfect: Int? // nil = no star collection requirement
     let star3Condition: String
     let star2Condition: String
     let learningGoal: String
     /// Declarative ring layout. `generateRings()` is a pure function of
     /// this value, so the same spec always yields the same course.
-    let course: CourseSpec
+    var course: CourseSpec
+    /// World the course is flown in. Nil = the player picks (Sky School).
+    var world: MapTheme? = nil
+    /// Kids version (see `kidsVariant()`): cannot be failed.
+    var isKids: Bool = false
 
     /// Number of rings in the course. Derived from `course` so the two
     /// can never disagree.
@@ -29,6 +33,9 @@ struct StageDefinition {
         // Special courses share their Home-button names.
         if isDailyRun { return L10n.t("daily.title") }
         if isEndless { return L10n.t("endless.title") }
+        if let world, let here = RouteCatalog.location(of: index) {
+            return L10n.format("route.course.nameFormat", world.displayName, here.step + 1)
+        }
         let key = "stage.\(index).name"
         let localized = NSLocalizedString(key, comment: key)
         return localized == key ? koreanName : localized
@@ -39,6 +46,8 @@ struct StageDefinition {
     /// stored on the struct. The fallback exists so unit tests on bare
     /// `StageDefinition` values keep passing without a strings bundle.
     var displayDescription: String {
+        if isKids { return L10n.format("route.course.kidsDescFormat", ringCount) }
+        if world != nil { return L10n.format("route.course.descFormat", ringCount) }
         let key = "stage.\(index).description"
         let localized = NSLocalizedString(key, comment: key)
         return localized == key ? description : localized
@@ -47,6 +56,10 @@ struct StageDefinition {
     /// Localized "★★★ goal: …" copy on `StageSelectView`. Looks up
     /// `stage.<index>.star3Condition`; falls back to the static field.
     var displayStar3Condition: String {
+        if isKids { return L10n.t("route.course.kidsStar3") }
+        if world != nil, let star3Time {
+            return L10n.format("route.course.star3Format", Int(star3Time))
+        }
         let key = "stage.\(index).star3Condition"
         let localized = NSLocalizedString(key, comment: key)
         return localized == key ? star3Condition : localized

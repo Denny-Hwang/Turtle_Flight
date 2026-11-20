@@ -80,7 +80,7 @@ struct CharacterSelectView: View {
                 character: characterVM.selectedCharacter,
                 vehicle: characterVM.selectedVehicle,
                 flightMode: flightMode,
-                mapTheme: characterVM.selectedMapTheme
+                mapTheme: fixedWorld ?? characterVM.selectedMapTheme
             )
         }
     }
@@ -154,7 +154,8 @@ struct CharacterSelectView: View {
                 }
             }
 
-            // ── MAP THEME ──
+            // ── MAP THEME ── (route courses come with their own world)
+            if fixedWorld == nil {
             sectionLabel("characterSelect.section.map", systemImage: "map.fill")
             // Seven worlds: a swipeable row of fixed-width cards.
             ScrollView(.horizontal, showsIndicators: false) {
@@ -174,9 +175,17 @@ struct CharacterSelectView: View {
                 .padding(.horizontal, Theme.Spacing.xs)
                 .padding(.vertical, Theme.Spacing.s)
             }
+            }
         }
         .padding(.top, Theme.Spacing.xs)
     }
+
+    /// World of the selected course when it has one of its own.
+    private var fixedWorld: MapTheme? {
+        flightMode == .stepGoal ? missionVM.currentStage?.world : nil
+    }
+
+    private var shownWorld: MapTheme { fixedWorld ?? characterVM.selectedMapTheme }
 
     private func sectionLabel(_ key: String, systemImage: String) -> some View {
         Label(L10n.t(key), systemImage: systemImage)
@@ -191,14 +200,14 @@ struct CharacterSelectView: View {
 
     private var themeBackground: some View {
         LinearGradient(
-            colors: characterVM.selectedMapTheme.uiGradient,
+            colors: shownWorld.uiGradient,
             startPoint: .top,
             endPoint: .bottom
         )
     }
 
     private var themeAccentColor: Color {
-        characterVM.selectedMapTheme.uiAccent
+        shownWorld.uiAccent
     }
 
     private func startFlight() {

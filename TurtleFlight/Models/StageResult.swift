@@ -67,6 +67,28 @@ struct PlayerProgress: Codable {
     /// Mastery XP per character (`CharacterType.rawValue` → XP).
     var masteryXP: [String: Int]
 
+    // MARK: Routes, rewards and secret codes (all optional-on-decode)
+
+    /// Kids difficulty: every course becomes its `kidsVariant()`.
+    var kidsMode: Bool
+    /// Stars ever paid into the wallet / ever spent from it.
+    var starsBanked: Int
+    var starsSpent: Int
+    /// Treat balance per character (`CharacterType.rawValue` → count).
+    var treats: [String: Int]
+    /// Shop item ids the player owns.
+    var ownedItems: Set<String>
+    /// Equipped trail per character (`CharacterType.rawValue` → item id).
+    var equippedFlair: [String: String]
+    /// Pinned Free Flight sky (`SkyMood.rawValue`); nil = random.
+    var preferredSky: String?
+    /// Courses opened early with stars.
+    var openedCourses: Set<Int>
+    /// Routes opened by a secret code (`RouteID.rawValue`).
+    var unlockedRoutes: Set<String>
+    /// Ids of secret codes already used on this save.
+    var redeemedCodes: Set<String>
+
     static let maxDailyResults = 60
 
     /// Stars that count toward cosmetics: campaign + quest bonus.
@@ -121,7 +143,9 @@ struct PlayerProgress: Codable {
 
     var maxUnlockedStage: Int {
         var maxStage = 0
-        for (index, result) in stageResults {
+        // Only the original five stages (Sky School) count here; the
+        // other routes use `isCourseUnlocked`.
+        for (index, result) in stageResults where index < 5 {
             if result.isCompleted && index >= maxStage {
                 maxStage = index + 1
             }
@@ -156,6 +180,8 @@ struct PlayerProgress: Codable {
         case selectedTrailTier, lastSeenTrailTierThreshold
         case dailyResults, endlessBest, bonusStars, gameCenterEnabled, remindersEnabled
         case cloudSyncEnabled, clipRecordingEnabled, masteryXP
+        case kidsMode, starsBanked, starsSpent, treats, ownedItems, equippedFlair
+        case preferredSky, openedCourses, unlockedRoutes, redeemedCodes
     }
 
     init(stageResults: [Int: StageResult],
@@ -174,7 +200,17 @@ struct PlayerProgress: Codable {
          remindersEnabled: Bool = false,
          cloudSyncEnabled: Bool = false,
          clipRecordingEnabled: Bool = false,
-         masteryXP: [String: Int] = [:]) {
+         masteryXP: [String: Int] = [:],
+         kidsMode: Bool = false,
+         starsBanked: Int? = nil,
+         starsSpent: Int = 0,
+         treats: [String: Int] = [:],
+         ownedItems: Set<String> = [],
+         equippedFlair: [String: String] = [:],
+         preferredSky: String? = nil,
+         openedCourses: Set<Int> = [],
+         unlockedRoutes: Set<String> = [],
+         redeemedCodes: Set<String> = []) {
         self.stageResults = stageResults
         self.totalStars = totalStars
         self.totalFlightTime = totalFlightTime
@@ -192,6 +228,17 @@ struct PlayerProgress: Codable {
         self.cloudSyncEnabled = cloudSyncEnabled
         self.clipRecordingEnabled = clipRecordingEnabled
         self.masteryXP = masteryXP
+        self.kidsMode = kidsMode
+        // A save from before the wallet starts with what it already earned.
+        self.starsBanked = starsBanked ?? (totalStars + bonusStars)
+        self.starsSpent = starsSpent
+        self.treats = treats
+        self.ownedItems = ownedItems
+        self.equippedFlair = equippedFlair
+        self.preferredSky = preferredSky
+        self.openedCourses = openedCourses
+        self.unlockedRoutes = unlockedRoutes
+        self.redeemedCodes = redeemedCodes
     }
 
     init(from decoder: Decoder) throws {
@@ -218,5 +265,16 @@ struct PlayerProgress: Codable {
         self.cloudSyncEnabled     = try c.decodeIfPresent(Bool.self, forKey: .cloudSyncEnabled) ?? false
         self.clipRecordingEnabled = try c.decodeIfPresent(Bool.self, forKey: .clipRecordingEnabled) ?? false
         self.masteryXP            = try c.decodeIfPresent([String: Int].self, forKey: .masteryXP) ?? [:]
+        // Routes / rewards / codes.
+        self.kidsMode       = try c.decodeIfPresent(Bool.self, forKey: .kidsMode) ?? false
+        self.starsBanked    = try c.decodeIfPresent(Int.self, forKey: .starsBanked) ?? (totalStars + bonusStars)
+        self.starsSpent     = try c.decodeIfPresent(Int.self, forKey: .starsSpent) ?? 0
+        self.treats         = try c.decodeIfPresent([String: Int].self, forKey: .treats) ?? [:]
+        self.ownedItems     = try c.decodeIfPresent(Set<String>.self, forKey: .ownedItems) ?? []
+        self.equippedFlair  = try c.decodeIfPresent([String: String].self, forKey: .equippedFlair) ?? [:]
+        self.preferredSky   = try c.decodeIfPresent(String.self, forKey: .preferredSky)
+        self.openedCourses  = try c.decodeIfPresent(Set<Int>.self, forKey: .openedCourses) ?? []
+        self.unlockedRoutes = try c.decodeIfPresent(Set<String>.self, forKey: .unlockedRoutes) ?? []
+        self.redeemedCodes  = try c.decodeIfPresent(Set<String>.self, forKey: .redeemedCodes) ?? []
     }
 }

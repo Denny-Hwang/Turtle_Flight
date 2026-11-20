@@ -173,7 +173,7 @@ private struct PauseButton: View {
         Button(action: {
             // Light haptic so the modal feels responsive even before the
             // underlying view-state animates.
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Haptics.shared.play(.tap)
             action()
         }) {
             HStack(spacing: Theme.Spacing.s) {
@@ -210,7 +210,7 @@ private struct SensitivityRow: View {
             HStack(spacing: Theme.Spacing.s) {
                 ForEach(SensitivityLevel.allCases, id: \.self) { level in
                     Button {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        Haptics.shared.play(.tap)
                         selection = level
                     } label: {
                         Text("\(level.emoji)  \(level.displayName)")

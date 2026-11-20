@@ -7,17 +7,22 @@ import SwiftUI
 /// to navigate to a specific stage.
 ///
 /// Surfaces:
-///   • 5 horizontally-scrolling stage cards
-///   • Per-stage ★ score earned (out of 3)
-///   • Lock icon on stages that haven't been unlocked yet
-///   • Difficulty pip ★☆☆☆☆ at the top of each card
-///   • Tap unlocked → select stage → push CharacterSelectView
+///   • One row per route (see `RouteCatalog`), each a chain of course cards
+///   • Per-course ★ score earned (out of 3), ring count
+///   • Lock icon on courses that haven't been unlocked yet; the next
+///     locked course on a route can be opened early with stars
+///   • Kids mode switch, star wallet (opens the shop)
+///   • Tap unlocked → select course → push CharacterSelectView
 struct StageSelectView: View {
     @ObservedObject var characterVM: CharacterViewModel
     @ObservedObject var flightVM: FlightViewModel
     @ObservedObject var missionVM: MissionViewModel
 
     @State private var pushCharacterSelect = false
+    @State private var showShop = false
+    @State private var showCode = false
+    /// Locked course the player tapped "open with stars" on.
+    @State private var openCandidate: StageDefinition?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -37,10 +42,11 @@ struct StageSelectView: View {
                 // Header pinned; the rest scrolls when an iPhone in
                 // landscape is too short for it.
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: Theme.Spacing.l) {
-                        progressBar
-                        stageRow
-                        description
+                    VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+                        kidsRow
+                        ForEach(RouteID.allCases, id: \.self) { route in
+                            routeRow(route)
+                        }
                     }
                     .padding(.vertical, Theme.Spacing.s)
                     .frame(maxWidth: .infinity)
@@ -48,6 +54,29 @@ struct StageSelectView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(isPresented: $showShop) {
+            ShopView(isPresented: $showShop, missionVM: missionVM,
+                     character: characterVM.selectedCharacter)
+        }
+        .sheet(isPresented: $showCode) {
+            SecretCodeSheet(isPresented: $showCode, missionVM: missionVM)
+        }
+        .alert(L10n.t("route.openEarly.confirmTitle"),
+               isPresented: Binding(get: { openCandidate != nil },
+                                    set: { if !$0 { openCandidate = nil } }),
+               presenting: openCandidate) { course in
+            if missionVM.progress.starBalance >= RouteCatalog.earlyOpenPrice {
+                Button(L10n.format("route.openEarly.format", RouteCatalog.earlyOpenPrice)) {
+                    missionVM.openCourseEarly(course.index)
+                }
+            }
+            Button(L10n.t("common.cancel"), role: .cancel) {}
+        } message: { _ in
+            Text(missionVM.progress.starBalance >= RouteCatalog.earlyOpenPrice
+                 ? L10n.format("route.openEarly.balance", missionVM.progress.starBalance)
+                 : L10n.format("route.openEarly.notEnough",
+                               missionVM.progress.starBalance, RouteCatalog.earlyOpenPrice))
+        }
         .navigationDestination(isPresented: $pushCharacterSelect) {
             CharacterSelectView(
                 characterVM: characterVM,
@@ -67,81 +96,133 @@ struct StageSelectView: View {
                     .font(.title2)
                     .foregroundColor(Theme.Color.textPrimary)
             }
+            .accessibilityLabel(L10n.t("common.home"))
             Spacer()
             Text(L10n.t("stageSelect.title"))
                 .font(Theme.Typography.titleSmall)
                 .foregroundColor(Theme.Color.textPrimary)
             Spacer()
-            // Spacer that mirrors the back button's width so the title
-            // stays optically centered.
-            Color.clear.frame(width: 28, height: 28)
+            walletChip
         }
         .padding(.horizontal, Theme.Spacing.l)
         .padding(.top, Theme.Spacing.s)
     }
 
-    /// "★ 7 / 15" total earned across the campaign.
-    private var progressBar: some View {
-        HStack(spacing: Theme.Spacing.xs) {
-            Image(systemName: "star.fill")
-                .foregroundColor(Theme.Color.starGold)
-                .font(.system(size: 14))
-            Text(L10n.format(
-                "stageSelect.progress.format",
-                missionVM.progress.totalStars,
-                missionVM.stages.count * 3
-            ))
+    /// Spendable stars; opens the shop.
+    private var walletChip: some View {
+        Button {
+            AudioManager.shared.playButtonTap()
+            showShop = true
+        } label: {
+            HStack(spacing: Theme.Spacing.xs) {
+                Image(systemName: "star.fill").foregroundColor(Theme.Color.starGold)
+                Text("\(missionVM.progress.starBalance)")
+                Image(systemName: "bag.fill")
+            }
             .font(Theme.Typography.label)
             .foregroundColor(Theme.Color.textPrimary)
+            .padding(.horizontal, Theme.Spacing.m)
+            .padding(.vertical, Theme.Spacing.xs + 2)
+            .background(Capsule().fill(Theme.Color.surfaceMuted))
         }
-        .padding(.horizontal, Theme.Spacing.m)
-        .padding(.vertical, Theme.Spacing.xs + 2)
-        .background(
-            Capsule()
-                .fill(Theme.Color.surfaceMuted)
-        )
+        .accessibilityLabel(L10n.format("shop.wallet.a11y", missionVM.progress.starBalance))
     }
 
-    private var stageRow: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Theme.Spacing.m) {
-                ForEach(missionVM.stages, id: \.index) { stage in
-                    StageCard(
-                        stage: stage,
-                        unlocked: missionVM.isStageUnlocked(stage.index),
-                        starsEarned: missionVM.stageStars(stage.index),
-                        isSelected: missionVM.currentStageIndex == stage.index
-                    ) {
-                        guard missionVM.isStageUnlocked(stage.index) else { return }
-                        missionVM.selectStage(stage.index)
-                        pushCharacterSelect = true
-                    }
-                }
+    private var kidsRow: some View {
+        Toggle(isOn: Binding(get: { missionVM.progress.kidsMode },
+                             set: { missionVM.setKidsMode($0) })) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("🧸  " + L10n.t("route.kids.toggle"))
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textPrimary)
+                Text(L10n.t("route.kids.caption"))
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Color.textPrimary.opacity(0.65))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .tint(Theme.Color.easyGreen)
+        .padding(.horizontal, Theme.Spacing.m)
+        .padding(.vertical, Theme.Spacing.s)
+        .background(RoundedRectangle(cornerRadius: Theme.Radius.l).fill(Color.white.opacity(0.7)))
+        .padding(.horizontal, Theme.Spacing.l)
+    }
+
+    private func routeRow(_ route: RouteID) -> some View {
+        let courses = RouteCatalog.courses(in: route)
+        let cleared = courses.filter { missionVM.progress.isCourseCleared($0.index) }.count
+        let open = missionVM.progress.isRouteUnlocked(route)
+        return VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+            HStack(spacing: Theme.Spacing.s) {
+                Text("\(route.emoji)  \(route.displayName)")
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textPrimary)
+                Text("\(cleared)/\(courses.count)")
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Color.textPrimary.opacity(0.6))
+                if !open { Image(systemName: "lock.fill").font(.caption).foregroundColor(Theme.Color.textPrimary.opacity(0.6)) }
             }
             .padding(.horizontal, Theme.Spacing.l)
-            // Room for the selected card's 1.05× scale, border and
-            // shadow — a horizontal ScrollView clips at its own height.
-            .padding(.vertical, Theme.Spacing.m)
+            .accessibilityElement(children: .combine)
+
+            if open {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Theme.Spacing.s) {
+                        ForEach(courses, id: \.index) { course in
+                            courseCard(course)
+                        }
+                    }
+                    .padding(.horizontal, Theme.Spacing.l)
+                    .padding(.vertical, Theme.Spacing.xs)
+                }
+            } else {
+                finaleLockedCard
+            }
         }
     }
 
-    private var description: some View {
-        let stage = missionVM.stages[missionVM.currentStageIndex]
-        let unlocked = missionVM.isStageUnlocked(stage.index)
-        return VStack(spacing: Theme.Spacing.s) {
-            Text(unlocked ? stage.displayDescription : L10n.t("stageSelect.locked.body"))
-                .font(Theme.Typography.bodyLarge)
-                .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, Theme.Spacing.xl)
+    private func courseCard(_ base: StageDefinition) -> some View {
+        let course = missionVM.progress.kidsMode ? base.kidsVariant() : base
+        let unlocked = missionVM.isStageUnlocked(base.index)
+        return StageCard(
+            stage: course,
+            step: (RouteCatalog.location(of: base.index)?.step ?? 0) + 1,
+            unlocked: unlocked,
+            starsEarned: missionVM.stageStars(base.index),
+            openPrice: missionVM.progress.canOpenEarly(base.index) ? RouteCatalog.earlyOpenPrice : nil
+        ) {
             if unlocked {
-                Text(L10n.format("stageSelect.objective.format", stage.displayStar3Condition))
-                    .font(Theme.Typography.caption)
-                    .foregroundColor(Theme.Color.textPrimary.opacity(0.55))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, Theme.Spacing.xl)
+                AudioManager.shared.playButtonTap()
+                if missionVM.selectCourse(base.index) { pushCharacterSelect = true }
+            } else if missionVM.progress.canOpenEarly(base.index) {
+                openCandidate = base
+            } else {
+                Haptics.shared.play(.boostDenied)
             }
         }
+    }
+
+    /// Star Road before it opens: how to open it, and the code shortcut.
+    private var finaleLockedCard: some View {
+        HStack(spacing: Theme.Spacing.m) {
+            Image(systemName: "lock.fill")
+                .font(.title3)
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.6))
+            Text(L10n.t("route.locked.finale"))
+                .font(Theme.Typography.caption)
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.75))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: Theme.Spacing.s)
+            if SecretCodes.isEnabled {
+                Button(L10n.t("code.enter")) { showCode = true }
+                    .font(Theme.Typography.label)
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.Color.brandPrimary)
+            }
+        }
+        .padding(Theme.Spacing.m)
+        .background(RoundedRectangle(cornerRadius: Theme.Radius.l).fill(Color.white.opacity(0.5)))
+        .padding(.horizontal, Theme.Spacing.l)
     }
 }
 
@@ -149,72 +230,84 @@ struct StageSelectView: View {
 
 private struct StageCard: View {
     let stage: StageDefinition
+    /// 1-based position on its route.
+    let step: Int
     let unlocked: Bool
     let starsEarned: Int
-    let isSelected: Bool
+    /// Stars it costs to open this locked course now; nil when it can't be.
+    let openPrice: Int?
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: Theme.Spacing.s) {
-                // Top: stage badge / lock icon
+            VStack(spacing: Theme.Spacing.xs) {
                 ZStack {
                     Circle()
                         .fill(badgeFill)
-                        .frame(width: 68, height: 68)
-                        .shadow(color: badgeFill.opacity(0.4), radius: 6, y: 3)
+                        .frame(width: 44, height: 44)
                     if unlocked {
-                        Text("\(stage.index + 1)")
-                            .font(Theme.Typography.displayMedium)
+                        Text("\(step)")
+                            .font(Theme.Typography.titleSmall)
                             .foregroundColor(Theme.Color.textOnDark)
                     } else {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 26, weight: .bold))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundColor(Theme.Color.textOnDark.opacity(0.85))
                     }
                 }
 
-                // Middle: stage name
                 Text(stage.displayName)
-                    .font(Theme.Typography.label)
-                    .foregroundColor(unlocked ? Theme.Color.textPrimary : Theme.Color.textPrimary.opacity(0.45))
+                    .font(Theme.Typography.caption)
+                    .foregroundColor(Theme.Color.textPrimary.opacity(unlocked ? 1 : 0.5))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-                    // Long single words (de "Himmelsspaziergang") shrink
-                    // rather than break mid-word.
                     .minimumScaleFactor(0.7)
-                    .padding(.horizontal, Theme.Spacing.xs)
-                    .frame(height: 36)
+                    .frame(height: 30)
 
-                // Difficulty (★☆☆☆☆)
-                difficultyPips
+                // What makes this course harder: how many rings, how big.
+                HStack(spacing: 3) {
+                    Image(systemName: "circle")
+                        .font(.system(size: ringGlyph, weight: .bold))
+                    Text("×\(stage.ringCount)")
+                        .font(Theme.Typography.caption)
+                }
+                .foregroundColor(Theme.Color.textPrimary.opacity(unlocked ? 0.7 : 0.35))
 
-                // Earned stars (out of 3) — small below
-                earnedStarsRow
+                if let openPrice, !unlocked {
+                    Label("\(openPrice)", systemImage: "star.fill")
+                        .font(Theme.Typography.caption)
+                        .foregroundColor(Theme.Color.textPrimary)
+                        .padding(.horizontal, Theme.Spacing.s)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(Theme.Color.starGold.opacity(0.45)))
+                } else {
+                    earnedStarsRow
+                }
             }
-            .adaptiveFrame(compactWidth: 130, compactHeight: 168)
-            .padding(.vertical, Theme.Spacing.m)
+            .adaptiveFrame(compactWidth: 112, compactHeight: 124)
+            .padding(.vertical, Theme.Spacing.s)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)
                     .fill(Color.white.opacity(unlocked ? 0.85 : 0.45))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Theme.Radius.l)
-                            .stroke(isSelected ? Theme.Color.brandPrimary : Color.clear, lineWidth: 3)
-                    )
-                    .elevation(isSelected ? Theme.Elevation.cardHigh : Theme.Elevation.card)
+                    .elevation(Theme.Elevation.card)
             )
-            .scaleEffect(isSelected ? 1.05 : 1.0)
-            .animation(.spring(response: 0.25), value: isSelected)
         }
         .accessibilityLabel(accessibilityLabel)
         .accessibilityHint(unlocked
             ? L10n.t("stageSelect.card.hint.unlocked")
-            : L10n.t("stageSelect.card.hint.locked"))
+            : (openPrice != nil
+               ? L10n.format("route.openEarly.format", openPrice ?? 0)
+               : L10n.t("stageSelect.card.hint.locked")))
+    }
+
+    /// Bigger rings draw a bigger glyph, so size reads without numbers.
+    private var ringGlyph: CGFloat {
+        CGFloat(min(18, max(9, stage.ringRadius / 3.2)))
     }
 
     private var badgeFill: Color {
         if !unlocked { return Theme.Color.surfaceOverlaySubtle }
-        // Color shifts with difficulty so the row reads as a ramp.
+        if stage.isKids { return Theme.Color.easyGreen }
         switch stage.difficulty {
         case 1: return Theme.Color.easyGreen
         case 2: return Color(hex: 0x29B6F6)
@@ -224,21 +317,11 @@ private struct StageCard: View {
         }
     }
 
-    private var difficultyPips: some View {
-        HStack(spacing: 2) {
-            ForEach(0..<5, id: \.self) { i in
-                Image(systemName: i < stage.difficulty ? "star.fill" : "star")
-                    .font(.system(size: 9))
-                    .foregroundColor(unlocked ? Theme.Color.normalYellow : Theme.Color.textPrimary.opacity(0.3))
-            }
-        }
-    }
-
     private var earnedStarsRow: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 3) {
             ForEach(0..<3, id: \.self) { i in
                 Image(systemName: i < starsEarned ? "star.fill" : "star")
-                    .font(.system(size: 14))
+                    .font(.system(size: 12))
                     .foregroundColor(i < starsEarned ? Theme.Color.starGold : Theme.Color.textPrimary.opacity(0.25))
             }
         }
@@ -246,12 +329,12 @@ private struct StageCard: View {
 
     private var accessibilityLabel: String {
         if !unlocked {
-            return L10n.format("stageSelect.card.label.locked", stage.index + 1)
+            return L10n.format("stageSelect.card.label.locked", step)
         }
         return L10n.format(
             "stageSelect.card.label.unlocked",
-            stage.index + 1,
-            stage.displayName,
+            step,
+            stage.displayName + ", " + stage.displayDescription,
             starsEarned
         )
     }

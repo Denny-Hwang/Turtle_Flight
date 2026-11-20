@@ -9,6 +9,33 @@ window.
 
 ## [Unreleased]
 
+### Routes, Kids mode, rewards, haptics, secret codes (2026-11-20)
+Design + progress: `docs/ROUTES_REWARDS_PLAN.md`.
+- **Routes.** The campaign is now five parallel routes (`RouteCatalog`):
+  Sky School (the original five stages, indices unchanged), Sun Road
+  (desert → city), East Trail (seoul → wild), Deep Blue (ocean) and Star
+  Road (space). Each world's courses differ in ring count and ring size
+  and get harder step by step. Four routes start with their first course
+  open; Star Road opens when the other four are finished, or with a code.
+  The stage picker is now a route map.
+- **Kids mode.** A global switch (route map + Settings). Every course
+  becomes its `kidsVariant()`: bigger and fewer plain rings, no clock, a
+  missed ring is skipped instead of sending the player back, bumps don't
+  cost stars. A Kids course cannot be failed.
+- **Haptics.** `Haptics` maps every game moment to its own pattern
+  (bullseye / great / ok, rim bump, miss, ground hit, boost, pickups,
+  clear / fail, shop, codes). Settings → Controls → Vibration.
+- **Rewards.** A star wallet shared by all characters plus one treat per
+  animal (lettuce, fish, sunflower seed, yarn, firefly, carrot). Stars buy
+  Free Flight skies and open the next course early; treats buy that
+  character's own trails. No purchases with real money.
+- **Secret codes.** Five free promo codes, entered in Settings or the
+  shop, validated offline against salted hashes (`SecretCodes`), once per
+  save. `SecretCodes.isEnabled` hides the field.
+- New saved fields are all optional-on-decode; an old save's wallet
+  starts with the stars it already earned.
+- Tests: `RoutesRewardsTests` (24). 443 tests.
+
 ### World tour & flight delight (2026-11-20)
 
 - **Four new worlds** — Desert Ruins, City of Lights, Seoul Sky, Wild
