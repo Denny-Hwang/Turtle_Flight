@@ -90,7 +90,9 @@ struct ShopView: View {
         Section {
             Picker(L10n.t("shop.tab.treats"), selection: $character) {
                 ForEach(CharacterType.allCases, id: \.self) { type in
-                    Text("\(type.treatEmoji) \(progress.treatBalance(type))").tag(type)
+                    Text("\(type.treatEmoji) \(progress.treatBalance(type))")
+                        .accessibilityLabel("\(type.treatName) \(progress.treatBalance(type))")
+                        .tag(type)
                 }
             }
             .pickerStyle(.segmented)
@@ -103,7 +105,11 @@ struct ShopView: View {
                     buyRow(item, icon: character.treatEmoji, balance: progress.treatBalance(character))
                 }
             }
-            if progress.owns(Shop.comet) { flairRow(item: Shop.comet) }
+            if progress.owns(Shop.comet) {
+                flairRow(item: Shop.comet)
+            } else {
+                buyRow(Shop.comet, icon: "⭐", balance: progress.starBalance)
+            }
         } header: {
             HStack {
                 Text(L10n.t("shop.tab.treats"))

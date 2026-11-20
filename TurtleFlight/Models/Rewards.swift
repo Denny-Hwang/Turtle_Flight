@@ -49,7 +49,7 @@ struct ShopItem: Identifiable, Equatable {
     enum Kind: Equatable {
         /// Lets the player choose this sky for Free Flight.
         case sky(SkyMood)
-        /// A trail for one character (nil = everyone; code reward only).
+        /// A trail for one character (nil = everyone).
         case flair(tier: Int, character: CharacterType?)
     }
     let id: String
@@ -84,8 +84,10 @@ struct ShopItem: Identifiable, Equatable {
 
 enum Shop {
     static let flairPrices = [6, 14, 28]
-    /// Free with a secret code; never sold.
+    /// A trail every character can wear. Costs stars; one secret code
+    /// gives it away.
     static let cometID = "flair.comet"
+    static let cometPrice = 40
 
     /// Bought with stars (shared by all characters).
     static let starItems: [ShopItem] = [
@@ -103,7 +105,7 @@ enum Shop {
         }
     }
 
-    static let comet = ShopItem(id: cometID, price: 0, currency: .stars,
+    static let comet = ShopItem(id: cometID, price: cometPrice, currency: .stars,
                                 kind: .flair(tier: 3, character: nil))
 
     static func item(id: String) -> ShopItem? {
@@ -119,6 +121,13 @@ enum Shop {
 // MARK: - Earning
 
 enum RewardRules {
+    /// Stars a clear pays into the wallet: the full rating the first
+    /// time and whenever it beats the old best, one star for any other
+    /// replay — so an easy course can't be farmed at three stars a run.
+    static func stars(forCourse result: StageResult, isNewBest: Bool) -> Int {
+        isNewBest ? result.stars : min(1, result.stars)
+    }
+
     /// Treats for clearing a course (campaign, route or daily).
     static func treats(forCourse result: StageResult) -> Int {
         1 + result.stars + min(3, (result.bullseyes ?? 0) / 2)
@@ -145,7 +154,10 @@ struct RewardGrant: Equatable {
     }
 
     var accessibilityText: String {
-        L10n.format("reward.a11y.format", stars, treats, character?.treatName ?? "")
+        var parts: [String] = []
+        if stars > 0 { parts.append(L10n.format("code.reward.stars", stars)) }
+        if treats > 0, let character { parts.append("+\(treats) \(character.treatName)") }
+        return L10n.t("reward.earned") + ": " + parts.joined(separator: ", ")
     }
 }
 
@@ -232,8 +244,14 @@ extension PlayerProgress {
 
     // MARK: Routes
 
+    /// Cleared at either difficulty — a Kids clear opens the next course too.
     func isCourseCleared(_ index: Int) -> Bool {
-        stageResults[index]?.isCompleted == true
+        stageResults[index]?.isCompleted == true || kidsResults[index]?.isCompleted == true
+    }
+
+    /// Best stars on a course at the given difficulty.
+    func bestStars(_ index: Int, kids: Bool) -> Int {
+        (kids ? kidsResults[index] : stageResults[index])?.stars ?? 0
     }
 
     /// A route is open from the start, except the finale: that needs

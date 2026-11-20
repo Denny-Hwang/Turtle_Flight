@@ -52,7 +52,9 @@ enum SecretCodes {
     /// Upper-case letters and digits only, so "sky friend", "Sky-Friend"
     /// and "SKYFRIEND" are the same code.
     static func normalise(_ raw: String) -> String {
-        String(raw.uppercased().unicodeScalars.filter {
+        // Japanese / Chinese keyboards may type full-width letters.
+        let folded = raw.applyingTransform(.fullwidthToHalfwidth, reverse: false) ?? raw
+        return String(folded.uppercased().unicodeScalars.filter {
             ("A"..."Z").contains($0) || ("0"..."9").contains($0)
         }.map(Character.init))
     }

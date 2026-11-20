@@ -126,8 +126,8 @@
 "stage.0.star3Condition" = "Finish within 60 seconds";
 "stage.1.star3Condition" = "Zero collisions, finish within 90s";
 "stage.2.star3Condition" = "Zero collisions, collect all 5 stars";
-"stage.3.star3Condition" = "All rings, finish within 120s";
-"stage.4.star3Condition" = "All rings, within 80s, zero collisions";
+"stage.3.star3Condition" = "All rings, finish within 110s";
+"stage.4.star3Condition" = "All rings, within 90s, zero collisions";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Sky Kingdom";
@@ -199,9 +199,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Pick a Stage";
-"stageSelect.progress.format"        = "%lld / %lld stars";
 "stageSelect.objective.format"       = "★★★ goal: %@";
-"stageSelect.locked.body"            = "Clear the previous stage to unlock this one.";
 "stageSelect.card.hint.unlocked"     = "Double-tap to choose this stage";
 "stageSelect.card.hint.locked"       = "Clear the previous stage first";
 "stageSelect.card.label.unlocked"    = "Stage %lld, %@, %lld stars earned";
@@ -480,4 +478,3 @@
 "shop.buy.a11y" = "Buy %1$@ for %2$lld";
 "shop.notEnough" = "You have %1$lld of %2$lld";
 "reward.earned" = "Earned";
-"reward.a11y.format" = "Earned %1$lld stars and %2$lld %3$@";

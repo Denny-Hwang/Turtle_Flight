@@ -292,6 +292,15 @@ final class MissionEngine {
                 ringsSkipped += 1
                 passCurrentRing(skipped: true)
             }
+            // Ring planes turn with the course, so after a wide swing the
+            // player can already be behind the next one without ever
+            // having crossed it. Let those go too, or the run would stall.
+            while case .inProgress = state, currentRingIndex < rings.count,
+                  Self.distancePast(rings[currentRingIndex], playerPosition, at: elapsedTime)
+                    > Self.kidsSkipDistance {
+                ringsSkipped += 1
+                passCurrentRing(skipped: true)
+            }
             animateTargetRing()
             return
         }
@@ -450,6 +459,18 @@ final class MissionEngine {
         let d0 = (from.x - c.x) * n.x + (from.y - c.y) * n.y + (from.z - c.z) * n.z
         let d1 = (to.x - c.x) * n.x + (to.y - c.y) * n.y + (to.z - c.z) * n.z
         return d0 < 0 && d1 >= 0
+    }
+
+    /// How far past a Kids ring's plane the player may be before the
+    /// ring is given up on.
+    static let kidsSkipDistance: Float = 60
+
+    /// Signed distance of `point` beyond the ring's plane along the
+    /// course direction (negative = still in front of the ring).
+    static func distancePast(_ ring: Ring, _ point: SCNVector3, at time: TimeInterval = 0) -> Float {
+        let n = ring.normal
+        let c = ring.center(at: time)
+        return (point.x - c.x) * n.x + (point.y - c.y) * n.y + (point.z - c.z) * n.z
     }
 
     func registerCollision() {

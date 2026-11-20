@@ -6,7 +6,7 @@ import Foundation
 /// side. Four start with their first course open, so there is always
 /// more than one thing to try next. The fifth — Star Road — opens when
 /// the other four are finished (or with a secret code).
-enum RouteID: String, CaseIterable, Codable {
+enum RouteID: String, CaseIterable {
     case skySchool, sunRoad, eastTrail, deepBlue, starRoad
 
     var displayName: String { L10n.t("route.\(rawValue).name") }

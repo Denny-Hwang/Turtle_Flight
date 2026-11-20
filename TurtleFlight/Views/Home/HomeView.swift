@@ -244,7 +244,7 @@ struct HomeView: View {
                 CloudSync.shared.onRemoteProgress = { remote in
                     missionVM.acceptRemoteProgress(remote)
                 }
-                CloudSync.shared.start(local: missionVM.progress)
+                CloudSync.shared.start(local: { missionVM.progress })
             }
             #if DEBUG
             if ScreenshotDirector.isActive {
@@ -471,6 +471,7 @@ struct HomeView: View {
                     .background(Capsule().fill(.ultraThinMaterial))
             }
             .accessibilityLabel(L10n.t("shop.title"))
+            .accessibilityValue(L10n.format("shop.wallet.a11y", missionVM.progress.starBalance))
 
             Label(
                 L10n.format("home.stats.bestStars", missionVM.progress.bestFreeFlightStars),
@@ -488,6 +489,8 @@ struct HomeView: View {
             .foregroundColor(Theme.Color.hudCyan)
         }
         .font(Theme.Typography.label)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
         .padding(.bottom, compactHeight ? Theme.Spacing.s : Theme.Spacing.xxl)
     }
 
@@ -517,6 +520,10 @@ struct HomeView: View {
                 showAlbum = true
             case .shop:
                 showShop = true
+            case .briefing:
+                missionVM.selectCourse(10)
+                selectedMode = .stepGoal
+                showCharacterSelect = true
             case .onboarding:
                 showOnboarding = true
             case .freeflight, .tour:

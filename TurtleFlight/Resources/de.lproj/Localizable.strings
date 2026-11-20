@@ -128,8 +128,8 @@
 "stage.0.star3Condition" = "In 60 Sekunden schaffen";
 "stage.1.star3Condition" = "Null Treffer, in 90 s schaffen";
 "stage.2.star3Condition" = "Null Treffer, alle 5 Sterne sammeln";
-"stage.3.star3Condition" = "Alle Ringe, in 120 s schaffen";
-"stage.4.star3Condition" = "Alle Ringe, in 80 s, null Treffer";
+"stage.3.star3Condition" = "Alle Ringe, in 110 s schaffen";
+"stage.4.star3Condition" = "Alle Ringe, in 90 s, null Treffer";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Himmelreich";
@@ -201,9 +201,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Wähle ein Level";
-"stageSelect.progress.format"        = "%lld / %lld Sterne";
 "stageSelect.objective.format"       = "★★★ Ziel: %@";
-"stageSelect.locked.body"            = "Schaffe das vorige Level, um dieses freizuschalten.";
 "stageSelect.card.hint.unlocked"     = "Doppeltippen, um dieses Level zu wählen";
 "stageSelect.card.hint.locked"       = "Schaffe erst das vorige Level";
 "stageSelect.card.label.unlocked"    = "Level %lld, %@, %lld Sterne erhalten";
@@ -481,4 +479,3 @@
 "shop.buy.a11y" = "%1$@ für %2$lld kaufen";
 "shop.notEnough" = "Du hast %1$lld von %2$lld";
 "reward.earned" = "Verdient";
-"reward.a11y.format" = "Verdient: %1$lld Sterne und %2$lld × %3$@";

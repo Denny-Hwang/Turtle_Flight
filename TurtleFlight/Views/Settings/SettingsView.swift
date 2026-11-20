@@ -246,7 +246,7 @@ struct SettingsView: View {
                         CloudSync.shared.onRemoteProgress = { remote in
                             missionVM.acceptRemoteProgress(remote)
                         }
-                        CloudSync.shared.start(local: missionVM.progress)
+                        CloudSync.shared.start(local: { missionVM.progress })
                     } else {
                         CloudSync.shared.stop()
                     }
@@ -432,7 +432,7 @@ struct SettingsView: View {
         // re-display a stale clear after the user reopens Step Goal.
         missionVM.lastResult = nil
         missionVM.priorBestForLastResult = nil
-        missionVM.currentStageIndex = 0
+        missionVM.clearSelection()
         // On-device funnel counters are part of "everything the app
         // stores" — wipe them too, along with quests and ghosts.
         Analytics.shared.reset()

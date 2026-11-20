@@ -129,8 +129,8 @@
 "stage.0.star3Condition" = "60초 이내 완료";
 "stage.1.star3Condition" = "접촉 0회 + 90초 이내";
 "stage.2.star3Condition" = "접촉 0회 + 별 5개 전체 수집";
-"stage.3.star3Condition" = "전체 통과 + 120초 이내";
-"stage.4.star3Condition" = "전체 통과 + 80초 이내 + 접촉 0회";
+"stage.3.star3Condition" = "전체 통과 + 110초 이내";
+"stage.4.star3Condition" = "전체 통과 + 90초 이내 + 접촉 0회";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "하늘 왕국";
@@ -202,9 +202,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "스테이지 선택";
-"stageSelect.progress.format"        = "%lld / %lld 별";
 "stageSelect.objective.format"       = "★★★ 조건: %@";
-"stageSelect.locked.body"            = "이전 스테이지를 클리어하면 잠금이 풀려요.";
 "stageSelect.card.hint.unlocked"     = "두 번 탭하여 이 스테이지로 이동합니다";
 "stageSelect.card.hint.locked"       = "이전 스테이지를 먼저 클리어해야 합니다";
 "stageSelect.card.label.unlocked"    = "스테이지 %lld, %@, 별 %lld개 획득";
@@ -466,7 +464,7 @@
 "shop.tab.stars" = "별 상점";
 "shop.tab.treats" = "간식 상점";
 "shop.stars.caption" = "코스를 클리어하면 별을 받아요. 별로 자유 비행의 하늘을 고르고 코스를 미리 열 수 있어요.";
-"shop.treats.caption" = "이 친구와 비행하면 %@을(를) 모아요. 간식으로 이 친구만의 트레일을 사요.";
+"shop.treats.caption" = "이 친구와 비행하면 간식(%@)이 쌓여요. 간식으로 이 친구만의 트레일을 사요.";
 "shop.sky.auto" = "깜짝 하늘";
 "shop.sky.morning" = "아침 하늘";
 "shop.sky.sunset" = "노을 하늘";
@@ -483,4 +481,3 @@
 "shop.buy.a11y" = "%1$@ 구매, 가격 %2$lld";
 "shop.notEnough" = "%2$lld개 중 %1$lld개 있어요";
 "reward.earned" = "받은 보상";
-"reward.a11y.format" = "별 %1$lld개와 %3$@ %2$lld개를 받았어요";

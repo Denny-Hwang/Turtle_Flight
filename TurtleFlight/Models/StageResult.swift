@@ -71,6 +71,10 @@ struct PlayerProgress: Codable {
 
     /// Kids difficulty: every course becomes its `kidsVariant()`.
     var kidsMode: Bool
+    /// Best Kids-mode result per course. Kept apart from `stageResults`
+    /// so easy clears open the next course without counting as campaign
+    /// stars (leaderboard, trail tiers).
+    var kidsResults: [Int: StageResult]
     /// Stars ever paid into the wallet / ever spent from it.
     var starsBanked: Int
     var starsSpent: Int
@@ -153,7 +157,13 @@ struct PlayerProgress: Codable {
         return min(maxStage, 4) // 0-indexed, max Stage 5 (index 4)
     }
 
-    mutating func updateStageResult(_ result: StageResult) {
+    mutating func updateStageResult(_ result: StageResult, kids: Bool = false) {
+        if kids {
+            if result.stars > (kidsResults[result.stageIndex]?.stars ?? 0) {
+                kidsResults[result.stageIndex] = result
+            }
+            return
+        }
         let existing = stageResults[result.stageIndex]
         if existing == nil || result.stars > (existing?.stars ?? 0) {
             stageResults[result.stageIndex] = result
@@ -180,7 +190,7 @@ struct PlayerProgress: Codable {
         case selectedTrailTier, lastSeenTrailTierThreshold
         case dailyResults, endlessBest, bonusStars, gameCenterEnabled, remindersEnabled
         case cloudSyncEnabled, clipRecordingEnabled, masteryXP
-        case kidsMode, starsBanked, starsSpent, treats, ownedItems, equippedFlair
+        case kidsMode, kidsResults, starsBanked, starsSpent, treats, ownedItems, equippedFlair
         case preferredSky, openedCourses, unlockedRoutes, redeemedCodes
     }
 
@@ -202,6 +212,7 @@ struct PlayerProgress: Codable {
          clipRecordingEnabled: Bool = false,
          masteryXP: [String: Int] = [:],
          kidsMode: Bool = false,
+         kidsResults: [Int: StageResult] = [:],
          starsBanked: Int? = nil,
          starsSpent: Int = 0,
          treats: [String: Int] = [:],
@@ -229,6 +240,7 @@ struct PlayerProgress: Codable {
         self.clipRecordingEnabled = clipRecordingEnabled
         self.masteryXP = masteryXP
         self.kidsMode = kidsMode
+        self.kidsResults = kidsResults
         // A save from before the wallet starts with what it already earned.
         self.starsBanked = starsBanked ?? (totalStars + bonusStars)
         self.starsSpent = starsSpent
@@ -267,6 +279,7 @@ struct PlayerProgress: Codable {
         self.masteryXP            = try c.decodeIfPresent([String: Int].self, forKey: .masteryXP) ?? [:]
         // Routes / rewards / codes.
         self.kidsMode       = try c.decodeIfPresent(Bool.self, forKey: .kidsMode) ?? false
+        self.kidsResults    = try c.decodeIfPresent([Int: StageResult].self, forKey: .kidsResults) ?? [:]
         self.starsBanked    = try c.decodeIfPresent(Int.self, forKey: .starsBanked) ?? (totalStars + bonusStars)
         self.starsSpent     = try c.decodeIfPresent(Int.self, forKey: .starsSpent) ?? 0
         self.treats         = try c.decodeIfPresent([String: Int].self, forKey: .treats) ?? [:]

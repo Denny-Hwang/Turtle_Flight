@@ -250,6 +250,161 @@ final class RoutesRewardsTests: XCTestCase {
         XCTAssertEqual(vm.progress.totalStars, 3, "best result is kept")
     }
 
+    func testKidsClearsOpenCoursesButAreNotCampaignStars() {
+        let vm = MissionViewModel()
+        vm.setKidsMode(true)
+        vm.recordFlightStart(character: .frog)
+        XCTAssertTrue(vm.selectCourse(30))
+        vm.completeMission(result: cleared(30, stars: 3))
+        XCTAssertEqual(vm.progress.totalStars, 0, "leaderboard stars are normal-mode only")
+        XCTAssertNil(vm.progress.stageResults[30])
+        XCTAssertEqual(vm.progress.kidsResults[30]?.stars, 3)
+        XCTAssertEqual(vm.stageStars(30), 3)
+        XCTAssertTrue(vm.isStageUnlocked(31), "a Kids clear still opens the next course")
+        XCTAssertEqual(vm.progress.starBalance, 3)
+        vm.returnToSelect()
+        vm.setKidsMode(false)
+        XCTAssertEqual(vm.stageStars(30), 0, "normal mode shows its own stars")
+        XCTAssertTrue(vm.isStageUnlocked(31))
+    }
+
+    func testReplayingWithoutImprovingPaysOneStar() {
+        let vm = MissionViewModel()
+        vm.selectCourse(0)
+        vm.completeMission(result: cleared(0, stars: 2))
+        vm.completeMission(result: cleared(0, stars: 2))
+        XCTAssertEqual(vm.progress.starBalance, 3)
+        vm.completeMission(result: cleared(0, stars: 3))
+        XCTAssertEqual(vm.progress.starBalance, 6, "a new best pays in full")
+    }
+
+    func testPickingAStageDropsACourseLeftFromAnEarlierFlight() {
+        let vm = MissionViewModel()
+        vm.selectCourse(20)
+        // Quit mid-flight: nothing calls returnToSelect().
+        vm.selectStage(0)
+        XCTAssertEqual(vm.currentStage?.index, 0)
+    }
+
+    func testPickingATrailColourTakesOffTheShopTrail() {
+        let vm = MissionViewModel()
+        let trail = Shop.treatItems(for: .turtle)[0]
+        vm.progress.earnTreats(trail.price, for: .turtle)
+        XCTAssertTrue(vm.buy(trail))
+        XCTAssertEqual(vm.progress.equippedFlair(for: .turtle), trail, "bought trails go straight on")
+        vm.setSelectedTrailTier(.vehicle)
+        XCTAssertNil(vm.progress.equippedFlair(for: .turtle))
+        XCTAssertTrue(vm.progress.owns(trail))
+    }
+
+    func testGoingHomeFromAResultKeepsTheSameCourseSelected() {
+        let vm = MissionViewModel()
+        vm.setKidsMode(true)
+        vm.selectCourse(20)
+        vm.completeMission(result: cleared(20, stars: 3))
+        vm.returnToSelect()     // "Home" on the result screen
+        XCTAssertEqual(vm.currentStage?.index, 20)
+        XCTAssertEqual(vm.currentStage?.isKids, true)
+        XCTAssertEqual(vm.currentStage?.world, .seoul)
+        // Daily run sits on top and goes away again.
+        vm.selectDailyRun()
+        XCTAssertEqual(vm.currentStage?.isDailyRun, true)
+        vm.returnToSelect()
+        XCTAssertEqual(vm.currentStage?.index, 20)
+        vm.clearSelection()
+        XCTAssertEqual(vm.currentStage?.index, 0)
+    }
+
+    func testKidsRunDoesNotStallBehindARingThatWasNeverCrossed() {
+        let scene = SCNScene()
+        let engine = MissionEngine(parentNode: scene.rootNode)
+        let stage = RouteCatalog.course(index: 23)!.kidsVariant()
+        engine.startStage(stage)
+        // Jump straight to well beyond the last ring: no plane is crossed
+        // between two frames near it, yet every ring is behind the player.
+        let last = engine.rings.last!
+        let beyond = last.position + last.normal * 500
+        engine.update(deltaTime: 0.016, playerPosition: beyond)
+        engine.update(deltaTime: 0.016, playerPosition: beyond + last.normal * 5)
+        guard case .completed(let result) = engine.state else { return XCTFail("stalled") }
+        XCTAssertEqual(result.stars, 1)
+    }
+
+    func testCometCanBeBoughtWithStarsSoNoRewardIsCodeOnly() {
+        var progress = PlayerProgress.defaultProgress
+        progress.earnStars(Shop.cometPrice)
+        XCTAssertTrue(progress.buy(Shop.comet))
+        progress.equipFlair(Shop.comet, for: .hamster)
+        XCTAssertEqual(progress.equippedFlair(for: .hamster), Shop.comet)
+    }
+
+    // MARK: - iCloud merge
+
+    func testCloudMergeKeepsWhatEitherDeviceEarned() {
+        var a = PlayerProgress.defaultProgress      // this device: routes, shop
+        a.updateStageResult(cleared(10, stars: 2))
+        a.updateStageResult(cleared(30, stars: 1), kids: true)
+        a.earnStars(20); a.earnTreats(9, for: .cat)
+        a.buy(Shop.starItems[0])
+        a.openedCourses = [21]
+        a.kidsMode = true
+        var b = PlayerProgress.defaultProgress      // other device: more campaign stars
+        b.updateStageResult(cleared(0, stars: 3))
+        b.updateStageResult(cleared(10, stars: 1))
+        b.earnStars(4); b.earnTreats(2, for: .cat); b.earnTreats(5, for: .frog)
+        b.unlockedRoutes = [RouteID.starRoad.rawValue]
+        b.redeemedCodes = ["x"]
+        XCTAssertTrue(CloudSync.isAhead(b, of: a))
+
+        let merged = CloudSync.merge(local: a, remote: b)
+        XCTAssertEqual(merged.stageResults[10]?.stars, 2, "best result per course")
+        XCTAssertEqual(merged.stageResults[0]?.stars, 3)
+        XCTAssertEqual(merged.totalStars, 5)
+        XCTAssertEqual(merged.kidsResults[30]?.stars, 1)
+        XCTAssertTrue(merged.owns(Shop.starItems[0]))
+        XCTAssertEqual(merged.starBalance, 20 - Shop.starItems[0].price)
+        XCTAssertEqual(merged.treatBalance(.cat), 9)
+        XCTAssertEqual(merged.treatBalance(.frog), 5)
+        XCTAssertEqual(merged.openedCourses, [21])
+        XCTAssertTrue(merged.isRouteUnlocked(.starRoad))
+        XCTAssertEqual(merged.redeemedCodes, ["x"])
+        XCTAssertTrue(merged.kidsMode, "Kids mode stays as set on this device")
+        XCTAssertFalse(CloudSync.merge(local: b, remote: a).kidsMode)
+        // Merging is stable: doing it again changes nothing.
+        XCTAssertTrue(CloudSync.same(CloudSync.merge(local: merged, remote: b), merged))
+    }
+
+    func testCloudPullUsesTheProgressOfTheMomentNotOfLaunch() {
+        final class Store: KeyValueStoreLike {
+            var storage: [String: Data] = [:]
+            func data(forKey key: String) -> Data? { storage[key] }
+            func set(_ data: Data?, forKey key: String) { storage[key] = data }
+            func synchronize() -> Bool { true }
+        }
+        let store = Store()
+        let sync = CloudSync(store: store)
+        var remote = PlayerProgress.defaultProgress
+        remote.updateStageResult(cleared(0, stars: 2))
+        store.storage[CloudSync.progressKey] = try? JSONEncoder().encode(remote)
+
+        var local = PlayerProgress.defaultProgress
+        var accepted: PlayerProgress?
+        sync.onRemoteProgress = { accepted = $0 }
+        sync.start(local: { local })
+        XCTAssertEqual(accepted?.totalStars, 2)
+        // Played on since launch: more stars and a purchase.
+        local = accepted!
+        local.updateStageResult(cleared(1, stars: 3))
+        local.earnStars(30); local.buy(Shop.starItems[1])
+        accepted = nil
+        NotificationCenter.default.post(name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+                                        object: nil)
+        XCTAssertNil(accepted, "the older remote must not roll the session back")
+        sync.push(local)
+        XCTAssertEqual(sync.remoteProgress()?.ownedItems, [Shop.starItems[1].id], "purchases reach iCloud")
+        sync.stop()
+    }
+
     // MARK: - Wallet and shop
 
     func testTwoCurrenciesBuyDifferentThings() {
@@ -324,7 +479,7 @@ final class RoutesRewardsTests: XCTestCase {
         old.updateStageResult(cleared(0, stars: 3))
         old.bonusStars = 4
         var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(old)) as! [String: Any]
-        for key in ["kidsMode", "starsBanked", "starsSpent", "treats", "ownedItems", "equippedFlair",
+        for key in ["kidsMode", "kidsResults", "starsBanked", "starsSpent", "treats", "ownedItems", "equippedFlair",
                     "preferredSky", "openedCourses", "unlockedRoutes", "redeemedCodes"] {
             json.removeValue(forKey: key)
         }
@@ -389,6 +544,7 @@ final class RoutesRewardsTests: XCTestCase {
         XCTAssertEqual(progress.starBalance, 10)
         XCTAssertTrue(CharacterType.allCases.allSatisfy { progress.treatBalance($0) == 5 })
 
+        XCTAssertEqual(SecretCodes.normalise("ＴＥＳＴ　ｔｒａｉｌ"), "TESTTRAIL", "full-width keyboards")
         _ = SecretCodes.redeem("TESTTRAIL", into: &progress, entries: catalogue)
         progress.equipFlair(Shop.comet, for: .penguin)
         XCTAssertEqual(progress.equippedFlair(for: .penguin), Shop.comet, "comet fits everyone")

@@ -36,10 +36,29 @@ final class MissionViewModel: ObservableObject {
     /// When set it overrides `currentStage`; cleared by `returnToSelect`.
     @Published var specialStage: StageDefinition?
 
+    /// Course picked on the route map. Unlike `specialStage` it survives
+    /// `returnToSelect()`, so going "Home" from a result and starting
+    /// again flies the same course.
+    @Published private(set) var selectedCourseIndex: Int?
+
     var currentStage: StageDefinition? {
         if let specialStage { return specialStage }
-        guard currentStageIndex < stages.count else { return nil }
-        return stages[currentStageIndex]
+        let base: StageDefinition?
+        if let selectedCourseIndex, let course = RouteCatalog.course(index: selectedCourseIndex) {
+            base = course
+        } else {
+            base = currentStageIndex < stages.count ? stages[currentStageIndex] : nil
+        }
+        // Kids mode swaps in the no-fail version of whatever is selected.
+        return progress.kidsMode ? base?.kidsVariant() : base
+    }
+
+    /// Forget the picked course (progress reset).
+    func clearSelection() {
+        selectedCourseIndex = nil
+        specialStage = nil
+        currentStageIndex = 0
+        lastReward = RewardGrant()
     }
 
     /// Select today's Daily Run as the active course.
@@ -101,12 +120,9 @@ final class MissionViewModel: ObservableObject {
     }
 
     private func activate(_ course: StageDefinition) {
+        specialStage = nil
+        selectedCourseIndex = course.index
         if course.index < stages.count { currentStageIndex = course.index }
-        if progress.kidsMode {
-            specialStage = course.kidsVariant()
-        } else {
-            specialStage = course.index < stages.count ? nil : course
-        }
     }
 
     /// The course after the current one on its route.
@@ -184,14 +200,15 @@ final class MissionViewModel: ObservableObject {
         return outcome
     }
 
+    /// Best stars at the difficulty currently being played.
     func stageStars(_ index: Int) -> Int {
-        progress.stageResults[index]?.stars ?? 0
+        progress.bestStars(index, kids: progress.kidsMode)
     }
 
     func selectStage(_ index: Int) {
-        guard isStageUnlocked(index) else { return }
-        currentStageIndex = index
-        if progress.kidsMode, let course = RouteCatalog.course(index: index) { activate(course) }
+        // Same path as the route map, so a course left over from an
+        // earlier flight can never stay selected.
+        selectCourse(index)
     }
 
     /// True iff there's a stage after the current one. The MissionHUD uses
@@ -230,13 +247,17 @@ final class MissionViewModel: ObservableObject {
         } else {
             // Capture prior best BEFORE merging the new result — drives the
             // "New Best!" badge in StageResultView.
-            priorBestForLastResult = progress.stageResults[result.stageIndex]
-            progress.updateStageResult(result)
+            let kids = currentStage?.isKids == true
+            priorBestForLastResult = kids ? progress.kidsResults[result.stageIndex]
+                                          : progress.stageResults[result.stageIndex]
+            progress.updateStageResult(result, kids: kids)
         }
         if specialStage?.isEndless == true {
             pay(stars: 0, treats: RewardRules.treats(forEndlessRings: result.ringsCompleted))
         } else {
-            pay(stars: result.stars, treats: RewardRules.treats(forCourse: result))
+            let isNewBest = result.stars > (priorBestForLastResult?.stars ?? 0)
+            pay(stars: RewardRules.stars(forCourse: result, isNewBest: isNewBest),
+                treats: RewardRules.treats(forCourse: result))
         }
         progress.totalFlightTime += result.completionTime
         QuestTracker.shared.record(.courseCleared(collisions: result.collisions,
@@ -287,7 +308,7 @@ final class MissionViewModel: ObservableObject {
             save()
         }
         Analytics.shared.track(.stageFailed, [
-            "stage": currentStageIndex,
+            "stage": currentStage?.index ?? currentStageIndex,
             "reason": reason,
             "time": Int(elapsed)
         ])
@@ -391,6 +412,9 @@ final class MissionViewModel: ObservableObject {
     func setSelectedTrailTier(_ tier: TrailColorTier) {
         guard tier.isUnlocked(totalStars: progress.effectiveStars) else { return }
         progress.selectedTrailTier = tier
+        // The latest choice wins: a shop trail would otherwise keep
+        // covering the colour picked here.
+        progress.equippedFlair.removeAll()
         save()
     }
 }

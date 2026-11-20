@@ -329,7 +329,7 @@ private struct StageCard: View {
 
     private var accessibilityLabel: String {
         if !unlocked {
-            return L10n.format("stageSelect.card.label.locked", step)
+            return stage.displayName + ", " + L10n.format("stageSelect.card.label.locked", step)
         }
         return L10n.format(
             "stageSelect.card.label.unlocked",

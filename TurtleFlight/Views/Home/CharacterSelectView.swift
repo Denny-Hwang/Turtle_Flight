@@ -117,8 +117,33 @@ struct CharacterSelectView: View {
                     RoundedRectangle(cornerRadius: Theme.Radius.m)
                         .fill(Theme.Color.surfaceOverlay)
                 )
+
+            if flightMode == .stepGoal, let course = missionVM.currentStage, !course.isSpecial {
+                courseBriefing(course)
+            }
         }
         .padding(.bottom, Theme.Spacing.s)
+    }
+
+    /// What the selected course asks for, and what three stars take.
+    private func courseBriefing(_ course: StageDefinition) -> some View {
+        VStack(spacing: Theme.Spacing.xxs) {
+            Text(course.displayName)
+                .font(Theme.Typography.label)
+                .foregroundColor(Theme.Color.textOnDark)
+            Text(course.displayDescription)
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(Theme.Color.textOnDark)
+            Text(L10n.format("stageSelect.objective.format", course.displayStar3Condition))
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(Theme.Color.starGold)
+        }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, Theme.Spacing.m)
+        .padding(.vertical, Theme.Spacing.s)
+        .background(RoundedRectangle(cornerRadius: Theme.Radius.m).fill(Theme.Color.surfaceOverlayStrong))
+        .accessibilityElement(children: .combine)
     }
 
     private var choicesColumn: some View {

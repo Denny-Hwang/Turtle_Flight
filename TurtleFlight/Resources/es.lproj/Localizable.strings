@@ -126,8 +126,8 @@
 "stage.0.star3Condition" = "Termina en 60 segundos";
 "stage.1.star3Condition" = "Cero golpes, termina en 90 s";
 "stage.2.star3Condition" = "Cero golpes, reúne las 5 estrellas";
-"stage.3.star3Condition" = "Todos los aros, termina en 120 s";
-"stage.4.star3Condition" = "Todos los aros, en 80 s, cero golpes";
+"stage.3.star3Condition" = "Todos los aros, termina en 110 s";
+"stage.4.star3Condition" = "Todos los aros, en 90 s, cero golpes";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Reino del Cielo";
@@ -199,9 +199,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Elige un nivel";
-"stageSelect.progress.format"        = "%lld / %lld estrellas";
 "stageSelect.objective.format"       = "Meta ★★★: %@";
-"stageSelect.locked.body"            = "Supera el nivel anterior para desbloquear este.";
 "stageSelect.card.hint.unlocked"     = "Toca dos veces para elegir este nivel";
 "stageSelect.card.hint.locked"       = "Supera primero el nivel anterior";
 "stageSelect.card.label.unlocked"    = "Nivel %lld, %@, %lld estrellas conseguidas";
@@ -479,4 +477,3 @@
 "shop.buy.a11y" = "Comprar %1$@ por %2$lld";
 "shop.notEnough" = "Tienes %1$lld de %2$lld";
 "reward.earned" = "Ganado";
-"reward.a11y.format" = "Has ganado %1$lld estrellas y %2$lld de %3$@";

@@ -27,6 +27,8 @@ enum ScreenshotScene: String {
     case settings
     case album
     case shop
+    /// Character select for a route course (shows the course briefing).
+    case briefing
     case onboarding
     case pause
     case freeflight

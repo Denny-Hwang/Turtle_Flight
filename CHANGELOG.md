@@ -32,9 +32,17 @@ Design + progress: `docs/ROUTES_REWARDS_PLAN.md`.
 - **Secret codes.** Five free promo codes, entered in Settings or the
   shop, validated offline against salted hashes (`SecretCodes`), once per
   save. `SecretCodes.isEnabled` hides the field.
+- **iCloud sync** now merges the two saves field by field
+  (`CloudSync.merge`: best result per course, union of purchases /
+  unlocks / used codes, larger balances) instead of replacing one blob
+  with the other, and compares against live progress rather than a
+  launch-time snapshot. Kids mode stays per device.
+- Kids clears are stored apart (`kidsResults`): they open the next
+  course and pay rewards but are not campaign stars. A replay that
+  doesn't beat the best pays one star.
 - New saved fields are all optional-on-decode; an old save's wallet
   starts with the stars it already earned.
-- Tests: `RoutesRewardsTests` (24). 443 tests.
+- Tests: `RoutesRewardsTests`. 452 tests.
 
 ### World tour & flight delight (2026-11-20)
 

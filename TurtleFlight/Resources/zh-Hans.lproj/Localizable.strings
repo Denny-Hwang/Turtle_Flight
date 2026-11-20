@@ -127,8 +127,8 @@
 "stage.0.star3Condition" = "60 秒内完成";
 "stage.1.star3Condition" = "零碰撞，90 秒内完成";
 "stage.2.star3Condition" = "零碰撞，集齐全部 5 颗星星";
-"stage.3.star3Condition" = "通过全部圆环，120 秒内完成";
-"stage.4.star3Condition" = "全部圆环，80 秒内，零碰撞";
+"stage.3.star3Condition" = "通过全部圆环，110 秒内完成";
+"stage.4.star3Condition" = "全部圆环，90 秒内，零碰撞";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "天空王国";
@@ -200,9 +200,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "选择关卡";
-"stageSelect.progress.format"        = "%lld / %lld 星";
 "stageSelect.objective.format"       = "★★★ 条件：%@";
-"stageSelect.locked.body"            = "通过上一关即可解锁此关。";
 "stageSelect.card.hint.unlocked"     = "双击选择此关卡";
 "stageSelect.card.hint.locked"       = "请先通过上一关";
 "stageSelect.card.label.unlocked"    = "第 %lld 关，%@，获得 %lld 颗星星";
@@ -480,4 +478,3 @@
 "shop.buy.a11y" = "花 %2$lld 购买%1$@";
 "shop.notEnough" = "已有 %1$lld / %2$lld";
 "reward.earned" = "获得奖励";
-"reward.a11y.format" = "获得 %1$lld 颗星和 %2$lld 个%3$@";

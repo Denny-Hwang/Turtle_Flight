@@ -126,8 +126,8 @@
 "stage.0.star3Condition" = "Termine en moins de 60 secondes";
 "stage.1.star3Condition" = "Zéro choc, termine en moins de 90 s";
 "stage.2.star3Condition" = "Zéro choc, récupère les 5 étoiles";
-"stage.3.star3Condition" = "Tous les anneaux, termine en moins de 120 s";
-"stage.4.star3Condition" = "Tous les anneaux, en moins de 80 s, zéro choc";
+"stage.3.star3Condition" = "Tous les anneaux, termine en moins de 110 s";
+"stage.4.star3Condition" = "Tous les anneaux, en moins de 90 s, zéro choc";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "Royaume du Ciel";
@@ -199,9 +199,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "Choisis un niveau";
-"stageSelect.progress.format"        = "%lld / %lld étoiles";
 "stageSelect.objective.format"       = "Objectif ★★★ : %@";
-"stageSelect.locked.body"            = "Réussis le niveau précédent pour débloquer celui-ci.";
 "stageSelect.card.hint.unlocked"     = "Touche deux fois pour choisir ce niveau";
 "stageSelect.card.hint.locked"       = "Réussis d'abord le niveau précédent";
 "stageSelect.card.label.unlocked"    = "Niveau %lld, %@, %lld étoiles obtenues";
@@ -479,4 +477,3 @@
 "shop.buy.a11y" = "Acheter %1$@ pour %2$lld";
 "shop.notEnough" = "Tu as %1$lld sur %2$lld";
 "reward.earned" = "Gagné";
-"reward.a11y.format" = "Gagné : %1$lld étoiles et %2$lld × %3$@";

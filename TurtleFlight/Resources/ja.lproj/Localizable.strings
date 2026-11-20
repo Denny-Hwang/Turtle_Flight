@@ -127,8 +127,8 @@
 "stage.0.star3Condition" = "60秒以内にクリア";
 "stage.1.star3Condition" = "接触0回 ＋ 90秒以内";
 "stage.2.star3Condition" = "接触0回 ＋ スター5個すべて収集";
-"stage.3.star3Condition" = "全リング通過 ＋ 120秒以内";
-"stage.4.star3Condition" = "全リング通過 ＋ 80秒以内 ＋ 接触0回";
+"stage.3.star3Condition" = "全リング通過 ＋ 110秒以内";
+"stage.4.star3Condition" = "全リング通過 ＋ 90秒以内 ＋ 接触0回";
 
 // MARK: - Map themes (CharacterSelectView, MapThemeCard)
 "theme.sky.displayName"   = "空の王国";
@@ -200,9 +200,7 @@
 
 // MARK: - Stage Select screen
 "stageSelect.title"                  = "ステージを選ぶ";
-"stageSelect.progress.format"        = "%lld / %lld スター";
 "stageSelect.objective.format"       = "★★★ 条件：%@";
-"stageSelect.locked.body"            = "前のステージをクリアすると解放されます。";
 "stageSelect.card.hint.unlocked"     = "ダブルタップでこのステージを選びます";
 "stageSelect.card.hint.locked"       = "先に前のステージをクリアしてください";
 "stageSelect.card.label.unlocked"    = "ステージ%lld、%@、スター%lld個獲得";
@@ -480,4 +478,3 @@
 "shop.buy.a11y" = "%1$@を%2$lldで買う";
 "shop.notEnough" = "%2$lld個中%1$lld個あります";
 "reward.earned" = "ごほうび";
-"reward.a11y.format" = "スター%1$lld個と%3$@%2$lld個をゲット";
