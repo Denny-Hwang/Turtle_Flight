@@ -526,10 +526,13 @@ struct HomeView: View {
                 showCharacterSelect = true
             case .onboarding:
                 showOnboarding = true
-            case .freeflight, .tour:
+            case .freeflight, .tour, .freeflightResult:
                 showQuickFlight = true
-            case .stage, .stageResult:
+            case .stage:
                 missionVM.selectStage(0)
+                showSpecialFlight = true
+            case .stageResult:
+                missionVM.selectCourseIgnoringLock(ScreenshotDirector.stageIndex)
                 showSpecialFlight = true
             case .pause:
                 missionVM.selectDailyRun()

@@ -17,6 +17,16 @@ window.
 - Stage result card is fully opaque (the character ghosted through at 90%); the
   Home button gets its own light fill so it no longer reads as bare text.
 - Free Flight summary scales up on iPad like the stage result.
+- iPhone landscape: the stage result and the Free Flight summary switch to two
+  columns (title + stars on the left, stats on the right, buttons underneath).
+  Stacked, Stage 3's six stat lines pushed the card to the screen edge and the
+  Free Flight summary ran off the top and bottom. Free Flight gets the same
+  solid card as the stage result.
+- Fix: tapping Exit in Free Flight (and Share clip) paused the flight, which drew
+  the Pause menu on top of the summary. The Pause menu no longer shows over a
+  result screen; stage Retry / Next resume a flight Share clip paused.
+- QA capture scenes: `freeflight-result`, and `stage-result` with
+  `-TFStageIndex <n>`; `qa_matrix.sh` takes `EXTRA_ARGS`.
 
 ### Routes follow-ups (2026-11-20)
 - Route map announces Star Road the first time it shows open (banner, haptic,

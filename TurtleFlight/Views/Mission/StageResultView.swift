@@ -48,26 +48,32 @@ struct StageResultView: View {
             Color.black.opacity(0.7)
                 .ignoresSafeArea()
 
-            VStack(spacing: compact ? Theme.Spacing.s : Theme.Spacing.l) {
-                // Headline
-                Text(headline)
-                    .font(Theme.Typography.displayMedium)
-                    .foregroundColor(headlineColor)
-                    .multilineTextAlignment(.center)
-
-                Text(stageTitle)
-                    .font(Theme.Typography.label)
-                    .foregroundColor(Theme.Color.textOnDarkMuted)
-
-                // Result body
+            VStack(spacing: compact ? Theme.Spacing.m : Theme.Spacing.l) {
                 switch outcome {
+                case .success(let result) where compact:
+                    // iPhone landscape: one column (headline, stars,
+                    // up to six stat lines, buttons) ran off the top
+                    // of a ~390pt screen. Score on the left, stats on
+                    // the right, buttons underneath.
+                    HStack(alignment: .center, spacing: Theme.Spacing.xl) {
+                        VStack(spacing: Theme.Spacing.s) {
+                            titleBlock
+                            scoreHero(result: result)
+                        }
+                        statsBlock(result: result)
+                    }
                 case .success(let result):
-                    successBody(result: result)
+                    titleBlock
+                    VStack(spacing: Theme.Spacing.l) {
+                        scoreHero(result: result)
+                        statsBlock(result: result)
+                    }
+                    Spacer().frame(height: Theme.Spacing.s)
                 case .failure(let reason):
+                    titleBlock
                     failureBody(reason: reason)
+                    if !compact { Spacer().frame(height: Theme.Spacing.s) }
                 }
-
-                if !compact { Spacer().frame(height: Theme.Spacing.s) }
 
                 // Action buttons (delayed entrance so the score can
                 // resolve before the user is offered a choice).
@@ -77,7 +83,7 @@ struct StageResultView: View {
             }
             .padding(.horizontal, Theme.Spacing.xl)
             .padding(.vertical, compact ? Theme.Spacing.m : Theme.Spacing.xl)
-            .frame(maxWidth: 460)
+            .frame(maxWidth: compact ? 660 : 460)
             // Solid card: over the bare dim, the HUD chips behind showed
             // through between the stat lines. Fully opaque — at 90% the
             // character behind still ghosted through on iPad.
@@ -102,26 +108,43 @@ struct StageResultView: View {
         return L10n.format("mission.stage.titleFormat", stage.index + 1, stage.displayName)
     }
 
-    private func successBody(result: StageResult) -> some View {
-        VStack(spacing: Theme.Spacing.l) {
-            if stage.isEndless {
-                // Sky Run: the run's length is the headline number.
-                VStack(spacing: Theme.Spacing.xs) {
-                    Text("\(result.ringsCompleted)")
-                        .font(Theme.Typography.displayLarge)
-                        .foregroundColor(Theme.Color.starGold)
-                    Text(L10n.t("endless.result.gates"))
-                        .font(Theme.Typography.label)
-                        .foregroundColor(Theme.Color.textOnDarkMuted)
-                }
-                .padding(.vertical, Theme.Spacing.s)
-                .accessibilityElement(children: .combine)
-            } else {
+    private var titleBlock: some View {
+        VStack(spacing: compact ? Theme.Spacing.xs : Theme.Spacing.l) {
+            Text(headline)
+                .font(Theme.Typography.displayMedium)
+                .foregroundColor(headlineColor)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.7)
+                .lineLimit(2)
+
+            Text(stageTitle)
+                .font(Theme.Typography.label)
+                .foregroundColor(Theme.Color.textOnDarkMuted)
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    /// Stars (campaign / daily) or the gate count (Sky Run).
+    @ViewBuilder
+    private func scoreHero(result: StageResult) -> some View {
+        if stage.isEndless {
+            // Sky Run: the run's length is the headline number.
+            VStack(spacing: Theme.Spacing.xs) {
+                Text("\(result.ringsCompleted)")
+                    .font(Theme.Typography.displayLarge)
+                    .foregroundColor(Theme.Color.starGold)
+                Text(L10n.t("endless.result.gates"))
+                    .font(Theme.Typography.label)
+                    .foregroundColor(Theme.Color.textOnDarkMuted)
+            }
+            .padding(.vertical, Theme.Spacing.s)
+            .accessibilityElement(children: .combine)
+        } else {
             // Star count-up
             HStack(spacing: Theme.Spacing.m) {
                 ForEach(0..<3, id: \.self) { i in
                     Image(systemName: i < displayedStars ? "star.fill" : "star")
-                        .font(.system(size: 56))
+                        .font(.system(size: compact ? 44 : 56))
                         .foregroundColor(i < displayedStars
                                          ? Theme.Color.starGold
                                          : Theme.Color.textOnDark.opacity(0.25))
@@ -130,50 +153,50 @@ struct StageResultView: View {
                                    value: displayedStars)
                 }
             }
-            .padding(.vertical, Theme.Spacing.s)
+            .padding(.vertical, compact ? 0 : Theme.Spacing.s)
             .accessibilityLabel(L10n.format(
                 "mission.result.starsLabel", result.stars))
-            }
+        }
+    }
 
-            // Stats row
-            VStack(spacing: Theme.Spacing.s) {
+    private func statsBlock(result: StageResult) -> some View {
+        VStack(spacing: Theme.Spacing.s) {
+            statLine(
+                icon: "clock",
+                text: L10n.format("mission.result.timeFormat",
+                                  result.completionTime.mmss),
+                badge: timeBadge(for: result)
+            )
+            statLine(
+                icon: "exclamationmark.triangle",
+                text: L10n.format("mission.result.collisionsFormat",
+                                  result.collisions),
+                badge: nil
+            )
+            if let score = result.score {
                 statLine(
-                    icon: "clock",
-                    text: L10n.format("mission.result.timeFormat",
-                                      result.completionTime.mmss),
-                    badge: timeBadge(for: result)
+                    icon: "scope",
+                    text: L10n.format("mission.result.scoreFormat", score),
+                    badge: scoreBadge(for: result)
                 )
                 statLine(
-                    icon: "exclamationmark.triangle",
-                    text: L10n.format("mission.result.collisionsFormat",
-                                      result.collisions),
+                    icon: "flame",
+                    text: L10n.format("mission.result.comboFormat",
+                                      result.maxCombo ?? 0, result.bullseyes ?? 0),
                     badge: nil
                 )
-                if let score = result.score {
-                    statLine(
-                        icon: "scope",
-                        text: L10n.format("mission.result.scoreFormat", score),
-                        badge: scoreBadge(for: result)
-                    )
-                    statLine(
-                        icon: "flame",
-                        text: L10n.format("mission.result.comboFormat",
-                                          result.maxCombo ?? 0, result.bullseyes ?? 0),
-                        badge: nil
-                    )
-                }
-                if !reward.isEmpty {
-                    statLine(icon: "gift", text: reward.summary, badge: nil)
-                        .accessibilityLabel(reward.accessibilityText)
-                }
-                if let perfect = stage.starCountForPerfect, perfect > 0 {
-                    statLine(
-                        icon: "star",
-                        text: L10n.format("mission.result.starsCollectedFormat",
-                                          result.starsCollected, perfect),
-                        badge: nil
-                    )
-                }
+            }
+            if !reward.isEmpty {
+                statLine(icon: "gift", text: reward.summary, badge: nil)
+                    .accessibilityLabel(reward.accessibilityText)
+            }
+            if let perfect = stage.starCountForPerfect, perfect > 0 {
+                statLine(
+                    icon: "star",
+                    text: L10n.format("mission.result.starsCollectedFormat",
+                                      result.starsCollected, perfect),
+                    badge: nil
+                )
             }
         }
     }

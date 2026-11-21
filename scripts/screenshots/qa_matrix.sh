@@ -5,6 +5,7 @@
 #
 #   scripts/screenshots/qa_matrix.sh
 #   DEVICES="iPhone 17e" LOCALES="en de" SCENES="home settings" scripts/screenshots/qa_matrix.sh
+#   EXTRA_ARGS="-TFStageIndex 2" SCENES="stage-result:90" scripts/screenshots/qa_matrix.sh
 #
 # Uses the Debug-only screenshot mode (ScreenshotDirector). Not part of CI.
 set -euo pipefail
@@ -50,8 +51,9 @@ for name in "${DEVICE_LIST[@]}"; do
       scene=${s%%:*}; wait=${s##*:}
       file="$OUT/${scene}__${loc}.png"
       xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
+      # shellcheck disable=SC2086 # EXTRA_ARGS is a list of launch arguments
       xcrun simctl launch "$UDID" "$BUNDLE_ID" -TFScreenshot "$scene" \
-        -AppleLanguages "($loc)" >/dev/null
+        -AppleLanguages "($loc)" ${EXTRA_ARGS:-} >/dev/null
       sleep "$wait"
       xcrun simctl io "$UDID" screenshot "$file" >/dev/null 2>&1
       w=$(sips -g pixelWidth "$file" | awk '/pixelWidth/{print $2}')

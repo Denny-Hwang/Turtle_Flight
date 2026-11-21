@@ -115,8 +115,10 @@ struct FlightView: View {
 
             // Pause modal — driven by flightVM.isPaused so both the
             // explicit Pause button and the scene-phase auto-pause
-            // surface the same UI.
-            if flightVM.isPaused {
+            // surface the same UI. Not over a result screen: Free Flight
+            // Exit and Share clip pause the flight to freeze it under the
+            // summary, which used to put the pause menu on top of it.
+            if flightVM.isPaused && !isShowingResult {
                 PauseView(
                     onResume:  { flightVM.resumeFlight() },
                     onRestart: {
@@ -233,10 +235,12 @@ struct FlightView: View {
                             dismiss()
                         },
                         onRetry: {
+                            flightVM.resumeFlight()   // Share clip paused it
                             flightVM.startStage(stage)
                             missionVM.startMission()
                         },
                         onNext: {
+                            flightVM.resumeFlight()
                             if missionVM.advanceToNextStage(),
                                let next = missionVM.currentStage {
                                 flightVM.startStage(next)
@@ -395,6 +399,15 @@ struct FlightView: View {
             if ScreenshotDirector.isActive { showGyroAlert = false }
             #endif
         }
+        #if DEBUG
+        if ScreenshotDirector.scene == .freeflightResult, flightMode == .freePlay {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                flightVM.pauseFlight()
+                recordFreeFlightRun()
+                showFreeFlightResult = true
+            }
+        }
+        #endif
 
         if flightMode == .stepGoal, let stage = missionVM.currentStage {
             // Use the FlightViewModel helper so the engine sees the
