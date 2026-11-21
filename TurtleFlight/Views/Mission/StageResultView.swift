@@ -79,10 +79,11 @@ struct StageResultView: View {
             .padding(.vertical, compact ? Theme.Spacing.m : Theme.Spacing.xl)
             .frame(maxWidth: 460)
             // Solid card: over the bare dim, the HUD chips behind showed
-            // through between the stat lines.
+            // through between the stat lines. Fully opaque — at 90% the
+            // character behind still ghosted through on iPad.
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                    .fill(Theme.Color.surfacePanel)
+                    .fill(Color(hex: Constants.Colors.panelDark))
                     .elevation(Theme.Elevation.cardHigh)
             )
             // iPad: the 460pt card looked lost on a 13" screen.
@@ -220,7 +221,9 @@ struct StageResultView: View {
         HStack(spacing: Theme.Spacing.m) {
             ResultButton(
                 title: L10n.t("common.home"),
-                color: Theme.Color.surfaceOverlay,
+                // surfaceOverlay is the card's own colour — the button
+                // read as bare text. A light wash keeps it a button.
+                color: Theme.Color.textOnDark.opacity(0.14),
                 action: onHome
             )
             ResultButton(

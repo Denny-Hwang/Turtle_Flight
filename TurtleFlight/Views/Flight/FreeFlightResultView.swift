@@ -20,6 +20,9 @@ struct FreeFlightResultView: View {
     var onShareClip: (() -> Void)? = nil
 
     @State private var showButtons: Bool = false
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isPad: Bool { horizontalSizeClass == .regular && verticalSizeClass == .regular }
 
     var body: some View {
         ZStack {
@@ -119,6 +122,9 @@ struct FreeFlightResultView: View {
             }
             .padding(Theme.Spacing.xl)
             .frame(maxWidth: 460)
+            // iPad: same scale-up as StageResultView, or the summary
+            // looks lost in the middle of a large screen.
+            .scaleEffect(isPad ? Theme.iPadScale : 1)
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {

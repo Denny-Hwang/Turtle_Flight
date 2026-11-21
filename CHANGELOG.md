@@ -9,6 +9,15 @@ window.
 
 ## [Unreleased]
 
+### Result screen polish (2026-11-21)
+- The in-flight HUD and control buttons (gauges, stage/timer chip, Pause/Exit,
+  ring/score, Boost) hide while a result screen is up — on iPad the scaled-up
+  result card overlapped the timer chip. They are also out of hit-testing and
+  VoiceOver while hidden, and come back on Retry.
+- Stage result card is fully opaque (the character ghosted through at 90%); the
+  Home button gets its own light fill so it no longer reads as bare text.
+- Free Flight summary scales up on iPad like the stage result.
+
 ### Routes follow-ups (2026-11-20)
 - Route map announces Star Road the first time it shows open (banner, haptic,
   VoiceOver announcement, scrolls to the route) — whether the last course or a

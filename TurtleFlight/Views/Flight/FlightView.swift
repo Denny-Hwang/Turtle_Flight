@@ -32,48 +32,57 @@ struct FlightView: View {
             SceneKitView(scene: scene, flightVM: flightVM)
                 .ignoresSafeArea()
 
-            // Free Flight "clean view": gauges off, just the sky. Missions
-            // always show the HUD (the player needs ring / score info).
-            if !(flightMode == .freePlay && cleanView) {
-                HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
-            }
+            // In-flight chrome. Hidden while a result screen is up: the
+            // gauges, stage chip and Pause/Exit buttons poked out around
+            // (and, on iPad, through the top of) the result card.
+            Group {
+                // Free Flight "clean view": gauges off, just the sky. Missions
+                // always show the HUD (the player needs ring / score info).
+                if !(flightMode == .freePlay && cleanView) {
+                    HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+                }
 
-            if flightMode == .freePlay {
-                SightseeingOverlay(flightVM: flightVM)
-            }
+                if flightMode == .freePlay {
+                    SightseeingOverlay(flightVM: flightVM)
+                }
 
-            if flightMode == .stepGoal, let engine = flightVM.missionEngine {
-                MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
-            }
+                if flightMode == .stepGoal, let engine = flightVM.missionEngine {
+                    MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
+                }
 
-            ControlButtons(
-                onBoost:     { flightVM.activateBoost() },
-                // v1 ships with the item button hidden — see ControlButtons
-                // and DESIGN_GAP_REPORT P1-2. Pass nil so the slot is empty
-                // rather than wired to a no-op projectile.
-                onFire:      nil,
-                onCalibrate: { flightVM.calibrateGyro() },
-                onPause:     { flightVM.pauseFlight() },
-                onExit: {
-                    // Free Flight: surface the result screen before
-                    // dismissing so the player sees their run stats.
-                    // Step Goal: just dismiss — if the player exits a
-                    // mission mid-run, the result/fail overlay would
-                    // already have surfaced if they completed it.
-                    if flightMode == .freePlay {
-                        flightVM.pauseFlight()       // freeze numerics for the summary
-                        recordFreeFlightRun()
-                        showFreeFlightResult = true
-                    } else {
-                        flightVM.stopFlight()
-                        dismiss()
-                    }
-                },
-                boostProgress: flightVM.boostProgress,
-                boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999,
-                onToggleCleanView: flightMode == .freePlay ? { cleanView.toggle() } : nil,
-                cleanViewOn: cleanView
-            )
+                ControlButtons(
+                    onBoost:     { flightVM.activateBoost() },
+                    // v1 ships with the item button hidden — see ControlButtons
+                    // and DESIGN_GAP_REPORT P1-2. Pass nil so the slot is empty
+                    // rather than wired to a no-op projectile.
+                    onFire:      nil,
+                    onCalibrate: { flightVM.calibrateGyro() },
+                    onPause:     { flightVM.pauseFlight() },
+                    onExit: {
+                        // Free Flight: surface the result screen before
+                        // dismissing so the player sees their run stats.
+                        // Step Goal: just dismiss — if the player exits a
+                        // mission mid-run, the result/fail overlay would
+                        // already have surfaced if they completed it.
+                        if flightMode == .freePlay {
+                            flightVM.pauseFlight()       // freeze numerics for the summary
+                            recordFreeFlightRun()
+                            showFreeFlightResult = true
+                        } else {
+                            flightVM.stopFlight()
+                            dismiss()
+                        }
+                    },
+                    boostProgress: flightVM.boostProgress,
+                    boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999,
+                    onToggleCleanView: flightMode == .freePlay ? { cleanView.toggle() } : nil,
+                    cleanViewOn: cleanView
+                )
+            }
+            .opacity(isShowingResult ? 0 : 1)
+            .allowsHitTesting(!isShowingResult)
+            .accessibilityHidden(isShowingResult)
+            .animation(.easeOut(duration: 0.25), value: isShowingResult)
 
             // Step Goal — full-screen StageResultView when the mission
             // finishes (success or fail). Replaces the previous in-HUD
@@ -182,6 +191,19 @@ struct FlightView: View {
     }
 
     // MARK: - Stage Result overlay
+
+    /// True while a result screen (Step Goal clear/fail or the Free
+    /// Flight summary) covers the flight. Mirrors the conditions under
+    /// which `stageResultOverlay` actually renders something.
+    private var isShowingResult: Bool {
+        if showFreeFlightResult { return true }
+        guard flightMode == .stepGoal, missionVM.currentStage != nil else { return false }
+        switch missionVM.missionState {
+        case .completed: return missionVM.lastResult != nil
+        case .failed: return true
+        case .selecting, .playing: return false
+        }
+    }
 
     /// Renders the full-screen Step Goal result (or fail) view when the
     /// MissionViewModel transitions to a terminal state. Renders nothing
