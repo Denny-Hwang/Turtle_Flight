@@ -436,6 +436,7 @@
 "route.course.star3Format" = "%lld초 안에 부딪히지 않고 완주";
 "route.course.kidsStar3" = "모든 링을 통과해요";
 "route.locked.finale" = "다른 네 루트를 모두 끝내면 열려요. 시크릿 코드로도 열 수 있어요.";
+"route.finale.opened" = "%@ 루트가 열렸어요!";
 "route.openEarly.format" = "별 %lld개로 열기";
 "route.openEarly.confirmTitle" = "이 코스를 미리 열까요?";
 "route.openEarly.balance" = "별 %lld개를 가지고 있어요.";

@@ -434,6 +434,7 @@
 "route.course.star3Format" = "In %lld s ohne Anstoßen ins Ziel";
 "route.course.kidsStar3" = "Fliege durch jeden Ring";
 "route.locked.finale" = "Schließe die anderen vier Routen ab – oder nutze einen Geheimcode.";
+"route.finale.opened" = "%@ ist offen!";
 "route.openEarly.format" = "Für %lld Sterne öffnen";
 "route.openEarly.confirmTitle" = "Diesen Kurs vorzeitig öffnen?";
 "route.openEarly.balance" = "Du hast %lld Sterne.";

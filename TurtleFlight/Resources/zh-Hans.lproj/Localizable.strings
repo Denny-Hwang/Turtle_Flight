@@ -433,6 +433,7 @@
 "route.course.star3Format" = "%lld 秒内无碰撞完成";
 "route.course.kidsStar3" = "穿过每一个光环";
 "route.locked.finale" = "完成另外四条路线即可开启，也可以使用秘密代码。";
+"route.finale.opened" = "%@已开启！";
 "route.openEarly.format" = "用 %lld 颗星开启";
 "route.openEarly.confirmTitle" = "提前开启这条赛道吗？";
 "route.openEarly.balance" = "你有 %lld 颗星。";

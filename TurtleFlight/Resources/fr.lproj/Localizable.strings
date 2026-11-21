@@ -432,6 +432,7 @@
 "route.course.star3Format" = "Termine en %lld s sans choc";
 "route.course.kidsStar3" = "Traverse tous les anneaux";
 "route.locked.finale" = "Termine les quatre autres routes pour l’ouvrir, ou utilise un code secret.";
+"route.finale.opened" = "%@ est ouverte !";
 "route.openEarly.format" = "Ouvrir pour %lld étoiles";
 "route.openEarly.confirmTitle" = "Ouvrir ce parcours en avance ?";
 "route.openEarly.balance" = "Tu as %lld étoiles.";
