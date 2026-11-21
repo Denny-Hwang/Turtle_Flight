@@ -34,7 +34,7 @@ SHOTS = [
     ("skyrun", "Sky Run", "An endless course that keeps getting tighter", ("pip", "nutty")),
     ("daily-result", "Beat your best", "Scores, combos and three stars on every course", ("hoppy", "turbo")),
     ("home", "A new course every day", "Daily quests, streaks and Today's Course", ("nutty", "hoppy")),
-    ("stages", "Five hand-built missions", "From a gentle Sky Walk to the Sky Race", ("bounce", "mochi")),
+    ("stages", "Five routes, 21 courses", "From Sky School to the Star Road, with a Kids mode", ("bounce", "mochi")),
 ]
 
 
