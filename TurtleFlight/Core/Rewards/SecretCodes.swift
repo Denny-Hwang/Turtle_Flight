@@ -5,8 +5,8 @@ import CryptoKit
 ///
 /// Everything a code gives can also be earned by playing, nothing is
 /// sold, and the check is fully offline. The app only carries salted
-/// hashes of the codes — this repository is public, so the words
-/// themselves live outside it.
+/// hashes of the codes — the words themselves never go in the
+/// repository (it has been public before).
 enum SecretCodes {
 
     /// Flip to false to hide the code field everywhere (e.g. if App

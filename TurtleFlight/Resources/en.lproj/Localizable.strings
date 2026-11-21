@@ -433,6 +433,7 @@
 "route.course.star3Format" = "Finish in %lld s with no bumps";
 "route.course.kidsStar3" = "Fly through every ring";
 "route.locked.finale" = "Finish the other four routes to open this one — or use a secret code.";
+"route.finale.opened" = "%@ is open!";
 "route.openEarly.format" = "Open for %lld stars";
 "route.openEarly.confirmTitle" = "Open this course early?";
 "route.openEarly.balance" = "You have %lld stars.";

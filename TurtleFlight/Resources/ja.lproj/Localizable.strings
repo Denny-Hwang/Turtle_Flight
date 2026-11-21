@@ -433,6 +433,7 @@
 "route.course.star3Format" = "%lld秒以内にぶつからずゴール";
 "route.course.kidsStar3" = "ぜんぶのリングをくぐろう";
 "route.locked.finale" = "ほかの4つのルートをクリアすると開きます。ひみつのコードでも開けます。";
+"route.finale.opened" = "%@が開きました！";
 "route.openEarly.format" = "スター%lld個で開く";
 "route.openEarly.confirmTitle" = "このコースを先に開きますか？";
 "route.openEarly.balance" = "スターを%lld個もっています。";

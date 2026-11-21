@@ -9,6 +9,12 @@ window.
 
 ## [Unreleased]
 
+### Routes follow-ups (2026-11-20)
+- Route map announces Star Road the first time it shows open (banner, haptic,
+  VoiceOver announcement, scrolls to the route) — whether the last course or a
+  secret code opened it. The flag clears itself after a progress reset.
+- Docs: the repository is private now; the "never commit code plaintext" rule stays.
+
 ### Routes, Kids mode, rewards, haptics, secret codes (2026-11-20)
 Design + progress: `docs/ROUTES_REWARDS_PLAN.md`.
 - **Routes.** The campaign is now five parallel routes (`RouteCatalog`):

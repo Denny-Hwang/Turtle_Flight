@@ -23,6 +23,10 @@ struct StageSelectView: View {
     @State private var showCode = false
     /// Locked course the player tapped "open with stars" on.
     @State private var openCandidate: StageDefinition?
+    /// The finale route opening is announced once; the flag clears itself
+    /// when the route is locked again (progress reset).
+    @AppStorage("route.finale.celebrated") private var finaleCelebrated = false
+    @State private var showFinaleBanner = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -41,16 +45,30 @@ struct StageSelectView: View {
                 header
                 // Header pinned; the rest scrolls when an iPhone in
                 // landscape is too short for it.
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: Theme.Spacing.m) {
-                        kidsRow
-                        ForEach(RouteID.allCases, id: \.self) { route in
-                            routeRow(route)
+                ScrollViewReader { proxy in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(alignment: .leading, spacing: Theme.Spacing.m) {
+                            kidsRow
+                            ForEach(RouteID.allCases, id: \.self) { route in
+                                routeRow(route).id(route)
+                            }
                         }
+                        .padding(.vertical, Theme.Spacing.s)
+                        .frame(maxWidth: .infinity)
                     }
-                    .padding(.vertical, Theme.Spacing.s)
-                    .frame(maxWidth: .infinity)
+                    .onAppear { celebrateFinaleIfNeeded(proxy) }
+                    .onChange(of: finaleOpen) { _ in celebrateFinaleIfNeeded(proxy) }
                 }
+            }
+
+            if showFinaleBanner {
+                VStack {
+                    finaleBanner
+                    Spacer()
+                }
+                .padding(.top, Theme.Spacing.xxxl)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .allowsHitTesting(false)
             }
         }
         .navigationBarHidden(true)
@@ -85,6 +103,45 @@ struct StageSelectView: View {
                 flightMode: .stepGoal
             )
         }
+    }
+
+    // MARK: - Finale announcement
+
+    private var finaleRoute: RouteID? { RouteID.allCases.first(where: \.isFinale) }
+
+    private var finaleOpen: Bool {
+        finaleRoute.map { missionVM.progress.isRouteUnlocked($0) } ?? false
+    }
+
+    /// Announces the finale route the first time the map shows it open —
+    /// whether the last course or a secret code opened it.
+    private func celebrateFinaleIfNeeded(_ proxy: ScrollViewProxy) {
+        guard let route = finaleRoute else { return }
+        guard finaleOpen else { finaleCelebrated = false; return }
+        guard !finaleCelebrated else { return }
+        finaleCelebrated = true
+        Haptics.shared.play(.discovery)
+        withAnimation(.spring(response: 0.45, dampingFraction: 0.8)) {
+            showFinaleBanner = true
+            proxy.scrollTo(route, anchor: .center)
+        }
+        UIAccessibility.post(notification: .announcement,
+                             argument: L10n.format("route.finale.opened", route.displayName))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+            withAnimation(.easeOut(duration: 0.4)) { showFinaleBanner = false }
+        }
+    }
+
+    private var finaleBanner: some View {
+        Text("🌠  " + L10n.format("route.finale.opened", finaleRoute?.displayName ?? ""))
+            .font(Theme.Typography.label)
+            .foregroundColor(Theme.Color.textOnDark)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, Theme.Spacing.m)
+            .background(Capsule().fill(Theme.Color.brandPrimary).elevation(Theme.Elevation.card))
+            .padding(.horizontal, Theme.Spacing.l)
+            .accessibilityHidden(true)
     }
 
     // MARK: - Sections

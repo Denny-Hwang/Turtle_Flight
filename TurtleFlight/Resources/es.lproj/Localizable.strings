@@ -432,6 +432,7 @@
 "route.course.star3Format" = "Termina en %lld s sin chocar";
 "route.course.kidsStar3" = "Atraviesa todos los aros";
 "route.locked.finale" = "Termina las otras cuatro rutas para abrirla, o usa un código secreto.";
+"route.finale.opened" = "¡%@ está abierto!";
 "route.openEarly.format" = "Abrir con %lld estrellas";
 "route.openEarly.confirmTitle" = "¿Abrir este recorrido antes?";
 "route.openEarly.balance" = "Tienes %lld estrellas.";
