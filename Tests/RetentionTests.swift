@@ -285,10 +285,10 @@ final class RetentionTests: XCTestCase {
         var added: [UNNotificationRequest] = []
         var removed: [String] = []
         func requestAuthorization(options: UNAuthorizationOptions,
-                                  completionHandler: @escaping (Bool, Error?) -> Void) {
+                                  completionHandler: @escaping @Sendable (Bool, Error?) -> Void) {
             completionHandler(granted, nil)
         }
-        func add(_ request: UNNotificationRequest, withCompletionHandler: ((Error?) -> Void)?) {
+        func add(_ request: UNNotificationRequest, withCompletionHandler: (@Sendable (Error?) -> Void)?) {
             added.append(request)
             withCompletionHandler?(nil)
         }

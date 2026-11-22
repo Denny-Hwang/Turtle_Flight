@@ -25,6 +25,7 @@ enum AnalyticsEvent: String, CaseIterable {
     case freeFlightEnded
     case settingsOpened
     case landmarkDiscovered
+    case wonderSeen
     case itemPurchased
     case codeRedeemed
 }
@@ -40,7 +41,8 @@ struct AnalyticsSnapshot: Codable, Equatable {
     }
 }
 
-final class Analytics {
+/// `@unchecked Sendable`: counters live behind the serial `queue`.
+final class Analytics: @unchecked Sendable {
 
     static let shared = Analytics(defaults: .standard)
 
@@ -86,9 +88,10 @@ final class Analytics {
     /// Increment the event counter and log the event with its params.
     /// Safe to call from any thread.
     func track(_ event: AnalyticsEvent, _ params: [String: Any] = [:]) {
+        // Rendered here so only a String crosses to the queue.
+        let paramText = params.isEmpty ? "" : " \(params)"
         queue.async { [self] in
             counters[event.rawValue, default: 0] += 1
-            let paramText = params.isEmpty ? "" : " \(params)"
             log.info("\(event.rawValue, privacy: .public)\(paramText, privacy: .public)")
             persist()
         }

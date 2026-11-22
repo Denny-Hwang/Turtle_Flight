@@ -7,7 +7,8 @@ import Foundation
 /// Stored on-device in `UserDefaults` (`postcards.v1`); nothing leaves
 /// the phone. Thread-safe, because discovery happens on the SceneKit
 /// render thread while the album screen reads on main.
-final class PostcardAlbum {
+/// `@unchecked Sendable`: every stored property is read and written under `lock`.
+final class PostcardAlbum: @unchecked Sendable {
     static let shared = PostcardAlbum()
 
     private let defaults: UserDefaults

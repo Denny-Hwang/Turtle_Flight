@@ -37,6 +37,8 @@ writes the following keys to `UserDefaults`:
 | `quests.v1`, `quests.v1.seconds.<day>` | Today's three daily quests, their progress and whether the bonus was claimed. | Daily goals need to survive a relaunch. Local only; reset with Reset Progress. |
 | *Application Support/ghosts/\*.json* | Your best flight path per course (time + position samples at 10 Hz). | Drawn as a translucent "ghost" of your own best run. Never leaves the device; Reset Progress deletes them. |
 | `playerProgress` (also `masteryXP`, `cloudSyncEnabled`, `clipRecordingEnabled` inside it) | Per-character mastery XP and the two Phase 4 opt-in switches. | Mastery levels are shown on the character tiles; the switches remember your choice. |
+| `postcards.v1`, `wonders.v1`, `playerProgress` (`claimedPostcardRewards`, `festivalOff` inside it) | Which landmarks each friend has visited, which sky wonders you have seen, which postcard milestones have paid out, and worlds whose Festival you switched off. | The album and its rewards. Local only; Reset Progress deletes them. |
+| `flight.lookAtMe`, `flight.cleanView` | Whether your friend faces you or flies facing ahead, and whether the gauges are hidden. | Display preferences. |
 | `analytics.counters.v1`, `analytics.playDays.v1`, `analytics.firstLaunch.v1` | Aggregate counts of in-app events (flights started, rings passed, stages cleared, …), the list of calendar days you opened the app, and the first-launch date. | Lets the app show you your own play history and streak, and lets the team read the funnel off a TestFlight device. **Never uploaded** — there is no network code. Reset Progress deletes them. |
 
 That's the entire on-device storage footprint. None of it is uploaded.
@@ -160,6 +162,8 @@ Turtle Flight는 1인용 자이로 비행 게임입니다. **수집하는 정보
 | `sensitivityLevel` | 자이로 민감도 선택값 (`easy`/`normal`/`expert`). | 다음 세션에서 조작 선호도를 유지합니다. |
 | `audio.muted`, `audio.bgmVolume`, `audio.sfxVolume` | 오디오 설정. | 사운드 설정을 유지합니다. |
 | `onboardingCompleted` | 첫 실행 튜토리얼 완료 여부. | 매 실행마다 튜토리얼을 다시 보여주지 않습니다. |
+| `postcards.v1`, `wonders.v1`, `playerProgress` 안의 `claimedPostcardRewards`·`festivalOff` | 친구별로 들른 명소, 본 하늘의 신비, 지급된 엽서 보상, 축제를 끈 월드. | 엽서 앨범과 보상. 기기에만 저장, 진행 기록 초기화로 삭제됩니다. |
+| `flight.lookAtMe`, `flight.cleanView` | 비행 중 친구가 나를 볼지 앞을 볼지, 계기를 숨길지. | 화면 설정. |
 
 이게 기기 내 저장의 전부입니다. 어떤 것도 업로드되지 않습니다.
 

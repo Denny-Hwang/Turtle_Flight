@@ -51,8 +51,10 @@ ATLAS_FRAMES=(default joy scared speed)
 #   <name>_atlas        ← <name>_fly_<frame>.svg    (riding its own vehicle)
 #   <name>_cloud_atlas  ← <name>_cloud_<frame>.svg  (riding the shared Cloud Surf)
 # The billboard is ~120–250 px on screen, so 512 px cells (1024² atlas) are
-# already oversampled and keep the twelve atlases small.
-ATLAS_SETS=("atlas:fly" "cloud_atlas:cloud")
+# already oversampled and keep the 24 atlases small.
+#   <name>_back_atlas / <name>_cloud_back_atlas ← the same rides from behind
+#   (the in-flight default: the character faces where it is flying).
+ATLAS_SETS=("atlas:fly" "cloud_atlas:cloud" "back_atlas:back" "cloud_back_atlas:cloudback")
 ATLAS_SIZE_PX=1024      # 2×2 grid, each cell 512×512
 ATLAS_CELL_PX=512
 TEXTURE_HI_PX=1024      # in-flight billboard, primary

@@ -4,7 +4,7 @@ import SceneKit
 import UIKit
 #endif
 
-final class CharacterRegistry {
+final class CharacterRegistry: Sendable {
     static let shared = CharacterRegistry()
 
     private init() {}
@@ -78,6 +78,35 @@ extension CharacterRegistry {
             : "\(character.assetPrefix)_atlas"
     }
 
+    /// Atlas for the character seen from behind — the in-flight default,
+    /// so it faces where it is flying rather than back at the chase
+    /// camera. Same 2×2 cell order as the front atlas.
+    static func backAtlasName(for character: CharacterType, vehicle: VehicleType?) -> String {
+        vehicle == .cloudSurf
+            ? "\(character.assetPrefix)_cloud_back_atlas"
+            : "\(character.assetPrefix)_back_atlas"
+    }
+
+    /// Front (looking at the player) or back (looking ahead) atlas image.
+    static func atlasImage(for character: CharacterType, vehicle: VehicleType?, lookingAtCamera: Bool) -> UIImage? {
+        if !lookingAtCamera,
+           let back = UIImage(named: backAtlasName(for: character, vehicle: vehicle))
+            ?? UIImage(named: backAtlasName(for: character, vehicle: nil)) {
+            return back
+        }
+        return UIImage(named: atlasName(for: character, vehicle: vehicle))
+            ?? UIImage(named: atlasName(for: character, vehicle: nil))
+    }
+
+    /// Turn the in-flight billboard around without rebuilding it: swaps
+    /// the atlas and keeps the current expression cell.
+    static func setFacing(lookingAtCamera: Bool, on node: SCNNode,
+                          character: CharacterType, vehicle: VehicleType?) {
+        guard let material = node.geometry?.firstMaterial,
+              let image = atlasImage(for: character, vehicle: vehicle, lookingAtCamera: lookingAtCamera) else { return }
+        material.diffuse.contents = image
+    }
+
     /// Build the in-flight character node — a billboarded SCNPlane textured
     /// with the expression atlas for this character + vehicle (the vehicle
     /// is part of the art, so one node covers both).
@@ -85,13 +114,13 @@ extension CharacterRegistry {
     /// `size` is the world-space side length of the square plane.
     func buildInflightBillboard(for character: CharacterType,
                                 vehicle: VehicleType? = nil,
-                                size: CGFloat = CharacterRegistry.inflightBillboardSize) -> SCNNode {
+                                size: CGFloat = CharacterRegistry.inflightBillboardSize,
+                                lookingAtCamera: Bool = true) -> SCNNode {
         let plane = SCNPlane(width: size, height: size)
         let mat = plane.firstMaterial ?? SCNMaterial()
 
         #if canImport(UIKit)
-        if let img = UIImage(named: Self.atlasName(for: character, vehicle: vehicle))
-            ?? UIImage(named: Self.atlasName(for: character, vehicle: nil)) {
+        if let img = Self.atlasImage(for: character, vehicle: vehicle, lookingAtCamera: lookingAtCamera) {
             mat.diffuse.contents = img
         } else {
             // Asset missing — surface visually so it's caught in QA, not

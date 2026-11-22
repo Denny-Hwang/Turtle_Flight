@@ -79,6 +79,34 @@ struct SightseeingOverlay: View {
                 .padding(.horizontal, Theme.Spacing.l)
                 .padding(.vertical, Theme.Spacing.s)
                 .background(Capsule().fill(Theme.Color.brandPrimary))
+        case .milestone(let world, let milestone):
+            banner(symbol: milestone == .complete ? "party.popper.fill" : "rectangle.stack.fill",
+                   text: L10n.format("postcard.milestone.toast.\(milestone.rawValue)", world.displayName, milestone.stars),
+                   fill: Theme.Color.starGold, onDark: false)
+        case .wonder(let wonder, _):
+            banner(symbol: wonder.symbol,
+                   text: L10n.format("wonder.toast.format", wonder.displayName),
+                   fill: Theme.Color.surfaceOverlay, onDark: true)
+        case .wonderBonus(_, let stars):
+            banner(symbol: "star.fill",
+                   text: L10n.format("wonder.bonus.toast", stars),
+                   fill: Theme.Color.brandPrimary, onDark: true)
         }
+    }
+
+    private func banner(symbol: String, text: String, fill: Color, onDark: Bool) -> some View {
+        HStack(spacing: Theme.Spacing.s) {
+            Image(systemName: symbol)
+            Text(text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .font(Theme.Typography.titleSmall)
+        .foregroundColor(onDark ? Theme.Color.textOnDark : Theme.Color.textPrimary)
+        .padding(.horizontal, Theme.Spacing.l)
+        .padding(.vertical, Theme.Spacing.s)
+        .background(Capsule().fill(fill))
+        .elevation(Theme.Elevation.cardHigh)
+        .accessibilityElement(children: .combine)
     }
 }

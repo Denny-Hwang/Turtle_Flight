@@ -1,11 +1,13 @@
 import Foundation
-import AVFoundation
+@preconcurrency import AVFoundation
 import UIKit
 
 /// Manages all game audio — BGM, vehicle SFX, UI sounds, and spoken
 /// callouts. BGM and SFX are synthesised at runtime unless a bundled
 /// asset overrides them; callouts are bundled clips only (`VoiceLine`).
-final class AudioManager {
+/// `@unchecked Sendable`: Public API is called on main (the flight loop hops with `onMain`); the
+/// background queue only builds `AVAudioPlayer`s and hands them back to main.
+final class AudioManager: @unchecked Sendable {
     static let shared = AudioManager()
 
     private var bgmPlayer: AVAudioPlayer?
@@ -327,7 +329,7 @@ final class AudioManager {
             return
         }
         guard !isMuted, isVoiceEnabled, sfxVolume > 0,
-              !UIAccessibility.isVoiceOverRunning else { return }
+              !MainActor.assumeIsolated({ UIAccessibility.isVoiceOverRunning }) else { return }
         if let playing = voicePlayer, playing.isPlaying,
            !VoiceLine.shouldInterrupt(current: currentVoiceLine, with: line) {
             return
@@ -394,7 +396,7 @@ final class AudioManager {
 
     // MARK: - Private Helpers
 
-    private func play(data: Data, volume: Float, loops: Int, completion: @escaping (AVAudioPlayer?) -> Void) {
+    private func play(data: Data, volume: Float, loops: Int, completion: @escaping @Sendable (AVAudioPlayer?) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let player = try AVAudioPlayer(data: data)
@@ -435,7 +437,7 @@ final class AudioManager {
                 let cleanupDelay: TimeInterval = player.duration > 0
                     ? player.duration + 0.1
                     : 2.0
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     // Hard cap defense — if the dictionary grew past the
                     // budget (asyncAfter scheduler hiccup, etc.), drop

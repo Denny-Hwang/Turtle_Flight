@@ -479,3 +479,24 @@
 "shop.buy.a11y" = "花 %2$lld 购买%1$@";
 "shop.notEnough" = "已有 %1$lld / %2$lld";
 "reward.earned" = "获得奖励";
+
+// MARK: - Sky wonders, postcard milestones, festival (2026-11-21)
+"wonder.meteorShower.name" = "流星雨";
+"wonder.roundRainbow.name" = "圆形彩虹";
+"wonder.cloudWhale.name" = "云朵鲸鱼";
+"wonder.glowTide.name" = "荧光潮";
+"wonder.toast.format" = "快看！%@";
+"wonder.bonus.toast" = "愿望成真！+%lld ★";
+"album.wonders.title" = "天空奇观";
+"album.wonders.hint" = "自由飞行中偶尔出现的罕见景象。飞近一点有奖励！";
+"album.milestone.half.format" = "一半：+%lld ★";
+"album.milestone.complete.format" = "全部：节日 +%lld ★";
+"album.festival.toggle" = "节日";
+"postcard.milestone.toast.half" = "%1$@ 明信片集齐一半！+%2$lld ★";
+"postcard.milestone.toast.complete" = "%1$@ 全部集齐！节日 +%2$lld ★";
+
+// MARK: - Look at me / look ahead (2026-11-22)
+"flight.control.lookAtMe" = "看我";
+"flight.control.lookAhead" = "看前面";
+"a11y.lookAtMe.label" = "让伙伴面向你，或面向飞行方向";
+"settings.controls.lookAtMe" = "飞行时伙伴看着我";

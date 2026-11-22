@@ -14,7 +14,8 @@ private let log = Logger(subsystem: "com.turtleflight.app", category: "GameCente
 ///     campaign 15★, 7-day streak
 /// Leaderboard / achievement IDs must exist in App Store Connect; until
 /// they do GameKit just logs an error and the game carries on.
-final class GameCenterManager: NSObject {
+/// `@unchecked Sendable`: GameKit callbacks are hopped to main before touching state.
+final class GameCenterManager: NSObject, @unchecked Sendable {
 
     static let shared = GameCenterManager()
 

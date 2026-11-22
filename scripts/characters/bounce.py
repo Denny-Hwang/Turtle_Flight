@@ -132,3 +132,66 @@ def vehicle():
 ICON = dict(s=1.2, cx=256, cy=250)
 STAND = dict(s=0.98, by=462)
 CLOUD = dict(s=0.9, by=420)
+
+
+# --- Back view --------------------------------------------------------------
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    hy = cy + 28
+    big = expr == "scared"
+    hg = E(cx, hy, 148, 102)
+    o = sh(hg, G, L, dx=-10, dy=-12)
+    o += clipped(hg, flat(C(cx - 60, hy - 10, 16), p["dark"], op=0.75) + flat(C(cx + 40, hy + 30, 12), p["dark"], op=0.75)
+                 + flat(C(cx + 96, hy - 26, 9), p["dark"], op=0.75) + flat(C(cx - 20, hy + 56, 8), p["dark"], op=0.75))
+    o += stroke(hg, L, 8)
+    # the eye bumps, seen from behind
+    for sx in (-1, 1):
+        o += sh(C(cx + sx * 74, cy - 58, 60 if big else 56), G, L, dx=-6, dy=-8)
+        o += flat(E(cx + sx * 74, cy - 28, 44, 22), G)
+    o += gloss(cx - 104, cy - 96, 18, 9)
+    return o
+
+
+def balloon_body_back(puff=1.0):
+    p = PAL; L = p["line"]; G = p["main"]
+    r = 136 * puff
+    o = stroke(P("M256 474 q-22 14 -6 26 q14 8 4 12"), L, 5)
+    g = C(256, 336, r)
+    o += sh(g, G, L, dx=-12, dy=-14)
+    spots = ""
+    for x, y, s in ((180, 300, 16), (330, 280, 12), (290, 390, 14), (196, 404, 10), (366, 360, 9), (250, 250, 8)):
+        spots += flat(C(x, y, s * puff), p["dark"], op=0.7)
+    o += clipped(g, spots) + stroke(g, L, 8)
+    o += flat(E(256 - r * 0.5, 336 - r * 0.42, r * 0.2, r * 0.1, -40), "#FFFFFF", op=0.6)
+    o += sh(P("M240 466 L272 466 L266 486 Q256 492 246 486 Z"), G, L, 6, dx=-2, dy=-3)
+    return o
+
+
+def fig_back(expr="default", arms=None):
+    p = PAL; L = p["line"]; G = p["main"]
+    a = ARMS[expr] if arms is None else arms
+    o = ""
+    for sx in (-1, 1):
+        o += sh(E(256 + sx * 92, 408, 54, 42, sx * 22), G, L)
+        o += foot(sx)
+    bg = E(256, 380, 90, 74)
+    o += sh(bg, G, L)
+    o += clipped(bg, flat(C(226, 370, 12), p["dark"], op=0.75) + flat(C(288, 400, 10), p["dark"], op=0.75)) + stroke(bg, L, 8)
+    o += limb(180, 350, 76, 30, a, -1, G, L) + limb(332, 350, 76, 30, a, 1, G, L)
+    o += head_back(expr)
+    return o
+
+
+def ride_back(expr="default"):
+    p = PAL; L = p["line"]; G = p["main"]
+    rot = {"speed": 6, "scared": -5}.get(expr, 0)
+    puff = {"joy": 1.04, "scared": 0.94}.get(expr, 1.0)
+    a = {"default": 96, "joy": 128, "scared": 80, "speed": 62}[expr]
+    o = ""
+    for sx in (-1, 1):
+        o += group(foot(sx), tx=sx * 6, ty=-6, rot=sx * -24, about=(256 + sx * 108, 450))
+        o += limb(256 + sx * 118, 316, 78, 30, a, sx, G, L)
+    o += balloon_body_back(puff)
+    o += '<g transform="translate(%s %s) scale(0.8)">\n%s</g>\n' % (f(256 - 256 * 0.8), f(170 - 200 * 0.8), head_back(expr))
+    return group(place(o, 0.98, 256, 462), rot=rot) + fx(expr, (40, 40, 472, 440))

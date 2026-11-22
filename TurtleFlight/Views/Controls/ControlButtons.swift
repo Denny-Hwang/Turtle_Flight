@@ -21,6 +21,10 @@ struct ControlButtons: View {
     /// just-enjoy-the-sky view. Nil hides the button.
     var onToggleCleanView: (() -> Void)? = nil
     var cleanViewOn: Bool = false
+    /// Turns the character round to face the player (or back to facing
+    /// ahead). Nil hides the button.
+    var onToggleLookAtMe: (() -> Void)? = nil
+    var lookAtMeOn: Bool = false
 
     var body: some View {
         VStack {
@@ -36,6 +40,15 @@ struct ControlButtons: View {
                         }
                         .accessibilityLabel(L10n.t("a11y.cleanView.label"))
                         .accessibilityAddTraits(cleanViewOn ? .isSelected : [])
+                    }
+
+                    if let onToggleLookAtMe {
+                        SmallButton(icon: lookAtMeOn ? "arrow.up.circle" : "face.smiling",
+                                    label: L10n.t(lookAtMeOn ? "flight.control.lookAhead" : "flight.control.lookAtMe")) {
+                            onToggleLookAtMe()
+                        }
+                        .accessibilityLabel(L10n.t("a11y.lookAtMe.label"))
+                        .accessibilityAddTraits(lookAtMeOn ? .isSelected : [])
                     }
 
                     // Calibrate button

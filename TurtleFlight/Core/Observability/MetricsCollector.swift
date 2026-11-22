@@ -25,7 +25,8 @@ private let log = Logger(subsystem: "com.turtleflight.app", category: "MetricsCo
 /// Subscriber registration is in `TurtleFlightApp.init`. The shared
 /// instance is retained for the lifetime of the app so the subscriber
 /// list inside `MXMetricManager` keeps a strong reference.
-final class MetricsCollector: NSObject {
+/// `@unchecked Sendable`: no mutable state; MetricKit payloads are only logged.
+final class MetricsCollector: NSObject, @unchecked Sendable {
 
     static let shared = MetricsCollector()
 

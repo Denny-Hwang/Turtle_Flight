@@ -118,3 +118,13 @@ extension TimeInterval {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 }
+
+/// Run `work` on the main actor: right away when already on main (so tests
+/// that drive the simulation from main stay synchronous), otherwise queued.
+func performOnMainActor(_ work: @escaping @MainActor @Sendable () -> Void) {
+    if Thread.isMainThread {
+        MainActor.assumeIsolated(work)
+    } else {
+        DispatchQueue.main.async { MainActor.assumeIsolated(work) }
+    }
+}

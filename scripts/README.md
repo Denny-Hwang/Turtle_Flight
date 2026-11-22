@@ -14,11 +14,22 @@ python3 scripts/characters/preview.py    # → build/character-preview/*.png con
 bash scripts/build_assets.sh             # → Assets.xcassets (PDF / PNG / atlases / icon)
 ```
 
-Per character it writes 16 SVGs: the standing poses (`default`, `joy`,
+Per character it writes 24 SVGs: the standing poses (`default`, `joy`,
 `scared`, `speed`), `flying`, `icon`, `silhouette`, `vehicle_only`, and the
-in-flight atlas frames `fly_*` (own vehicle) and `cloud_*` (Cloud Surf).
+in-flight atlas frames `fly_*` (own vehicle) and `cloud_*` (Cloud Surf), plus
+the same two rides seen from behind, `back_*` and `cloudback_*` (the in-flight
+default — the character faces where it is flying).
 To change a character, edit its module and re-run all three commands —
 never edit the SVG/PDF/PNG by hand.
+
+## `audio/build_audio.sh`
+
+Renders the bundled audio — one music loop per world, an engine loop per
+vehicle, the sound effects — with `audio/render_assets.swift` (plain Swift,
+no dependencies) and encodes it into `TurtleFlight/Audio/` (music AAC `.m4a`,
+loops and effects 16-bit `.caf`). Everything is synthesised from oscillators,
+plucked-string and FM models, so it can run anywhere, including CI. To change
+a tune, edit its `Song` in `render_assets.swift` and re-run.
 
 ## `screenshots/qa_matrix.sh`
 

@@ -131,3 +131,57 @@ def vehicle():
 ICON = dict(s=1.2, cx=256, cy=282)
 STAND = dict(s=0.9, by=462)
 CLOUD = dict(s=0.86, by=420)
+
+
+# --- Back view --------------------------------------------------------------
+
+def ear_back(rot=0):
+    p = PAL
+    g = P("M142 152 Q134 80 158 38 Q208 60 238 106 Z")
+    o = sh(g, p["main"], p["line"], dx=-5, dy=-6)
+    o += clipped(g, flat(C(156, 36, 38), p["dark"])) + stroke(g, p["line"], 8)
+    return group(o, rot=rot, about=(190, 130))
+
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    er = -34 if expr == "scared" else (-6 if expr == "joy" else 0)
+    hg = E(cx, cy, 126, 108)
+    o = sh(hg, G, L, dx=-10, dy=-12)
+    # tabby stripes on the back of the head
+    stripes = ""
+    for dx in (-36, 0, 36):
+        stripes += stroke(P("M%s %s q%s 30 0 60" % (f(cx + dx), f(cy - 100), f(dx * 0.2 - 6))), p["iris"], 12, op=0.7)
+    o += clipped(hg, stripes) + stroke(hg, L, 8)
+    o += gloss(cx - 70, cy - 58, 28, 13)
+    o += ear_back(er) + mirror(ear_back(er))
+    return o
+
+
+def fig_back(expr="default", arms=None, with_tail=True):
+    p = PAL; L = p["line"]; G = p["main"]
+    a = ARMS[expr] if arms is None else arms
+    o = sh(E(224, 452, 29, 17), G, L, 7, dx=-4, dy=-5) + sh(E(288, 452, 29, 17), G, L, 7, dx=-4, dy=-5)
+    o += limb(202, 340, 62, 32, a, -1, G, L) + limb(310, 340, 62, 32, a, 1, G, L)
+    bg = E(256, 376, 72, 80)
+    o += sh(bg, G, L)
+    o += clipped(bg, stroke(P("M226 330 q-8 30 0 60 M286 330 q8 30 0 60"), p["iris"], 10, op=0.6)) + stroke(bg, L, 8)
+    o += head_back(expr)
+    band = "M190 300 Q256 270 322 300 Q330 312 322 322 Q256 296 190 322 Q182 312 190 300 Z"
+    o += sh(P(band), RED, REDL, 7, dx=-4, dy=-5)
+    if with_tail:
+        o += mirror(tail(expr))
+    return o
+
+
+def ride_back(expr="default"):
+    p = PAL; L = p["line"]; G = p["main"]
+    rot = {"speed": 5, "scared": -5}.get(expr, 0)
+    o = balloon()
+    o += place(fig_back(expr, with_tail=False), 0.82, 256, 474)
+    o += basket()
+    if expr in ("default", "speed"):
+        o += sh(E(214, 382, 22, 16), G, L, 7, dx=-3, dy=-4) + sh(E(298, 382, 22, 16), G, L, 7, dx=-3, dy=-4)
+    # tail curls over the basket rim
+    o += tube("M330 400 Q392 392 396 340 Q398 312 420 300", G, L, 22)
+    return group(place(o, 0.98, 256, 462), rot=rot) + fx(expr, (50, 150, 462, 440))

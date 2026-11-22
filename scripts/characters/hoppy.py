@@ -135,3 +135,61 @@ def vehicle():
 ICON = dict(s=1.0, cx=256, cy=312)
 STAND = dict(s=0.84, by=462)
 CLOUD = dict(s=0.78, by=420)
+
+
+# --- Back view --------------------------------------------------------------
+
+def ear_back(side, rot):
+    p = PAL
+    x = 256 + side * 50
+    return group(sh(E(x, 44, 33, 96), p["main"], p["line"], dx=-5, dy=-6), rot=rot, about=(x - side * 4, 122))
+
+
+def flop_ear_back():
+    p = PAL
+    return (sh(E(308, 76, 33, 64, 8), p["main"], p["line"], dx=-5, dy=-6)
+            + sh(E(348, 36, 31, 56, 64), p["main"], p["line"], dx=-5, dy=-6))
+
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    lr, rr = EARS[expr]
+    # From behind the flopped ear is on the other side.
+    ears = ear_back(-1, lr) + (flop_ear_back() if rr is None else ear_back(1, rr))
+    o = mirror(ears) if rr is None else ears
+    for sx in (-1, 1):
+        o += sh(C(cx + sx * 118, cy + 34, 22), G, L, 7, dx=-4, dy=-5)
+    hg = E(cx, cy, 124, 108)
+    o += sh(hg, G, L, dx=-10, dy=-12)
+    o += clipped(hg, flat(E(cx, cy - 20, 60, 70), p["light"], op=0.35)) + stroke(hg, L, 8)
+    o += gloss(cx - 70, cy - 60, 28, 13)
+    if expr != "scared":
+        o += flower(cx + 96, cy - 86)
+    return o
+
+
+def fig_back(expr="default", arms=None):
+    p = PAL; L = p["line"]; G = p["main"]
+    a = ARMS[expr] if arms is None else arms
+    o = sh(E(212, 452, 38, 18), G, L, 7, dx=-4, dy=-5) + sh(E(300, 452, 38, 18), G, L, 7, dx=-4, dy=-5)
+    o += limb(204, 342, 60, 32, a, -1, G, L) + limb(308, 342, 60, 32, a, 1, G, L)
+    bg = E(256, 378, 78, 78)
+    o += sh(bg, G, L)
+    o += head_back(expr)
+    # the cotton tail is the star of the back view
+    o += sh(C(256, 426, 30), WHITE, L, 7, dx=-4, dy=-5) + sh(C(240, 414, 14), WHITE, L, 0, dx=-2, dy=-2)
+    return o
+
+
+def ride_back(expr="default"):
+    rot = {"speed": 9, "scared": -2}.get(expr, 4)
+    body, g, inner = carrot_body()
+    o = leaves() + body + clipped(g, inner) + stroke(g, CARL, 8)
+    o += flat(E(262, 352, 104, 20), "#B3500F", CARL, 7)
+    o += place(fig_back(expr), 0.86, 262, 432)
+    kit_lip = clipped(P("M0 366 H512 V512 H0 Z"), '<%s fill="%s"/>\n' % (g, CAR) + clipped(g, inner) + stroke(g, CARL, 8))
+    o += kit_lip
+    o += stroke(P("M158 354 Q262 388 366 354"), CARL, 7)
+    o += sh(P("M300 458 Q330 500 392 492 Q372 470 372 452 Z"), "#E06A12", CARL, 7, dx=-3, dy=-4)
+    # Seen from behind the carrot points the other way.
+    return group(place(mirror(o), 0.95, 262, 474), rot=rot) + fx(expr, (50, 60, 462, 440))

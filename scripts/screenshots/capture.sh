@@ -28,14 +28,20 @@ DEVICES=()
 [ "$ONLY" = all ] || [ "$ONLY" = iphone ] && DEVICES+=("iphone-6.9|iPhone 17 Pro Max")
 [ "$ONLY" = all ] || [ "$ONLY" = ipad ]   && DEVICES+=("ipad-13|iPad Pro 13-inch (M5)")
 
-# scene | character | vehicle | theme | seconds to wait before capture
+# scene | character | vehicle | theme | seconds to wait before capture | extra launch args
+# In flight the character faces ahead by default; `-flight.lookAtMe YES`
+# turns it round (the in-flight "Look at me" button) for the hero shot.
+# `tour` / `freeflight` show the world tour: a landmark at sunset, and a
+# sky wonder over a festival (forced on, Debug-only switches).
 SCENES=(
-  "daily|turtle|shellJet|sky|26"
-  "skyrun|penguin|bellyGlider|ocean|32"
-  "daily-result|bunny|carrotJet|sky|70"
-  "home|turtle|shellJet|sky|4"
-  "characters|turtle|shellJet|sky|4"
-  "stages|turtle|shellJet|sky|4"
+  "daily|turtle|shellJet|sky|26|-flight.lookAtMe YES"
+  "skyrun|penguin|bellyGlider|ocean|32|-flight.lookAtMe NO"
+  "daily-result|bunny|carrotJet|sky|70|-flight.lookAtMe YES"
+  "home|turtle|shellJet|sky|4|"
+  "characters|turtle|shellJet|sky|4|"
+  "stages|turtle|shellJet|sky|4|"
+  "tour|bunny|carrotJet|desert|24|-TFMood sunset -flight.lookAtMe NO"
+  "freeflight|cat|cushionBalloon|seoul|9|-TFMood day -TFWonder cloudWhale -TFFestival YES -flight.lookAtMe NO"
 )
 
 command -v xcodegen >/dev/null || { echo "brew install xcodegen" >&2; exit 2; }
@@ -82,18 +88,21 @@ for entry in "${DEVICES[@]}"; do
   OUT="$OUT_ROOT/$slug"; mkdir -p "$OUT"
   i=0
   for s in "${SCENES[@]}"; do
-    IFS='|' read -r scene char vehicle theme wait <<<"$s"
+    IFS='|' read -r scene char vehicle theme wait extra <<<"$s"
     i=$((i + 1)); file="$OUT/$(printf '%02d' $i)_$scene.png"
     xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
     xcrun simctl launch "$UDID" "$BUNDLE_ID" -TFScreenshot "$scene" \
-      -selectedCharacter "$char" -selectedVehicle "$vehicle" -selectedMapTheme "$theme" \
+      -selectedCharacter "$char" -selectedVehicle "$vehicle" -selectedMapTheme "$theme" $extra \
       -AppleLanguages "($LANG_CODE)" -AppleLocale "$LOCALE" >/dev/null
     sleep "$wait"
     xcrun simctl io "$UDID" screenshot --mask=ignored "$file" >/dev/null 2>&1
     # The simulator captures in portrait; the game is landscape-only.
     w=$(sips -g pixelWidth "$file" | awk '/pixelWidth/{print $2}')
     h=$(sips -g pixelHeight "$file" | awk '/pixelHeight/{print $2}')
-    [ "$h" -gt "$w" ] && sips -r 270 "$file" >/dev/null
+    # Which way round depends on the simulator's landscape side, which has
+    # flipped between runs: if the shots come out upside down, re-run with
+    # ROTATE=90 (or turn the raw files 180° and re-run compose.py).
+    [ "$h" -gt "$w" ] && sips -r "${ROTATE:-270}" "$file" >/dev/null
     # Real-device screenshots never contain the Dynamic Island; the
     # Simulator's do. Paint it out (only that pill is touched).
     case "$slug" in iphone*) python3 scripts/screenshots/clean_island.py "$file" >/dev/null ;; esac

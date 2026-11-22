@@ -27,7 +27,10 @@ import UIKit
 ///     *reads* its inputs. That read is technically racy but benign for
 ///     a Double snapshot; Swift 6 strict-concurrency adoption is tracked
 ///     as a follow-up.
-final class FlightViewModel: ObservableObject {
+/// `@unchecked Sendable`: the simulation half runs on the SceneKit render
+/// thread and the `@Published` half on main, exactly as described above;
+/// every hop between the two goes through `onMain` / `publish`.
+final class FlightViewModel: ObservableObject, @unchecked Sendable {
     // MARK: - Published State
     @Published var speed: Float = 0
     @Published var altitude: Float = 500
@@ -120,7 +123,7 @@ final class FlightViewModel: ObservableObject {
 
     /// Run `work` now if on main, else hop asynchronously. Keeps unit
     /// tests (which drive `update` from main) fully synchronous.
-    func onMain(_ work: @escaping () -> Void) {
+    func onMain(_ work: @escaping @Sendable () -> Void) {
         if Thread.isMainThread {
             work()
         } else {
@@ -191,6 +194,36 @@ final class FlightViewModel: ObservableObject {
     var toastCounter = 0
     /// A greeted friend hands over one star.
     func awardHelloStar() { simStarsCollected += 1 }
+    /// Stars from a sky wonder (see FlightViewModel+Sightseeing).
+    func awardWonderStars(_ count: Int) { simStarsCollected += count }
+    /// Lanterns + fireworks when this world's Festival is on.
+    var festivalLayer: FestivalLayer?
+    /// Sky wonder rolled for this flight, the flight clock that counts
+    /// toward it, and the one in the sky right now.
+    var wonderPlan: SkyWonder.Plan?
+    var wonderClock: Float = 0
+    var activeWonder: (wonder: SkyWonder, node: SCNNode, endsAt: Float, bonusPaid: Bool)?
+    /// Last friendly bump off a landmark (debounces sound + haptic).
+    var lastLandmarkBumpTime: TimeInterval = 0
+    /// Scene root the wonder is added to.
+    weak var wonderParent: SCNNode?
+    /// True while the character is turned round to face the player
+    /// (front art); false = facing ahead, back to the camera (default).
+    @Published private(set) var isLookingAtCamera = false
+    /// UserDefaults key shared by the in-flight button and Settings.
+    static let lookAtCameraKey = "flight.lookAtMe"
+
+    func setLookingAtCamera(_ on: Bool) {
+        isLookingAtCamera = on
+        guard let node = characterNode else { return }
+        CharacterRegistry.setFacing(lookingAtCamera: on, on: node,
+                                    character: currentCharacter, vehicle: currentVehicle)
+    }
+
+    /// Hold an expression for a moment (bump → scared, wonder → joy).
+    func flashExpression(_ expression: CharacterExpression, for duration: TimeInterval) {
+        expressionLatch.trigger(expression, for: duration, now: CACurrentMediaTime())
+    }
     var itemSystem: ItemSystem?
     var missionEngine: MissionEngine?
 
@@ -370,14 +403,15 @@ final class FlightViewModel: ObservableObject {
     init() {
         flightEngine = FlightEngine()
         gyroController = GyroController()
-        reduceMotionEnabled = UIAccessibility.isReduceMotionEnabled
+        // Built on main (a `@StateObject` / the tests).
+        reduceMotionEnabled = MainActor.assumeIsolated { UIAccessibility.isReduceMotionEnabled }
         reduceMotionObserver = NotificationCenter.default.addObserver(
             forName: UIAccessibility.reduceMotionStatusDidChangeNotification,
             object: nil,
             queue: .main
         ) { [weak self] _ in
             guard let self else { return }
-            self.reduceMotionEnabled = UIAccessibility.isReduceMotionEnabled
+            self.reduceMotionEnabled = MainActor.assumeIsolated { UIAccessibility.isReduceMotionEnabled }
             self.applyEffectiveSensitivity()
         }
         applyEffectiveSensitivity()
@@ -402,7 +436,11 @@ final class FlightViewModel: ObservableObject {
                      vehicle: VehicleType,
                      theme: MapTheme = .sky,
                      trailTier: TrailColorTier = .vehicle,
-                     flair: TrailLook? = nil) {
+                     flair: TrailLook? = nil,
+                     skyMood: SkyMood = .day,
+                     festival: Bool = false,
+                     wonderSeed: Int? = nil,
+                     lookingAtCamera: Bool = false) {
         currentCharacter = character
         currentVehicle = vehicle
         currentMapTheme = theme
@@ -418,7 +456,11 @@ final class FlightViewModel: ObservableObject {
         // flying-pose art, so a single billboard subsumes both per spec
         // (docs/CHARACTER_DESIGN_PROMPT.md §Technical Notes / 2).
         let registry = CharacterRegistry.shared
-        let charNode = registry.buildInflightBillboard(for: character, vehicle: vehicle)
+        // By default the character faces where it is flying (its back to
+        // the chase camera); the in-flight "look at me" button turns it round.
+        isLookingAtCamera = lookingAtCamera
+        let charNode = registry.buildInflightBillboard(for: character, vehicle: vehicle,
+                                                       lookingAtCamera: lookingAtCamera)
 
         // Place in scene
         charNode.position = SCNVector3(0, 500, 0)
@@ -502,6 +544,9 @@ final class FlightViewModel: ObservableObject {
         lastSimLandmarkHint = nil
         landmarkHint = nil
         flightToast = nil
+        lastLandmarkBumpTime = 0
+        setUpFreeFlightExtras(scene: scene, theme: theme, mood: skyMood, festival: festival,
+                              wonderSeed: wonderSeed, around: charNode.position)
 
         // Setup items
         itemSystem = ItemSystem(parentNode: scene.rootNode)
@@ -549,6 +594,7 @@ final class FlightViewModel: ObservableObject {
         lookAtConstraint = nil
         lastRenderTime = 0
         tearDownGhost()
+        tearDownFreeFlightExtras()
         activeCourseKey = nil
         activeStage = nil
     }
@@ -564,6 +610,7 @@ final class FlightViewModel: ObservableObject {
         landmarkField?.clear()
         landmarkField = nil
         landmarkHint = nil
+        tearDownFreeFlightExtras()
         AudioManager.shared.playVoice(.go)
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
@@ -721,6 +768,8 @@ final class FlightViewModel: ObservableObject {
             screenshotAutopilotStep(from: poseBeforePhysics, deltaTime: deltaTime)
         }
         #endif
+        // Free Flight: landmarks are solid (a friendly bump, no penalty).
+        bumpOffLandmarks()
 
         let flightState = flightEngine.state
 

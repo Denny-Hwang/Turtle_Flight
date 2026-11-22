@@ -101,7 +101,9 @@ enum QuestGenerator {
 }
 
 /// Persists today's quest set and applies events to it.
-final class QuestTracker {
+/// `@unchecked Sendable`: state is guarded by `lock` (quests are recorded
+/// from the SceneKit render thread and read on main).
+final class QuestTracker: @unchecked Sendable {
 
     static let storageKey = "quests.v1"
     static let shared = QuestTracker(defaults: .standard)

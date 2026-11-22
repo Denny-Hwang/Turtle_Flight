@@ -482,3 +482,24 @@
 "shop.buy.a11y" = "%1$@ 구매, 가격 %2$lld";
 "shop.notEnough" = "%2$lld개 중 %1$lld개 있어요";
 "reward.earned" = "받은 보상";
+
+// MARK: - Sky wonders, postcard milestones, festival (2026-11-21)
+"wonder.meteorShower.name" = "유성우";
+"wonder.roundRainbow.name" = "동그란 무지개";
+"wonder.cloudWhale.name" = "구름 고래";
+"wonder.glowTide.name" = "빛나는 물결";
+"wonder.toast.format" = "저기 봐! %@";
+"wonder.bonus.toast" = "소원 성취! +%lld ★";
+"album.wonders.title" = "하늘의 신비";
+"album.wonders.hint" = "자유 비행에서 가끔 나타나는 특별한 광경이에요. 가까이 날아가면 보너스!";
+"album.milestone.half.format" = "절반: +%lld ★";
+"album.milestone.complete.format" = "전부: 축제 +%lld ★";
+"album.festival.toggle" = "축제";
+"postcard.milestone.toast.half" = "%1$@ 엽서 절반 모음! +%2$lld ★";
+"postcard.milestone.toast.complete" = "%1$@ 엽서 완성! 축제 +%2$lld ★";
+
+// MARK: - Look at me / look ahead (2026-11-22)
+"flight.control.lookAtMe" = "나를 봐";
+"flight.control.lookAhead" = "앞을 봐";
+"a11y.lookAtMe.label" = "친구가 나를 보게 하거나 날아가는 쪽을 보게 바꾸기";
+"settings.controls.lookAtMe" = "비행 중 친구가 나를 보기";

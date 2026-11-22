@@ -479,3 +479,24 @@
 "shop.buy.a11y" = "Buy %1$@ for %2$lld";
 "shop.notEnough" = "You have %1$lld of %2$lld";
 "reward.earned" = "Earned";
+
+// MARK: - Sky wonders, postcard milestones, festival (2026-11-21)
+"wonder.meteorShower.name" = "Meteor Shower";
+"wonder.roundRainbow.name" = "Round Rainbow";
+"wonder.cloudWhale.name" = "Cloud Whale";
+"wonder.glowTide.name" = "Glow Tide";
+"wonder.toast.format" = "Look! %@";
+"wonder.bonus.toast" = "Wish granted! +%lld ★";
+"album.wonders.title" = "Sky Wonders";
+"album.wonders.hint" = "Rare sights that sometimes appear in Free Flight. Fly up close for a bonus.";
+"album.milestone.half.format" = "Half: +%lld ★";
+"album.milestone.complete.format" = "All: Festival +%lld ★";
+"album.festival.toggle" = "Festival";
+"postcard.milestone.toast.half" = "%1$@: half the postcards! +%2$lld ★";
+"postcard.milestone.toast.complete" = "%1$@ complete! Festival +%2$lld ★";
+
+// MARK: - Look at me / look ahead (2026-11-22)
+"flight.control.lookAtMe" = "Look at me";
+"flight.control.lookAhead" = "Look ahead";
+"a11y.lookAtMe.label" = "Turn your friend to face you or to face where it is flying";
+"settings.controls.lookAtMe" = "Friend looks at me while flying";

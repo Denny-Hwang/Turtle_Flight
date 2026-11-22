@@ -30,6 +30,8 @@ struct SettingsView: View {
     // MARK: - Local audio mirror
 
     @State private var touchControls: Bool = GyroController.touchControlEnabled
+    /// Character faces the player instead of where it is flying.
+    @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
     @State private var hapticsOn: Bool = Haptics.shared.isEnabled
     @State private var isMuted: Bool
     @State private var bgmVolume: Float
@@ -143,6 +145,7 @@ struct SettingsView: View {
                 .onChange(of: touchControls) { newValue in
                     GyroController.touchControlEnabled = newValue
                 }
+            Toggle(L10n.t("settings.controls.lookAtMe"), isOn: $lookAtMe)
             Toggle(L10n.t("settings.controls.haptics"), isOn: $hapticsOn)
                 .onChange(of: hapticsOn) { newValue in
                     Haptics.shared.isEnabled = newValue
@@ -246,7 +249,8 @@ struct SettingsView: View {
                         CloudSync.shared.onRemoteProgress = { remote in
                             missionVM.acceptRemoteProgress(remote)
                         }
-                        CloudSync.shared.start(local: { missionVM.progress })
+                        // CloudSync asks on main (start + its .main notification).
+                CloudSync.shared.start(local: { MainActor.assumeIsolated { missionVM.progress } })
                     } else {
                         CloudSync.shared.stop()
                     }
@@ -439,6 +443,7 @@ struct SettingsView: View {
         QuestTracker.shared.reset()
         GhostStore.shared.deleteAll()
         PostcardAlbum.shared.reset()
+        WonderLog.shared.reset()
         // Banner stays visible briefly so the destructive action reads
         // as confirmed rather than silently working.
         withAnimation(.easeInOut) { resetSuccess = true }

@@ -7,10 +7,11 @@
 Output is deterministic and byte-stable. The SVGs are build inputs for
 scripts/build_assets.sh; edit the character modules here, never the SVGs.
 
-Per character (16 files):
+Per character (24 files):
   <n>_default|joy|scared|speed.svg         standing, no vehicle (selection UI)
   <n>_flying.svg, <n>_fly_<expr>.svg       riding its own vehicle (in-flight atlas)
   <n>_cloud_<expr>.svg                     riding the shared Cloud Surf cloud
+  <n>_back_<expr>.svg, <n>_cloudback_<expr>.svg  the same two rides seen from behind
   <n>_icon.svg                             head portrait in a ring
   <n>_silhouette.svg                       one-colour shape
   <n>_vehicle_only.svg                     the vehicle by itself
@@ -40,6 +41,13 @@ def cloud_ride(m, expr):
     c = m.CLOUD
     rot = {"speed": -6, "scared": 5}.get(expr, 0)
     inner = cloud(256, 404, 0.9, back=True) + place(m.fig(expr), c["s"], 256, c["by"]) + cloud(256, 404, 0.9)
+    return group(inner, rot=rot) + fx(expr, (40, 40, 472, 440))
+
+
+def cloud_ride_back(m, expr):
+    c = m.CLOUD
+    rot = {"speed": 6, "scared": -5}.get(expr, 0)
+    inner = cloud(256, 404, 0.9, back=True) + place(m.fig_back(expr), c["s"], 256, c["by"]) + cloud(256, 404, 0.9)
     return group(inner, rot=rot) + fx(expr, (40, 40, 472, 440))
 
 
@@ -112,6 +120,9 @@ def file_plan(name, m):
         plan.append(("%s_%s" % (name, e), lambda e=e: stand(m, e)))
         plan.append(("%s_fly_%s" % (name, e), lambda e=e: m.ride(e)))
         plan.append(("%s_cloud_%s" % (name, e), lambda e=e: cloud_ride(m, e)))
+        # back views: flying away from the chase camera (the in-flight default)
+        plan.append(("%s_back_%s" % (name, e), lambda e=e: m.ride_back(e)))
+        plan.append(("%s_cloudback_%s" % (name, e), lambda e=e: cloud_ride_back(m, e)))
     plan.append(("%s_flying" % name, lambda: m.ride("default")))
     plan.append(("%s_icon" % name, lambda: icon(m)))
     plan.append(("%s_silhouette" % name, lambda: silhouette(m)))

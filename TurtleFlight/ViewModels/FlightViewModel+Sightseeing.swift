@@ -40,6 +40,10 @@ extension FlightViewModel {
         enum Kind: Equatable {
             case postcard(LandmarkKind, isNew: Bool)
             case hello
+            /// A world's postcards reached half / all.
+            case milestone(MapTheme, PostcardMilestone)
+            case wonder(SkyWonder, isNew: Bool)
+            case wonderBonus(SkyWonder, stars: Int)
         }
         let id: Int
         let kind: Kind
@@ -56,6 +60,7 @@ extension FlightViewModel {
         guard let field = landmarkField else { return }
         sightseeingAccumulator += deltaTime
         guard sightseeingAccumulator >= Self.sightseeingInterval else { return }
+        let elapsed = sightseeingAccumulator
         sightseeingAccumulator = 0
 
         field.update(playerPosition: position)
@@ -69,7 +74,14 @@ extension FlightViewModel {
             if nearest.distance < LandmarkField.discoveryRadius {
                 let visit = album.recordVisit(nearest.placement.kind, by: character)
                 if visit != .alreadyStamped {
-                    emitToast(.postcard(nearest.placement.kind, isNew: visit == .newPostcard))
+                    let world = nearest.placement.kind.world
+                    if visit == .newPostcard,
+                       let milestone = PostcardRewards.crossed(world: world, found: album.postcardCount(in: world)) {
+                        // The bigger news wins the banner; it names the place too.
+                        emitToast(.milestone(world, milestone))
+                    } else {
+                        emitToast(.postcard(nearest.placement.kind, isNew: visit == .newPostcard))
+                    }
                     Analytics.shared.track(.landmarkDiscovered, ["landmark": nearest.placement.kind.rawValue])
                     onMain {
                         AudioManager.shared.playStageClear()
@@ -83,8 +95,11 @@ extension FlightViewModel {
         }
         if hint != lastSimLandmarkHint {
             lastSimLandmarkHint = hint
-            onMain { [weak self] in self?.landmarkHint = hint }
+            let published = hint
+            onMain { [weak self] in self?.landmarkHint = published }
         }
+
+        updateWondersAndFestival(deltaTime: elapsed, position: position, heading: heading)
 
         // Friends → hello.
         for friend in terrainGenerator?.ungreetedFriends() ?? [] {
@@ -100,6 +115,98 @@ extension FlightViewModel {
                 AudioManager.shared.playStarCollect()
                 Haptics.shared.play(.pickup)
             }
+        }
+    }
+
+    // MARK: - Festival + sky wonders
+
+    func setUpFreeFlightExtras(scene: SCNScene, theme: MapTheme, mood: SkyMood, festival: Bool,
+                               wonderSeed: Int?, around position: SCNVector3) {
+        tearDownFreeFlightExtras()
+        if festival {
+            festivalLayer = FestivalLayer(parentNode: scene.rootNode, world: theme, around: position)
+        }
+        let seed = wonderSeed ?? Int.random(in: 0...Int(Int32.max))
+        wonderPlan = SkyWonder.plan(world: theme, mood: mood, seed: seed)
+        #if DEBUG
+        // Screenshot / QA: `-TFWonder <name>` forces one, three seconds in.
+        if let raw = UserDefaults.standard.string(forKey: "TFWonder"), let forced = SkyWonder(rawValue: raw) {
+            wonderPlan = SkyWonder.Plan(wonder: forced, startTime: 3)
+        }
+        #endif
+        wonderClock = 0
+        wonderParent = scene.rootNode
+    }
+
+    func tearDownFreeFlightExtras() {
+        festivalLayer?.remove()
+        festivalLayer = nil
+        activeWonder?.node.removeFromParentNode()
+        activeWonder = nil
+        wonderPlan = nil
+        wonderClock = 0
+    }
+
+    /// Runs inside the throttled sightseeing tick.
+    func updateWondersAndFestival(deltaTime: Float, position: SCNVector3, heading: Float) {
+        festivalLayer?.update(deltaTime: deltaTime, playerPosition: position, heading: heading)
+        wonderClock += deltaTime
+
+        if let plan = wonderPlan, activeWonder == nil, wonderClock >= plan.startTime, let parent = wonderParent {
+            wonderPlan = nil
+            let node = WonderFactory.build(plan.wonder)
+            let h = heading * .pi / 180
+            let distance = SkyWonder.spawnDistance
+            let y = max(position.y, Float(terrainGenerator?.heightAt(x: position.x, z: position.z) ?? 0) + 120)
+            node.position = SCNVector3(position.x + sin(h) * distance, y, position.z - cos(h) * distance)
+            node.eulerAngles.y = -h
+            parent.addChildNode(node)
+            activeWonder = (plan.wonder, node, wonderClock + SkyWonder.duration, false)
+            let isNew = WonderLog.shared.record(plan.wonder)
+            emitToast(.wonder(plan.wonder, isNew: isNew))
+            Analytics.shared.track(.wonderSeen, ["wonder": plan.wonder.rawValue])
+            onMain {
+                AudioManager.shared.playRingPass()
+                Haptics.shared.play(.discovery)
+            }
+        }
+
+        guard var active = activeWonder else { return }
+        if !active.bonusPaid {
+            let a = WonderFactory.anchor(of: active.node)
+            let d2 = pow(a.x - position.x, 2) + pow(a.y - position.y, 2) + pow(a.z - position.z, 2)
+            if d2 < SkyWonder.bonusRadius * SkyWonder.bonusRadius {
+                active.bonusPaid = true
+                activeWonder = active
+                awardWonderStars(SkyWonder.bonusStars)
+                flashExpression(.joy, for: 1.5)
+                emitToast(.wonderBonus(active.wonder, stars: SkyWonder.bonusStars))
+                onMain {
+                    AudioManager.shared.playStarCollect()
+                    Haptics.shared.play(.pickup)
+                }
+            }
+        }
+        if wonderClock >= active.endsAt {
+            let node = active.node
+            node.runAction(.sequence([.fadeOut(duration: 2), .removeFromParentNode()]))
+            activeWonder = nil
+        }
+    }
+
+    /// Landmarks are solid in Free Flight: push the character back out
+    /// and turn it away. No score, no penalty — just a bump.
+    func bumpOffLandmarks() {
+        guard let field = landmarkField,
+              let hit = field.contact(at: flightEngine.state.position) else { return }
+        flightEngine.resolveContact(normal: hit.normal, depth: hit.depth)
+        let now = CACurrentMediaTime()
+        guard now - lastLandmarkBumpTime > 0.6 else { return }
+        lastLandmarkBumpTime = now
+        flashExpression(.scared, for: 0.8)
+        onMain {
+            AudioManager.shared.playCollision()
+            Haptics.shared.play(.landmarkBump)
         }
     }
 

@@ -107,3 +107,42 @@ def vehicle():
 ICON = dict(s=1.3, cx=256, cy=272)
 STAND = dict(s=0.94, by=462)
 CLOUD = dict(s=0.9, by=420)
+
+
+# --- Back view --------------------------------------------------------------
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    o = ""
+    for dx, top, w, rot in ((-24, 62, 15, -22), (2, 50, 17, 2), (27, 64, 15, 24)):
+        o += sh(E(cx + dx, cy - 150 + top, w, 34, rot), p["dark"], L, 7, dx=-3, dy=-4)
+    hg = E(cx, cy, 128, 112)
+    o += sh(hg, G, L, dx=-10, dy=-12)
+    o += clipped(hg, flat(E(cx, cy - 30, 100, 80), p["dark"], op=0.35))
+    o += stroke(hg, L, 8)
+    o += gloss(cx - 70, cy - 64, 28, 13)
+    # bow-tie ribbon round the back of the neck
+    o += stroke(P("M%s %s Q%s %s %s %s" % (f(cx - 90), f(cy + 92), f(cx), f(cy + 112), f(cx + 90), f(cy + 92))), RED, 10)
+    return o
+
+
+def fig_back(expr="default", arms=None):
+    p = PAL; L = p["line"]
+    a = ARMS[expr] if arms is None else arms
+    o = sh(E(218, 452, 34, 17), ORANGE, ORL, 7, dx=-4, dy=-5) + sh(E(294, 452, 34, 17), ORANGE, ORL, 7, dx=-4, dy=-5)
+    o += limb(184, 336, 80, 42, a, -1, p["dark"], L) + limb(328, 336, 80, 42, a, 1, p["dark"], L)
+    bg = E(256, 372, 86, 84)
+    o += sh(bg, p["main"], L)
+    o += clipped(bg, flat(E(256, 352, 60, 70), p["dark"], op=0.4)) + stroke(bg, L, 8)
+    o += sh(P("M240 444 L256 474 L272 444 Z"), p["dark"], L, 6, dx=-2, dy=-2)   # tail
+    o += head_back(expr)
+    return o
+
+
+def ride_back(expr="default"):
+    """Riding the glider away from the camera, flippers out for balance."""
+    rot = {"speed": 6, "scared": -5}.get(expr, 0)
+    a = GLIDE[expr]
+    o = glider()
+    o += place(fig_back(expr, arms=a), 0.86, 256, 440)
+    return group(place(o, 0.97, 256, 462), rot=rot) + fx(expr, (40, 60, 472, 440))

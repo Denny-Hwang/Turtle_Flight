@@ -1,5 +1,5 @@
 import Foundation
-import ReplayKit
+@preconcurrency import ReplayKit
 import SwiftUI
 import os
 
@@ -15,7 +15,8 @@ private let log = Logger(subsystem: "com.turtleflight.app", category: "Clips")
 /// presents Apple's `RPPreviewViewController` (trim + save + share).
 /// ReplayKit shows its own permission prompt the first time; audio from
 /// the microphone is never enabled.
-final class ClipRecorder: NSObject {
+/// `@unchecked Sendable`: ReplayKit start/stop is driven from main.
+final class ClipRecorder: NSObject, @unchecked Sendable {
 
     static let shared = ClipRecorder()
 
@@ -43,7 +44,7 @@ final class ClipRecorder: NSObject {
 
     /// Stop and hand back the preview controller (nil when nothing was
     /// recorded or the user has nothing to share).
-    func stop(completion: @escaping (RPPreviewViewController?) -> Void) {
+    func stop(completion: @escaping @Sendable (RPPreviewViewController?) -> Void) {
         guard isRecording else {
             completion(nil)
             return
@@ -68,8 +69,11 @@ final class ClipRecorder: NSObject {
     }
 }
 
-extension RPPreviewViewController: Identifiable {
-    public var id: ObjectIdentifier { ObjectIdentifier(self) }
+/// Identifiable box for presenting a preview with `fullScreenCover(item:)`
+/// (rather than retro-conforming the ReplayKit class).
+struct ClipPreviewItem: Identifiable {
+    let controller: RPPreviewViewController
+    var id: ObjectIdentifier { ObjectIdentifier(controller) }
 }
 
 /// SwiftUI bridge for `RPPreviewViewController`.

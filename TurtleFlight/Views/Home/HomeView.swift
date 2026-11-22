@@ -208,7 +208,7 @@ struct HomeView: View {
             )
         }
         .sheet(isPresented: $showAlbum) {
-            PostcardAlbumView(isPresented: $showAlbum)
+            PostcardAlbumView(isPresented: $showAlbum, missionVM: missionVM)
         }
         .sheet(isPresented: $showShop) {
             ShopView(isPresented: $showShop, missionVM: missionVM,
@@ -247,7 +247,8 @@ struct HomeView: View {
                 CloudSync.shared.onRemoteProgress = { remote in
                     missionVM.acceptRemoteProgress(remote)
                 }
-                CloudSync.shared.start(local: { missionVM.progress })
+                // CloudSync asks on main (start + its .main notification).
+                CloudSync.shared.start(local: { MainActor.assumeIsolated { missionVM.progress } })
             }
             #if DEBUG
             if ScreenshotDirector.isActive {

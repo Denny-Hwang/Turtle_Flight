@@ -52,6 +52,15 @@ struct ExpressionLatch {
         lastMissionStateKey = ""
     }
 
+    /// Hold `expression` for `duration` from `now` — for one-off moments
+    /// outside the mission state machine (a bump off a landmark, a sky
+    /// wonder). A longer latch already running is not cut short.
+    mutating func trigger(_ expression: CharacterExpression, for duration: TimeInterval, now: TimeInterval) {
+        if latched != nil, latchUntil > now + duration { return }
+        latched = expression
+        latchUntil = now + duration
+    }
+
     /// Resolve the expression for this frame and return it. Side effect:
     /// stores the result in `current`.
     ///
