@@ -29,6 +29,21 @@ final class WorldTourTests: XCTestCase {
         }
     }
 
+    func testNewWorldsHaveWaterAndOldWorldsKeepTheirShape() {
+        // Fractal noise is in [0, 1]: water exists only where seaOffset
+        // pushes valleys under 0 m (V3).
+        for world in [MapTheme.city, .seoul, .wild] {
+            let p = WorldProfile.profile(for: world)
+            XCTAssertLessThan(p.height(fromNoise: 0.25), 0, "\(world) should have water in its valleys")
+            XCTAssertGreaterThan(p.height(fromNoise: 0.6), 0, "\(world) is mostly land")
+            XCTAssertTrue(WaterSurface.hasWater(world))
+        }
+        for world in [MapTheme.sky, .space, .ocean, .desert] {
+            XCTAssertEqual(WorldProfile.profile(for: world).seaOffset, 0)
+            XCTAssertFalse(WaterSurface.hasWater(world))
+        }
+    }
+
     func testDesertHasNoWaterAndCityIsFlat() {
         let desert = WorldProfile.profile(for: .desert)
         XCTAssertGreaterThan(desert.height(fromNoise: -0.8), 0)

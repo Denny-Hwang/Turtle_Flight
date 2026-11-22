@@ -91,7 +91,9 @@ enum MapTheme: String, CaseIterable, Codable {
         switch self {
         case .space: return 300
         case .ocean: return 500
-        default:     return 600
+        // V1: with real terrain normals, 600 ambient + 800 sun clipped flat
+        // ground to white. Less fill, a touch more sun: slopes read.
+        default:     return 420
         }
     }
 
@@ -108,7 +110,7 @@ enum MapTheme: String, CaseIterable, Codable {
         switch self {
         case .space: return 400
         case .ocean: return 600
-        default:     return 800
+        default:     return 850
         }
     }
 

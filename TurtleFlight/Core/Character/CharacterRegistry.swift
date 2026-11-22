@@ -152,6 +152,27 @@ extension CharacterRegistry {
         return node
     }
 
+    /// V5 (docs/VISUAL_AUDIO_PLAN.md): the billboard always faces the
+    /// camera, so on its own it can't lean into a turn. This roll is applied
+    /// on top of the billboard constraint, around the axis toward the
+    /// camera. Written by the flight loop on the render thread, read by
+    /// SceneKit's constraint pass on the same thread.
+    final class BankRoll: @unchecked Sendable {
+        /// Radians; negative leans right (clockwise on screen).
+        var angle: Float = 0
+    }
+
+    /// Lean the billboard by `roll.angle` after it has been turned to
+    /// face the camera.
+    static func bankConstraint(_ roll: BankRoll) -> SCNConstraint {
+        SCNTransformConstraint.orientationConstraint(inWorldSpace: false) { _, q in
+            guard roll.angle != 0 else { return q }
+            let facing = simd_quatf(ix: q.x, iy: q.y, iz: q.z, r: q.w)
+            let lean = facing * simd_quatf(angle: roll.angle, axis: SIMD3(0, 0, 1))
+            return SCNQuaternion(lean.imag.x, lean.imag.y, lean.imag.z, lean.real)
+        }
+    }
+
     /// UV transform that crops the texture to one cell of a 2×2 atlas.
     /// Applied to `material.diffuse.contentsTransform`.
     ///
