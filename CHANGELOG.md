@@ -9,6 +9,15 @@ window.
 
 ## [Unreleased]
 
+### Landmark materials V6 (2026-11-22)
+- One material language for all 25 landmarks (`LandmarkStyle`, two SceneKit
+  shader modifiers): darker, cooler feet fading to full colour at the top;
+  soft two-band toon light over a gentle lambert slope; a per-world rim light
+  that lifts silhouettes off the terrain. Glowing parts stay flat.
+- Styling happens before flattening (`LandmarkFactory.styledParts`): a
+  flattened clone fills in its materials lazily, so changes made to it are
+  lost.
+
 ### Visual pass V1–V5 (2026-11-22)
 - Terrain: real per-vertex normals (every vertex used to point straight up, so
   hills had no lit or shaded side), soft colour blending between height bands,

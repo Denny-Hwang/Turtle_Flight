@@ -2,7 +2,7 @@ import XCTest
 import SceneKit
 @testable import TurtleFlight
 
-/// V1–V5 of docs/VISUAL_AUDIO_PLAN.md.
+/// V1–V6 of docs/VISUAL_AUDIO_PLAN.md.
 final class VisualPassTests: XCTestCase {
 
     // V1
@@ -70,5 +70,31 @@ final class VisualPassTests: XCTestCase {
         XCTAssertLessThan(vm.bankRoll.angle, -FlightViewModel.maxBank * 0.5, "right turn leans right (clockwise)")
         for _ in 0..<240 { vm.updateBank(rollInput: 0, deltaTime: 1 / 60) }
         XCTAssertEqual(vm.bankRoll.angle, 0, accuracy: 0.01)
+    }
+
+    // V6
+    func testEveryLandmarkUsesTheSharedMaterialLanguage() {
+        for kind in LandmarkKind.allCases {
+            let (root, moving) = LandmarkFactory.styledParts(kind)
+            let (lo, hi) = root.boundingBox
+            XCTAssertGreaterThan(hi.y - lo.y, 10, "\(kind) gradient spans the landmark")
+            var lit = 0
+            for part in [root] + moving {
+                for m in LandmarkStyle.litMaterials(under: part) {
+                    lit += 1
+                    XCTAssertEqual(m.shaderModifiers?[.surface], LandmarkStyle.surfaceModifier, "\(kind)")
+                    XCTAssertEqual(m.shaderModifiers?[.lightingModel], LandmarkStyle.lightingModifier, "\(kind)")
+                    XCTAssertNotNil(m.value(forKey: LandmarkStyle.bottomKey), "\(kind)")
+                    XCTAssertNotNil(m.value(forKey: LandmarkStyle.rimKey), "\(kind)")
+                }
+            }
+            XCTAssertGreaterThan(lit, 0, "\(kind) has lit parts")
+            // Glowing parts keep their flat look.
+            root.enumerateHierarchy { node, _ in
+                for m in node.geometry?.materials ?? [] where m.lightingModel == .constant {
+                    XCTAssertNil(m.shaderModifiers, "\(kind)")
+                }
+            }
+        }
     }
 }
