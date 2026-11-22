@@ -201,49 +201,48 @@ extension View {
     }
 }
 
-// MARK: - Size class adaptive helpers
+// MARK: - Device canvas (iPad scale-up)
 
-/// Multiplier applied to compact-sized layouts to scale them up for
-/// regular size class (iPad). Used by tile/button sizing helpers below
-/// so a single source of truth controls the iPhone↔iPad scale-up.
+/// The custom full-screen UI (Home, character select, route map,
+/// onboarding, flight HUD, pause, results) is designed for a landscape
+/// iPhone. On an iPad the same point sizes left text tiny and most of a
+/// 13" screen empty, and per-control 1.4x bumps only patched a few tiles.
 ///
-/// 1.4× was picked empirically: a 140pt iPhone ModeButton becomes
-/// 196pt on iPad, which roughly matches the visual weight of native
-/// iPadOS controls without dwarfing the canvas.
-extension Theme {
-    static let iPadScale: CGFloat = 1.4
+/// Instead, each screen's foreground is laid out on a virtual canvas
+/// about the size of `reference` and scaled up uniformly to fill the
+/// safe area. iPhones are smaller than the reference in at least one
+/// direction, so their scale is 1 and nothing changes there.
+/// Backgrounds stay outside the canvas (they must reach under the
+/// status bar), and so does the SceneKit view (it renders at native
+/// resolution). System sheets (Settings, Shop, Album) keep native size.
+enum DeviceCanvas {
+    static let reference = CGSize(width: 880, height: 580)
+
+    /// Uniform scale for a container of `size` (points, safe area).
+    static func scale(for size: CGSize) -> CGFloat {
+        guard size.width > 0, size.height > 0 else { return 1 }
+        return max(1, min(size.width / reference.width,
+                          size.height / reference.height))
+    }
 }
 
-/// Returns a size scaled up for regular size class (iPad), pass-through
-/// for compact (iPhone). The argument should be the design's compact
-/// reference size; the regular value is computed from it. Used by the
-/// home/stage tile sizing so iPad layouts read at iPad scale rather
-/// than as oversized iPhone layouts.
-struct AdaptiveSize: ViewModifier {
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-
-    let compactWidth: CGFloat
-    let compactHeight: CGFloat
-
+private struct DeviceCanvasModifier: ViewModifier {
     func body(content: Content) -> some View {
-        // iPad = regular in both directions. A Plus / Pro Max iPhone in
-        // landscape is regular-width but compact-height, and scaling
-        // there pushed Stage Select's header off the top of the screen.
-        let isPad = sizeClass == .regular && verticalSizeClass == .regular
-        let scale = isPad ? Theme.iPadScale : 1.0
-        return content.frame(
-            width: compactWidth * scale,
-            height: compactHeight * scale
-        )
+        GeometryReader { geo in
+            let scale = DeviceCanvas.scale(for: geo.size)
+            content
+                .frame(width: geo.size.width / scale, height: geo.size.height / scale)
+                .scaleEffect(scale)
+                .frame(width: geo.size.width, height: geo.size.height)
+        }
     }
 }
 
 extension View {
-    /// Apply iPhone-baseline width/height that scales up on iPad.
-    /// Drop-in replacement for `.frame(width: w, height: h)` on tiles
-    /// and buttons that look tiny on iPad otherwise.
-    func adaptiveFrame(compactWidth: CGFloat, compactHeight: CGFloat) -> some View {
-        modifier(AdaptiveSize(compactWidth: compactWidth, compactHeight: compactHeight))
+    /// Lay this full-screen foreground out on the device canvas (see
+    /// `DeviceCanvas`). Apply it to the foreground only, never to a
+    /// background that uses `.ignoresSafeArea()`.
+    func deviceCanvas() -> some View {
+        modifier(DeviceCanvasModifier())
     }
 }

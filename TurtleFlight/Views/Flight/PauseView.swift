@@ -54,12 +54,15 @@ struct PauseView: View {
             .padding(Theme.Spacing.xl)
             .frame(maxWidth: compact ? 460 : 380)
             .background(
+                // Opaque, like the result cards: at 90% the 3D scene
+                // behind showed through the buttons.
                 RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                    .fill(Theme.Color.surfacePanel)
+                    .fill(Color(hex: Constants.Colors.panelDark))
                     .elevation(Theme.Elevation.cardHigh)
             )
             .padding(.horizontal, Theme.Spacing.xl)
             .padding(.vertical, Theme.Spacing.s)
+            .deviceCanvas()
         }
         .confirmationDialog(
             L10n.t("flight.pause.restart.confirm.title"),
@@ -154,7 +157,8 @@ struct PauseView: View {
         PauseButton(
             title: L10n.t("flight.pause.quit"),
             systemImage: "xmark",
-            color: Theme.Color.surfaceOverlayStrong,
+            // Panel-coloured fill read as bare text on the opaque panel.
+            color: Theme.Color.textOnDark.opacity(0.14),
             action: onQuit
         )
         .accessibilityHint(L10n.t("flight.pause.quit.hint"))
@@ -224,7 +228,7 @@ private struct SensitivityRow: View {
                                 RoundedRectangle(cornerRadius: Theme.Radius.s)
                                     .fill(selection == level
                                           ? tint(for: level)
-                                          : Theme.Color.surfaceOverlayStrong)
+                                          : Theme.Color.textOnDark.opacity(0.1))
                             )
                     }
                     .accessibilityLabel(L10n.t("a11y.sensitivity.\(level.rawValue).label"))

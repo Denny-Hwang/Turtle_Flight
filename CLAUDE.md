@@ -93,6 +93,7 @@ Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `
 - 새 문자열은 7개 로케일 전부에 추가 (`LocalizationParityTests` 가 강제).
 - 링 통과 관련 테스트는 `MissionEngine.testPass(ringIndex:)` 로 2프레임 세그먼트를 날린다.
 - 외부로 나가는 것(Game Center, 알림, iCloud, 녹화)은 전부 옵트인 + 기본 OFF, `PRIVACY.md` 에 기록.
+- iPad 크기 대응은 `.deviceCanvas()` 한 가지로 (`Theme.swift` 의 `DeviceCanvas`). 새 전체화면 커스텀 화면은 배경(`ignoresSafeArea`)을 뺀 전경에만 적용하고, 개별 컨트롤에 iPad 배율을 따로 곱하지 말 것. 시스템 시트(설정·상점·앨범)와 SceneKit 뷰는 스케일하지 않는다.
 
 ## 월드 투어 (2026-11-20)
 월드 7개(`MapTheme`: sky/desert/city/seoul/wild/space/ocean). 지형·색은 `WorldProfile` 데이터, 랜드마크 25개는 `LandmarkFactory` 가 SceneKit 기본 도형으로 생성(모델 파일 없음). **랜드마크는 실제 건축물 모델이 아니라 "명소풍" 오리지널 + 자체 이름** — 실존 명소를 그대로 재현하거나 실명으로 바꾸지 말 것(상표·저작권). 랜드마크/엽서/인사 비행은 자유 비행 전용. 새 월드·랜드마크 추가 시 `WorldTourTests` 가 이름·소속·빌드를 강제. 진행표와 남은 아이디어는 `docs/LAUNCH_POLISH_PLAN.md`.

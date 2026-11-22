@@ -20,110 +20,158 @@ struct FreeFlightResultView: View {
     var onShareClip: (() -> Void)? = nil
 
     @State private var showButtons: Bool = false
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var compact: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ZStack {
             Color.black.opacity(0.7)
                 .ignoresSafeArea()
 
-            VStack(spacing: Theme.Spacing.l) {
-                Image(systemName: "cloud.sun.fill")
-                    .font(.system(size: 56))
-                    .foregroundColor(Theme.Color.brandSky)
-
-                Text(L10n.t("freeFlight.result.title"))
-                    .font(Theme.Typography.displayMedium)
-                    .foregroundColor(Theme.Color.textOnDark)
-
-                Text(L10n.t("freeFlight.result.subtitle"))
-                    .font(Theme.Typography.bodyDynamic)
-                    .foregroundColor(Theme.Color.textOnDarkMuted)
-                    .multilineTextAlignment(.center)
-
-                // Stats card
-                VStack(spacing: Theme.Spacing.m) {
-                    statRow(
-                        icon: "clock",
-                        label: L10n.t("freeFlight.result.flightTime"),
-                        value: flightTime.mmss,
-                        badge: nil
-                    )
-                    statRow(
-                        icon: "star.fill",
-                        label: L10n.t("freeFlight.result.stars"),
-                        value: "\(starsCollected)",
-                        badge: isNewBestStars ? L10n.t("mission.result.newBest") : nil
-                    )
-                    if !reward.isEmpty {
-                        statRow(icon: "gift", label: L10n.t("reward.earned"),
-                                value: reward.summary, badge: nil)
-                            .accessibilityLabel(reward.accessibilityText)
+            VStack(spacing: compact ? Theme.Spacing.m : Theme.Spacing.l) {
+                if compact {
+                    // iPhone landscape: stacked, the summary ran off the
+                    // top and bottom of the screen. Title on the left,
+                    // stats on the right, buttons underneath.
+                    HStack(alignment: .center, spacing: Theme.Spacing.xl) {
+                        titleBlock
+                        statsCard
                     }
+                } else {
+                    titleBlock
+                    statsCard
+                    Spacer().frame(height: Theme.Spacing.s)
                 }
-                .padding(Theme.Spacing.l)
-                .frame(maxWidth: 320)
-                .background(
-                    RoundedRectangle(cornerRadius: Theme.Radius.l)
-                        .fill(Theme.Color.surfaceOverlayStrong)
-                )
 
-                Spacer().frame(height: Theme.Spacing.s)
-
-                VStack(spacing: Theme.Spacing.m) {
-                HStack(spacing: Theme.Spacing.m) {
-                    ResultActionButton(
-                        title: L10n.t("common.home"),
-                        color: Theme.Color.surfaceOverlay,
-                        action: onHome
-                    )
-                    // Share — bridges the bare result number into the
-                    // viral loop. ShareLink (iOS 16+) handles the
-                    // UIActivityViewController dance for us and gives a
-                    // proper iPad popover anchor automatically.
-                    ShareLink(
-                        item: shareMessage,
-                        subject: Text(L10n.t("freeFlight.result.share.subject"))
-                    ) {
-                        Text(L10n.t("freeFlight.result.share"))
-                            .font(Theme.Typography.button)
-                            .foregroundColor(Theme.Color.textOnDark)
-                            .padding(.horizontal, Theme.Spacing.xl)
-                            .padding(.vertical, Theme.Spacing.m)
-                            .background(
-                                RoundedRectangle(cornerRadius: Theme.Radius.m)
-                                    .fill(Theme.Color.brandSky)
-                            )
-                    }
-                    .simultaneousGesture(TapGesture().onEnded {
-                        Haptics.shared.play(.tap)
-                    })
-                    .accessibilityLabel(L10n.t("freeFlight.result.share"))
-
-                    ResultActionButton(
-                        title: L10n.t("freeFlight.result.again"),
-                        color: Theme.Color.brandPrimary,
-                        action: onAgain
-                    )
-                }
-                if let onShareClip {
-                    ResultActionButton(
-                        title: L10n.t("result.shareClip"),
-                        color: Color(hex: 0x6C5CE7),
-                        action: onShareClip
-                    )
-                    .accessibilityHint(L10n.t("a11y.result.shareClip.hint"))
-                }
-                }   // VStack (buttons)
-                .opacity(showButtons ? 1 : 0)
-                .offset(y: showButtons ? 0 : 16)
+                actionButtons
+                    .opacity(showButtons ? 1 : 0)
+                    .offset(y: showButtons ? 0 : 16)
             }
-            .padding(Theme.Spacing.xl)
-            .frame(maxWidth: 460)
+            .padding(.horizontal, Theme.Spacing.xl)
+            .padding(.vertical, compact ? Theme.Spacing.l : Theme.Spacing.xl)
+            .frame(maxWidth: compact ? 760 : 460)
+            // Same solid card as StageResultView.
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.xl)
+                    .fill(Color(hex: Constants.Colors.panelDark))
+                    .elevation(Theme.Elevation.cardHigh)
+            )
+            // iPad: scaled up with the rest of the UI (DeviceCanvas).
+            .deviceCanvas()
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 withAnimation(.easeOut(duration: 0.3)) { showButtons = true }
             }
+        }
+    }
+
+    // MARK: - Sections
+
+    private var titleBlock: some View {
+        VStack(spacing: compact ? Theme.Spacing.s : Theme.Spacing.l) {
+            Image(systemName: "cloud.sun.fill")
+                .font(.system(size: compact ? 44 : 56))
+                .foregroundColor(Theme.Color.brandSky)
+
+            Text(L10n.t("freeFlight.result.title"))
+                .font(Theme.Typography.displayMedium)
+                .foregroundColor(Theme.Color.textOnDark)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.7)
+                .lineLimit(2)
+
+            Text(L10n.t("freeFlight.result.subtitle"))
+                .font(Theme.Typography.bodyDynamic)
+                .foregroundColor(Theme.Color.textOnDarkMuted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var statsCard: some View {
+        VStack(spacing: Theme.Spacing.m) {
+            statRow(
+                icon: "clock",
+                label: L10n.t("freeFlight.result.flightTime"),
+                value: flightTime.mmss,
+                badge: nil
+            )
+            statRow(
+                icon: "star.fill",
+                label: L10n.t("freeFlight.result.stars"),
+                value: "\(starsCollected)",
+                badge: isNewBestStars ? L10n.t("mission.result.newBest") : nil
+            )
+            if !reward.isEmpty {
+                statRow(icon: "gift", label: L10n.t("reward.earned"),
+                        value: reward.summary, badge: nil)
+                    .accessibilityLabel(reward.accessibilityText)
+            }
+        }
+        .padding(Theme.Spacing.l)
+        .frame(maxWidth: 320)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.Radius.l)
+                .fill(Theme.Color.textOnDark.opacity(0.06))
+        )
+    }
+
+    /// Home / Share / Fly again, plus Share clip when recording. On a
+    /// compact height the clip button joins the row instead of adding
+    /// a second one.
+    private var actionButtons: some View {
+        VStack(spacing: Theme.Spacing.m) {
+            HStack(spacing: Theme.Spacing.m) {
+                ResultActionButton(
+                    title: L10n.t("common.home"),
+                    // The card's own colour read as bare text.
+                    color: Theme.Color.textOnDark.opacity(0.14),
+                    action: onHome
+                )
+                // Share — bridges the bare result number into the
+                // viral loop. ShareLink (iOS 16+) handles the
+                // UIActivityViewController dance for us and gives a
+                // proper iPad popover anchor automatically.
+                ShareLink(
+                    item: shareMessage,
+                    subject: Text(L10n.t("freeFlight.result.share.subject"))
+                ) {
+                    Text(L10n.t("freeFlight.result.share"))
+                        .font(Theme.Typography.button)
+                        .foregroundColor(Theme.Color.textOnDark)
+                        .padding(.horizontal, Theme.Spacing.xl)
+                        .padding(.vertical, Theme.Spacing.m)
+                        .background(
+                            RoundedRectangle(cornerRadius: Theme.Radius.m)
+                                .fill(Theme.Color.brandSky)
+                        )
+                }
+                .simultaneousGesture(TapGesture().onEnded {
+                    Haptics.shared.play(.tap)
+                })
+                .accessibilityLabel(L10n.t("freeFlight.result.share"))
+
+                ResultActionButton(
+                    title: L10n.t("freeFlight.result.again"),
+                    color: Theme.Color.brandPrimary,
+                    action: onAgain
+                )
+                if compact { shareClipButton }
+            }
+            if !compact { shareClipButton }
+        }
+    }
+
+    @ViewBuilder
+    private var shareClipButton: some View {
+        if let onShareClip {
+            ResultActionButton(
+                title: L10n.t("result.shareClip"),
+                color: Color(hex: 0x6C5CE7),
+                action: onShareClip
+            )
+            .accessibilityHint(L10n.t("a11y.result.shareClip.hint"))
         }
     }
 

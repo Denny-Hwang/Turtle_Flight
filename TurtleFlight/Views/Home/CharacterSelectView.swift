@@ -8,14 +8,7 @@ struct CharacterSelectView: View {
 
     @State private var showFlight = false
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
-    /// Matches `AdaptiveSize`: tiles are 1.4× on iPad, so the grid's
-    /// column width has to grow with them or they overlap.
-    private var tileScale: CGFloat {
-        horizontalSizeClass == .regular && verticalSizeClass == .regular ? Theme.iPadScale : 1
-    }
 
     var body: some View {
         ZStack {
@@ -71,6 +64,7 @@ struct CharacterSelectView: View {
                 }
                 .padding(.horizontal)
             }
+            .deviceCanvas()
         }
         .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showFlight) {
@@ -150,7 +144,7 @@ struct CharacterSelectView: View {
         VStack(alignment: .leading, spacing: Theme.Spacing.m) {
             // ── CHARACTER ──
             sectionLabel("characterSelect.section.character", systemImage: "pawprint.fill")
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64 * tileScale), spacing: Theme.Spacing.s * tileScale)],
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 64), spacing: Theme.Spacing.s)],
                       spacing: Theme.Spacing.s) {
                 ForEach(CharacterType.allCases, id: \.self) { character in
                     CharacterTile(
@@ -194,7 +188,7 @@ struct CharacterSelectView: View {
                                 characterVM.selectMapTheme(theme)
                             }
                         }
-                        .frame(width: 118 * tileScale)
+                        .frame(width: 118)
                     }
                 }
                 .padding(.horizontal, Theme.Spacing.xs)
@@ -333,7 +327,7 @@ struct CharacterTile: View {
                     .resizable()
                     .interpolation(.high)
                     .aspectRatio(contentMode: .fit)
-                    .adaptiveFrame(compactWidth: 44, compactHeight: 44)
+                    .frame(width: 44, height: 44)
                 Text(character.config.name)
                     .font(Theme.Typography.tileLabel)
                 if masteryLevel > 1 {
@@ -345,7 +339,7 @@ struct CharacterTile: View {
                         .foregroundColor(Theme.Color.textPrimary)
                 }
             }
-            .adaptiveFrame(compactWidth: 64, compactHeight: 72)
+            .frame(width: 64, height: 72)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l - 2)
                     .fill(isSelected ? Theme.Color.surfaceSelected : Theme.Color.surfaceOverlayMuted)

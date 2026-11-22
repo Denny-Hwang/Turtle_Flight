@@ -36,7 +36,11 @@ enum ScreenshotScene: String {
     /// frozen `tourFreezeDistance` short of it.
     case tour
     case stage
+    /// Flies the course to its result screen. `-TFStageIndex <n>` picks
+    /// the campaign stage (default 0; stage 3 has the tallest card).
     case stageResult = "stage-result"
+    /// Free Flight summary: flies a few seconds, then taps Exit.
+    case freeflightResult = "freeflight-result"
 }
 
 enum ScreenshotDirector {
@@ -44,6 +48,9 @@ enum ScreenshotDirector {
         UserDefaults.standard.string(forKey: "TFScreenshot").flatMap(ScreenshotScene.init(rawValue:))
 
     static var isActive: Bool { scene != nil }
+
+    /// `stage-result`: which campaign stage to fly.
+    static var stageIndex: Int { UserDefaults.standard.integer(forKey: "TFStageIndex") }
 
     /// Flight scenes fly themselves.
     static var autopilot: Bool {

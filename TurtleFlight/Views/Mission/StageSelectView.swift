@@ -60,6 +60,7 @@ struct StageSelectView: View {
                     .onChange(of: finaleOpen) { _ in celebrateFinaleIfNeeded(proxy) }
                 }
             }
+            .deviceCanvas()
 
             if showFinaleBanner {
                 VStack {
@@ -69,6 +70,7 @@ struct StageSelectView: View {
                 .padding(.top, Theme.Spacing.xxxl)
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .allowsHitTesting(false)
+                .deviceCanvas()
             }
         }
         .navigationBarHidden(true)
@@ -341,7 +343,7 @@ private struct StageCard: View {
                     earnedStarsRow
                 }
             }
-            .adaptiveFrame(compactWidth: 112, compactHeight: 124)
+            .frame(width: 112, height: 124)
             .padding(.vertical, Theme.Spacing.s)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)

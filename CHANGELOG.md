@@ -9,6 +9,36 @@ window.
 
 ## [Unreleased]
 
+### Result screens, iPad layout (2026-11-21)
+- The in-flight HUD and control buttons (gauges, stage/timer chip, Pause/Exit,
+  ring/score, Boost) hide while a result screen is up — on iPad the scaled-up
+  result card overlapped the timer chip. They are also out of hit-testing and
+  VoiceOver while hidden, and come back on Retry.
+- Stage result card is fully opaque (the character ghosted through at 90%); the
+  Home button gets its own light fill so it no longer reads as bare text.
+- Free Flight summary scales up on iPad like the stage result.
+- iPhone landscape: the stage result and the Free Flight summary switch to two
+  columns (title + stars on the left, stats on the right, buttons underneath).
+  Stacked, Stage 3's six stat lines pushed the card to the screen edge and the
+  Free Flight summary ran off the top and bottom. Free Flight gets the same
+  solid card as the stage result.
+- Fix: tapping Exit in Free Flight (and Share clip) paused the flight, which drew
+  the Pause menu on top of the summary. The Pause menu no longer shows over a
+  result screen; stage Retry / Next resume a flight Share clip paused.
+- **iPad layout: device canvas.** iPads used iPhone point sizes (tiny text, a
+  mostly empty 13" screen); only a few tiles had a 1.4x bump. Each custom
+  full-screen UI (Home, character select, route map, onboarding, flight HUD and
+  controls, pause, results) now lays its foreground out on a ~880x580pt canvas
+  and scales it to fill the safe area (`DeviceCanvas`, `.deviceCanvas()`):
+  about 1.2x on iPad mini, 1.3x on 11", 1.55x on 13". iPhones stay at 1x.
+  Backgrounds, the SceneKit view and system sheets are not scaled.
+  `Theme.iPadScale` / `adaptiveFrame` are removed.
+- Pause menu: the HUD hides behind it (the stage/timer chip overlapped the
+  panel), the panel is opaque, and Quit / unselected sensitivity chips get a
+  visible fill.
+- QA capture scenes: `freeflight-result`, and `stage-result` with
+  `-TFStageIndex <n>`; `qa_matrix.sh` takes `EXTRA_ARGS`.
+
 ### Routes follow-ups (2026-11-20)
 - Route map announces Star Road the first time it shows open (banner, haptic,
   VoiceOver announcement, scrolls to the route) — whether the last course or a

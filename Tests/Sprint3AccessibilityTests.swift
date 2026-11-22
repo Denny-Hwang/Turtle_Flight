@@ -8,8 +8,7 @@ import SwiftUI
 ///   1. GyroController fallback path: when the gyro is unavailable, the
 ///      `injectFallback(...)` API moves the published roll/pitch values
 ///      and the auto-level timer reflects activity.
-///   2. Theme.iPadScale + adaptiveFrame produce different sizes per
-///      horizontal size class.
+///   2. DeviceCanvas leaves iPhones at 1x and scales iPads up.
 ///   3. Theme.Typography Dynamic Type variants exist as `Font` values
 ///      (compile-time check only — visual assertions belong in UI tests).
 final class Sprint3AccessibilityTests: XCTestCase {
@@ -79,19 +78,43 @@ final class Sprint3AccessibilityTests: XCTestCase {
         XCTAssertEqual(controller.pitchInput, 0)
     }
 
-    // MARK: - iPad adaptive sizing
+    // MARK: - Device canvas (iPad scale-up)
 
-    func testIPadScaleIsLargerThanCompact() {
-        XCTAssertGreaterThan(Theme.iPadScale, 1.0,
-                             "iPad multiplier must scale UP, not DOWN")
-        XCTAssertLessThan(Theme.iPadScale, 2.0,
-                          "iPad multiplier shouldn't dwarf the canvas")
+    /// Landscape safe-area sizes in points.
+    private let iPhone17e       = CGSize(width: 750, height: 369)
+    private let iPhoneProMax    = CGSize(width: 832, height: 419)
+    private let iPadMini        = CGSize(width: 1133, height: 700)
+    private let iPadPro11       = CGSize(width: 1210, height: 790)
+    private let iPadPro13       = CGSize(width: 1376, height: 988)
+
+    func testIPhonesAreNotScaled() {
+        XCTAssertEqual(DeviceCanvas.scale(for: iPhone17e), 1)
+        XCTAssertEqual(DeviceCanvas.scale(for: iPhoneProMax), 1)
     }
 
-    func testAdaptiveFrameModifierExists() {
-        // Smoke test: the modifier compiles and applies without crashing.
-        let _ = Color.red
-            .adaptiveFrame(compactWidth: 100, compactHeight: 100)
+    func testIPadsScaleUpWithScreenSize() {
+        let mini = DeviceCanvas.scale(for: iPadMini)
+        let pro11 = DeviceCanvas.scale(for: iPadPro11)
+        let pro13 = DeviceCanvas.scale(for: iPadPro13)
+        XCTAssertGreaterThan(mini, 1.1)
+        XCTAssertGreaterThan(pro11, mini)
+        XCTAssertGreaterThan(pro13, pro11)
+        XCTAssertLessThan(pro13, 2, "the 13-inch shouldn't look blown up")
+    }
+
+    func testScaledCanvasFitsTheScreen() {
+        // The virtual canvas never comes out smaller than the reference
+        // in both directions, and the scaled canvas is the screen size.
+        for size in [iPadMini, iPadPro11, iPadPro13] {
+            let s = DeviceCanvas.scale(for: size)
+            let virtual = CGSize(width: size.width / s, height: size.height / s)
+            XCTAssertGreaterThanOrEqual(virtual.width + 0.5, DeviceCanvas.reference.width)
+            XCTAssertGreaterThanOrEqual(virtual.height + 0.5, DeviceCanvas.reference.height)
+        }
+    }
+
+    func testDegenerateSizeIsNotScaled() {
+        XCTAssertEqual(DeviceCanvas.scale(for: .zero), 1)
     }
 
     // MARK: - Dynamic Type tokens

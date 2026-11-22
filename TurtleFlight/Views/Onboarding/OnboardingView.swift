@@ -107,6 +107,7 @@ struct OnboardingView: View {
                     ? L10n.t("a11y.onboarding.next.hint")
                     : L10n.t("a11y.onboarding.start.hint"))
             }
+            .deviceCanvas()
         }
     }
 

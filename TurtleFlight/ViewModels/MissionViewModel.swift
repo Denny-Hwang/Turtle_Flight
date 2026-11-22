@@ -119,6 +119,15 @@ final class MissionViewModel: ObservableObject {
         return true
     }
 
+    #if DEBUG
+    /// Screenshot mode only: open a course even if it is still locked
+    /// on a freshly erased simulator.
+    func selectCourseIgnoringLock(_ index: Int) {
+        guard let course = RouteCatalog.course(index: index) else { return }
+        activate(course)
+    }
+    #endif
+
     private func activate(_ course: StageDefinition) {
         specialStage = nil
         selectedCourseIndex = course.index
