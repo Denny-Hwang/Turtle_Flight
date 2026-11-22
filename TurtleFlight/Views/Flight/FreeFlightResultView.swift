@@ -20,9 +20,7 @@ struct FreeFlightResultView: View {
     var onShareClip: (() -> Void)? = nil
 
     @State private var showButtons: Bool = false
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    private var isPad: Bool { horizontalSizeClass == .regular && verticalSizeClass == .regular }
     private var compact: Bool { verticalSizeClass == .compact }
 
     var body: some View {
@@ -58,9 +56,8 @@ struct FreeFlightResultView: View {
                     .fill(Color(hex: Constants.Colors.panelDark))
                     .elevation(Theme.Elevation.cardHigh)
             )
-            // iPad: same scale-up as StageResultView, or the summary
-            // looks lost in the middle of a large screen.
-            .scaleEffect(isPad ? Theme.iPadScale : 1)
+            // iPad: scaled up with the rest of the UI (DeviceCanvas).
+            .deviceCanvas()
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {

@@ -9,7 +9,7 @@ window.
 
 ## [Unreleased]
 
-### Result screen polish (2026-11-21)
+### Result screens, iPad layout (2026-11-21)
 - The in-flight HUD and control buttons (gauges, stage/timer chip, Pause/Exit,
   ring/score, Boost) hide while a result screen is up — on iPad the scaled-up
   result card overlapped the timer chip. They are also out of hit-testing and
@@ -25,6 +25,17 @@ window.
 - Fix: tapping Exit in Free Flight (and Share clip) paused the flight, which drew
   the Pause menu on top of the summary. The Pause menu no longer shows over a
   result screen; stage Retry / Next resume a flight Share clip paused.
+- **iPad layout: device canvas.** iPads used iPhone point sizes (tiny text, a
+  mostly empty 13" screen); only a few tiles had a 1.4x bump. Each custom
+  full-screen UI (Home, character select, route map, onboarding, flight HUD and
+  controls, pause, results) now lays its foreground out on a ~880x580pt canvas
+  and scales it to fill the safe area (`DeviceCanvas`, `.deviceCanvas()`):
+  about 1.2x on iPad mini, 1.3x on 11", 1.55x on 13". iPhones stay at 1x.
+  Backgrounds, the SceneKit view and system sheets are not scaled.
+  `Theme.iPadScale` / `adaptiveFrame` are removed.
+- Pause menu: the HUD hides behind it (the stage/timer chip overlapped the
+  panel), the panel is opaque, and Quit / unselected sensitivity chips get a
+  visible fill.
 - QA capture scenes: `freeflight-result`, and `stage-result` with
   `-TFStageIndex <n>`; `qa_matrix.sh` takes `EXTRA_ARGS`.
 

@@ -33,11 +33,9 @@ struct StageResultView: View {
     var reward = RewardGrant()
 
     @State private var displayedStars: Int = 0
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private var compact: Bool { verticalSizeClass == .compact }
-    private var isPad: Bool { horizontalSizeClass == .regular && verticalSizeClass == .regular }
     @State private var showButtons: Bool = false
 
     var body: some View {
@@ -92,8 +90,8 @@ struct StageResultView: View {
                     .fill(Color(hex: Constants.Colors.panelDark))
                     .elevation(Theme.Elevation.cardHigh)
             )
-            // iPad: the 460pt card looked lost on a 13" screen.
-            .scaleEffect(isPad ? Theme.iPadScale : 1)
+            // iPad: scaled up with the rest of the UI (DeviceCanvas).
+            .deviceCanvas()
         }
         .onAppear { runEntranceAnimation() }
     }

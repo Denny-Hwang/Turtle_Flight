@@ -110,6 +110,7 @@ struct HomeView: View {
                     .padding(.top, Theme.Spacing.s)
                     Spacer()
                 }
+                .deviceCanvas()
 
                 // A landscape iPhone is ~390pt tall: stacked in one
                 // column the mode cards and sensitivity row sat below the
@@ -119,8 +120,9 @@ struct HomeView: View {
                 GeometryReader { geo in
                     ScrollView(.vertical, showsIndicators: false) {
                         Group {
-                            // Also the smaller iPads (mini 744pt, 11" 834pt):
-                            // the single column needs ~880pt.
+                            // iPads land here too: the device canvas is
+                            // ~580-640pt tall, and the single column
+                            // needs ~880pt.
                             if compactHeight || geo.size.height < 900 {
                                 VStack(spacing: Theme.Spacing.s) {
                                     HStack(alignment: .center, spacing: Theme.Spacing.l) {
@@ -161,6 +163,7 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity, minHeight: geo.size.height)
                     }
                 }
+                .deviceCanvas()
             }
             .navigationDestination(isPresented: $showCharacterSelect) {
                 CharacterSelectView(
@@ -690,7 +693,7 @@ struct ModeButton: View {
                     .opacity(0.7)
             }
             .foregroundColor(Theme.Color.textOnDark)
-            .adaptiveFrame(compactWidth: 140, compactHeight: 120)
+            .frame(width: 140, height: 120)
             .background(
                 RoundedRectangle(cornerRadius: Theme.Radius.l)
                     .fill(color)

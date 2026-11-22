@@ -32,10 +32,10 @@ struct FlightView: View {
             SceneKitView(scene: scene, flightVM: flightVM)
                 .ignoresSafeArea()
 
-            // In-flight chrome. Hidden while a result screen is up: the
-            // gauges, stage chip and Pause/Exit buttons poked out around
-            // (and, on iPad, through the top of) the result card.
-            Group {
+            // In-flight chrome. Hidden while a result screen or the pause
+            // menu is up: the gauges, stage chip and Pause/Exit buttons
+            // poked out around (and through the top of) those panels.
+            ZStack {
                 // Free Flight "clean view": gauges off, just the sky. Missions
                 // always show the HUD (the player needs ring / score info).
                 if !(flightMode == .freePlay && cleanView) {
@@ -79,10 +79,11 @@ struct FlightView: View {
                     cleanViewOn: cleanView
                 )
             }
-            .opacity(isShowingResult ? 0 : 1)
-            .allowsHitTesting(!isShowingResult)
-            .accessibilityHidden(isShowingResult)
-            .animation(.easeOut(duration: 0.25), value: isShowingResult)
+            .deviceCanvas()
+            .opacity(chromeHidden ? 0 : 1)
+            .allowsHitTesting(!chromeHidden)
+            .accessibilityHidden(chromeHidden)
+            .animation(.easeOut(duration: 0.25), value: chromeHidden)
 
             // Step Goal — full-screen StageResultView when the mission
             // finishes (success or fail). Replaces the previous in-HUD
@@ -197,6 +198,10 @@ struct FlightView: View {
     /// True while a result screen (Step Goal clear/fail or the Free
     /// Flight summary) covers the flight. Mirrors the conditions under
     /// which `stageResultOverlay` actually renders something.
+    /// HUD + controls hidden: a result screen or the pause menu covers
+    /// the flight.
+    private var chromeHidden: Bool { isShowingResult || flightVM.isPaused }
+
     private var isShowingResult: Bool {
         if showFreeFlightResult { return true }
         guard flightMode == .stepGoal, missionVM.currentStage != nil else { return false }
