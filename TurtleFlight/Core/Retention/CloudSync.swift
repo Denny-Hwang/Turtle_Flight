@@ -24,7 +24,8 @@ protocol KeyValueStoreLike: AnyObject {
     func synchronize() -> Bool
 }
 
-final class CloudSync {
+/// `@unchecked Sendable`: Driven from main: the KVS change notification is delivered on `.main`.
+final class CloudSync: @unchecked Sendable {
 
     static let shared = CloudSync(store: nil)
 
@@ -49,7 +50,7 @@ final class CloudSync {
     /// Begin observing remote changes and pull once.
     /// `local` is asked each time, so a change that arrives mid-session is
     /// compared with the progress as it is then, not as it was at launch.
-    func start(local: @escaping () -> PlayerProgress) {
+    func start(local: @escaping @Sendable () -> PlayerProgress) {
         guard observer == nil else { return }
         observer = NotificationCenter.default.addObserver(
             forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
@@ -128,6 +129,8 @@ final class CloudSync {
         out.openedCourses.formUnion(other.openedCourses)
         out.unlockedRoutes.formUnion(other.unlockedRoutes)
         out.redeemedCodes.formUnion(other.redeemedCodes)
+        out.claimedPostcardRewards.formUnion(other.claimedPostcardRewards)
+        out.festivalOff = local.festivalOff
         out.kidsMode = local.kidsMode
         return out
     }

@@ -92,6 +92,11 @@ struct PlayerProgress: Codable {
     var unlockedRoutes: Set<String>
     /// Ids of secret codes already used on this save.
     var redeemedCodes: Set<String>
+    /// Postcard milestones already paid (`PostcardReward.id`).
+    var claimedPostcardRewards: Set<String>
+    /// Worlds whose unlocked Festival the player switched off
+    /// (`MapTheme.rawValue`).
+    var festivalOff: Set<String>
 
     static let maxDailyResults = 60
 
@@ -192,6 +197,7 @@ struct PlayerProgress: Codable {
         case cloudSyncEnabled, clipRecordingEnabled, masteryXP
         case kidsMode, kidsResults, starsBanked, starsSpent, treats, ownedItems, equippedFlair
         case preferredSky, openedCourses, unlockedRoutes, redeemedCodes
+        case claimedPostcardRewards, festivalOff
     }
 
     init(stageResults: [Int: StageResult],
@@ -221,7 +227,9 @@ struct PlayerProgress: Codable {
          preferredSky: String? = nil,
          openedCourses: Set<Int> = [],
          unlockedRoutes: Set<String> = [],
-         redeemedCodes: Set<String> = []) {
+         redeemedCodes: Set<String> = [],
+         claimedPostcardRewards: Set<String> = [],
+         festivalOff: Set<String> = []) {
         self.stageResults = stageResults
         self.totalStars = totalStars
         self.totalFlightTime = totalFlightTime
@@ -251,6 +259,8 @@ struct PlayerProgress: Codable {
         self.openedCourses = openedCourses
         self.unlockedRoutes = unlockedRoutes
         self.redeemedCodes = redeemedCodes
+        self.claimedPostcardRewards = claimedPostcardRewards
+        self.festivalOff = festivalOff
     }
 
     init(from decoder: Decoder) throws {
@@ -289,5 +299,7 @@ struct PlayerProgress: Codable {
         self.openedCourses  = try c.decodeIfPresent(Set<Int>.self, forKey: .openedCourses) ?? []
         self.unlockedRoutes = try c.decodeIfPresent(Set<String>.self, forKey: .unlockedRoutes) ?? []
         self.redeemedCodes  = try c.decodeIfPresent(Set<String>.self, forKey: .redeemedCodes) ?? []
+        self.claimedPostcardRewards = try c.decodeIfPresent(Set<String>.self, forKey: .claimedPostcardRewards) ?? []
+        self.festivalOff    = try c.decodeIfPresent(Set<String>.self, forKey: .festivalOff) ?? []
     }
 }

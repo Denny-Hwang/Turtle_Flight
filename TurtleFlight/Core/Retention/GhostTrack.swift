@@ -79,7 +79,8 @@ struct GhostRecorder {
 
 /// On-disk store: one JSON file per course key under
 /// Application Support/ghosts. Replaced only by a higher-scoring run.
-final class GhostStore {
+/// `@unchecked Sendable`: Reads and writes happen on main (course start / result).
+final class GhostStore: @unchecked Sendable {
 
     static let shared = GhostStore()
 

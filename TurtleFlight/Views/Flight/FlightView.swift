@@ -15,6 +15,8 @@ struct FlightView: View {
     @State private var scene = SCNScene()
     @State private var showGyroAlert = false
     @AppStorage("flight.cleanView") private var cleanView = false
+    /// Character faces the player instead of where it is flying.
+    @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
@@ -25,7 +27,7 @@ struct FlightView: View {
     @State private var freeFlightWasNewBest = false
     /// ReplayKit preview handed back by `ClipRecorder.stop`; presenting
     /// it is the "Share clip" flow (Phase 4).
-    @State private var clipPreview: RPPreviewViewController?
+    @State private var clipPreview: ClipPreviewItem?
 
     var body: some View {
         ZStack {
@@ -76,7 +78,12 @@ struct FlightView: View {
                     boostProgress: flightVM.boostProgress,
                     boostReady: !flightVM.isBoosting && flightVM.boostProgress >= 0.999,
                     onToggleCleanView: flightMode == .freePlay ? { cleanView.toggle() } : nil,
-                    cleanViewOn: cleanView
+                    cleanViewOn: cleanView,
+                    onToggleLookAtMe: {
+                        lookAtMe.toggle()
+                        flightVM.setLookingAtCamera(lookAtMe)
+                    },
+                    lookAtMeOn: lookAtMe
                 )
             }
             .deviceCanvas()
@@ -109,7 +116,7 @@ struct FlightView: View {
                         showFreeFlightResult = false
                         flightVM.restartFlight()
                     },
-                    onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil
+                    onShareClip: ClipRecorder.shared.isRecording ? { shareClip() } : nil
                 )
                 .transition(.opacity)
             }
@@ -188,7 +195,7 @@ struct FlightView: View {
         }
         .statusBar(hidden: true)
         .fullScreenCover(item: $clipPreview) { preview in
-            ReplayPreview(controller: preview) { clipPreview = nil }
+            ReplayPreview(controller: preview.controller) { clipPreview = nil }
                 .ignoresSafeArea()
         }
     }
@@ -252,7 +259,7 @@ struct FlightView: View {
                                 missionVM.startMission()
                             }
                         },
-                        onShareClip: ClipRecorder.shared.isRecording ? shareClip : nil,
+                        onShareClip: ClipRecorder.shared.isRecording ? { shareClip() } : nil,
                         reward: missionVM.lastReward
                     )
                     .transition(.opacity)
@@ -288,7 +295,10 @@ struct FlightView: View {
     private func shareClip() {
         flightVM.pauseFlight()
         ClipRecorder.shared.stop { preview in
-            clipPreview = preview
+            // ClipRecorder calls back on main.
+            MainActor.assumeIsolated {
+                clipPreview = preview.map(ClipPreviewItem.init(controller:))
+            }
         }
     }
 
@@ -384,6 +394,11 @@ struct FlightView: View {
         // (e.g. progress reset) doesn't render.
         let claimedTier = missionVM.progress.selectedTrailTier
         let earnedTier = TrailColorTier.highestUnlocked(totalStars: missionVM.progress.effectiveStars)
+        var festival = flightMode == .freePlay && missionVM.progress.festivalEnabled(in: mapTheme)
+        #if DEBUG
+        // Screenshot / QA: `-TFFestival YES` shows it without the album.
+        if flightMode == .freePlay, UserDefaults.standard.bool(forKey: "TFFestival") { festival = true }
+        #endif
         let tierToApply: TrailColorTier =
             claimedTier.unlockStarThreshold <= earnedTier.unlockStarThreshold
             ? claimedTier
@@ -393,7 +408,11 @@ struct FlightView: View {
                              vehicle: vehicle,
                              theme: mapTheme,
                              trailTier: tierToApply,
-                             flair: missionVM.progress.equippedFlair(for: character)?.trailLook)
+                             flair: missionVM.progress.equippedFlair(for: character)?.trailLook,
+                             skyMood: mood,
+                             // Festival and sky wonders are Free Flight treats.
+                             festival: festival,
+                             lookingAtCamera: lookAtMe)
         missionVM.recordFlightStart(character: character)
         ClipRecorder.shared.startIfEnabled(missionVM.progress.clipRecordingEnabled)
 
@@ -544,7 +563,7 @@ struct SceneKitView: UIViewRepresentable {
         /// the same condition. Mapping: drag right to roll right, drag
         /// up (translation.y < 0) to pitch up. Range scales by view
         /// half-extents so a full-edge drag reads as ±1.0 input.
-        @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        @MainActor @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
             guard let view = recognizer.view else { return }
             switch recognizer.state {
             case .began, .changed:

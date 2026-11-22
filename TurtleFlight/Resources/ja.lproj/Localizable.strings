@@ -479,3 +479,24 @@
 "shop.buy.a11y" = "%1$@を%2$lldで買う";
 "shop.notEnough" = "%2$lld個中%1$lld個あります";
 "reward.earned" = "ごほうび";
+
+// MARK: - Sky wonders, postcard milestones, festival (2026-11-21)
+"wonder.meteorShower.name" = "流れ星の雨";
+"wonder.roundRainbow.name" = "まるい虹";
+"wonder.cloudWhale.name" = "くもクジラ";
+"wonder.glowTide.name" = "ひかる潮";
+"wonder.toast.format" = "見て！%@";
+"wonder.bonus.toast" = "願いがかなった！ +%lld ★";
+"album.wonders.title" = "空のふしぎ";
+"album.wonders.hint" = "フリーフライトでときどき現れるめずらしい景色。近くまで飛ぶとボーナス！";
+"album.milestone.half.format" = "半分：+%lld ★";
+"album.milestone.complete.format" = "全部：おまつり +%lld ★";
+"album.festival.toggle" = "おまつり";
+"postcard.milestone.toast.half" = "%1$@の絵はがき半分！ +%2$lld ★";
+"postcard.milestone.toast.complete" = "%1$@コンプリート！おまつり +%2$lld ★";
+
+// MARK: - Look at me / look ahead (2026-11-22)
+"flight.control.lookAtMe" = "こっち見て";
+"flight.control.lookAhead" = "前を見て";
+"a11y.lookAtMe.label" = "なかまをこっちに向かせるか、飛ぶ方向を向かせるかを切りかえる";
+"settings.controls.lookAtMe" = "飛行中になかまがこっちを見る";

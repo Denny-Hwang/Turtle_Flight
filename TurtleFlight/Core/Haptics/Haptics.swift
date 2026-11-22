@@ -13,6 +13,8 @@ enum HapticEvent: String, CaseIterable {
     /// Crossed well outside the ring.
     case ringMiss
     case groundHit
+    /// Soft bump off a landmark in Free Flight (no penalty).
+    case landmarkBump
     case boostStart, boostDenied
     /// Star / treat picked up, a friend greeted.
     case pickup
@@ -36,7 +38,9 @@ struct HapticPulse: Equatable {
     var delay: TimeInterval = 0
 }
 
-final class Haptics {
+/// `@unchecked Sendable`: `play` may be called from the render thread but
+/// hops to main; generators are created and fired on main only.
+final class Haptics: @unchecked Sendable {
 
     static let shared = Haptics()
 
@@ -50,7 +54,7 @@ final class Haptics {
 
     private let defaults: UserDefaults
     private var impacts: [HapticPulse.Kind: UIImpactFeedbackGenerator] = [:]
-    private lazy var notifier = UINotificationFeedbackGenerator()
+    private var notifierStorage: UINotificationFeedbackGenerator?
     /// Pulses actually fired — tests read this instead of feeling the phone.
     private(set) var playedCount = 0
 
@@ -90,6 +94,9 @@ final class Haptics {
             return [HapticPulse(kind: .heavy, intensity: 1),
                     HapticPulse(kind: .soft, intensity: 0.8, delay: 0.09),
                     HapticPulse(kind: .soft, intensity: 0.5, delay: 0.20)]
+        case .landmarkBump:
+            return [HapticPulse(kind: .medium, intensity: 0.9),
+                    HapticPulse(kind: .soft, intensity: 0.6, delay: 0.08)]
         case .boostStart:
             return [HapticPulse(kind: .medium, intensity: 0.7),
                     HapticPulse(kind: .soft, intensity: 1, delay: 0.07)]
@@ -110,29 +117,39 @@ final class Haptics {
     func play(_ event: HapticEvent) {
         guard isEnabled else { return }
         let pulses = Self.pattern(for: event)
-        let run = { [weak self] in
+        performOnMainActor { [weak self] in
             guard let self else { return }
             for pulse in pulses {
                 if pulse.delay <= 0 {
                     self.fire(pulse)
                 } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + pulse.delay) { [weak self] in
-                        self?.fire(pulse)
+                        MainActor.assumeIsolated { self?.fire(pulse) }
                     }
                 }
             }
         }
-        if Thread.isMainThread { run() } else { DispatchQueue.main.async(execute: run) }
     }
 
     /// Warm the engine up before a flight so the first bump isn't late.
     func prepare() {
         guard isEnabled else { return }
-        for kind in [HapticPulse.Kind.light, .medium, .heavy, .rigid, .soft] {
-            generator(for: kind)?.prepare()
+        performOnMainActor { [weak self] in
+            for kind in [HapticPulse.Kind.light, .medium, .heavy, .rigid, .soft] {
+                self?.generator(for: kind)?.prepare()
+            }
         }
     }
 
+    @MainActor
+    private var notifier: UINotificationFeedbackGenerator {
+        if let made = notifierStorage { return made }
+        let made = UINotificationFeedbackGenerator()
+        notifierStorage = made
+        return made
+    }
+
+    @MainActor
     private func fire(_ pulse: HapticPulse) {
         guard isEnabled else { return }
         playedCount += 1
@@ -144,6 +161,7 @@ final class Haptics {
         }
     }
 
+    @MainActor
     private func generator(for kind: HapticPulse.Kind) -> UIImpactFeedbackGenerator? {
         if let existing = impacts[kind] { return existing }
         let style: UIImpactFeedbackGenerator.FeedbackStyle

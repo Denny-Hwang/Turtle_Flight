@@ -35,6 +35,8 @@ SHOTS = [
     ("daily-result", "Beat your best", "Scores, combos and three stars on every course", ("hoppy", "turbo")),
     ("home", "A new course every day", "Daily quests, streaks and Today's Course", ("nutty", "hoppy")),
     ("stages", "Five routes, 21 courses", "From Sky School to the Star Road, with a Kids mode", ("bounce", "mochi")),
+    ("tour", "Fly around the world", "Seven worlds and 25 landmarks to collect as postcards", ("hoppy", "pip")),
+    ("freeflight", "Sky wonders and festivals", "Rare surprises in the sky, and a festival for every finished album", ("mochi", "nutty")),
 ]
 
 

@@ -116,3 +116,42 @@ def vehicle():
 ICON = dict(s=1.2, cx=256, cy=262)
 STAND = dict(s=0.96, by=462)
 CLOUD = dict(s=0.9, by=420)
+
+
+# --- Back view --------------------------------------------------------------
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    o = ""
+    # stuffed cheeks bulge out past the head even from behind
+    rl, rr = CHEEK[expr]
+    o += sh(E(cx + 114, cy + 64, rl, rl * 0.92), POUCH, L, dx=-5, dy=-6)
+    o += sh(E(cx - 116, cy + 66, rr, rr * 0.92), POUCH, L, dx=-6, dy=-7)
+    hg = E(cx, cy, 134, 112)
+    o += sh(hg, G, L, dx=-10, dy=-12)
+    o += clipped(hg, flat(E(cx, cy - 10, 34, 120), p["dark"], op=0.55)) + stroke(hg, L, 8)
+    o += gloss(cx - 84, cy - 62, 28, 13)
+    for sx in (-1, 1):
+        o += sh(C(cx + sx * 88, cy - 88, 36), G, L, dx=-5, dy=-6)
+    return o
+
+
+def fig_back(expr="default", arms=None):
+    p = PAL; L = p["line"]; G = p["main"]
+    a = ARMS[expr] if arms is None else arms
+    if a is None:
+        a = 34
+    o = sh(E(214, 452, 30, 16), POUCH, L, 7, dx=-4, dy=-5) + sh(E(298, 452, 30, 16), POUCH, L, 7, dx=-4, dy=-5)
+    o += limb(192, 344, 56, 34, a, -1, G, L) + limb(320, 344, 56, 34, a, 1, G, L)
+    bg = E(256, 378, 90, 80)
+    o += sh(bg, G, L)
+    o += clipped(bg, flat(E(256, 360, 30, 90), p["dark"], op=0.55)) + stroke(bg, L, 8)
+    o += sh(C(256, 448, 16), CREAM, L, 7, dx=-3, dy=-4)   # stubby tail
+    o += head_back(expr)
+    return o
+
+
+def ride_back(expr="default"):
+    rot = {"speed": 6, "scared": -5}.get(expr, 0)
+    o = rotor() + ball(False) + place(fig_back(expr), 0.7, 256, 462) + ball(True)
+    return group(place(o, 0.99, 256, 486), rot=rot) + fx(expr, (60, 150, 452, 440))

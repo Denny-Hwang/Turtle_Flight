@@ -480,3 +480,24 @@
 "shop.buy.a11y" = "%1$@ für %2$lld kaufen";
 "shop.notEnough" = "Du hast %1$lld von %2$lld";
 "reward.earned" = "Verdient";
+
+// MARK: - Sky wonders, postcard milestones, festival (2026-11-21)
+"wonder.meteorShower.name" = "Sternschnuppenregen";
+"wonder.roundRainbow.name" = "Runder Regenbogen";
+"wonder.cloudWhale.name" = "Wolkenwal";
+"wonder.glowTide.name" = "Leuchtflut";
+"wonder.toast.format" = "Schau! %@";
+"wonder.bonus.toast" = "Wunsch erfüllt! +%lld ★";
+"album.wonders.title" = "Himmelswunder";
+"album.wonders.hint" = "Seltene Anblicke, die im Freiflug manchmal auftauchen. Flieg nah heran für einen Bonus.";
+"album.milestone.half.format" = "Hälfte: +%lld ★";
+"album.milestone.complete.format" = "Alle: Fest +%lld ★";
+"album.festival.toggle" = "Fest";
+"postcard.milestone.toast.half" = "%1$@: die Hälfte der Postkarten! +%2$lld ★";
+"postcard.milestone.toast.complete" = "%1$@ komplett! Fest +%2$lld ★";
+
+// MARK: - Look at me / look ahead (2026-11-22)
+"flight.control.lookAtMe" = "Schau mich an";
+"flight.control.lookAhead" = "Schau nach vorn";
+"a11y.lookAtMe.label" = "Deinen Freund zu dir oder in Flugrichtung drehen";
+"settings.controls.lookAtMe" = "Freund schaut mich beim Fliegen an";

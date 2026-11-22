@@ -7,8 +7,8 @@ private let log = Logger(subsystem: "com.turtleflight.app", category: "Reminders
 /// Minimal seam over `UNUserNotificationCenter` so tests can stub it.
 protocol NotificationCenterLike {
     func requestAuthorization(options: UNAuthorizationOptions,
-                              completionHandler: @escaping (Bool, Error?) -> Void)
-    func add(_ request: UNNotificationRequest, withCompletionHandler: ((Error?) -> Void)?)
+                              completionHandler: @escaping @Sendable (Bool, Error?) -> Void)
+    func add(_ request: UNNotificationRequest, withCompletionHandler: (@Sendable (Error?) -> Void)?)
     func removePendingNotificationRequests(withIdentifiers identifiers: [String])
 }
 
@@ -18,7 +18,8 @@ protocol NotificationCenterLike {
 ///     (scheduled on each launch for the *next* day and cancelled by
 ///     the next launch, so it only ever fires after a missed day)
 /// Local only — no push service, no device token, no server.
-final class ReminderScheduler {
+/// `@unchecked Sendable`: Settings and app launch call it on main.
+final class ReminderScheduler: @unchecked Sendable {
 
     static let shared = ReminderScheduler(center: nil)
 
@@ -41,7 +42,7 @@ final class ReminderScheduler {
 
     /// Ask for permission and, if granted, schedule both reminders.
     func enable(dailyBody: String, streakBody: String, title: String,
-                completion: ((Bool) -> Void)? = nil) {
+                completion: (@Sendable (Bool) -> Void)? = nil) {
         liveCenter.requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
             if let error {
                 log.error("Notification auth error: \(error.localizedDescription, privacy: .public)")

@@ -5,7 +5,7 @@
 
 ## Key Documents
 - `docs/SDD.md` — SW 개발 문서
-- `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (historical snapshot; 현재 테스트 390+)
+- `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (historical snapshot; 현재 테스트 460+)
 - `docs/APP_STORE_SUBMISSION.md` — 앱스토어 제출 체크리스트 (계정에서 해야 할 일, Game Center ID, 프라이버시 라벨, 리뷰 노트). 마케팅 카피는 `docs/store/<locale>.md`
 
 ## Tech Stack — Native iOS only
@@ -54,7 +54,7 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 60 FPS on iPhone 12+, < 250MB memory, < 80MB app size.
 
 ## Open follow-ups (RN 폐기로 인한 손실분)
-- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 213키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
+- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 407키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
 - ⚠️ XcodeGen 주의: `project.yml` 의 `Resources` 는 `type: folder` 금지 — `.lproj` 가 `Resources/` 하위로 중첩되면 `NSLocalizedString` 이 못 찾음. 일반 그룹 참조로 두어 변형 그룹이 번들 루트에 위치하게 함.
 
 ## Sprint 0–4 closure
@@ -101,10 +101,15 @@ Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `
 ## 루트 · Kids · 보상 · 햅틱 · 시크릿 코드 (2026-11-20)
 설계와 진행표는 `docs/ROUTES_REWARDS_PLAN.md`. 캠페인은 루트 5개(`RouteCatalog`, 코스 21개)이고 기존 5개 스테이지는 Sky School 루트(index 0–4 유지). 루트 코스는 index 10/20/30/40 대역 + 고정 월드. 잠금 규칙은 `PlayerProgress.isCourseUnlocked` 한 곳. Kids 모드는 `StageDefinition.kidsVariant()` + `MissionEngine` 의 `isKids` 분기(실패 없음). 진동은 반드시 `Haptics.shared.play(_:)` 로 (직접 `UIImpactFeedbackGenerator` 쓰지 말 것). 화폐는 별 지갑(`starsBanked − starsSpent`)과 캐릭터별 간식(`treats`), 상품은 `Shop`. **시크릿 코드 원문은 절대 커밋하지 말 것** (저장소는 2026-11-20 에 private 으로 바뀌었지만 그 전 기록이 공개된 적이 있고, 다시 공개될 수도 있다) — `SecretCodes` 에는 솔트 해시만, 원문은 gitignore 된 `marketing/secret_codes.md`. 테스트도 대역 코드로만 검증.
 
+## 비행 방향 · 하늘 추가 요소 · 오디오 · Swift 6 (2026-11-22)
+- 비행 중 캐릭터는 **기본으로 앞(날아가는 쪽)을 본다** — 뒷모습 아틀라스 `<name>_back_atlas` / `<name>_cloud_back_atlas`. "나를 봐" 버튼(비행 컨트롤)과 설정 → 조작에서 앞모습으로 전환, `flight.lookAtMe` 에 저장. 뒷모습은 각 캐릭터 모듈의 `ride_back` / `fig_back` (생성기), 아틀라스 셀 순서는 앞모습과 동일.
+- 자유 비행 전용: 랜드마크 충돌(`LandmarkKind.colliders`, 벌점 없는 튕김), 하늘의 신비(`SkyWonder`, 비행당 35%), 엽서 마일스톤(절반 5★ / 전부 10★ + 축제 `FestivalLayer`). 미션은 `startStage` 에서 모두 제거.
+- 번들 오디오 `TurtleFlight/Audio/` 는 `bash scripts/audio/build_audio.sh` 로 재생성 (전부 합성, 샘플·생성형 모델 없음 → 에이전트/CI 에서 실행 가능). 파일이 없으면 기존 인앱 합성으로 폴백.
+- 앱 타깃은 **Swift 6 언어 모드** (`project.yml`), 테스트 타깃은 Swift 5.9. 스레드를 넘는 타입은 `@unchecked Sendable` + 보호 방법(락/직렬 큐/메인 전용) 주석을 단다. 렌더 스레드에서 UI·햅틱·오디오는 `onMain` / `performOnMainActor` 로만.
+
 ## 남은 백로그 (저장소 밖 또는 선택 사항)
 - **Apple 계정 작업**: App ID capability(Game Center, iCloud KVS), App Store Connect 리더보드/업적 생성, 프라이버시 정책 URL 호스팅 — 절차와 정확한 ID는 `docs/APP_STORE_SUBMISSION.md`
 - **음성 콜아웃 클립 생성 (오너)**: `VoiceLine` 9종 + 재생 경로는 머지됨. Google Cloud TTS Neural2 (`en-US-Neural2-F`) 로 `scripts/audio/generate_voice.sh` 를 **오너 터미널에서** 실행 (Claude Code/CI 안에서는 거부, 에이전트는 `--dry-run` 만). 생성형 음성(Chirp/Journey/Studio/Gemini, Lyria 음악)은 4+ 앱이라 Google 약관상 금지. 절차는 `docs/APP_STORE_SUBMISSION.md` §9
-- **실제 오디오 에셋 (선택)**: `AudioManager.assetURL` 훅은 준비됨. `bgm_<theme>`, `vehicle_<name>`, `sfx_<event>` 파일만 번들에 넣으면 됨. 없으면 합성음 사용
+- **오디오 귀 검수 (오너)**: 번들 오디오는 오프라인 합성으로 만들어 넣었지만 사람이 들어본 적이 없다. 실기기에서 월드별 BGM·루프 이음새·효과음 크기를 듣고, 바꿀 곳은 `scripts/audio/render_assets.swift` 의 `songs` / `sfx` 를 고쳐 재생성
 - **출시 설정 (오너 결정 2026-11-19)**: 미국 스토어만, 심사 통과 후 자동 출시
 - **실기기 튜닝**: TestFlight 후 `GateScoring`, `Constants.Flight.energy*`, `EndlessCourse.radius(at:)` 상수 조정
-- **Swift 6 strict concurrency** 채택 (제출 요건 아님)

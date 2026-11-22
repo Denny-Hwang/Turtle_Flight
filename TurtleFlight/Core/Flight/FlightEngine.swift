@@ -181,6 +181,34 @@ final class FlightEngine {
         state.rotation = SCNVector3(pitchAngle, -headingRad, bankAngle)
     }
 
+    /// Friendly bump off a solid landmark: move the character `depth`
+    /// along `normal` (out of the shape) and, if it was heading into the
+    /// surface, turn it away like a ball off a wall. Speed and boost are
+    /// untouched — it is a nudge, not a crash.
+    func resolveContact(normal: SIMD3<Float>, depth: Float) {
+        guard depth > 0 else { return }
+        state.position.x += normal.x * depth
+        state.position.y += normal.y * depth
+        state.position.z += normal.z * depth
+        state.altitude = state.position.y
+        if normal.y > 0.5 {
+            // Landed on a roof: stop sinking into it.
+            state.verticalSpeed = max(state.verticalSpeed, 0)
+        }
+        let flat = SIMD2<Float>(normal.x, normal.z)
+        let len = simd_length(flat)
+        guard len > 0.3 else { return }
+        let n = flat / len
+        let headingRad = state.heading.rad
+        let dir = SIMD2<Float>(sin(headingRad), -cos(headingRad))
+        let into = simd_dot(dir, n)
+        guard into < 0 else { return }
+        let out = dir - 2 * into * n
+        var heading = atan2(out.x, -out.y) * 180 / .pi
+        if heading < 0 { heading += 360 }
+        state.heading = heading
+    }
+
     /// Stall check
     var isStalling: Bool {
         guard profile.stallEnabled else { return false }

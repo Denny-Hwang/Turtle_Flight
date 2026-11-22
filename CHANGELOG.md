@@ -9,6 +9,45 @@ window.
 
 ## [Unreleased]
 
+### Look ahead, sky extras, bundled audio, Swift 6 (2026-11-22)
+- **Characters face where they fly.** In flight the character used to look
+  back at the player the whole time. It now shows its back by default (new
+  back-view art for all six friends on their own ride and on Cloud Surf:
+  `<name>_back_atlas`, `<name>_cloud_back_atlas`, same 2×2 expression cells,
+  so joy / scared / speed still read through pose and effects). A new
+  **Look at me** button in the flight controls turns it round (and **Look
+  ahead** back); the choice is remembered (`flight.lookAtMe`) and also lives
+  in Settings → Controls.
+- **Landmarks are solid** in Free Flight: a friendly bump (pushed out and
+  turned away, soft haptic + "boing", scared face) with no penalty. Each
+  landmark has a rough hull (`LandmarkKind.colliders`) that leaves the
+  openings that look flyable open — under arches, between tower legs,
+  through the sky wheel and the rainbow gate, behind the waterfall.
+- **Sky wonders**: about one Free Flight in three, a surprise appears ahead
+  — meteor shower (night / space), round rainbow (day), cloud whale, glow
+  tide (ocean). Fly up to it for +3 stars; the album gets a "Sky Wonders"
+  page (`wonders.v1`).
+- **Postcard milestones and Festival**: half a world's postcards pays 5
+  stars, all of them 10 stars and unlocks that world's Festival — paper
+  lanterns (pearls under the sea, star lanterns in space) and fireworks in
+  Free Flight, switchable per world in the album. Paid with the Free Flight
+  result; an in-flight banner marks the moment.
+- **Bundled audio**: a music loop for each of the 7 worlds (the four new
+  worlds used to fall back to the sky tune), an engine loop per vehicle and
+  the 8 sound effects, all rendered offline by
+  `scripts/audio/render_assets.swift` (plucked strings, FM bells, flute,
+  pads, hand drums — no samples) into `TurtleFlight/Audio/` (6.4 MB).
+  `bash scripts/audio/build_audio.sh` regenerates them. The in-app synth
+  stays as the fallback.
+- **Swift 6**: the app target now builds in the Swift 6 language mode with
+  zero warnings. Shared singletons say how they are thread-safe (lock,
+  serial queue, or main-only contract); haptics and audio hop to the main
+  actor through `performOnMainActor`; the ReplayKit preview is wrapped
+  instead of retro-conforming an Apple class. Tests stay in Swift 5 mode.
+- Store screenshots: two more scenes (`tour` at sunset in the desert, and a
+  sky wonder over a festival) — 8 per device.
+- Tests: 469 (new `SkyExtrasTests`, `FacingTests`, bundled-audio coverage).
+
 ### Result screens, iPad layout (2026-11-21)
 - The in-flight HUD and control buttons (gauges, stage/timer chip, Pause/Exit,
   ring/score, Boost) hide while a result screen is up — on iPad the scaled-up

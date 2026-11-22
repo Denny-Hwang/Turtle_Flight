@@ -1,4 +1,5 @@
 import XCTest
+import AVFoundation
 @testable import TurtleFlight
 
 /// Phase 4: character mastery, iCloud progress merge rules, audio asset
@@ -151,8 +152,17 @@ final class Phase4PolishTests: XCTestCase {
 
     // MARK: - Audio asset hook
 
-    func testAssetLookupReturnsNilWhenNothingIsBundled() {
-        XCTAssertNil(AudioManager.assetURL(named: "bgm_sky"))
+    func testBundledAudioCoversEveryWorldVehicleAndEffect() throws {
+        // Rendered by scripts/audio/build_audio.sh into TurtleFlight/Audio/.
+        var names = MapTheme.allCases.map { "bgm_\($0.rawValue)" }
+        names += VehicleType.allCases.compactMap { VehicleDefinition.definition(for: $0)?.soundEffect }.map { "vehicle_\($0)" }
+        names += ["star_collect", "ring_pass", "boost", "stage_clear", "stage_fail",
+                  "collision", "timer_tick", "button_tap"].map { "sfx_\($0)" }
+        for name in names {
+            let url = try XCTUnwrap(AudioManager.assetURL(named: name), "\(name) is not bundled")
+            let player = try AVAudioPlayer(contentsOf: url)
+            XCTAssertGreaterThan(player.duration, 0.05, name)
+        }
         XCTAssertNil(AudioManager.assetURL(named: "definitely-not-a-sound"))
     }
 

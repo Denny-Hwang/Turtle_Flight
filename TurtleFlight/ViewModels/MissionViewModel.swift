@@ -337,7 +337,9 @@ final class MissionViewModel: ObservableObject {
         if isNewBest {
             progress.bestFreeFlightStars = starsCollected
         }
-        pay(stars: 0, treats: RewardRules.treats(forFreeFlightStars: starsCollected))
+        // Postcard milestones reached on this flight pay out with it.
+        let milestoneStars = claimPostcardRewards(credit: false).reduce(0) { $0 + $1.stars }
+        pay(stars: milestoneStars, treats: RewardRules.treats(forFreeFlightStars: starsCollected))
         progress.totalFlightTime += max(0, flightTime)
         QuestTracker.shared.record(.flightTime(seconds: max(0, flightTime)))
         Analytics.shared.track(.freeFlightEnded, [
@@ -347,6 +349,27 @@ final class MissionViewModel: ObservableObject {
         ])
         save()
         return isNewBest
+    }
+
+    /// Pay every postcard milestone reached but not yet paid. Returns
+    /// what was paid. `credit: false` marks them paid without touching
+    /// the wallet, for a caller that pays them itself (`recordFreeFlight`
+    /// routes them through `pay` so the result screen shows them).
+    @discardableResult
+    func claimPostcardRewards(album: PostcardAlbum = .shared, credit: Bool = true) -> [PostcardReward] {
+        let due = PostcardRewards.due(album: album, claimed: progress.claimedPostcardRewards)
+        guard !due.isEmpty else { return [] }
+        for reward in due {
+            progress.claimedPostcardRewards.insert(reward.id)
+            if credit { progress.earnStars(reward.stars) }
+        }
+        return due
+    }
+
+    /// Album switch for an unlocked Festival.
+    func setFestival(_ on: Bool, in world: MapTheme) {
+        if on { progress.festivalOff.remove(world.rawValue) } else { progress.festivalOff.insert(world.rawValue) }
+        save()
     }
 
     func returnToSelect() {

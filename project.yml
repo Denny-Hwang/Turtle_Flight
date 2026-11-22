@@ -87,6 +87,12 @@ targets:
         # Static analysis hygiene
         GCC_WARN_UNUSED_FUNCTION: YES
         CLANG_WARN_DOCUMENTATION_COMMENTS: YES
+        # The app compiles in the Swift 6 language mode (full data-race
+        # checking). The flight loop's render-thread / main split is kept
+        # by design; the types that cross it say how they are protected
+        # (`@unchecked Sendable` + a comment naming the lock or the hop).
+        # The test bundle stays on Swift 5 (see below).
+        SWIFT_VERSION: "6.0"
 
   TurtleFlightTests:
     type: bundle.unit-test
@@ -103,6 +109,9 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         BUNDLE_LOADER: "$(TEST_HOST)"
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/TurtleFlight.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TurtleFlight"
+        # Tests drive the simulation synchronously from XCTest's main
+        # thread, which Swift 6 can't prove; they stay in Swift 5 mode.
+        SWIFT_VERSION: "5.9"
 
   # Screenshot tooling only (scripts/screenshots/capture.sh). Not in the
   # TurtleFlight scheme, so CI and ⌘U never run it.

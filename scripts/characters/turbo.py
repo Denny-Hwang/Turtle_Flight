@@ -129,3 +129,50 @@ def vehicle():
 ICON = dict(s=1.36, cx=256, cy=262)   # head centre (256,200) lands on (cx, cy)
 STAND = dict(s=0.98, by=462)
 CLOUD = dict(s=0.92, by=420)
+
+
+# --- Back view (flying away from the camera) -------------------------------
+# The chase camera sits behind the character, so in flight we mostly see
+# its back: the domed shell, the goggle strap round the back of the head,
+# the scarf knot. Expressions read through the arms, tilt and fx cues.
+
+def head_back(expr, cx=256, cy=200):
+    p = PAL; L = p["line"]; G = p["main"]
+    hg = E(cx, cy, 132, 112)
+    o = sh(hg, G, L, dx=-10, dy=-12)
+    o += clipped(hg, flat(E(cx, cy + 90, 110, 50), p["dark"], op=0.35))
+    o += stroke(hg, L, 8)
+    o += gloss(cx - 70, cy - 66, 30, 14)
+    # goggle strap round the back, with its buckle
+    strap = "M%s %s Q%s %s %s %s" % (f(cx - 130), f(cy - 30), f(cx), f(cy - 4), f(cx + 130), f(cy - 30))
+    o += clipped(hg, stroke(P(strap), BRASSL, 30) + stroke(P(strap), "#8A5A1E", 18))
+    o += flat(R(cx - 18, cy - 26, 36, 22, 5), BRASS, BRASSL, 6) + flat(R(cx - 8, cy - 20, 16, 10, 3), "#8A5A1E")
+    # goggle rims peeking out at the sides
+    for sx in (-1, 1):
+        o += sh(E(cx + sx * 118, cy - 62, 16, 24, sx * 20), BRASS, BRASSL, 6, dx=-2, dy=-3)
+    return o
+
+
+def fig_back(expr="default", arms=None):
+    p = PAL; L = p["line"]; G = p["main"]
+    a = ARMS[expr] if arms is None else arms
+    o = sh(E(204, 446, 36, 22), G, L, dx=-5, dy=-6) + sh(E(308, 446, 36, 22), G, L, dx=-5, dy=-6)
+    o += limb(196, 338, 62, 40, a, -1, G, L) + limb(316, 338, 62, 40, a, 1, G, L)
+    o += head_back(expr)
+    o += shell(256, 360, 150, 124)
+    # scarf knot at the nape, tails streaming in the wind
+    wind = expr in ("speed", "joy")
+    for sx in (-1, 1):
+        tail = ("M256 282 Q%s 250 %s 236 Q%s 262 %s 290 Z" if wind else "M256 284 Q%s 320 %s 344 Q%s 340 %s 300 Z") % (
+            f(256 + sx * 70), f(256 + sx * 120), f(256 + sx * 100), f(256 + sx * 20))
+        o += sh(P(tail), RED, REDL, 7, dx=-3, dy=-4)
+    o += sh(E(256, 284, 22, 18), RED, REDL, 7, dx=-3, dy=-4)
+    o += sh(P("M236 470 Q256 500 276 470 Z"), G, L, 7, dx=-3, dy=-3)   # tail
+    return o
+
+
+def ride_back(expr="default"):
+    power = {"speed": 1.25, "scared": 0.7}.get(expr, 1.0)
+    rot = {"speed": 6, "scared": -5}.get(expr, 0)
+    inner = boosters(power) + sh(P("M224 430 L214 462 H298 L288 430 Z"), "#B9BEC6", "#3D4652", 7) + fig_back(expr)
+    return group(place(inner, 1.0, 256, 416), rot=rot) + fx(expr, (40, 40, 472, 440))
