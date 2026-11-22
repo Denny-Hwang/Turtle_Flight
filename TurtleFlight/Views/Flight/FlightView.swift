@@ -356,7 +356,14 @@ struct FlightView: View {
         // Distance haze: landmarks and the far terrain fade into the sky
         // instead of popping in at the edge of the loaded area.
         scene.fogColor = skyColor
-        scene.fogStartDistance = 1100
+        if mapTheme.hasOpenSky {
+            // Painted sky (gradient, sun / moon, far clouds); the fog takes
+            // the horizon colour so the ground melts into it.
+            let palette = SkyPainter.palette(world: mapTheme, mood: mood)
+            scene.background.contents = SkyPainter.cubeMap(palette)
+            scene.fogColor = SkyPainter.fogColor(palette)
+        }
+        scene.fogStartDistance = 1300
         scene.fogEndDistance = 2300
         scene.fogDensityExponent = 1.5
 
@@ -381,7 +388,8 @@ struct FlightView: View {
         // Theme-specific extras
         switch mapTheme {
         case .sky, .desert, .city, .seoul, .wild:
-            if mood.showsStars { addStarDome() } else { addSunSphere() }
+            // The sun / moon is painted into the sky now.
+            if mood.showsStars { addStarDome() }
         case .space:
             addStarDome()
         case .ocean:
@@ -443,13 +451,6 @@ struct FlightView: View {
     }
 
     /// Bright yellow sun sphere in sky theme
-    private func addSunSphere() {
-        let sun = SCNNode(geometry: SCNSphere(radius: 30))
-        sun.position = SCNVector3(500, 800, -800)
-        sun.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.95, blue: 0.5, alpha: 1)
-        sun.geometry?.firstMaterial?.emission.contents = UIColor(red: 1.0, green: 0.85, blue: 0.2, alpha: 0.9)
-        scene.rootNode.addChildNode(sun)
-    }
 
     /// Distant star particles for space theme. The count is gated on
     /// Reduce Motion — 200 small spheres produced first-frame stutter on

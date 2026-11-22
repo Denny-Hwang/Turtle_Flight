@@ -515,7 +515,7 @@ struct HomeView: View {
             case .daily, .dailyResult:
                 missionVM.selectDailyRun()
                 showSpecialFlight = true
-            case .skyrun:
+            case .skyrun, .soak:
                 missionVM.selectEndless()
                 showSpecialFlight = true
             case .settings:

@@ -41,6 +41,10 @@ enum ScreenshotScene: String {
     case stageResult = "stage-result"
     /// Free Flight summary: flies a few seconds, then taps Exit.
     case freeflightResult = "freeflight-result"
+    /// Device soak test (scripts/device/verify.sh): Sky Run flown by the
+    /// autopilot with no freeze, so it keeps flying for as long as the
+    /// perf probe records.
+    case soak
 }
 
 enum ScreenshotDirector {
@@ -55,7 +59,7 @@ enum ScreenshotDirector {
     /// Flight scenes fly themselves.
     static var autopilot: Bool {
         switch scene {
-        case .daily, .dailyResult, .skyrun, .pause, .stage, .stageResult, .tour: return true
+        case .daily, .dailyResult, .skyrun, .pause, .stage, .stageResult, .tour, .soak: return true
         default: return false
         }
     }

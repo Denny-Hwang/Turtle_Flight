@@ -220,6 +220,19 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
                                     character: currentCharacter, vehicle: currentVehicle)
     }
 
+    /// Lean of the in-flight billboard (V5). See `CharacterRegistry.BankRoll`.
+    let bankRoll = CharacterRegistry.BankRoll()
+    /// Full lean at full stick, radians (about 22°); half with Reduce Motion.
+    static let maxBank: Float = 0.38
+
+    /// Ease the billboard's lean toward the current turn input.
+    func updateBank(rollInput: Double, deltaTime: Float) {
+        let limit = Self.maxBank * (reduceMotionEnabled ? 0.5 : 1) * flightEngine.vehicleHandling.bank
+        let target = -Float(max(-1, min(1, rollInput))) * limit
+        let k = min(1, deltaTime * 7)
+        bankRoll.angle += (target - bankRoll.angle) * k
+    }
+
     /// Hold an expression for a moment (bump → scared, wonder → joy).
     func flashExpression(_ expression: CharacterExpression, for duration: TimeInterval) {
         expressionLatch.trigger(expression, for: duration, now: CACurrentMediaTime())
@@ -467,6 +480,8 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         scene.rootNode.addChildNode(charNode)
 
         self.characterNode = charNode
+        bankRoll.angle = 0
+        charNode.constraints = (charNode.constraints ?? []) + [CharacterRegistry.bankConstraint(bankRoll)]
         self.vehicleNode = nil
         self.lastDisplayedExpression = .default
         self.expressionLatch.reset()
@@ -726,6 +741,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// into a clamped delta and runs one simulation step. The first frame
     /// after a start / pause / resume only establishes the baseline.
     func tick(at time: TimeInterval) {
+        PerfProbe.shared.frame(at: time)
         guard lastRenderTime != 0 else {
             lastRenderTime = time
             return
@@ -828,12 +844,20 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
             }
         }
 
+        var bankInput = gyroController.rollInput
+        #if DEBUG
+        // QA: `-TFRoll 0.8` holds a lean for screenshots (no gyro in the simulator).
+        if let forced = UserDefaults.standard.string(forKey: "TFRoll").flatMap(Double.init) { bankInput = forced }
+        #endif
+        updateBank(rollInput: bankInput, deltaTime: deltaTime)
+
         // Update camera (3rd person follow)
         updateCamera(deltaTime: deltaTime)
 
         // Update terrain chunks
         if let pos = characterNode?.position {
             terrainGenerator?.updateChunks(playerPosition: pos)
+            terrainGenerator?.updateWater(playerPosition: pos, deltaTime: deltaTime)
         }
 
         // Update items

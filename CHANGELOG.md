@@ -9,6 +9,25 @@ window.
 
 ## [Unreleased]
 
+### Visual pass V1–V5 (2026-11-22)
+- Terrain: real per-vertex normals (every vertex used to point straight up, so
+  hills had no lit or shaded side), soft colour blending between height bands,
+  rock on steep slopes, broad light/dark variation. Open-sky worlds get less
+  ambient and a little more sun (flat ground was clipping to white).
+- Water: the terrain noise is in [0, 1], so no world ever had water. Seoul,
+  city and wild now sit lower (`WorldProfile.seaOffset`) so their valleys hold
+  rivers and lakes under a rippling, sun-glinting water plane
+  (`WaterSurface`); river boats in the city finally appear. Sky, space and
+  ocean keep their 1.0 shape.
+- Sky: painted cube map per world and mood (zenith-to-horizon gradient, sun or
+  moon with glow, far cloud layer) replaces the flat colour and the drifting
+  sun sphere; fog takes the horizon colour.
+- Character leans into turns (billboard roll, up to ~22°, halved with Reduce
+  Motion).
+- Device verification kit: `scripts/device/verify.sh`, `PerfProbe`
+  (`-TFPerfProbe YES`), `soak` scene; `docs/DEVICE_VERIFICATION.md`,
+  `docs/VISUAL_AUDIO_PLAN.md`.
+
 ### Look ahead, sky extras, bundled audio, Swift 6 (2026-11-22)
 - **Characters face where they fly.** In flight the character used to look
   back at the player the whole time. It now shows its back by default (new

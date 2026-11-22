@@ -11,6 +11,9 @@ final class TerrainGenerator {
     private var loadedChunks: [ChunkCoord: SCNNode] = [:]
     private var farNode: SCNNode?
     private var farCentre: SIMD2<Float>?
+    /// Sea-level water plane (worlds with water only).
+    private(set) var water: WaterSurface?
+    private var waterClock: Float = 0
     private let parentNode: SCNNode
     let seed: Int
     private(set) var theme: MapTheme
@@ -21,6 +24,18 @@ final class TerrainGenerator {
         self.seed = seed
         self.theme = theme
         self.profile = WorldProfile.profile(for: theme)
+        if WaterSurface.hasWater(theme) {
+            let surface = WaterSurface(world: theme, profile: profile)
+            parentNode.addChildNode(surface.node)
+            water = surface
+        }
+    }
+
+    /// Per-frame: keep the water under the player and its ripples moving.
+    func updateWater(playerPosition: SCNVector3, deltaTime: Float) {
+        guard let water else { return }
+        waterClock += deltaTime
+        water.update(playerPosition: playerPosition, time: waterClock)
     }
 
     /// Node name given to friendly creatures and craft (balloons,
@@ -91,6 +106,7 @@ final class TerrainGenerator {
         let half = Float(n) * size / 2
         var vertices: [SCNVector3] = []
         var colors: [SCNVector3] = []
+        var normals: [SCNVector3] = []
         var indices: [Int32] = []
         vertices.reserveCapacity((n + 1) * (n + 1))
         for row in 0...n {
@@ -100,7 +116,11 @@ final class TerrainGenerator {
                 let h = terrainHeight(x: x, z: z)
                 // Sits a little low so the detailed chunks always win.
                 vertices.append(SCNVector3(x, h - 6, z))
-                colors.append(profile.color(forHeight: h))
+                let n = Self.normal(left: terrainHeight(x: x - size, z: z), right: terrainHeight(x: x + size, z: z),
+                                    back: terrainHeight(x: x, z: z - size), front: terrainHeight(x: x, z: z + size),
+                                    spacing: size)
+                normals.append(n)
+                colors.append(profile.renderColor(height: h, slope: 1 - n.y, variation: colorVariation(x: x, z: z)))
             }
         }
         for row in 0..<n {
@@ -119,13 +139,10 @@ final class TerrainGenerator {
             componentsPerVector: 3, bytesPerComponent: MemoryLayout<Float>.size,
             dataOffset: 0, dataStride: MemoryLayout<SCNVector3>.size
         )
-        let normals = [SCNVector3](repeating: SCNVector3(0, 1, 0), count: vertices.count)
         let geometry = SCNGeometry(
             sources: [SCNGeometrySource(vertices: vertices), SCNGeometrySource(normals: normals), colorSource],
             elements: [SCNGeometryElement(indices: indices, primitiveType: .triangles)])
-        let material = SCNMaterial()
-        material.isDoubleSided = true
-        geometry.materials = [material]
+        geometry.materials = [Self.terrainMaterial()]
         let node = SCNNode(geometry: geometry)
         node.name = "far_terrain"
         parentNode.addChildNode(node)
@@ -141,6 +158,8 @@ final class TerrainGenerator {
         farNode?.removeFromParentNode()
         farNode = nil
         farCentre = nil
+        water?.node.removeFromParentNode()
+        water = nil
     }
 
     /// Recursively `removeAllActions()` for a node and its descendants.
@@ -185,15 +204,30 @@ final class TerrainGenerator {
         var normals:  [SCNVector3] = []
         var colors:   [SCNVector3] = []
         var indices:  [Int32] = []
+        vertices.reserveCapacity((resolution + 1) * (resolution + 1))
 
+        // Heights on the grid plus a one-cell border, so normals at the
+        // chunk edge use the same neighbours as the next chunk (no seams).
+        let side = resolution + 3
+        var heights = [Float](repeating: 0, count: side * side)
+        for row in 0..<side {
+            for col in 0..<side {
+                heights[row * side + col] = terrainHeight(x: Float(col - 1) * cellSize + offsetX,
+                                                          z: Float(row - 1) * cellSize + offsetZ)
+            }
+        }
         for row in 0...resolution {
             for col in 0...resolution {
                 let x = Float(col) * cellSize + offsetX
                 let z = Float(row) * cellSize + offsetZ
-                let height = terrainHeight(x: x, z: z)
+                let i = (row + 1) * side + (col + 1)
+                let height = heights[i]
+                let normal = Self.normal(left: heights[i - 1], right: heights[i + 1],
+                                         back: heights[i - side], front: heights[i + side], spacing: cellSize)
                 vertices.append(SCNVector3(x, height, z))
-                normals.append(SCNVector3(0, 1, 0))
-                colors.append(colorForHeight(height))
+                normals.append(normal)
+                colors.append(profile.renderColor(height: height, slope: 1 - normal.y,
+                                                  variation: colorVariation(x: x, z: z)))
             }
         }
 
@@ -218,13 +252,38 @@ final class TerrainGenerator {
         )
         let element = SCNGeometryElement(indices: indices, primitiveType: .triangles)
         let geometry = SCNGeometry(sources: [vertexSource, normalSource, colorSource], elements: [element])
-        let material = SCNMaterial()
-        material.isDoubleSided = true
-        geometry.materials = [material]
+        geometry.materials = [Self.terrainMaterial()]
         chunkNode.geometry = geometry
 
         addDecorations(to: chunkNode, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
         return chunkNode
+    }
+
+    // MARK: - Shading (V1/V2, docs/VISUAL_AUDIO_PLAN.md)
+
+    /// Surface normal from the four neighbouring heights (central
+    /// differences). Until V1 every vertex used (0, 1, 0), so slopes had
+    /// no light and dark side and the hills read flat.
+    static func normal(left: Float, right: Float, back: Float, front: Float, spacing: Float) -> SCNVector3 {
+        let nx = left - right
+        let nz = back - front
+        let ny = 2 * spacing
+        let len = (nx * nx + ny * ny + nz * nz).squareRoot()
+        return SCNVector3(nx / len, ny / len, nz / len)
+    }
+
+    /// Slow light/dark variation across the ground, in [-1, 1].
+    func colorVariation(x: Float, z: Float) -> Float {
+        MathHelpers.fractalNoise(x: x * 0.0035 + 91, y: z * 0.0035 - 37, octaves: 2, seed: seed &+ 7)
+    }
+
+    /// Matte, vertex-coloured ground. Lambert: grass and sand shouldn't
+    /// have a specular hot spot.
+    static func terrainMaterial() -> SCNMaterial {
+        let material = SCNMaterial()
+        material.lightingModel = .lambert
+        material.isDoubleSided = true
+        return material
     }
 
     // MARK: - Height
@@ -236,12 +295,6 @@ final class TerrainGenerator {
             octaves: 4, persistence: 0.5, lacunarity: 2.0, seed: seed
         )
         return profile.height(fromNoise: noise)
-    }
-
-    // MARK: - Theme Colors
-
-    private func colorForHeight(_ height: Float) -> SCNVector3 {
-        profile.color(forHeight: height)
     }
 
     // MARK: - Decorations

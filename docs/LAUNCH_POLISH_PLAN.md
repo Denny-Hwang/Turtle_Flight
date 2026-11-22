@@ -162,6 +162,8 @@ xcrun devicectl device process launch --device 40159E23-B6B4-59A7-8A35-93CA679DF
 
 ## 작업 로그
 
+- 2026-11-22 (9) 실기기 검증은 `docs/DEVICE_VERIFICATION.md` 로 이관(A1–A3·C2 포함, 원클릭 `scripts/device/verify.sh`). 비주얼·소리 개선은 `docs/VISUAL_AUDIO_PLAN.md`.
+
 - 2026-11-22 (8) 남은 아이디어 전부 처리: 랜드마크 충돌(벌점 없는 튕김), 하늘의 신비 4종(유성우·동그란 무지개·구름 고래·빛나는 물결), 엽서 마일스톤 보상 + 월드별 축제, 새 월드 스토어 스크린샷 2장(tour·freeflight), 번들 오디오(월드 7곡 + 탈것 루프 7 + 효과음 8, `scripts/audio/build_audio.sh`), Swift 6 언어 모드. "월드별 캠페인 스테이지"는 #56 루트(Sun Road·East Trail·Deep Blue·Star Road)로 이미 처리돼 있었음.
   오너 피드백 반영: 비행 중 캐릭터가 카메라(나)를 보던 것을 **기본 앞보기(뒷모습)** 로 바꾸고 "나를 봐" 버튼 + 설정 토글 추가. 뒷모습 아트 12세트 생성.
   남은 것: 오디오 귀 검수(사람이 들어봐야 함), A1–A3·C2 실기기.

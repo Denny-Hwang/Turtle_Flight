@@ -6,6 +6,8 @@
 ## Key Documents
 - `docs/SDD.md` — SW 개발 문서
 - `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (historical snapshot; 현재 테스트 460+)
+- `docs/DEVICE_VERIFICATION.md` — 배포 전 실기기 검증 절차 + 결과 기록 (`scripts/device/verify.sh`)
+- `docs/VISUAL_AUDIO_PLAN.md` — 지형·랜드마크·비주얼·소리 개선 진행표 (실기기 검증 후)
 - `docs/APP_STORE_SUBMISSION.md` — 앱스토어 제출 체크리스트 (계정에서 해야 할 일, Game Center ID, 프라이버시 라벨, 리뷰 노트). 마케팅 카피는 `docs/store/<locale>.md`
 
 ## Tech Stack — Native iOS only
