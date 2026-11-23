@@ -9,6 +9,18 @@ window.
 
 ## [Unreleased]
 
+### Landmark detail V7 (2026-11-22)
+- Detail pass on the eight landmarks seen first in each world: floating castle,
+  pyramids, sand guardian, grand arch, palace gate, canyon arch, ring planet,
+  shipwreck (windows, trims, steps, faces, props; small motion on the castle
+  banner, canyon birds, ring rocks and kelp). Colliders cover the new parts
+  that stick out.
+- Fix: `flattenedClone()` dropped geometry nested two levels down, so the
+  palace gate never showed its roofs and the hanok village showed one house.
+  Geometry is now lifted under the root before flattening.
+- Review tools: `LandmarkGalleryTests` (off-screen renders, skipped unless
+  `TEST_RUNNER_TF_GALLERY` is set) and `-TFTourKind` for the `tour` scene.
+
 ### Landmark materials V6 (2026-11-22)
 - One material language for all 25 landmarks (`LandmarkStyle`, two SceneKit
   shader modifiers): darker, cooler feet fading to full colour at the top;

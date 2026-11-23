@@ -83,6 +83,7 @@ extension LandmarkKind {
                 .cone(0, -60, 0, bottom: 8, top: 70, h: 60),
                 .cylinder(0, 0, 0, r: 72, h: 8),
                 .box(0, 28, 0, 30, 20, 30),
+                .box(0, 52, 0, 34, 5, 34),          // battlements
                 .cylinder(0, 30, 0, r: 14, h: 80),
                 .cone(0, 110, 0, bottom: 18, top: 0, h: 36)
             ]
@@ -121,7 +122,8 @@ extension LandmarkKind {
             return shapes
         case .grandArch:
             return [.box(-46, 55, 0, 19, 55, 22), .box(46, 55, 0, 19, 55, 22),
-                    .box(0, 135, 0, 70, 21, 25)]
+                    .box(0, 135, 0, 70, 21, 25),
+                    .cylinder(0, 152, 0, r: 9, h: 38)]   // statue
         case .riverBridge:
             var shapes: [LandmarkShape] = [.box(0, 34, 0, 17, 3, 170)]
             for z: Float in [-90, 90] {
@@ -140,7 +142,8 @@ extension LandmarkKind {
                     .cylinder(0, 232, 0, r: 20, h: 26),
                     .cone(0, 258, 0, bottom: 12, top: 2, h: 26)]
         case .palaceGate:
-            return [.box(0, 22, 0, 95, 22, 30), .box(0, 64, 0, 94, 20, 39), .box(0, 98, 0, 72, 20, 39)]
+            return [.box(0, 22, 0, 95, 22, 30), .box(0, 64, 0, 94, 20, 39), .box(0, 98, 0, 72, 20, 39),
+                    .cylinder(-85, 0, 44, r: 8, h: 30), .cylinder(85, 0, 44, r: 8, h: 30)]   // guardians
         case .moonBridge:
             return [.box(0, 30, 0, 15, 3, 165)]
         case .greatFalls:
@@ -150,6 +153,7 @@ extension LandmarkKind {
         case .canyonArch:
             return [.box(-95, 85, 0, 30, 85, 35), .box(95, 85, 0, 30, 85, 35),
                     .box(0, 180, 0, 130, 23, 33),
+                    .cone(-20, 203, 0, bottom: 9, top: 0, h: 38),   // pine on the span
                     .cone(-170, 0, 60, bottom: 24, top: 14, h: 90),
                     .cone(180, 0, -50, bottom: 24, top: 14, h: 120),
                     .cone(-200, 0, -70, bottom: 24, top: 14, h: 60)]

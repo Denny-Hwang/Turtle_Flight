@@ -128,7 +128,12 @@ final class LandmarkField {
     init(parentNode: SCNNode, world: MapTheme, seed: Int = 42,
          heightAt: @escaping (Float, Float) -> Float) {
         self.parentNode = parentNode
-        self.kinds = LandmarkKind.kinds(in: world)
+        var kinds = LandmarkKind.kinds(in: world)
+        #if DEBUG
+        // Screenshot `tour` aimed at one landmark: every cell holds it.
+        if let only = ScreenshotDirector.tourKind, only.world == world { kinds = [only] }
+        #endif
+        self.kinds = kinds
         self.seed = seed
         self.heightAt = heightAt
     }
