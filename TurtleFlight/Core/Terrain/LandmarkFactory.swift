@@ -9,6 +9,19 @@ import UIKit
 enum LandmarkFactory {
 
     static func build(_ kind: LandmarkKind) -> SCNNode {
+        let (root, moving) = styledParts(kind)
+        let flat = root.flattenedClone()
+        moving.forEach { flat.addChildNode($0) }
+        return flat
+    }
+
+    /// The landmark before flattening: the static parts under `root` and
+    /// the moving parts split off, every lit material in the shared style.
+    /// Styling happens here because the flattened clone fills in its
+    /// materials lazily, so it is the source materials that count. The
+    /// static mesh shares one gradient (the root's space); each moving
+    /// part gets its own, since it is drawn in its own space.
+    static func styledParts(_ kind: LandmarkKind) -> (root: SCNNode, moving: [SCNNode]) {
         let root = SCNNode()
         switch kind {
         case .floatingCastle: floatingCastle(root)
@@ -41,9 +54,9 @@ enum LandmarkFactory {
         // and kept out of the flattened static mesh.
         let moving = root.childNodes.filter { $0.name == movingName }
         moving.forEach { $0.removeFromParentNode() }
-        let flat = root.flattenedClone()
-        moving.forEach { flat.addChildNode($0) }
-        return flat
+        LandmarkStyle.apply(to: root, world: kind.world)
+        moving.forEach { LandmarkStyle.apply(to: $0, world: kind.world) }
+        return (root, moving)
     }
 
     private static let movingName = "moving"
