@@ -80,6 +80,13 @@ enum ScreenshotDirector {
     /// character has cleared the ring and the next gates are in view.
     static let freezeDelay: Double = 0.18
 
+    /// `tour` with `-TFTourKind <rawValue>`: only that landmark appears
+    /// (it must belong to the selected world), for before/after captures.
+    static var tourKind: LandmarkKind? {
+        guard scene == .tour else { return nil }
+        return UserDefaults.standard.string(forKey: "TFTourKind").flatMap(LandmarkKind.init(rawValue:))
+    }
+
     /// `tour`: stop this far from the landmark so it fills the frame.
     static var tourFreezeDistance: Float {
         let v = UserDefaults.standard.float(forKey: "TFTourDistance")

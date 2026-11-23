@@ -2,7 +2,7 @@ import XCTest
 import SceneKit
 @testable import TurtleFlight
 
-/// V1–V6 of docs/VISUAL_AUDIO_PLAN.md.
+/// V1–V7 of docs/VISUAL_AUDIO_PLAN.md.
 final class VisualPassTests: XCTestCase {
 
     // V1
@@ -96,5 +96,27 @@ final class VisualPassTests: XCTestCase {
                 }
             }
         }
+    }
+
+    // V7
+    func testNestedGeometryIsLiftedUnderTheRootWithoutMoving() {
+        let (root, _) = LandmarkFactory.styledParts(.hanokVillage)
+        var before: [ObjectIdentifier: SCNVector3] = [:]
+        root.enumerateChildNodes { node, _ in
+            if node.geometry != nil { before[ObjectIdentifier(node)] = node.worldPosition }
+        }
+        XCTAssertGreaterThan(before.count, 20)
+        LandmarkFactory.liftNestedGeometry(root)
+        var after = 0
+        root.enumerateChildNodes { node, _ in
+            guard node.geometry != nil else { return }
+            after += 1
+            XCTAssertTrue(node.parent === root, "every piece sits straight under the root")
+            let p = before[ObjectIdentifier(node)]!
+            XCTAssertEqual(node.worldPosition.x, p.x, accuracy: 0.01)
+            XCTAssertEqual(node.worldPosition.y, p.y, accuracy: 0.01)
+            XCTAssertEqual(node.worldPosition.z, p.z, accuracy: 0.01)
+        }
+        XCTAssertEqual(after, before.count)
     }
 }
