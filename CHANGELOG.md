@@ -9,6 +9,21 @@ window.
 
 ## [Unreleased]
 
+### Decoration variety V8 (2026-11-23)
+- Repeated ground props come in three shapes each, picked from their
+  placement hash (same spot, same prop): meadow tree, pine, palm, blossom
+  tree, tiled-roof house, town house (plus roof colours), and clouds. Each
+  prop also gets its own size and turn (houses in quarter turns).
+- Meadow speckles: flower bunches and grass tufts in patches on gentle
+  ground (sky, seoul, wild, city; pebbles/scrub in the desert; shells and
+  sea grass in the ocean).
+- Static props and speckles are baked into the chunk's terrain mesh
+  (`PropMesh`), and each cloud is one shared mesh: geometry nodes in the
+  loaded chunks drop 40–80% per world. Chunk build time is within ~1–2 ms of
+  before (cached primitive templates, speckles sample the chunk height grid).
+- `LandmarkGalleryTests.testRenderDecorGallery` (`TEST_RUNNER_TF_DECOR=<dir>`)
+  renders each world's ground from a low flight for before/after review.
+
 ### Landmark detail V7 (2026-11-22)
 - Detail pass on the eight landmarks seen first in each world: floating castle,
   pyramids, sand guardian, grand arch, palace gate, canyon arch, ring planet,

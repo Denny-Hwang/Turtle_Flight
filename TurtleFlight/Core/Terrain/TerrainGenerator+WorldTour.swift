@@ -22,7 +22,8 @@ extension TerrainGenerator {
         for i in 0..<(theme == .desert ? 2 : 4) {
             let h = hash(7, 13, i)
             let (x, z) = spot(h, 17)
-            let cloud = makeFluffyCloud()
+            let cloud = makeFluffyCloud(variant: DecorVariety.variant(h, count: 3))
+            DecorVariety.vary(cloud, hash: h, scale: 0.8...1.6)
             cloud.position = SCNVector3(x, Float(380 + h % 260), z)
             cloud.runAction(.repeatForever(.sequence([
                 .moveBy(x: 6, y: 0, z: 0, duration: 5), .moveBy(x: -6, y: 0, z: 0, duration: 5)
@@ -36,7 +37,10 @@ extension TerrainGenerator {
                 let h = hash(11, 23, i)
                 let (x, z) = spot(h, 19)
                 let y = terrainHeight(x: x, z: z)
-                if y < 30 { node.addChildNode(Self.makePalm(at: SCNVector3(x, y, z))) }
+                if y < 30 {
+                    let palm = Self.makePalm(at: SCNVector3(x, y, z), variant: DecorVariety.variant(h, count: 3))
+                    node.addChildNode(Self.staticProp(palm, hash: h, scale: 0.8...1.3))
+                }
             }
             if hash(5, 9, 0) % 3 == 0 {
                 let h = hash(5, 9, 1)
@@ -66,7 +70,14 @@ extension TerrainGenerator {
                 let h = hash(11, 23, i)
                 let (x, z) = spot(h, 19)
                 let y = terrainHeight(x: x, z: z)
-                if y > 5 { node.addChildNode(Self.makeTownHouse(at: SCNVector3(x, y, z), variant: h)) }
+                if y > 5 {
+                    let house = Self.makeTownHouse(at: SCNVector3(x, y, z), variant: h,
+                                                   shape: DecorVariety.variant(h, count: 3))
+                    // Houses keep to the street grid: quarter turns only.
+                    house.eulerAngles.y = Float(Int(DecorVariety.unit(h, 3) * 4)) * .pi / 2
+                    house.name = Self.staticPropName
+                    node.addChildNode(house)
+                }
             }
             if hash(5, 9, 0) % 3 == 0 {
                 let h = hash(5, 9, 1)
@@ -98,10 +109,13 @@ extension TerrainGenerator {
                 let (x, z) = spot(h, 19)
                 let y = terrainHeight(x: x, z: z)
                 guard y > 14 else { continue }
+                let shape = DecorVariety.variant(h, count: 3)
                 if y < 70 && i % 2 == 0 {
-                    node.addChildNode(Self.makeTiledRoofHouse(at: SCNVector3(x, y, z)))
+                    let house = Self.makeTiledRoofHouse(at: SCNVector3(x, y, z), variant: shape)
+                    node.addChildNode(Self.staticProp(house, hash: h, scale: 0.9...1.15))
                 } else if y < 150 {
-                    node.addChildNode(Self.makeBlossomTree(at: SCNVector3(x, y, z)))
+                    let tree = Self.makeBlossomTree(at: SCNVector3(x, y, z), variant: shape)
+                    node.addChildNode(Self.staticProp(tree, hash: h, scale: 0.8...1.35))
                 }
             }
             if hash(5, 9, 0) % 4 == 0 {
@@ -131,7 +145,10 @@ extension TerrainGenerator {
                 let h = hash(11, 23, i)
                 let (x, z) = spot(h, 19)
                 let y = terrainHeight(x: x, z: z)
-                if y > 30 && y < 240 { node.addChildNode(Self.makePine(at: SCNVector3(x, y, z), scale: 1 + Float(h % 3) * 0.4)) }
+                if y > 30 && y < 240 {
+                    let pine = Self.makePine(at: SCNVector3(x, y, z), scale: 1, variant: DecorVariety.variant(h, count: 3))
+                    node.addChildNode(Self.staticProp(pine, hash: h, scale: 0.9...1.9))
+                }
             }
             if hash(5, 9, 0) % 3 == 0 {
                 let h = hash(5, 9, 1)
@@ -153,6 +170,14 @@ extension TerrainGenerator {
 
     // MARK: - Prop builders
 
+    /// V8: give a ground prop its own size and turn and mark it for
+    /// baking into the chunk mesh.
+    static func staticProp(_ node: SCNNode, hash h: Int, scale: ClosedRange<Float>) -> SCNNode {
+        DecorVariety.vary(node, hash: h, scale: scale)
+        node.name = staticPropName
+        return node
+    }
+
     private static func box(_ w: CGFloat, _ h: CGFloat, _ l: CGFloat, _ color: UIColor,
                             at p: SCNVector3, chamfer: CGFloat = 0.3) -> SCNNode {
         let n = SCNNode(geometry: SCNBox(width: w, height: h, length: l, chamferRadius: chamfer))
@@ -161,19 +186,39 @@ extension TerrainGenerator {
         return n
     }
 
-    static func makePalm(at position: SCNVector3) -> SCNNode {
+    /// Palm, three shapes (V8): the original, a taller one with seven
+    /// fronds and coconuts, and a short leaning one. Variant 0 keeps the
+    /// one-level layout the landmark builders flatten.
+    static func makePalm(at position: SCNVector3, variant: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
-        let trunk = SCNNode(geometry: SCNCylinder(radius: 0.7, height: 12))
+        let shape = variant % 3
+        let height: Float = [12, 15, 9][shape]
+        let fronds = [5, 7, 4][shape]
+        let lean: Float = shape == 2 ? 0.22 : 0
+        let leafColor = [UIColor(red: 0.25, green: 0.62, blue: 0.30, alpha: 1),
+                         UIColor(red: 0.20, green: 0.55, blue: 0.28, alpha: 1),
+                         UIColor(red: 0.36, green: 0.68, blue: 0.30, alpha: 1)][shape]
+        // Leaning: tip the whole palm (position stays at the foot).
+        node.eulerAngles.z = lean
+        let trunk = SCNNode(geometry: SCNCylinder(radius: 0.7, height: CGFloat(height)))
         trunk.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.55, green: 0.40, blue: 0.24, alpha: 1)
-        trunk.position = SCNVector3(0, 6, 0)
+        trunk.position = SCNVector3(0, height / 2, 0)
         node.addChildNode(trunk)
-        for i in 0..<5 {
-            let leaf = box(8, 0.4, 2, UIColor(red: 0.25, green: 0.62, blue: 0.30, alpha: 1),
-                           at: SCNVector3(0, 12, 0), chamfer: 0.2)
+        for i in 0..<fronds {
+            let leaf = box(8, 0.4, 2, leafColor, at: SCNVector3(0, height, 0), chamfer: 0.2)
             leaf.pivot = SCNMatrix4MakeTranslation(-4, 0, 0)
-            leaf.eulerAngles = SCNVector3(0, Float(i) * 2 * .pi / 5, -0.35)
+            leaf.eulerAngles = SCNVector3(0, Float(i) * 2 * .pi / Float(fronds), -0.35)
             node.addChildNode(leaf)
+        }
+        if shape == 1 {
+            for i in 0..<3 {
+                let a = Float(i) * 2 * .pi / 3
+                let nut = SCNNode(geometry: SCNSphere(radius: 0.6))
+                nut.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.42, green: 0.30, blue: 0.18, alpha: 1)
+                nut.position = SCNVector3(cos(a) * 0.8, height - 0.8, sin(a) * 0.8)
+                node.addChildNode(nut)
+            }
         }
         return node
     }
@@ -201,19 +246,46 @@ extension TerrainGenerator {
         return node
     }
 
-    static func makeTownHouse(at position: SCNVector3, variant: Int) -> SCNNode {
+    /// Town house: wall colour and height from `variant`, and (V8) a
+    /// roof colour and one of three shapes — hip roof, flat roof with a
+    /// rooftop hut, or a long gabled house with a chimney.
+    static func makeTownHouse(at position: SCNVector3, variant: Int, shape: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
         let walls: [UIColor] = [
             UIColor(red: 0.96, green: 0.90, blue: 0.80, alpha: 1), UIColor(red: 0.98, green: 0.82, blue: 0.72, alpha: 1),
             UIColor(red: 0.86, green: 0.90, blue: 0.96, alpha: 1), UIColor(red: 0.98, green: 0.93, blue: 0.70, alpha: 1)
         ]
+        let wall = walls[variant % walls.count]
+        let roofColors: [UIColor] = [
+            UIColor(red: 0.42, green: 0.46, blue: 0.62, alpha: 1), UIColor(red: 0.72, green: 0.38, blue: 0.30, alpha: 1),
+            UIColor(red: 0.36, green: 0.52, blue: 0.48, alpha: 1)
+        ]
+        let roofColor = roofColors[(variant / 4) % roofColors.count]
         let h = CGFloat(8 + variant % 3 * 4)
-        node.addChildNode(box(9, h, 9, walls[variant % walls.count], at: SCNVector3(0, Float(h) / 2, 0)))
-        let roof = SCNNode(geometry: SCNPyramid(width: 10.5, height: 5, length: 10.5))
-        roof.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.42, green: 0.46, blue: 0.62, alpha: 1)
-        roof.position = SCNVector3(0, Float(h), 0)
-        node.addChildNode(roof)
+        let top = Float(h)
+        switch shape % 3 {
+        case 1:
+            node.addChildNode(box(10, h, 9, wall, at: SCNVector3(0, top / 2, 0)))
+            node.addChildNode(box(10.6, 0.8, 9.6, UIColor(white: 0.88, alpha: 1), at: SCNVector3(0, top + 0.4, 0), chamfer: 0.2))
+            node.addChildNode(box(3.5, 2.6, 3.5, roofColor, at: SCNVector3(2, top + 2, -1.5)))
+        case 2:
+            node.addChildNode(box(13, h, 7.5, wall, at: SCNVector3(0, top / 2, 0)))
+            // Gable: a square bar along the house, turned 45° and squashed.
+            let gable = box(5.6, 5.6, 14, roofColor, at: SCNVector3(0, top, 0), chamfer: 0.2)
+            gable.eulerAngles = SCNVector3(0, Float.pi / 2, 0)
+            gable.pivot = SCNMatrix4MakeRotation(Float.pi / 4, 0, 0, 1)
+            gable.scale = SCNVector3(1, 0.62, 1)
+            node.addChildNode(gable)
+            node.addChildNode(box(1.4, 4, 1.4, UIColor(red: 0.55, green: 0.32, blue: 0.26, alpha: 1),
+                                  at: SCNVector3(3.5, top + 2.5, 1.2), chamfer: 0.1))
+        default:
+            node.addChildNode(box(9, h, 9, wall, at: SCNVector3(0, top / 2, 0)))
+            let roof = SCNNode(geometry: SCNPyramid(width: 10.5, height: 5, length: 10.5))
+            roof.geometry?.firstMaterial?.diffuse.contents = roofColor
+            roof.position = SCNVector3(0, top, 0)
+            node.addChildNode(roof)
+        }
         return node
     }
 
@@ -227,9 +299,35 @@ extension TerrainGenerator {
         return node
     }
 
-    static func makeTiledRoofHouse(at position: SCNVector3) -> SCNNode {
+    /// Tiled-roof house (V8 shapes): single hall, L-shaped with a side
+    /// wing, or a smaller hall inside a low courtyard wall. Only used for
+    /// baked ground props (nesting is fine there).
+    static func makeTiledRoofHouse(at position: SCNVector3, variant: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
+        let hall = tiledHall()
+        node.addChildNode(hall)
+        switch variant % 3 {
+        case 1:
+            let wing = tiledHall()
+            wing.scale = SCNVector3(0.75, 0.85, 0.75)
+            wing.eulerAngles.y = .pi / 2
+            wing.position = SCNVector3(7.5, 0, -5)
+            node.addChildNode(wing)
+        case 2:
+            hall.scale = SCNVector3(0.8, 0.85, 0.8)
+            let stone = UIColor(red: 0.82, green: 0.78, blue: 0.70, alpha: 1)
+            for (w, l, x, z) in [(22.0, 0.8, 0.0, 9.0), (22.0, 0.8, 0.0, -9.0), (0.8, 18.0, 11.0, 0.0), (0.8, 18.0, -11.0, 0.0)] {
+                node.addChildNode(box(CGFloat(w), 1.6, CGFloat(l), stone, at: SCNVector3(Float(x), 0.8, Float(z)), chamfer: 0.2))
+            }
+        default:
+            break
+        }
+        return node
+    }
+
+    private static func tiledHall() -> SCNNode {
+        let node = SCNNode()
         node.addChildNode(box(10, 4, 7, UIColor(red: 0.96, green: 0.93, blue: 0.86, alpha: 1),
                               at: SCNVector3(0, 2, 0)))
         // Wide, low, dark roof with upturned eaves.
@@ -246,16 +344,33 @@ extension TerrainGenerator {
         return node
     }
 
-    static func makeBlossomTree(at position: SCNVector3) -> SCNNode {
+    /// Blossom tree (V8 shapes): the original three puffs, a pale
+    /// four-puff crown, or a wide, low, deep-pink one.
+    static func makeBlossomTree(at position: SCNVector3, variant: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
-        let trunk = SCNNode(geometry: SCNCylinder(radius: 0.6, height: 6))
+        let shape = variant % 3
+        let trunkHeight: Float = [6, 7, 4.5][shape]
+        let trunk = SCNNode(geometry: SCNCylinder(radius: 0.6, height: CGFloat(trunkHeight)))
         trunk.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.40, green: 0.28, blue: 0.22, alpha: 1)
-        trunk.position = SCNVector3(0, 3, 0)
+        trunk.position = SCNVector3(0, trunkHeight / 2, 0)
         node.addChildNode(trunk)
-        for (r, x, y, z) in [(4.0, 0.0, 8.0, 0.0), (3.0, 2.5, 7.0, 1.0), (3.0, -2.5, 7.2, -1.0)] {
+        let puffs: [(Double, Double, Double, Double)]
+        let color: UIColor
+        switch shape {
+        case 1:
+            puffs = [(3.4, 0, 9.5, 0), (2.8, 2.4, 8, 1.2), (2.8, -2.4, 8.2, -1), (2.4, 0.4, 7.6, -2.6)]
+            color = UIColor(red: 1.0, green: 0.88, blue: 0.92, alpha: 1)
+        case 2:
+            puffs = [(3.2, 0, 6.5, 0), (3.0, 3.6, 5.8, 0.5), (3.0, -3.6, 5.9, -0.5), (2.4, 0, 6, 3)]
+            color = UIColor(red: 0.98, green: 0.62, blue: 0.76, alpha: 1)
+        default:
+            puffs = [(4.0, 0.0, 8.0, 0.0), (3.0, 2.5, 7.0, 1.0), (3.0, -2.5, 7.2, -1.0)]
+            color = UIColor(red: 1.0, green: 0.76, blue: 0.84, alpha: 1)
+        }
+        for (r, x, y, z) in puffs {
             let puff = SCNNode(geometry: SCNSphere(radius: CGFloat(r)))
-            puff.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.76, blue: 0.84, alpha: 1)
+            puff.geometry?.firstMaterial?.diffuse.contents = color
             puff.position = SCNVector3(Float(x), Float(y), Float(z))
             node.addChildNode(puff)
         }
@@ -272,7 +387,9 @@ extension TerrainGenerator {
         return node
     }
 
-    static func makePine(at position: SCNVector3, scale: Float) -> SCNNode {
+    /// Pine (V8 shapes): three tiers, a slim four-tier spruce, or a
+    /// broad two-tier fir in a bluer green.
+    static func makePine(at position: SCNVector3, scale: Float, variant: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
         node.scale = SCNVector3(scale, scale, scale)
@@ -280,11 +397,24 @@ extension TerrainGenerator {
         trunk.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.40, green: 0.28, blue: 0.20, alpha: 1)
         trunk.position = SCNVector3(0, 2, 0)
         node.addChildNode(trunk)
-        for (i, r) in [4.0, 3.0, 2.0].enumerated() {
-            let tier = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: CGFloat(r), height: 5))
-            tier.geometry?.firstMaterial?.diffuse.contents = UIColor(red: 0.13, green: 0.45, blue: 0.28, alpha: 1)
-            tier.position = SCNVector3(0, Float(5 + i * 3), 0)
-            node.addChildNode(tier)
+        let tiers: [(radius: Double, y: Float, height: Double)]
+        let needles: UIColor
+        switch variant % 3 {
+        case 1:
+            tiers = [(3.0, 5, 4.5), (2.5, 7.5, 4.5), (1.9, 10, 4), (1.2, 12.3, 3.4)]
+            needles = UIColor(red: 0.10, green: 0.38, blue: 0.24, alpha: 1)
+        case 2:
+            tiers = [(5.0, 5, 5.5), (3.6, 8.5, 5)]
+            needles = UIColor(red: 0.14, green: 0.44, blue: 0.38, alpha: 1)
+        default:
+            tiers = [(4, 5, 5), (3, 8, 5), (2, 11, 5)]
+            needles = UIColor(red: 0.13, green: 0.45, blue: 0.28, alpha: 1)
+        }
+        for tier in tiers {
+            let cone = SCNNode(geometry: SCNCone(topRadius: 0, bottomRadius: CGFloat(tier.radius), height: CGFloat(tier.height)))
+            cone.geometry?.firstMaterial?.diffuse.contents = needles
+            cone.position = SCNVector3(0, tier.y, 0)
+            node.addChildNode(cone)
         }
         return node
     }

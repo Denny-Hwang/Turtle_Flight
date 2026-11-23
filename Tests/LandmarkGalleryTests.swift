@@ -30,6 +30,60 @@ final class LandmarkGalleryTests: XCTestCase {
         }
     }
 
+    /// V8: the ground props of each world from a low flight, so prop
+    /// variety and the meadow speckles can be compared before/after.
+    /// Run with `TEST_RUNNER_TF_DECOR=<output dir>`.
+    func testRenderDecorGallery() throws {
+        guard let dir = ProcessInfo.processInfo.environment["TF_DECOR"], !dir.isEmpty else {
+            throw XCTSkip("set TEST_RUNNER_TF_DECOR to render the decoration gallery")
+        }
+        guard let device = MTLCreateSystemDefaultDevice() else { throw XCTSkip("no Metal device") }
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        let worlds: [MapTheme] = [.sky, .seoul, .wild, .city, .desert, .ocean]
+        for world in worlds {
+            let scene = SCNScene()
+            scene.background.contents = world.backgroundColor
+            scene.fogStartDistance = 1300
+            scene.fogEndDistance = 2300
+            scene.fogColor = world.backgroundColor
+            let terrain = TerrainGenerator(parentNode: scene.rootNode, seed: 42, theme: world)
+            let origin = SCNVector3(100, 0, 100)
+            terrain.updateChunks(playerPosition: origin)
+            addLights(to: scene, world: world)
+
+            let ground = terrain.heightAt(x: origin.x, z: origin.z)
+            let camera = SCNNode()
+            camera.camera = SCNCamera()
+            camera.camera?.zFar = 5000
+            camera.camera?.fieldOfView = 60
+            camera.position = SCNVector3(origin.x, max(ground, 0) + 70, origin.z + 160)
+            camera.look(at: SCNVector3(origin.x, max(ground, 0), origin.z - 80))
+            scene.rootNode.addChildNode(camera)
+
+            let renderer = SCNRenderer(device: device, options: nil)
+            renderer.scene = scene
+            renderer.pointOfView = camera
+            let image = renderer.snapshot(atTime: 1, with: CGSize(width: 960, height: 540), antialiasingMode: .multisampling4X)
+            try image.pngData()!.write(to: URL(fileURLWithPath: dir).appendingPathComponent("\(world.rawValue).png"))
+        }
+    }
+
+    private func addLights(to scene: SCNScene, world: MapTheme) {
+        let ambient = SCNNode()
+        ambient.light = SCNLight()
+        ambient.light?.type = .ambient
+        ambient.light?.intensity = world.ambientLightIntensity
+        ambient.light?.color = world.ambientLightColor
+        scene.rootNode.addChildNode(ambient)
+        let sun = SCNNode()
+        sun.light = SCNLight()
+        sun.light?.type = .directional
+        sun.light?.intensity = world.sunLightIntensity
+        sun.light?.color = world.sunLightColor
+        sun.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 4, 0)
+        scene.rootNode.addChildNode(sun)
+    }
+
     private func render(_ kind: LandmarkKind, yaw: Float, device: MTLDevice) -> UIImage {
         let world = kind.world
         let scene = SCNScene()
