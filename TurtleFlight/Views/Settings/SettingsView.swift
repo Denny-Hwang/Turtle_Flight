@@ -32,6 +32,8 @@ struct SettingsView: View {
     @State private var touchControls: Bool = GyroController.touchControlEnabled
     /// Character faces the player instead of where it is flying.
     @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
+    /// V9: quieter speed / altitude gauges in free flight.
+    @AppStorage(SimpleHUD.settingKey) private var simpleHUD = SimpleHUD.defaultOn
     @State private var hapticsOn: Bool = Haptics.shared.isEnabled
     @State private var isMuted: Bool
     @State private var bgmVolume: Float
@@ -146,6 +148,7 @@ struct SettingsView: View {
                     GyroController.touchControlEnabled = newValue
                 }
             Toggle(L10n.t("settings.controls.lookAtMe"), isOn: $lookAtMe)
+            Toggle(L10n.t("settings.controls.simpleHUD"), isOn: $simpleHUD)
             Toggle(L10n.t("settings.controls.haptics"), isOn: $hapticsOn)
                 .onChange(of: hapticsOn) { newValue in
                     Haptics.shared.isEnabled = newValue

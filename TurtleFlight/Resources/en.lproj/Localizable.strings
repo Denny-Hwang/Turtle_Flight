@@ -500,3 +500,4 @@
 "flight.control.lookAhead" = "Look ahead";
 "a11y.lookAtMe.label" = "Turn your friend to face you or to face where it is flying";
 "settings.controls.lookAtMe" = "Friend looks at me while flying";
+"settings.controls.simpleHUD" = "Quiet gauges in free flight";

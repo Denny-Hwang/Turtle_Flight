@@ -9,6 +9,16 @@ window.
 
 ## [Unreleased]
 
+### HUD tidy V9 (2026-11-23)
+- Free flight now uses a quieter HUD by default. The speed and altitude gauges
+  rest at 80% size and 45% opacity. They come back in full for 2.5 s when a
+  value crosses a band (50 km/h / 100 m), and stay full while stalled, boosting
+  or below 40 m. The sensitivity chip and compass letters are hidden; the
+  flight clock, star counter and region name stay.
+- Missions keep the full HUD.
+- New setting: Settings → Controls → "Quiet gauges in free flight" (`hud.simple`,
+  default ON, all 7 locales). Turning it off restores the previous HUD exactly.
+
 ### Decoration variety V8 (2026-11-23)
 - Repeated ground props come in three shapes each, picked from their
   placement hash (same spot, same prop): meadow tree, pine, palm, blossom

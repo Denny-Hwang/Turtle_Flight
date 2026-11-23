@@ -503,3 +503,4 @@
 "flight.control.lookAhead" = "앞을 봐";
 "a11y.lookAtMe.label" = "친구가 나를 보게 하거나 날아가는 쪽을 보게 바꾸기";
 "settings.controls.lookAtMe" = "비행 중 친구가 나를 보기";
+"settings.controls.simpleHUD" = "자유 비행에서 계기 간단히";

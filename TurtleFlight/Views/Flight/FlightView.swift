@@ -17,6 +17,8 @@ struct FlightView: View {
     @AppStorage("flight.cleanView") private var cleanView = false
     /// Character faces the player instead of where it is flying.
     @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
+    /// V9: quieter speed / altitude gauges in free flight.
+    @AppStorage(SimpleHUD.settingKey) private var simpleHUD = SimpleHUD.defaultOn
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
@@ -41,7 +43,8 @@ struct FlightView: View {
                 // Free Flight "clean view": gauges off, just the sky. Missions
                 // always show the HUD (the player needs ring / score info).
                 if !(flightMode == .freePlay && cleanView) {
-                    HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay)
+                    HUDOverlay(flightVM: flightVM, showsCenterReadout: flightMode == .freePlay,
+                               simple: SimpleHUD.isOn(mode: flightMode, setting: simpleHUD))
                 }
 
                 if flightMode == .freePlay {
