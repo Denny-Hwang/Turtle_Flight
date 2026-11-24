@@ -170,12 +170,19 @@ TurtleFlight/
 ### 3.2 Gyroscope Control System
 
 #### 3.2.1 Input Mapping
-| 동작 | 폰 움직임 | CoreMotion 축 |
+| 동작 | 폰 움직임 (가로 화면 기준) | 측정 |
 |------|----------|--------------|
-| 좌회전 | 폰을 왼쪽으로 기울임 | Roll (attitude.roll) |
-| 우회전 | 폰을 오른쪽으로 기울임 | Roll (attitude.roll) |
-| 상승 | 폰 윗부분을 들어올림 | Pitch (attitude.pitch) |
-| 하강 | 폰 윗부분을 내림 | Pitch (attitude.pitch) |
+| 좌회전 | 화면 왼쪽 끝을 내림 | 화면 가로축의 기울기 (`ScreenTilt.lateral`) |
+| 우회전 | 화면 오른쪽 끝을 내림 | 〃 |
+| 상승 + 감속 | 폰을 세움 (윗변을 내 쪽으로) | 화면이 뒤로 누운 각도 (`ScreenTilt.lean`) 감소 |
+| 하강 + 가속 | 폰을 앞으로 눕힘 (윗변을 앞으로) | 〃 증가 |
+
+- 축은 `CMDeviceMotion.gravity` 를 가로 화면 좌표로 바꿔 읽는다 (`TiltMapping`, 좌/우 가로 모두).
+  Euler `attitude.roll/pitch` 는 세로 기준 축이라 가로에서 조종·상하가 뒤바뀌었다 (2026-11-24 실기기에서 발견, 수정).
+- 속도는 에너지 모델로 상하와 연동 (오너 결정 2026-11-24): 모든 단계에서 내려가면 빨라지고 올라가면 느려진다. Easy 는 상하 속도가 느려 약 165–235 km/h 로 완만, 실속 없음.
+- **원점 보정:** 비행 시작·다시 하기·일시정지 복귀·스테이지 시작·보정 버튼마다, 플레이어가 지금 들고 있는
+  자세를 중립으로 잡는다. 기기가 0.6초 가만히 있으면 그 평균, 2.5초 안에 못 멈추면 그동안의 평균,
+  "바로 시작" 을 누르면 그 순간의 자세. 그동안 세계는 멈춘다 (`FlightViewModel.isCalibrating`, `CalibrationOverlay`).
 
 #### 3.2.2 Sensitivity Profiles (3단계)
 

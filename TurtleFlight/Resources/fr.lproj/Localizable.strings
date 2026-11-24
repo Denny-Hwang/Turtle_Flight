@@ -76,6 +76,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrer";
+"flight.calibrate.title" = "Tiens-le comme tu veux";
+"flight.calibrate.body" = "Cette position sera ta position neutre. Ne bouge pas un instant.";
+"flight.calibrate.now" = "Commencer";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Quitter";
 "flight.control.boost"     = "Turbo";
@@ -213,10 +216,10 @@
 "onboarding.page.label"        = "Page %lld sur %lld";
 "onboarding.welcome.title"     = "Bienvenue dans Turtle Flight";
 "onboarding.welcome.body"      = "Une aventure de vol au gyroscope pour les animaux qui ne savent pas voler. Choisis un ami et envole-toi avec lui.";
-"onboarding.calibrate.title"   = "Tiens l'appareil à plat";
-"onboarding.calibrate.body"    = "Tiens l'appareil dans une position confortable, puis touche Calibrer pour en faire ta position neutre. Tu peux recalibrer à tout moment.";
+"onboarding.calibrate.title"   = "Tiens-le comme tu veux";
+"onboarding.calibrate.body"    = "Chaque vol commence en prenant ta façon de tenir l'appareil comme position neutre. Ne bouge pas un instant et c'est parti. En vol, touche Calibrer pour la refaire.";
 "onboarding.tilt.title"        = "Incline pour piloter";
-"onboarding.tilt.body"         = "Incline à gauche/droite pour tourner, lève ou abaisse le haut pour monter ou descendre. Les petits mouvements doux sont les meilleurs.";
+"onboarding.tilt.body"         = "Abaisse le côté gauche ou droit pour tourner. Penche le téléphone vers l'avant pour piquer et accélérer ; redresse-le pour monter et ralentir. Les petits mouvements doux sont les meilleurs.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Même une tortue lente peut voler !";

@@ -32,7 +32,7 @@ enum Constants {
         static let maxAltitude: Float = 10000.0
         static let gravity: Float = 9.8
 
-        // Phase 2 — energy model (Normal / Expert only; see
+        // Phase 2 — energy model (all levels since 2026-11-24; see
         // `SensitivityProfile.energyModelEnabled`).
         /// km/h gained per second per m/s of descent (and lost per m/s of
         /// climb). At Expert's 120 m/s max climb that's -72 km/h per

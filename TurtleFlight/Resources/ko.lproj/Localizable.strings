@@ -79,6 +79,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "보정";
+"flight.calibrate.title" = "편하게 들어 주세요";
+"flight.calibrate.body" = "지금 잡은 자세를 기준으로 맞출게요. 잠깐만 그대로 있어요.";
+"flight.calibrate.now" = "바로 시작";
 "flight.control.pause"     = "일시정지";
 "flight.control.exit"      = "종료";
 "flight.control.boost"     = "부스터";
@@ -216,10 +219,10 @@
 "onboarding.page.label"        = "%lld / %lld 페이지";
 "onboarding.welcome.title"     = "Turtle Flight에 오신 걸 환영해요";
 "onboarding.welcome.body"      = "날 수 없는 동물들이 하늘을 누비는 자이로 비행 모험. 친구를 골라 함께 떠나봐요.";
-"onboarding.calibrate.title"   = "기기를 평평하게 잡아주세요";
-"onboarding.calibrate.body"    = "편안한 자세로 기기를 잡고 보정 버튼을 누르면 그 자세가 중립이 됩니다. 언제든 다시 보정할 수 있어요.";
+"onboarding.calibrate.title"   = "편한 자세로 잡아요";
+"onboarding.calibrate.body"    = "비행을 시작할 때마다 지금 잡은 자세를 기준으로 맞춰요. 잠깐만 그대로 있으면 출발해요. 비행 중에도 보정 버튼으로 다시 맞출 수 있어요.";
 "onboarding.tilt.title"        = "기울여서 조종해요";
-"onboarding.tilt.body"         = "왼쪽/오른쪽으로 기울이면 좌우 회전, 위쪽을 들거나 내리면 상승/하강이에요. 부드럽고 짧게 움직여요.";
+"onboarding.tilt.body"         = "왼쪽/오른쪽 끝을 내리면 그쪽으로 돌아요. 앞으로 눕히면 내려가며 빨라지고, 세우면 올라가며 느려져요. 부드럽고 짧게 움직여요.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "느린 거북이도 하늘을 날 수 있다!";

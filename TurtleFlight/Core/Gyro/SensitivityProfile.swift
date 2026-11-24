@@ -10,8 +10,10 @@ struct SensitivityProfile {
     let autoLevelDelay: Double? // seconds, nil = disabled
     let minAltitude: Double     // meters
     let stallEnabled: Bool
-    /// Phase 2 energy model: dive to gain speed, climb to lose it. Off
-    /// for Easy so first flights keep a constant airspeed.
+    /// Phase 2 energy model: dive to gain speed, climb to lose it. On for
+    /// every level since 2026-11-24 (owner: tipping the phone forward
+    /// should feel faster). Easy's low `pitchSpeed` keeps it gentle —
+    /// about 165–235 km/h at full tilt — and Easy never stalls.
     let energyModelEnabled: Bool
 
     /// Apply response curve based on sensitivity level
@@ -55,7 +57,7 @@ struct SensitivityProfile {
         autoLevelDelay: 2.0,
         minAltitude: 50,
         stallEnabled: false,
-        energyModelEnabled: false
+        energyModelEnabled: true
     )
 
     static let normal = SensitivityProfile(

@@ -9,6 +9,23 @@ window.
 
 ## [Unreleased]
 
+### Tilt controls fix + start-of-flight calibration (2026-11-24)
+- Fix: in landscape the tilt axes were crossed. Leaning the phone
+  forward/back turned the character, and tilting it left/right barely
+  steered. Tilt is now read from gravity in landscape screen axes
+  (`TiltMapping`), for both landscape sides, without yaw drift.
+- Every flight, retry, resume, stage start and the Calibrate button now
+  take the way the player is holding the phone as neutral. The world waits
+  under a small card ("Hold it how you like") until the phone is still for
+  0.6 s (or 2.5 s pass), or the player taps Start now (`CalibrationOverlay`,
+  3 new strings in all 7 locales).
+- Tipping the phone forward dives and speeds up, standing it up climbs and
+  slows down, on every level. Easy gets the energy model too (about
+  165–235 km/h at full tilt, no stall).
+- The onboarding tilt preview uses the same mapping.
+- `scripts/device/verify.sh`: fixed device detection (it passed the word
+  `available` as the device id) and added `--no-scenes`.
+
 ### HUD tidy V9 (2026-11-23)
 - Free flight now uses a quieter HUD by default. The speed and altitude gauges
   rest at 80% size and 60% opacity. They come back in full for 2.5 s when a

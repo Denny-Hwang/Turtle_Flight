@@ -15,6 +15,11 @@ final class GyroController: ObservableObject {
     @Published var pitchInput: Double = 0.0  // -1...1
     @Published var isAvailable: Bool = false
     @Published var timeSinceLastInput: TimeInterval = 0
+    /// True while the start-of-flight calibration is looking for the
+    /// player's neutral pose. Inputs stay at zero meanwhile.
+    @Published private(set) var isCalibrating: Bool = false
+    /// 0…1 — how long the phone has been held still, for the overlay ring.
+    @Published private(set) var calibrationProgress: Double = 0
 
     /// Player preference (Settings → Controls): steer by dragging on the
     /// screen instead of tilting. Tilt can be uncomfortable — or simply
@@ -33,7 +38,11 @@ final class GyroController: ObservableObject {
 
     // MARK: - Properties
     private let motionManager = CMMotionManager()
-    private var referenceAttitude: CMAttitude?
+    /// Neutral pose the player chose at the start of the flight.
+    private var reference: ScreenTilt?
+    private var latestTilt: ScreenTilt?
+    private var calibrator = TiltCalibrator()
+    private var onCalibrated: (() -> Void)?
     private var profile: SensitivityProfile
     private var smoothedRoll: Double = 0
     private var smoothedPitch: Double = 0
@@ -53,14 +62,16 @@ final class GyroController: ObservableObject {
         }
 
         isAvailable = true
+        guard !motionManager.isDeviceMotionActive else { return }
         motionManager.deviceMotionUpdateInterval = Constants.Sensor.updateInterval
 
-        motionManager.startDeviceMotionUpdates(
-            using: .xArbitraryZVertical,
-            to: .main
-        ) { [weak self] motion, error in
+        motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
             guard let self = self, let motion = motion, error == nil else { return }
-            self.processMotion(motion)
+            // Handler queue is `.main` (see above).
+            let orientation = MainActor.assumeIsolated { TiltMapping.currentInterfaceOrientation() }
+            let g = motion.gravity
+            self.processTilt(TiltMapping.tilt(gravity: SIMD3(g.x, g.y, g.z), orientation: orientation),
+                             at: motion.timestamp)
         }
     }
 
@@ -68,8 +79,33 @@ final class GyroController: ObservableObject {
         motionManager.stopDeviceMotionUpdates()
     }
 
+    /// Find the player's neutral pose afresh: inputs read zero until the
+    /// phone has been held still briefly (or `TiltCalibrator.timeout`
+    /// passes), then `completion` runs on main. Finishes at once when the
+    /// sensor is not driving the flight (Simulator, touch controls).
+    func beginCalibration(completion: (() -> Void)? = nil) {
+        resetSmoothing()
+        guard isAvailable, !Self.touchControlEnabled else {
+            isCalibrating = false
+            calibrationProgress = 1
+            completion?()
+            return
+        }
+        calibrator.reset()
+        calibrationProgress = 0
+        onCalibrated = completion
+        isCalibrating = true
+    }
+
+    /// "Start now": take the pose the phone is in right now.
+    func finishCalibrationNow() {
+        guard isCalibrating else { return }
+        completeCalibration(with: calibrator.currentAverage() ?? latestTilt)
+    }
+
+    /// Re-zero to the current pose (in-flight Calibrate button, resume).
     func calibrate() {
-        referenceAttitude = nil // Will be set on next motion update
+        beginCalibration()
     }
 
     func updateSensitivity(_ level: SensitivityLevel) {
@@ -135,23 +171,49 @@ final class GyroController: ObservableObject {
 
     // MARK: - Private Methods
 
-    private func processMotion(_ motion: CMDeviceMotion) {
+    private func resetSmoothing() {
+        smoothedRoll = 0
+        smoothedPitch = 0
+        rollInput = 0
+        pitchInput = 0
+        lastInputTime = Date()
+        timeSinceLastInput = 0
+    }
+
+    private func completeCalibration(with neutral: ScreenTilt?) {
+        reference = neutral ?? reference
+        isCalibrating = false
+        calibrationProgress = 1
+        resetSmoothing()
+        let done = onCalibrated
+        onCalibrated = nil
+        done?()
+    }
+
+    /// One sensor sample, already in landscape screen terms. Internal so
+    /// tests can drive the pipeline without CoreMotion.
+    func processTilt(_ tilt: ScreenTilt, at time: TimeInterval) {
         // Touch controls own the input; ignoring the sensor here keeps
         // the two from fighting.
         guard !Self.touchControlEnabled else { return }
-        // Set reference attitude on first reading or after calibration
-        if referenceAttitude == nil {
-            referenceAttitude = motion.attitude.copy() as? CMAttitude
+        latestTilt = tilt
+
+        if isCalibrating {
+            let neutral = calibrator.add(tilt, at: time)
+            if abs(calibrator.progress - calibrationProgress) > 0.05 || neutral != nil {
+                calibrationProgress = calibrator.progress
+            }
+            if let neutral { completeCalibration(with: neutral) }
+            return
+        }
+        // No flight has calibrated yet (e.g. onboarding preview): the
+        // first sample is neutral.
+        guard let reference else {
+            self.reference = tilt
             return
         }
 
-        // Get relative attitude from reference point
-        guard let ref = referenceAttitude else { return }
-        let attitude = motion.attitude
-        attitude.multiply(byInverseOf: ref)
-
-        let rawRoll = attitude.roll
-        let rawPitch = attitude.pitch
+        let (rawRoll, rawPitch) = TiltMapping.inputs(tilt, reference: reference)
 
         // Apply dead zone
         let filteredRoll = profile.applyDeadZone(rawRoll)

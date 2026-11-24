@@ -111,10 +111,9 @@ final class FlightEngine {
             state.verticalSpeed *= 0.95 // Gradually reduce
         }
 
-        // Energy model (Normal / Expert): diving trades altitude for
-        // speed, climbing bleeds it, and drag pulls the speed back toward
-        // cruise. Easy keeps the flat constant-speed model so a first
-        // flight never has to think about airspeed.
+        // Energy model: diving trades altitude for speed, climbing bleeds
+        // it, and drag pulls the speed back toward cruise. Easy's slow
+        // pitch rate keeps the swing gentle.
         if profile.energyModelEnabled {
             let base = Constants.Flight.defaultSpeed
             let energyGain = -state.verticalSpeed * Constants.Flight.energyExchangeRate

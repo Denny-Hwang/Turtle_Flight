@@ -78,6 +78,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Kalibrieren";
+"flight.calibrate.title" = "Halte es, wie du magst";
+"flight.calibrate.body" = "Diese Haltung wird deine Neutralstellung. Halte kurz still.";
+"flight.calibrate.now" = "Jetzt starten";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Beenden";
 "flight.control.boost"     = "Boost";
@@ -215,10 +218,10 @@
 "onboarding.page.label"        = "Seite %lld von %lld";
 "onboarding.welcome.title"     = "Willkommen bei Turtle Flight";
 "onboarding.welcome.body"      = "Ein Flugabenteuer per Gyrosensor für Tiere, die nicht fliegen können. Wähle einen Freund und ab in den Himmel.";
-"onboarding.calibrate.title"   = "Halte das Gerät flach";
-"onboarding.calibrate.body"    = "Halte das Gerät in einer bequemen Haltung und tippe auf Kalibrieren, um sie als Neutralstellung festzulegen. Du kannst jederzeit neu kalibrieren.";
+"onboarding.calibrate.title"   = "Halte es, wie du magst";
+"onboarding.calibrate.body"    = "Jeder Flug übernimmt zuerst deine aktuelle Haltung als Neutralstellung. Kurz stillhalten, dann geht's los. Im Flug setzt Kalibrieren sie neu.";
 "onboarding.tilt.title"        = "Neige zum Steuern";
-"onboarding.tilt.body"         = "Neige nach links/rechts zum Kurven, hebe oder senke die Oberkante zum Steigen oder Sinken. Kleine, sanfte Bewegungen fühlen sich am besten an.";
+"onboarding.tilt.body"         = "Senke die linke oder rechte Seite zum Kurven. Kipp das Handy nach vorn zum Sinken und Beschleunigen, richte es auf zum Steigen und Bremsen. Kleine, sanfte Bewegungen fühlen sich am besten an.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Sogar eine langsame Schildkröte kann fliegen!";

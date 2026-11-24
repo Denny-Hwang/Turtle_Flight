@@ -76,6 +76,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrate";
+"flight.calibrate.title" = "Hold it how you like";
+"flight.calibrate.body" = "We'll use this pose as neutral. Hold still for a moment.";
+"flight.calibrate.now" = "Start now";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Exit";
 "flight.control.boost"     = "Boost";
@@ -213,10 +216,10 @@
 "onboarding.page.label"        = "Page %lld of %lld";
 "onboarding.welcome.title"     = "Welcome to Turtle Flight";
 "onboarding.welcome.body"      = "A gyro flight adventure for animals that can't fly. Pick a friend and take to the skies together.";
-"onboarding.calibrate.title"   = "Hold your device flat";
-"onboarding.calibrate.body"    = "Hold the device in a comfortable pose, then tap Calibrate to make that your neutral. You can recalibrate anytime.";
+"onboarding.calibrate.title"   = "Hold it how you like";
+"onboarding.calibrate.body"    = "Every flight starts by taking the way you're holding the device as neutral. Hold still for a moment and you're off. Tap Calibrate in flight to reset it.";
 "onboarding.tilt.title"        = "Tilt to steer";
-"onboarding.tilt.body"         = "Tilt left/right to turn, lift or lower the top to climb or dive. Small smooth motions feel best.";
+"onboarding.tilt.body"         = "Lower the left or right side to turn. Tip the phone forward to dive and speed up; stand it up to climb and slow down. Small smooth motions feel best.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "Even a slow turtle can fly!";

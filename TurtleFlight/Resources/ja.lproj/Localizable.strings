@@ -77,6 +77,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "調整";
+"flight.calibrate.title" = "楽な持ち方でどうぞ";
+"flight.calibrate.body" = "今の持ち方を基準にします。少しだけそのままで。";
+"flight.calibrate.now" = "すぐ始める";
 "flight.control.pause"     = "一時停止";
 "flight.control.exit"      = "終了";
 "flight.control.boost"     = "ブースト";
@@ -214,10 +217,10 @@
 "onboarding.page.label"        = "%lld / %lld ページ";
 "onboarding.welcome.title"     = "Turtle Flight へようこそ";
 "onboarding.welcome.body"      = "空を飛べない動物たちのジャイロ飛行アドベンチャー。仲間を選んでいっしょに空へ飛び出そう。";
-"onboarding.calibrate.title"   = "端末を平らに持って";
-"onboarding.calibrate.body"    = "楽な姿勢で端末を持ち、調整ボタンを押すとその姿勢が中立になります。いつでも再調整できます。";
+"onboarding.calibrate.title"   = "楽な持ち方で";
+"onboarding.calibrate.body"    = "飛行を始めるたびに、今の持ち方を基準にします。少しそのままでいれば出発。飛行中も調整ボタンでやり直せます。";
 "onboarding.tilt.title"        = "傾けて操縦";
-"onboarding.tilt.body"         = "左右に傾けると旋回、上を持ち上げたり下げたりで上昇・下降。小さくなめらかに動かすのがコツです。";
+"onboarding.tilt.body"         = "左右の端を下げるとその方向へ旋回。前に倒すと下降して速く、起こすと上昇してゆっくりに。小さくなめらかに動かすのがコツです。";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "のろまなカメだって空を飛べる！";

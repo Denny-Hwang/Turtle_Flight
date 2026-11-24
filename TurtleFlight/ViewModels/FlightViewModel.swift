@@ -49,6 +49,10 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// the moment we pause; audio keeps playing under the modal so the
     /// pause overlay reads as "wait" rather than "the world died").
     @Published var isPaused: Bool = false
+    /// True while the start-of-flight calibration finds the player's
+    /// neutral pose (see `beginCalibration`). Freezes the simulation the
+    /// same way `isPaused` does, without the pause menu.
+    @Published var isCalibrating: Bool = false
 
     // MARK: - Phase 2: gate scoring surface
 
@@ -570,9 +574,10 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         // Setup mission engine
         missionEngine = MissionEngine(parentNode: scene.rootNode)
 
-        // Start gyro
+        // Start gyro, then zero it to how the player is holding the phone.
         gyroController.start()
         isFlying = true
+        beginCalibration()
         QuestTracker.shared.record(.flightStarted(character: character))
         Analytics.shared.track(.flightStarted, [
             "character": character.rawValue,
@@ -622,6 +627,8 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// don't carry over from the previous run.
     func startStage(_ stage: StageDefinition) {
         lastTimerBeepBucket = -1
+        // Every attempt starts from the pose the player holds now.
+        if isFlying { beginCalibration() }
         landmarkField?.clear()
         landmarkField = nil
         landmarkHint = nil
@@ -699,7 +706,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         guard isFlying, isPaused else { return }
         isPaused = false
         gyroController.start()
-        gyroController.calibrate()
+        beginCalibration()
         lastRenderTime = 0
     }
 
@@ -734,7 +741,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         // If we were paused, drop the modal too.
         isPaused = false
         gyroController.start()
-        gyroController.calibrate()
+        beginCalibration()
     }
 
     /// Render-thread entry point. Converts the renderer's absolute time
@@ -760,6 +767,8 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         // position/heading/speed don't drift and the mission timer
         // doesn't tick down.
         guard !isPaused else { return }
+        // Waiting for the player's neutral pose: hold the world still.
+        guard !isCalibrating else { return }
         #if DEBUG
         if screenshotFrozen { return }
         #endif
@@ -1182,7 +1191,33 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     }
 
     func calibrateGyro() {
-        gyroController.calibrate()
+        beginCalibration()
+    }
+
+    /// Zero the tilt controls to how the player is holding the phone right
+    /// now. Runs at every flight start, restart, resume, stage start and on
+    /// the Calibrate button. The world waits (`isCalibrating`) until the
+    /// phone is held still briefly or the player taps Start now.
+    func beginCalibration() {
+        #if DEBUG
+        // Screenshot / soak runs drive themselves; no neutral pose needed.
+        if ScreenshotDirector.isActive {
+            isCalibrating = false
+            return
+        }
+        #endif
+        isCalibrating = true
+        gyroController.beginCalibration { [weak self] in
+            guard let self else { return }
+            self.isCalibrating = false
+            // First frame after the wait only re-establishes the clock.
+            self.lastRenderTime = 0
+        }
+    }
+
+    /// "Start now" on the calibration overlay.
+    func finishCalibrationNow() {
+        gyroController.finishCalibrationNow()
     }
 
     /// Convert a MissionEngine state into the stable string key that
