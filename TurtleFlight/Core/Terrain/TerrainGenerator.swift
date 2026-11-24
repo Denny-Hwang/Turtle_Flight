@@ -241,22 +241,132 @@ final class TerrainGenerator {
             }
         }
 
-        let vertexSource = SCNGeometrySource(vertices: vertices)
-        let normalSource = SCNGeometrySource(normals: normals)
-        let colorData = Data(bytes: colors, count: colors.count * MemoryLayout<SCNVector3>.size)
-        let colorSource = SCNGeometrySource(
-            data: colorData, semantic: .color,
-            vectorCount: colors.count, usesFloatComponents: true,
-            componentsPerVector: 3, bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: 0, dataStride: MemoryLayout<SCNVector3>.size
-        )
-        let element = SCNGeometryElement(indices: indices, primitiveType: .triangles)
-        let geometry = SCNGeometry(sources: [vertexSource, normalSource, colorSource], elements: [element])
+        addDecorations(to: chunkNode, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
+
+        // V8: static ground props and meadow speckles join the terrain
+        // mesh — one draw call for the whole chunk's ground.
+        var mesh = PropMesh(positions: vertices, normals: normals, colors: colors, indices: indices)
+        bakeStaticProps(of: chunkNode, into: &mesh)
+        let ground = ChunkGround(heights: heights, side: side, cellSize: cellSize, offsetX: offsetX, offsetZ: offsetZ)
+        addMeadowSpeckles(into: &mesh, coord: coord, ground: ground)
+
+        let element = SCNGeometryElement(indices: mesh.indices, primitiveType: .triangles)
+        let geometry = SCNGeometry(sources: mesh.sources(), elements: [element])
         geometry.materials = [Self.terrainMaterial()]
         chunkNode.geometry = geometry
-
-        addDecorations(to: chunkNode, coord: coord, chunkSize: chunkSize, offsetX: offsetX, offsetZ: offsetZ)
         return chunkNode
+    }
+
+    // MARK: - V8 decor baking
+
+    /// Node name for props that never move: they are baked into the
+    /// chunk mesh instead of staying separate nodes.
+    static let staticPropName = "staticProp"
+
+    /// Move every `staticPropName` child of `chunk` into `mesh`.
+    func bakeStaticProps(of chunk: SCNNode, into mesh: inout PropMesh) {
+        for prop in chunk.childNodes where prop.name == Self.staticPropName {
+            mesh.bake(prop)
+            prop.removeFromParentNode()
+        }
+    }
+
+    /// The chunk's own height grid (one-cell border included), sampled
+    /// on the drawn triangles so speckles sit exactly on the mesh — and
+    /// without paying for more fractal noise.
+    struct ChunkGround {
+        let heights: [Float]
+        let side: Int
+        let cellSize: Float
+        let offsetX: Float
+        let offsetZ: Float
+
+        func height(x: Float, z: Float) -> Float {
+            let gx = (x - offsetX) / cellSize + 1, gz = (z - offsetZ) / cellSize + 1
+            let col = max(0, min(side - 2, Int(gx))), row = max(0, min(side - 2, Int(gz)))
+            let fx = gx - Float(col), fz = gz - Float(row)
+            let tl = heights[row * side + col], tr = heights[row * side + col + 1]
+            let bl = heights[(row + 1) * side + col], br = heights[(row + 1) * side + col + 1]
+            // Same split as the index buffer: (tl, bl, tr) and (tr, bl, br).
+            if fx + fz <= 1 { return tl + fx * (tr - tl) + fz * (bl - tl) }
+            return br + (1 - fx) * (bl - br) + (1 - fz) * (tr - br)
+        }
+    }
+
+    /// Flower and grass-tuft speckles on gentle meadow ground, gathered
+    /// in patches (a coarse noise mask) so they read as clumps rather
+    /// than an even sprinkle. Deterministic per chunk.
+    func addMeadowSpeckles(into mesh: inout PropMesh, coord: ChunkCoord, ground: ChunkGround) {
+        guard let style = DecorVariety.speckleStyle(for: theme) else { return }
+        let chunkSize = Constants.Terrain.chunkSize
+        let (offsetX, offsetZ) = (ground.offsetX, ground.offsetZ)
+        // Patch mask: noise on a 9×9 lattice, bilinear in between.
+        let lattice = 8
+        var mask = [Float](repeating: 0, count: (lattice + 1) * (lattice + 1))
+        for r in 0...lattice {
+            for c in 0...lattice {
+                let x = offsetX + Float(c) / Float(lattice) * chunkSize
+                let z = offsetZ + Float(r) / Float(lattice) * chunkSize
+                mask[r * (lattice + 1) + c] = MathHelpers.fractalNoise(x: x * 0.012 + 13, y: z * 0.012 - 7,
+                                                                      octaves: 2, seed: seed &+ 101)
+            }
+        }
+        func patch(_ u: Float, _ v: Float) -> Float {
+            let gx = u * Float(lattice), gz = v * Float(lattice)
+            let c = min(lattice - 1, Int(gx)), r = min(lattice - 1, Int(gz))
+            let fx = gx - Float(c), fz = gz - Float(r)
+            let a = mask[r * (lattice + 1) + c], b = mask[r * (lattice + 1) + c + 1]
+            let d = mask[(r + 1) * (lattice + 1) + c], e = mask[(r + 1) * (lattice + 1) + c + 1]
+            return (a * (1 - fx) + b * fx) * (1 - fz) + (d * (1 - fx) + e * fx) * fz
+        }
+
+        let base = coord.x &* 73_856_093 ^ coord.z &* 19_349_663 ^ seed
+        let lift: Float = 0.45
+        let step: Float = 2
+        for i in 0..<style.candidates {
+            let h = base &+ i &* 2_654_435
+            let u = DecorVariety.unit(h, 11), v = DecorVariety.unit(h, 12)
+            guard patch(u, v) > 0.42 + DecorVariety.unit(h, 13) * 0.2 else { continue }
+            let x = offsetX + u * chunkSize, z = offsetZ + v * chunkSize
+            let y = ground.height(x: x, z: z)
+            guard style.heights.contains(y), theme == .ocean || y > 0.5 else { continue }
+            // Local slope; skip steep ground.
+            let dx = (ground.height(x: x + step, z: z) - ground.height(x: x - step, z: z)) / (2 * step)
+            let dz = (ground.height(x: x, z: z + step) - ground.height(x: x, z: z - step)) / (2 * step)
+            let n = simd_normalize(SIMD3<Float>(-dx, 1, -dz))
+            guard n.y > 0.86 else { continue }
+
+            let isFlower = DecorVariety.unit(h, 14) < style.flowerShare
+            let palette = isFlower ? style.flowers : style.tufts
+            let color = palette[Int(DecorVariety.unit(h, 15) * Float(palette.count)) % palette.count]
+            let normal = SCNVector3(n.x, n.y, n.z)
+            // A flat polygon lying on the ground plane through (x, y, z).
+            func dot(_ cx: Float, _ cz: Float, radius: Float, sides: Int, ragged: Bool, salt: Int) {
+                let squash = 0.65 + DecorVariety.unit(h, salt) * 0.35
+                let turn = DecorVariety.unit(h, salt + 1) * .pi
+                var ring: [SCNVector3] = []
+                for k in 0..<sides {
+                    let a = Float(k) / Float(sides) * 2 * .pi
+                    let r = radius * (ragged ? 0.75 + 0.5 * DecorVariety.unit(h, salt + 2 + k) : 1)
+                    let lx = cos(a) * r, lz = sin(a) * r * squash
+                    let px = cx + lx * cos(turn) - lz * sin(turn), pz = cz + lx * sin(turn) + lz * cos(turn)
+                    ring.append(SCNVector3(x + px, ground.height(x: x + px, z: z + pz) + lift, z + pz))
+                }
+                mesh.appendFan(centre: SCNVector3(x + cx, ground.height(x: x + cx, z: z + cz) + lift + 0.15, z + cz), ring: ring,
+                               normal: normal, color: color)
+            }
+            if isFlower {
+                // A little bunch: three dots of one colour.
+                for k in 0..<3 {
+                    let a = DecorVariety.unit(h, 30 + k) * 2 * .pi
+                    let d: Float = k == 0 ? 0 : 1.6 + DecorVariety.unit(h, 33 + k) * 1.6
+                    dot(cos(a) * d, sin(a) * d, radius: 0.9 + DecorVariety.unit(h, 36 + k) * 0.8,
+                        sides: 5, ragged: false, salt: 40 + k * 3)
+                }
+            } else {
+                dot(0, 0, radius: 1.8 + DecorVariety.unit(h, 16) * 2, sides: 7, ragged: true, salt: 50)
+            }
+        }
     }
 
     // MARK: - Shading (V1/V2, docs/VISUAL_AUDIO_PLAN.md)
@@ -320,7 +430,8 @@ final class TerrainGenerator {
             let cx = offsetX + Float(h % Int(chunkSize))
             let cz = offsetZ + Float((h * 17) % Int(chunkSize))
             let cy = Float(200 + h % 300)
-            let cloud = makeFluffyCloud()
+            let cloud = makeFluffyCloud(variant: DecorVariety.variant(h, count: 3))
+            DecorVariety.vary(cloud, hash: h, scale: 0.8...1.6)
             cloud.position = SCNVector3(cx, cy, cz)
             // Gentle drift
             let drift = SCNAction.sequence([
@@ -345,7 +456,10 @@ final class TerrainGenerator {
             let tz = offsetZ + Float((h * 19) % Int(chunkSize))
             let height = terrainHeight(x: tx, z: tz)
             if height > Constants.Terrain.sandLevel && height < Constants.Terrain.grassLevel {
-                node.addChildNode(makeRoundTree(at: SCNVector3(tx, height, tz)))
+                let tree = makeRoundTree(at: SCNVector3(tx, height, tz), variant: DecorVariety.variant(h, count: 3))
+                DecorVariety.vary(tree, hash: h, scale: 0.8...1.35)
+                tree.name = Self.staticPropName
+                node.addChildNode(tree)
             }
         }
 
@@ -524,6 +638,8 @@ final class TerrainGenerator {
             let cz = offsetZ + Float((h * 11) % Int(chunkSize))
             let height = terrainHeight(x: cx, z: cz)
             let coral = makeCoral(seed: h)
+            DecorVariety.vary(coral, hash: h, scale: 0.8...1.4)
+            coral.name = Self.staticPropName
             coral.position = SCNVector3(cx, height, cz)
             node.addChildNode(coral)
         }
@@ -598,19 +714,37 @@ final class TerrainGenerator {
 
     // MARK: - Sky NPC Builders
 
-    func makeFluffyCloud() -> SCNNode {
-        let node = SCNNode()
-        let configs: [(Float, Float, Float, Float)] = [
-            (8, 0, 0, 0), (6, -5, 1, 2), (5, 4, -1, -2), (4, 2, 2, 3)
-        ]
-        for (r, ox, oy, oz) in configs {
-            let sphere = SCNNode(geometry: SCNSphere(radius: CGFloat(r)))
-            sphere.position = SCNVector3(ox, oy, oz)
-            sphere.geometry?.firstMaterial?.diffuse.contents = UIColor.white
-            sphere.geometry?.firstMaterial?.transparency = 0.15
-            node.addChildNode(sphere)
+    /// Puff layouts `(radius, x, y, z, y-squash)`: the original round
+    /// heap, a long flat bank, and a tall billowing stack (V8).
+    static let cloudShapes: [[(Float, Float, Float, Float, Float)]] = [
+        [(8, 0, 0, 0, 1), (6, -5, 1, 2, 1), (5, 4, -1, -2, 1), (4, 2, 2, 3, 1)],
+        [(7, 0, 0, 0, 0.6), (6, -8, -0.5, 1, 0.6), (6, 8, 0, -1, 0.6), (4.5, -14, -1, 0, 0.6), (4.5, 13, -1, 1, 0.6)],
+        [(7, 0, 0, 0, 1), (5.5, 1, 6, 0.5, 1), (4, -1, 10.5, -0.5, 1), (5, -5, -1, 1, 1), (4.5, 5, -1.5, -1, 1)]
+    ]
+
+    /// One merged mesh per cloud shape (one draw call per cloud instead of
+    /// one per puff), built once and shared by every cloud. Never mutated
+    /// after this initialiser (lazy `static let` is thread-safe), so
+    /// sharing it between the render thread and main is safe.
+    nonisolated(unsafe) static let cloudGeometries: [SCNGeometry] = {
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.white
+        material.transparency = 0.15
+        return cloudShapes.map { puffs in
+            var mesh = PropMesh()
+            mesh.roundSegments = 20   // big and soft: keep them round
+            for (r, ox, oy, oz, squash) in puffs {
+                let sphere = SCNNode(geometry: SCNSphere(radius: CGFloat(r)))
+                sphere.position = SCNVector3(ox, oy, oz)
+                sphere.scale = SCNVector3(1, squash, 1)
+                mesh.bake(sphere)
+            }
+            return mesh.geometry(material: material)
         }
-        return node
+    }()
+
+    func makeFluffyCloud(variant: Int = 0) -> SCNNode {
+        SCNNode(geometry: Self.cloudGeometries[variant % Self.cloudGeometries.count])
     }
 
     private func makeRainbow() -> SCNNode {
@@ -634,18 +768,34 @@ final class TerrainGenerator {
         return node
     }
 
-    func makeRoundTree(at position: SCNVector3) -> SCNNode {
+    /// Meadow tree, three shapes (V8): round crown, a cluster of three
+    /// puffs, or a tall oval crown.
+    func makeRoundTree(at position: SCNVector3, variant: Int = 0) -> SCNNode {
         let node = SCNNode()
         node.position = position
-        let trunk = SCNNode(geometry: SCNCylinder(radius: 0.5, height: 5))
-        trunk.position = SCNVector3(0, 2.5, 0)
-        trunk.geometry?.firstMaterial?.diffuse.contents = UIColor.brown
-        node.addChildNode(trunk)
-        let foliage = SCNNode(geometry: SCNSphere(radius: 3.5))
-        foliage.position = SCNVector3(0, 7, 0)
-        foliage.geometry?.firstMaterial?.diffuse.contents =
-            UIColor(red: 0.2, green: 0.75, blue: 0.3, alpha: 1)
-        node.addChildNode(foliage)
+        func part(_ g: SCNGeometry, _ c: UIColor, _ p: SCNVector3, scale: SCNVector3 = SCNVector3(1, 1, 1)) {
+            let n = SCNNode(geometry: g)
+            n.position = p
+            n.scale = scale
+            n.geometry?.firstMaterial?.diffuse.contents = c
+            node.addChildNode(n)
+        }
+        let bark = UIColor.brown
+        switch variant % 3 {
+        case 1:
+            part(SCNCylinder(radius: 0.5, height: 5), bark, SCNVector3(0, 2.5, 0))
+            let leaf = UIColor(red: 0.36, green: 0.78, blue: 0.34, alpha: 1)
+            part(SCNSphere(radius: 2.7), leaf, SCNVector3(0, 7.6, 0))
+            part(SCNSphere(radius: 2.1), leaf, SCNVector3(1.9, 6.2, 0.6))
+            part(SCNSphere(radius: 2.0), UIColor(red: 0.28, green: 0.70, blue: 0.30, alpha: 1), SCNVector3(-1.7, 6.3, -0.8))
+        case 2:
+            part(SCNCylinder(radius: 0.45, height: 6.5), bark, SCNVector3(0, 3.2, 0))
+            part(SCNSphere(radius: 2.8), UIColor(red: 0.16, green: 0.58, blue: 0.30, alpha: 1), SCNVector3(0, 9, 0),
+                 scale: SCNVector3(0.85, 1.5, 0.85))
+        default:
+            part(SCNCylinder(radius: 0.5, height: 5), bark, SCNVector3(0, 2.5, 0))
+            part(SCNSphere(radius: 3.5), UIColor(red: 0.2, green: 0.75, blue: 0.3, alpha: 1), SCNVector3(0, 7, 0))
+        }
         return node
     }
 

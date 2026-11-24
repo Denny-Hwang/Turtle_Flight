@@ -2,7 +2,7 @@ import XCTest
 import SceneKit
 @testable import TurtleFlight
 
-/// V1–V7 of docs/VISUAL_AUDIO_PLAN.md.
+/// V1–V8 of docs/VISUAL_AUDIO_PLAN.md.
 final class VisualPassTests: XCTestCase {
 
     // V1
@@ -118,5 +118,125 @@ final class VisualPassTests: XCTestCase {
             XCTAssertEqual(node.worldPosition.z, p.z, accuracy: 0.01)
         }
         XCTAssertEqual(after, before.count)
+    }
+
+    // V8
+    func testPropVariantsAreStableAndEvenlySpread() {
+        var counts = [0, 0, 0]
+        for h in 0..<600 {
+            let v = DecorVariety.variant(h, count: 3)
+            XCTAssertEqual(v, DecorVariety.variant(h, count: 3), "same spot, same prop")
+            counts[v] += 1
+            let u = DecorVariety.unit(h, 2)
+            XCTAssertTrue(u >= 0 && u < 1)
+        }
+        // Neighbouring hashes don't all get the same shape.
+        for c in counts { XCTAssertGreaterThan(c, 150) }
+        // Size and turn come from the hash too.
+        let a = SCNNode(), b = SCNNode()
+        DecorVariety.vary(a, hash: 77, scale: 0.8...1.4)
+        DecorVariety.vary(b, hash: 77, scale: 0.8...1.4)
+        XCTAssertEqual(a.scale.x, b.scale.x)
+        XCTAssertEqual(a.eulerAngles.y, b.eulerAngles.y)
+        XCTAssertTrue((0.8...1.4).contains(a.scale.x))
+    }
+
+    func testEveryRepeatedPropHasThreeDistinctShapes() {
+        let terrain = TerrainGenerator(parentNode: SCNNode(), theme: .sky)
+        let origin = SCNVector3Zero
+        let builders: [(String, (Int) -> SCNNode)] = [
+            ("tree", { terrain.makeRoundTree(at: origin, variant: $0) }),
+            ("cloud", { terrain.makeFluffyCloud(variant: $0) }),
+            ("pine", { TerrainGenerator.makePine(at: origin, scale: 1, variant: $0) }),
+            ("palm", { TerrainGenerator.makePalm(at: origin, variant: $0) }),
+            ("blossom", { TerrainGenerator.makeBlossomTree(at: origin, variant: $0) }),
+            ("hanok", { TerrainGenerator.makeTiledRoofHouse(at: origin, variant: $0) }),
+            ("house", { TerrainGenerator.makeTownHouse(at: origin, variant: 0, shape: $0) })
+        ]
+        for (name, make) in builders {
+            var signatures = Set<String>()
+            for v in 0..<3 {
+                let node = make(v)
+                var mesh = PropMesh()
+                if node.geometry != nil, node.childNodes.isEmpty {
+                    // Clouds are already one merged mesh.
+                    let (lo, hi) = node.boundingBox
+                    signatures.insert("\(Int(hi.x - lo.x))x\(Int(hi.y - lo.y))")
+                    continue
+                }
+                mesh.bake(node)
+                XCTAssertFalse(mesh.isEmpty, name)
+                let top = mesh.positions.map(\.y).max()!
+                signatures.insert("\(mesh.positions.count)/\(Int(top * 10))")
+            }
+            XCTAssertEqual(signatures.count, 3, "\(name) shapes should differ")
+        }
+    }
+
+    func testPropMeshBakesPrimitivesAtTheirRealSize() {
+        // SceneKit's own vertex sources are a unit template; the baker
+        // must use the real dimensions and face outward.
+        var mesh = PropMesh()
+        let box = SCNNode(geometry: SCNBox(width: 2, height: 4, length: 6, chamferRadius: 0))
+        box.position = SCNVector3(10, 0, 0)
+        mesh.bake(box)
+        XCTAssertEqual(mesh.positions.map(\.x).min()!, 9, accuracy: 0.001)
+        XCTAssertEqual(mesh.positions.map(\.y).max()!, 2, accuracy: 0.001)
+        XCTAssertEqual(mesh.positions.map(\.z).max()!, 3, accuracy: 0.001)
+
+        var ball = PropMesh()
+        ball.bake(SCNNode(geometry: SCNSphere(radius: 3)))
+        for (p, n) in zip(ball.positions, ball.normals) {
+            XCTAssertEqual(sqrt(p.x * p.x + p.y * p.y + p.z * p.z), 3, accuracy: 0.01)
+            XCTAssertGreaterThan(p.x * n.x + p.y * n.y + p.z * n.z, 0, "normals face out")
+        }
+        // Triangles wind counter-clockwise seen from outside.
+        for t in stride(from: 0, to: ball.indices.count, by: 3) {
+            let a = ball.positions[Int(ball.indices[t])], b = ball.positions[Int(ball.indices[t + 1])]
+            let c = ball.positions[Int(ball.indices[t + 2])]
+            let u = SIMD3(b.x - a.x, b.y - a.y, b.z - a.z), v = SIMD3(c.x - a.x, c.y - a.y, c.z - a.z)
+            XCTAssertGreaterThan(simd_dot(simd_cross(u, v), SIMD3(a.x + b.x + c.x, a.y + b.y + c.y, a.z + b.z + c.z)), 0)
+        }
+
+        var roof = PropMesh()
+        roof.bake(SCNNode(geometry: SCNPyramid(width: 4, height: 5, length: 4)))
+        XCTAssertEqual(roof.positions.map(\.y).min()!, 0, accuracy: 0.001, "pyramids stand on their base")
+        XCTAssertEqual(roof.positions.map(\.y).max()!, 5, accuracy: 0.001)
+
+        // Colours are converted to the linear space SceneKit reads vertex colours in.
+        let m = SCNMaterial()
+        m.diffuse.contents = UIColor(red: 0.5, green: 1, blue: 0, alpha: 1)
+        let c = PropMesh.vertexColor(m)
+        XCTAssertEqual(c.x, 0.214, accuracy: 0.002)
+        XCTAssertEqual(c.y, 1, accuracy: 0.001)
+    }
+
+    func testStaticPropsAndSpecklesJoinTheChunkMeshDeterministically() {
+        func chunks(_ world: MapTheme) -> [String: SCNNode] {
+            let parent = SCNNode()
+            TerrainGenerator(parentNode: parent, seed: 42, theme: world).updateChunks(playerPosition: SCNVector3(100, 0, 100))
+            return Dictionary(uniqueKeysWithValues: parent.childNodes.compactMap { n in
+                n.name?.hasPrefix("chunk_") == true ? (n.name!, n) : nil
+            })
+        }
+        let gridVertices = (Constants.Terrain.gridResolution + 1) * (Constants.Terrain.gridResolution + 1)
+        func vertices(_ n: SCNNode) -> Int { n.geometry!.sources(for: .vertex).first!.vectorCount }
+
+        for world in [MapTheme.sky, .city, .seoul, .wild, .desert] {
+            let a = chunks(world), b = chunks(world)
+            XCTAssertEqual(a.count, 9)
+            var extra = 0
+            for (name, chunk) in a {
+                XCTAssertEqual(chunk.geometry?.elements.count, 1, "\(world) \(name): one draw call for the ground")
+                var stray = 0
+                chunk.enumerateChildNodes { n, _ in if n.name == TerrainGenerator.staticPropName { stray += 1 } }
+                XCTAssertEqual(stray, 0, "\(world) \(name): static props are baked, not left as nodes")
+                XCTAssertEqual(vertices(chunk), vertices(b[name]!), "\(world) \(name): same chunk every time")
+                extra += vertices(chunk) - gridVertices
+            }
+            XCTAssertGreaterThan(extra, 500, "\(world): props/speckles added to the ground")
+        }
+        // Space has no ground props or speckles.
+        for chunk in chunks(.space).values { XCTAssertEqual(vertices(chunk), gridVertices) }
     }
 }
