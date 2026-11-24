@@ -500,3 +500,4 @@
 "flight.control.lookAhead" = "看前面";
 "a11y.lookAtMe.label" = "让伙伴面向你，或面向飞行方向";
 "settings.controls.lookAtMe" = "飞行时伙伴看着我";
+"settings.controls.simpleHUD" = "自由飞行时简化仪表";

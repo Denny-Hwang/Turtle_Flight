@@ -6,6 +6,18 @@ struct HUDOverlay: View {
     /// `MissionHUD` puts the course title and countdown in the same
     /// top-centre slot (they overlapped before).
     var showsCenterReadout: Bool = true
+    /// V9 simple HUD (free flight only, `SimpleHUD.settingKey`): the
+    /// speed / altitude gauges rest small and faint and only come back
+    /// to full strength for a moment when they change band or matter
+    /// (stall, boost, low altitude). The sensitivity chip and compass
+    /// letters are left out; the flight clock and star counter stay.
+    var simple: Bool = false
+
+    /// Last time a secondary gauge had something worth showing.
+    @State private var gaugesWokeAt: Date = .distantPast
+    /// Re-evaluated once a second so the fade back happens without
+    /// per-frame state.
+    @State private var gaugesAwake = false
 
     /// Vertical room the top-right Calibrate / Pause / Exit row
     /// (`ControlButtons`) occupies, so the altitude gauge sits below it
@@ -81,6 +93,7 @@ struct HUDOverlay: View {
                             value: "\(Int(flightVM.speed))",
                             unit: "KM/H"
                         )
+                        .modifier(secondaryGauge(anchor: .topLeading))
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(L10n.format("a11y.hud.speed.format", Int(flightVM.speed)))
                         if flightVM.isStalled {
@@ -92,6 +105,7 @@ struct HUDOverlay: View {
                                 .background(Capsule().fill(Theme.Color.expertRed))
                                 .accessibilityLabel(L10n.t("hud.stall"))
                         }
+                        if !simple {
                         Text("Lv.\(flightVM.sensitivityLevel.levelNumber)")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .foregroundColor(sensitivityColor)
@@ -102,6 +116,7 @@ struct HUDOverlay: View {
                                     .fill(Theme.Color.surfaceOverlay)
                             )
                             .accessibilityLabel(L10n.format("a11y.hud.sensitivity.format", flightVM.sensitivityLevel.levelNumber))
+                        }
                     }
 
                     Spacer()
@@ -109,9 +124,11 @@ struct HUDOverlay: View {
                     // Center: Compass + Flight Time
                     if showsCenterReadout {
                     VStack(spacing: Theme.Spacing.xxs) {
+                        if !simple {
                         Text(compassText)
                             .font(Theme.Typography.hudCompass)
                             .foregroundColor(Theme.Color.hudCyan)
+                        }
 
                         Text(flightVM.flightTime.mmss)
                             .font(Theme.Typography.hudTimer)
@@ -135,6 +152,7 @@ struct HUDOverlay: View {
                         value: "\(Int(flightVM.altitude))",
                         unit: "M"
                     )
+                    .modifier(secondaryGauge(anchor: .topTrailing))
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(L10n.format("a11y.hud.altitude.format", Int(flightVM.altitude)))
                     .padding(.top, Self.controlRowClearance)
@@ -211,6 +229,34 @@ struct HUDOverlay: View {
             }   // ← closes the wrapping ZStack (collision flash + VStack)
         }
         .allowsHitTesting(false) // Pass touches through to SceneKit
+        .onChange(of: SimpleHUD.speedBand(flightVM.speed)) { _ in wakeGauges() }
+        .onChange(of: SimpleHUD.altitudeBand(flightVM.altitude)) { _ in wakeGauges() }
+        .onReceive(SimpleHUD.tick) { now in
+            guard simple, gaugesAwake,
+                  !SimpleHUD.isAwake(now: now, wokeAt: gaugesWokeAt) else { return }
+            setAwake(false)
+        }
+    }
+
+    private func wakeGauges() {
+        guard simple else { return }
+        gaugesWokeAt = Date()
+        if !gaugesAwake { setAwake(true) }
+    }
+
+    private func setAwake(_ awake: Bool) {
+        if reduceMotion {
+            gaugesAwake = awake
+        } else {
+            withAnimation(.easeInOut(duration: 0.35)) { gaugesAwake = awake }
+        }
+    }
+
+    /// Stall, boost and low altitude always show the gauges in full.
+    private func secondaryGauge(anchor: UnitPoint) -> SimpleHUD.GaugeStyle {
+        let urgent = SimpleHUD.isUrgent(stalled: flightVM.isStalled, boosting: flightVM.isBoosting,
+                                        altitude: flightVM.altitude)
+        return SimpleHUD.GaugeStyle(resting: simple && !gaugesAwake && !urgent, anchor: anchor)
     }
 
     private var compassText: String {
@@ -224,6 +270,56 @@ struct HUDOverlay: View {
         case .easy:   return Theme.Color.easyGreen
         case .normal: return Theme.Color.normalYellow
         case .expert: return Theme.Color.expertRed
+        }
+    }
+}
+
+// MARK: - Simple HUD (V9)
+
+/// V9 (docs/VISUAL_AUDIO_PLAN.md): free flight at a child's eye level.
+/// Speed and altitude are rarely what a young player looks at, so in
+/// free flight they rest small and faint, and come back for a couple
+/// of seconds when they cross a band or when they matter. Missions keep
+/// the full HUD. One switch (Settings → Controls, default ON) turns it
+/// off, and `HUDOverlay(simple: false)` is the old HUD exactly.
+enum SimpleHUD {
+    static let settingKey = "hud.simple"
+    static let defaultOn = true
+
+    /// Faint, smaller resting look of a secondary gauge.
+    static let restingOpacity: Double = 0.6
+    static let restingScale: CGFloat = 0.8
+    /// How long a gauge stays at full strength after it wakes.
+    static let wakeDuration: TimeInterval = 2.5
+    /// Below this the terrain is close and the altitude matters.
+    static let lowAltitude: Float = 40
+
+    static func isOn(mode: FlightMode, setting: Bool) -> Bool { mode == .freePlay && setting }
+
+    /// One shared 1 s tick. Built once: a `Timer.publish` made inside
+    /// `body` is rebuilt on every HUD refresh (many per second) and
+    /// never gets to fire.
+    @MainActor static let tick = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// Coarse bands: crossing one wakes the gauges, steady flight does not.
+    /// Centred on round numbers (cruise 200 km/h, start 500 m) so the
+    /// usual values sit mid-band instead of flickering on an edge.
+    static func speedBand(_ speed: Float) -> Int { Int((speed / 50).rounded()) }
+    static func altitudeBand(_ altitude: Float) -> Int { Int((altitude / 100).rounded()) }
+
+    static func isAwake(now: Date, wokeAt: Date) -> Bool { now.timeIntervalSince(wokeAt) < wakeDuration }
+
+    static func isUrgent(stalled: Bool, boosting: Bool, altitude: Float) -> Bool {
+        stalled || boosting || altitude < lowAltitude
+    }
+
+    struct GaugeStyle: ViewModifier {
+        let resting: Bool
+        let anchor: UnitPoint
+        func body(content: Content) -> some View {
+            content
+                .scaleEffect(resting ? SimpleHUD.restingScale : 1, anchor: anchor)
+                .opacity(resting ? SimpleHUD.restingOpacity : 1)
         }
     }
 }

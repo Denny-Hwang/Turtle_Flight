@@ -499,3 +499,4 @@
 "flight.control.lookAhead" = "Mira adelante";
 "a11y.lookAtMe.label" = "Haz que tu amigo te mire o mire hacia donde vuela";
 "settings.controls.lookAtMe" = "Mi amigo me mira al volar";
+"settings.controls.simpleHUD" = "Indicadores discretos en vuelo libre";

@@ -500,3 +500,4 @@
 "flight.control.lookAhead" = "前を見て";
 "a11y.lookAtMe.label" = "なかまをこっちに向かせるか、飛ぶ方向を向かせるかを切りかえる";
 "settings.controls.lookAtMe" = "飛行中になかまがこっちを見る";
+"settings.controls.simpleHUD" = "フリーフライトで計器をひかえめに";
