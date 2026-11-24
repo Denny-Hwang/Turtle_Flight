@@ -287,7 +287,7 @@ enum SimpleHUD {
     static let defaultOn = true
 
     /// Faint, smaller resting look of a secondary gauge.
-    static let restingOpacity: Double = 0.45
+    static let restingOpacity: Double = 0.6
     static let restingScale: CGFloat = 0.8
     /// How long a gauge stays at full strength after it wakes.
     static let wakeDuration: TimeInterval = 2.5
