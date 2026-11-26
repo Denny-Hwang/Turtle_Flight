@@ -110,6 +110,9 @@
 "mission.result.collisionsFormat"  = "Golpes: %lld";
 "mission.result.failed"       = "Misión fallida";
 "mission.fail.timeout"        = "¡Se acabó el tiempo!";
+"mission.fail.missedRings"    = "¡Demasiados aros fallados!";
+"hud.ringGuide.a11y"           = "Siguiente aro a %lld m";
+"hud.ringGuide.behind"         = "Detrás";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "Paseo por el cielo";

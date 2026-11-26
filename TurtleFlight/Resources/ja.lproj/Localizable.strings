@@ -111,6 +111,9 @@
 "mission.result.collisionsFormat"  = "接触：%lld回";
 "mission.result.failed"       = "ミッション失敗";
 "mission.fail.timeout"        = "時間切れ！";
+"mission.fail.missedRings"    = "リングを半分以上のがしちゃった！";
+"hud.ringGuide.a11y"           = "次のリングまで %lld m";
+"hud.ringGuide.behind"         = "うしろ";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "空の散歩";

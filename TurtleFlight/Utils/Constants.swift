@@ -132,6 +132,11 @@ enum Constants {
         /// cluster. 2.0s keeps a fresh cluster reachable without
         /// devolving into a confetti-everywhere blur.
         static let starRespawnCooldown: TimeInterval = 2.0
+        /// Uncollected stars this far behind are let go so the pool reads
+        /// low and a fresh cluster appears (2026-11-26 star-desert fix).
+        static let starDropDistance: Float = 700
+        /// A fresh cluster is centred this far ahead of the character.
+        static let starSpawnLead: Float = 250
     }
 
     // MARK: - Collision

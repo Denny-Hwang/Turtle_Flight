@@ -111,6 +111,9 @@
 "mission.result.collisionsFormat"  = "碰撞：%lld 次";
 "mission.result.failed"       = "任务失败";
 "mission.fail.timeout"        = "时间到！";
+"mission.fail.missedRings"    = "错过了一半以上的圆环！";
+"hud.ringGuide.a11y"           = "下一个圆环 %lld 米";
+"hud.ringGuide.behind"         = "在后面";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "天空漫步";

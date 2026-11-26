@@ -110,6 +110,9 @@
 "mission.result.collisionsFormat"  = "Chocs : %lld";
 "mission.result.failed"       = "Mission échouée";
 "mission.fail.timeout"        = "Temps écoulé !";
+"mission.fail.missedRings"    = "Trop d'anneaux manqués !";
+"hud.ringGuide.a11y"           = "Prochain anneau à %lld m";
+"hud.ringGuide.behind"         = "Derrière";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "Balade céleste";

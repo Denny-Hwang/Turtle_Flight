@@ -63,7 +63,7 @@ final class GateScoringTests: XCTestCase {
         XCTAssertEqual(engine.lastPointsEarned, 0)
         XCTAssertEqual(engine.score.combo, 0)
         XCTAssertEqual(engine.score.points, 520)
-        XCTAssertEqual(engine.currentRingIndex, 2)
+        XCTAssertEqual(engine.currentRingIndex, 3, "a miss moves on (2026-11-26)")
     }
 
     func testCompletedResultCarriesScore() {

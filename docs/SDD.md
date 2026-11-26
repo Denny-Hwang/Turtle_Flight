@@ -257,6 +257,11 @@ TurtleFlight/
 
 콤보 1스텝당 +10 % (최대 +100 %). 게이트 종류: 기본 / 축소(6초에 50 %) / 기울기 슬릿(45 %, 45°) / 이동(±40 m, 4초). `CourseSpec.comboShrink` 가 켜지면 콤보에 따라 판정 반경이 4 %씩(바닥 60 %) 줄어든다. 판정은 `MissionEngine.crossing(of:index:from:to:at:comboFactor:)` 의 세그먼트-원판 교차로 계산한다.
 
+**놓친 링 (2026-11-26):** MISS(링 밖 통과, 멀리 비켜 지나감, 80 m 넘게 지나침)면 목표가 다음 링으로 넘어간다
+(`missCurrentRing`). 전에는 목표가 그 링에 남아 플레이어 뒤에 있게 됐다. 절반 넘게 놓치면 실패, 놓친 링이 있으면
+별 최대 2, 4분의 1 초과면 1. Sky Run 은 MISS 마다 목숨 1. 모든 스테이지는 원점에서 첫 링 높이로 시작
+(`placeAtCourseStart`). 목표 링이 화면 밖이면 가장자리에 방향·거리 안내(`RingGuide`, `RingGuideIndicator`).
+
 ### 3.5.5 리텐션 시스템 (Phase 3–4)
 
 일일 퀘스트 3개(`QuestSystem`, 보너스 별 → 트레일 티어), 연속 출석(`Analytics.currentStreak`), 고스트 리플레이(`GhostStore`), 캐릭터 숙련도(`CharacterMastery`). 옵트인: Game Center, 로컬 알림, iCloud KVS 동기화, ReplayKit 클립.

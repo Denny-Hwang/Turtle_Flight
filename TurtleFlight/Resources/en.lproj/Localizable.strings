@@ -110,6 +110,9 @@
 "mission.result.collisionsFormat"  = "Hits: %lld";
 "mission.result.failed"       = "Mission Failed";
 "mission.fail.timeout"        = "Time's up!";
+"mission.fail.missedRings"    = "Missed too many rings!";
+"hud.ringGuide.a11y"           = "Next ring, %lld m";
+"hud.ringGuide.behind"         = "Behind you";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "Sky Walk";

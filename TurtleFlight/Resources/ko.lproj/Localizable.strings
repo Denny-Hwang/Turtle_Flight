@@ -113,6 +113,9 @@
 "mission.result.collisionsFormat"  = "접촉: %lld회";
 "mission.result.failed"       = "Mission Failed";
 "mission.fail.timeout"        = "시간 초과!";
+"mission.fail.missedRings"    = "링을 절반 넘게 놓쳤어요";
+"hud.ringGuide.a11y"           = "다음 링까지 %lld m";
+"hud.ringGuide.behind"         = "뒤에 있어요";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "하늘 산책";

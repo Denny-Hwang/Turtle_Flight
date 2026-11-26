@@ -9,6 +9,27 @@ window.
 
 ## [Unreleased]
 
+### Tilt comfort + ring flow (2026-11-26, owner device feedback)
+- Steering and climbing have their own tilt ranges (`AxisResponse`): full
+  climb at 12–15°, full turn at 18–25°, smaller dead zones and gentler
+  curves. Before, climbing needed so much tilt the screen was hard to see.
+  Easy/Normal climb rate 40/70 m/s.
+- Every stage start (including Retry and Next) puts the character back at
+  the course start, level with and facing the first ring. Retry/Next used
+  to start wherever the last run ended, often km away from the new rings.
+- A missed ring (near miss, wide pass, or drifting 80 m past it) now counts
+  as MISS and the target moves to the next ring instead of staying behind
+  the player. Missing more than half fails the course; missed rings cap the
+  stars (any → 2, over a quarter → 1). Kids unchanged.
+- Screen-edge ring guide (`RingGuideIndicator`): a gold arrow plus the
+  distance when the target ring is off-screen, "Behind you" when it is
+  behind.
+- Free flight: stars left 700 m behind are dropped and new clusters spawn
+  250 m ahead, which ends the "star desert" after the first cluster.
+- 3 new strings in all 7 locales (414 keys).
+- Plan for the joystick, set pieces along the route and varied BGM:
+  `docs/FLIGHT_FUN_PLAN.md`.
+
 ### Tilt controls fix + start-of-flight calibration (2026-11-24)
 - Fix: in landscape the tilt axes were crossed. Leaning the phone
   forward/back turned the character, and tilting it left/right barely

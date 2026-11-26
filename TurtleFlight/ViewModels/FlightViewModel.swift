@@ -88,6 +88,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         var starsCollected: Int
         var boostProgress: Float
         var directionToObjective: Double?
+        var ringGuide: RingGuide? = nil
         var currentRegion: String
         var score: Int = 0
         var combo: Int = 0
@@ -104,6 +105,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
                 && starsCollected == other.starsCollected
                 && Int(boostProgress * 100) == Int(other.boostProgress * 100)
                 && Self.quantize(directionToObjective) == Self.quantize(other.directionToObjective)
+                && ringGuide?.displayKey == other.ringGuide?.displayKey
                 && currentRegion == other.currentRegion
                 && score == other.score
                 && combo == other.combo
@@ -173,6 +175,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         if directionToObjective != frame.directionToObjective {
             directionToObjective = frame.directionToObjective
         }
+        if ringGuide != frame.ringGuide { ringGuide = frame.ringGuide }
         if currentRegion != frame.currentRegion { currentRegion = frame.currentRegion }
         if score != frame.score { score = frame.score }
         if combo != frame.combo { combo = frame.combo }
@@ -355,6 +358,11 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// 90° to the right, ±π = directly behind. Nil while no Step-Goal
     /// stage is active. Drives the objective compass arrow on MissionHUD.
     @Published private(set) var directionToObjective: Double? = nil
+
+    /// Where the target ring is from the character: drives the screen-edge
+    /// guide (`RingGuideIndicator`) when the ring is out of view. Nil
+    /// while no Step-Goal stage is in progress.
+    @Published private(set) var ringGuide: RingGuide? = nil
 
     /// Monotonically-increasing trigger for a one-shot HUD flash on
     /// collision. Sound + haptic already fire, but a deaf / silent-phone
@@ -608,6 +616,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         // Drop the Step-Goal-only published values so a follow-up Free
         // Flight doesn't read stale objective indicators.
         directionToObjective = nil
+        ringGuide = nil
         boostProgress = 0
         lastTimerBeepBucket = -1
         lastPublishedFrame = nil
@@ -637,6 +646,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         missionEngine?.startStage(stage) { [weak self] x, z in
             self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0
         }
+        placeAtCourseStart()
         // Ghost: load the best previous run on this course and start
         // recording this one. Endless courses have no fixed layout, so
         // no ghost there.
@@ -659,6 +669,32 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
                 ghostNode = node
             }
         }
+    }
+
+    /// Every course is laid out from the origin heading north, but Retry /
+    /// Next used to start it wherever the last run ended — often a few km
+    /// away, so the new rings were nowhere in sight (owner 2026-11-26:
+    /// "stretches with no rings"). Put the character back at the start,
+    /// level with the first ring and facing it, and bring the camera along.
+    func placeAtCourseStart() {
+        guard let engine = missionEngine, let first = engine.rings.first else { return }
+        let target = first.center(at: 0)
+        let ground = terrainGenerator?.heightAt(x: 0, z: 0) ?? 0
+        let y = max(target.y, ground + 40)
+        let start = SCNVector3(0, y, 0)
+        var heading = atan2(target.x, -target.z) * 180 / .pi
+        if heading < 0 { heading += 360 }
+        flightEngine.reset()
+        flightEngine.place(at: start, heading: heading)
+        characterNode?.position = start
+        if let cam = cameraNode {
+            let h = heading * .pi / 180
+            cam.position = SCNVector3(start.x - sin(h) * Constants.Camera.followDistance,
+                                      start.y + Constants.Camera.followHeight,
+                                      start.z + cos(h) * Constants.Camera.followDistance)
+        }
+        lastPublishedFrame = nil
+        lastRenderTime = 0
     }
 
     /// Stable key for ghost storage. Daily runs key by day so tomorrow's
@@ -944,6 +980,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
             starsCollected: simStarsCollected,
             boostProgress: computeBoostProgress(flightState: flightState),
             directionToObjective: computeObjectiveDirection(flightState: flightState),
+            ringGuide: computeRingGuide(flightState: flightState),
             currentRegion: computeRegionName(),
             score: missionEngine?.score.points ?? 0,
             combo: missionEngine?.score.combo ?? 0,
@@ -1032,6 +1069,17 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         return relative
     }
 
+    /// Bearing, elevation and distance to the target ring (see `RingGuide`).
+    private func computeRingGuide(flightState: FlightEngine.FlightState) -> RingGuide? {
+        guard let bearing = computeObjectiveDirection(flightState: flightState),
+              let ringPos = missionEngine?.currentRingPosition else { return nil }
+        let pos = flightState.position
+        return RingGuide.make(bearing: bearing,
+                              dx: ringPos.x - pos.x,
+                              dy: ringPos.y - pos.y,
+                              dz: ringPos.z - pos.z)
+    }
+
     /// Boost ring value (0…1). While boosting it is the remaining
     /// fraction of the burst; otherwise it is the gauge charge, so the
     /// ring visibly refills from stars and reads "ready" when full.
@@ -1065,16 +1113,19 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// the player picks up the initial 10. Debounced via
     /// `Constants.Items.starRespawnCooldown`.
     private func respawnStarsIfDepleted() {
-        guard let items = itemSystem,
-              let pos = characterNode?.position,
-              items.uncollectedStarCount < Constants.Items.starRespawnThreshold
-        else { return }
+        guard let items = itemSystem, let pos = characterNode?.position else { return }
+        items.dropStars(fartherThan: Constants.Items.starDropDistance, from: pos)
+        guard items.uncollectedStarCount < Constants.Items.starRespawnThreshold else { return }
         let now = CACurrentMediaTime()
         guard now - lastStarSpawnTime > Constants.Items.starRespawnCooldown else {
             return
         }
         lastStarSpawnTime = now
-        items.spawnStars(around: pos)
+        // New cluster ahead of the character, not around it, so it lands
+        // where the player is going.
+        let h = flightEngine.state.heading * .pi / 180
+        let ahead = Constants.Items.starSpawnLead
+        items.spawnStars(around: SCNVector3(pos.x + sin(h) * ahead, pos.y, pos.z - cos(h) * ahead))
     }
 
     /// Edge-detect MissionEngine state transitions; fire `onMissionTerminalState`

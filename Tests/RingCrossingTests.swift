@@ -109,20 +109,22 @@ final class RingCrossingTests: XCTestCase {
         XCTAssertEqual(engine.ringMisses, 0)
     }
 
-    func testEngineCountsNearMissAndKeepsTargetRing() {
+    func testEngineCountsNearMissAndMovesOn() {
+        // Since 2026-11-26 a miss moves the target to the next ring —
+        // keeping it left the target behind the player.
         let scene = SCNScene()
         let engine = MissionEngine(parentNode: scene.rootNode)
         let stage = StageDefinition.allStages[0]     // radius 50
         engine.startStage(stage)
         engine.testPass(ringIndex: 0, lateralOffset: 70)  // 1.4 radii
-        XCTAssertEqual(engine.currentRingIndex, 0, "A miss must not advance the ring")
+        XCTAssertEqual(engine.currentRingIndex, 1, "A miss moves on to the next ring")
         XCTAssertEqual(engine.ringMisses, 1)
+        XCTAssertEqual(engine.ringsSkipped, 1)
         XCTAssertEqual(engine.crossingCount, 1)
         XCTAssertFalse(engine.lastCrossing!.isPass)
 
-        // Loop back and take it properly.
-        engine.testPass(ringIndex: 0)
-        XCTAssertEqual(engine.currentRingIndex, 1)
+        engine.testPass(ringIndex: 1)
+        XCTAssertEqual(engine.currentRingIndex, 2)
         XCTAssertEqual(engine.crossingCount, 2)
     }
 

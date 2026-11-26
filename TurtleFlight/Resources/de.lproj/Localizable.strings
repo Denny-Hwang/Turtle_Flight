@@ -112,6 +112,9 @@
 "mission.result.collisionsFormat"  = "Treffer: %lld";
 "mission.result.failed"       = "Mission gescheitert";
 "mission.fail.timeout"        = "Zeit um!";
+"mission.fail.missedRings"    = "Zu viele Ringe verpasst!";
+"hud.ringGuide.a11y"           = "Nächster Ring in %lld m";
+"hud.ringGuide.behind"         = "Hinter dir";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "Himmelsspaziergang";
