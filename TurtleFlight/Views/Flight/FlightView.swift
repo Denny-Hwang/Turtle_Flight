@@ -19,6 +19,8 @@ struct FlightView: View {
     @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
     /// V9: quieter speed / altitude gauges in free flight.
     @AppStorage(SimpleHUD.settingKey) private var simpleHUD = SimpleHUD.defaultOn
+    @AppStorage(ControlPreferences.stickOnLeftKey) private var stickOnLeft = false
+    @AppStorage(ControlPreferences.invertStickKey) private var invertStick = false
     /// True after the user taps Exit on Free Flight. We don't dismiss
     /// immediately — the FreeFlightResultView surfaces the run summary
     /// first, then dismiss is wired through its Home button.
@@ -55,6 +57,16 @@ struct FlightView: View {
                     MissionHUD(missionEngine: engine, missionVM: missionVM, flightVM: flightVM)
                 }
 
+                // Thumb stick (joystick / mixed modes, or no gyro). Above
+                // the HUD so gauge text never swallows a touch, below the
+                // buttons so they still win.
+                if flightVM.controlMode.usesStick {
+                    JoystickOverlay(stick: flightVM.stick,
+                                    onLeft: stickOnLeft,
+                                    verticalOnly: flightVM.controlMode == .mixed,
+                                    invertPitch: invertStick)
+                }
+
                 ControlButtons(
                     onBoost:     { flightVM.activateBoost() },
                     // v1 ships with the item button hidden — see ControlButtons
@@ -86,7 +98,8 @@ struct FlightView: View {
                         lookAtMe.toggle()
                         flightVM.setLookingAtCamera(lookAtMe)
                     },
-                    lookAtMeOn: lookAtMe
+                    lookAtMeOn: lookAtMe,
+                    boostOnRight: flightVM.controlMode.usesStick && stickOnLeft
                 )
             }
             .deviceCanvas()
@@ -99,7 +112,9 @@ struct FlightView: View {
             // holds the phone, every flight / retry / resume.
             if flightVM.isCalibrating && !flightVM.isPaused && !isShowingResult {
                 CalibrationOverlay(gyro: flightVM.gyroController,
-                                   onStartNow: { flightVM.finishCalibrationNow() })
+                                   onStartNow: { flightVM.finishCalibrationNow() },
+                                   onUseFinger: flightVM.controlMode == .tilt
+                                       ? { flightVM.setControlMode(.joystick) } : nil)
                     .transition(.opacity)
             }
 
@@ -540,16 +555,6 @@ struct SceneKitView: UIViewRepresentable {
         scnView.preferredFramesPerSecond = 60
         scnView.antialiasingMode = .multisampling2X
 
-        // Simulator / iPad-without-gyro fallback: a pan gesture on the
-        // scene view is mapped to roll / pitch input so the app stays
-        // exhibitable without a real device. Real-device sessions ignore
-        // this input (`GyroController.injectFallback` short-circuits when
-        // the gyro is available). See P2-7 in DESIGN_GAP_REPORT.
-        let pan = UIPanGestureRecognizer(target: context.coordinator,
-                                          action: #selector(Coordinator.handlePan(_:)))
-        pan.maximumNumberOfTouches = 1
-        scnView.addGestureRecognizer(pan)
-
         return scnView
     }
 
@@ -569,31 +574,6 @@ struct SceneKitView: UIViewRepresentable {
         /// rendered position lag the simulation.
         func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
             flightVM.tick(at: time)
-        }
-
-        /// Pan-gesture → fallback input. Only fires meaningful samples
-        /// when the gyro is unavailable; the GyroController side guards
-        /// the same condition. Mapping: drag right to roll right, drag
-        /// up (translation.y < 0) to pitch up. Range scales by view
-        /// half-extents so a full-edge drag reads as ±1.0 input.
-        @MainActor @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
-            guard let view = recognizer.view else { return }
-            switch recognizer.state {
-            case .began, .changed:
-                let translation = recognizer.translation(in: view)
-                let halfWidth  = max(view.bounds.width  / 2, 1)
-                let halfHeight = max(view.bounds.height / 2, 1)
-                let roll  = Double(translation.x / halfWidth)
-                let pitch = Double(-translation.y / halfHeight)
-                flightVM.gyroController.injectFallback(
-                    rollNormalized: roll,
-                    pitchNormalized: pitch
-                )
-            case .ended, .cancelled, .failed:
-                flightVM.gyroController.releaseFallback()
-            default:
-                break
-            }
         }
     }
 }

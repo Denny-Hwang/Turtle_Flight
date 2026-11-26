@@ -81,6 +81,7 @@
 "flight.calibrate.title" = "Halte es, wie du magst";
 "flight.calibrate.body" = "Diese Haltung wird deine Neutralstellung. Halte kurz still.";
 "flight.calibrate.now" = "Jetzt starten";
+"flight.calibrate.useStick" = "Lieber mit dem Finger";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Beenden";
 "flight.control.boost"     = "Boost";
@@ -277,6 +278,12 @@
 "onboarding.try.cta"           = "Neigen testen";
 "onboarding.try.exit"          = "Fertig";
 "onboarding.try.timeLeft.format" = "%lld s";
+"onboarding.control.title" = "Wie willst du fliegen?";
+"onboarding.control.tilt" = "Neigen";
+"onboarding.control.tilt.body" = "Lenke durch Neigen des Geräts";
+"onboarding.control.stick" = "Finger";
+"onboarding.control.stick.body" = "Lenke mit einem Stick auf dem Bildschirm";
+"onboarding.control.footer" = "Jederzeit in den Einstellungen änderbar";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "Teilen";
@@ -369,8 +376,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "Steuerung";
-"settings.controls.touch"         = "Touch-Steuerung";
-"settings.controls.touch.caption" = "Zum Steuern über den Bildschirm ziehen statt das Gerät zu neigen. Praktisch im Liegen, im Auto oder wenn Neigen unangenehm ist.";
+"settings.controls.mode" = "Steuerung";
+"settings.controls.mode.tilt" = "Neigen";
+"settings.controls.mode.joystick" = "Joystick";
+"settings.controls.mode.mixed" = "Gemischt";
+"settings.controls.mode.tilt.caption" = "Nach links oder rechts neigen zum Lenken. Nach vorn kippen zum Sinken, aufrichten zum Steigen.";
+"settings.controls.mode.joystick.caption" = "Schiebe den Stick unten am Bildschirm mit dem Daumen. Kein Neigen nötig – auch im Liegen oder im Auto.";
+"settings.controls.mode.mixed.caption" = "Zum Lenken nach links oder rechts neigen, hoch und runter mit dem Daumen. Ohne Kippen bleibt der Bildschirm gut sichtbar.";
+"settings.controls.stickInvert" = "Stick oben/unten umkehren";
+"settings.controls.stickLeft" = "Stick links";
 "flight.control.view"             = "Ansicht";
 "a11y.cleanView.label"            = "Fluganzeigen aus- oder einblenden";
 
@@ -506,5 +520,8 @@
 "flight.control.lookAtMe" = "Schau mich an";
 "flight.control.lookAhead" = "Schau nach vorn";
 "a11y.lookAtMe.label" = "Deinen Freund zu dir oder in Flugrichtung drehen";
+"a11y.joystick" = "Joystick";
+"a11y.joystick.hint" = "Nach links oder rechts zum Lenken, nach oben zum Steigen";
+"a11y.joystick.hint.vertical" = "Nach oben zum Steigen, nach unten zum Sinken";
 "settings.controls.lookAtMe" = "Freund schaut mich beim Fliegen an";
 "settings.controls.simpleHUD" = "Dezente Anzeigen im Freiflug";

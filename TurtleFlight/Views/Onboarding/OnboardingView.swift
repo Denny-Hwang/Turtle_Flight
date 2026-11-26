@@ -1,12 +1,14 @@
 import SwiftUI
 import CoreMotion
 
-/// First-run gyro tutorial. Four swipeable cards:
+/// First-run gyro tutorial. Five swipeable cards:
 ///   1. Welcome — brand + character cameo
 ///   2. Hold flat + calibrate — explain neutral position
 ///   3. Tilt to steer — explain roll/pitch mapping
 ///   4. Try Tilt — live tilt-meter so the player feels the mechanic
 ///      before being asked to commit to a flight
+///   5. How do you want to fly? — tilt or the on-screen joystick
+///      (`ControlChoiceCard`, 2026-11-26)
 ///
 /// Triggered from HomeView when `OnboardingState.completed` is false.
 /// Once finished (Get Started tap OR Skip), persists `completed = true`
@@ -16,8 +18,17 @@ struct OnboardingView: View {
     /// Called when the user finishes (Get Started or Skip).
     let onFinish: () -> Void
 
-    @State private var pageIndex: Int = 0
-    private static let pageCount = 4
+    @State private var pageIndex: Int = Self.initialPage
+
+    /// QA (Debug only): `-TFOnboardingPage 4` opens on a given card.
+    private static var initialPage: Int {
+        #if DEBUG
+        return min(max(UserDefaults.standard.integer(forKey: "TFOnboardingPage"), 0), pageCount - 1)
+        #else
+        return 0
+        #endif
+    }
+    private static let pageCount = 5
 
     var body: some View {
         ZStack {
@@ -80,6 +91,9 @@ struct OnboardingView: View {
                     // before committing to a flight.
                     TryTiltCard(isActive: pageIndex == 3)
                         .tag(3)
+
+                    ControlChoiceCard()
+                        .tag(4)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
 
@@ -191,6 +205,72 @@ struct OnboardingCard: View {
                 .foregroundColor(Theme.Color.brandPrimary)
                 .padding(Theme.Spacing.xl)
         }
+    }
+}
+
+// MARK: - Control choice
+
+/// "How do you want to fly?" — tilt or the thumb stick. Saved straight to
+/// `ControlPreferences.mode`; Settings → Controls also offers the mix.
+struct ControlChoiceCard: View {
+    @State private var mode: ControlMode = ControlPreferences.mode
+
+    var body: some View {
+        VStack(spacing: Theme.Spacing.l) {
+            Text(L10n.t("onboarding.control.title"))
+                .font(Theme.Typography.titleDynamic)
+                .foregroundColor(Theme.Color.textPrimary)
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: Theme.Spacing.l) {
+                option(.tilt, icon: "iphone.landscape",
+                       title: "onboarding.control.tilt", body: "onboarding.control.tilt.body")
+                option(.joystick, icon: "hand.point.up.left.fill",
+                       title: "onboarding.control.stick", body: "onboarding.control.stick.body")
+            }
+            .padding(.horizontal, Theme.Spacing.xl)
+
+            Text(L10n.t("onboarding.control.footer"))
+                .font(Theme.Typography.captionDynamic)
+                .foregroundColor(Theme.Color.textPrimary.opacity(0.6))
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    private func option(_ value: ControlMode, icon: String, title: String, body: String) -> some View {
+        let selected = mode == value || (value == .tilt && mode == .mixed)
+        return Button {
+            mode = value
+            ControlPreferences.mode = value
+            Haptics.shared.play(.tap)
+        } label: {
+            VStack(spacing: Theme.Spacing.s) {
+                Image(systemName: icon)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundColor(Theme.Color.brandPrimary)
+                    .frame(height: 44)
+                Text(L10n.t(title))
+                    .font(Theme.Typography.button)
+                    .foregroundColor(Theme.Color.textPrimary)
+                Text(L10n.t(body))
+                    .font(Theme.Typography.captionDynamic)
+                    .foregroundColor(Theme.Color.textPrimary.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(Theme.Spacing.l)
+            .frame(maxWidth: 240, minHeight: 120)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Radius.l)
+                    .fill(Color.white.opacity(selected ? 0.85 : 0.45))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.l)
+                    .stroke(selected ? Theme.Color.brandPrimary : Color.clear, lineWidth: 3)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 

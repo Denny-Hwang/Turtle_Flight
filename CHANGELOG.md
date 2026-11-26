@@ -9,6 +9,22 @@ window.
 
 ## [Unreleased]
 
+### On-screen joystick + control modes (2026-11-26)
+- Settings → Controls now offers three ways to fly:
+  - **Tilt** (default).
+  - **Joystick**: a floating thumb stick in the lower half of the screen; the sensor and the calibration are skipped.
+  - **Mixed**: tilt to turn, thumb for up and down, so the phone never has to be tipped away.
+  - Options: invert up/down, and stick on the left (Boost moves right).
+- The last onboarding page asks "How do you want to fly?" (tilt or finger).
+  The calibration card has a "Use my finger instead" link.
+- `StickInput` filters the stick on the render thread, frame-rate
+  independent, with the level's curve. It fixes the old drag fallback,
+  which never reached full input while the finger was still and kept
+  65–92% of the turn after the finger lifted. A full diagonal is full turn
+  plus full climb. Devices without a gyro fly with the joystick.
+- 19 new strings × 7 locales; the 2 old touch-toggle strings were removed
+  (431 keys).
+
 ### Tilt comfort + ring flow (2026-11-26, owner device feedback)
 - Steering and climbing have their own tilt ranges (`AxisResponse`): full
   climb at 12–15°, full turn at 18–25°, smaller dead zones and gentler
