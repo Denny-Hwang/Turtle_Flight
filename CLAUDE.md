@@ -45,9 +45,10 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 2. Step Goal — 5단계 미션, ⭐ 3단계 평가
 
 ## 3-Level Sensitivity
-- Lv.1 Easy: Dead zone 8°, Cubic(x³), α=0.08, Auto-Level 2초
-- Lv.2 Normal: Dead zone 4°, Quadratic(x²), α=0.15, Auto-Level 4초
-- Lv.3 Expert: Dead zone 1.5°, Linear(x), α=0.35, 실속 있음
+조향(좌우)·상승(앞뒤)은 축마다 따로 (`AxisResponse`, 2026-11-26 오너 실기기 피드백: 많이 기울이면 화면이 안 보이고 피곤함).
+- Lv.1 Easy: 조향 3°/18°/x^1.6, 상승 2.5°/12°/x^1.4 (데드존/최대/곡선), α=0.08, Auto-Level 2초
+- Lv.2 Normal: 조향 2°/20°/x^1.4, 상승 2°/12°/x^1.25, α=0.15, Auto-Level 4초
+- Lv.3 Expert: 조향 1°/25°/선형, 상승 1°/15°/선형, α=0.35, 실속 있음
 
 ## Camera — CRITICAL
 캐릭터+탈것이 항상 화면 중앙. 3인칭 뒤쪽 상단 카메라. 선회 시 뱅킹 효과. Lerp 추종.

@@ -129,18 +129,10 @@ final class GyroController: ObservableObject {
         let clampedRoll  = rollNormalized.clamped(to: -1...1)
         let clampedPitch = pitchNormalized.clamped(to: -1...1)
 
-        // Map the [-1, 1] virtual joystick into the same attitude space
-        // the device-motion path produces — roughly profile.maxTilt
-        // radians at full deflection. That way the dead-zone + curve
-        // logic below is identical for both code paths.
-        let virtualRoll  = clampedRoll  * profile.maxTilt
-        let virtualPitch = clampedPitch * profile.maxTilt
-
-        let filteredRoll  = profile.applyDeadZone(virtualRoll)
-        let filteredPitch = profile.applyDeadZone(virtualPitch)
-
-        let curvedRoll  = profile.applyCurve(filteredRoll)
-        let curvedPitch = profile.applyCurve(filteredPitch)
+        // Map the [-1, 1] stick onto the same tilt range a full sensor
+        // deflection covers, so the dead zone + curve below are shared.
+        let curvedRoll  = profile.roll.input(for: clampedRoll * profile.roll.fullTilt)
+        let curvedPitch = profile.pitch.input(for: clampedPitch * profile.pitch.fullTilt)
 
         let alpha = profile.smoothingAlpha
         smoothedRoll  = smoothedRoll  * (1 - alpha) + curvedRoll  * alpha
@@ -215,13 +207,9 @@ final class GyroController: ObservableObject {
 
         let (rawRoll, rawPitch) = TiltMapping.inputs(tilt, reference: reference)
 
-        // Apply dead zone
-        let filteredRoll = profile.applyDeadZone(rawRoll)
-        let filteredPitch = profile.applyDeadZone(rawPitch)
-
-        // Apply response curve
-        let curvedRoll = profile.applyCurve(filteredRoll)
-        let curvedPitch = profile.applyCurve(filteredPitch)
+        // Dead zone + response curve, per axis.
+        let curvedRoll = profile.roll.input(for: rawRoll)
+        let curvedPitch = profile.pitch.input(for: rawPitch)
 
         // Low-pass filter (smoothing)
         let alpha = profile.smoothingAlpha
