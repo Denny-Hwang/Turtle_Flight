@@ -170,26 +170,36 @@ TurtleFlight/
 ### 3.2 Gyroscope Control System
 
 #### 3.2.1 Input Mapping
-| 동작 | 폰 움직임 | CoreMotion 축 |
+| 동작 | 폰 움직임 (가로 화면 기준) | 측정 |
 |------|----------|--------------|
-| 좌회전 | 폰을 왼쪽으로 기울임 | Roll (attitude.roll) |
-| 우회전 | 폰을 오른쪽으로 기울임 | Roll (attitude.roll) |
-| 상승 | 폰 윗부분을 들어올림 | Pitch (attitude.pitch) |
-| 하강 | 폰 윗부분을 내림 | Pitch (attitude.pitch) |
+| 좌회전 | 화면 왼쪽 끝을 내림 | 화면 가로축의 기울기 (`ScreenTilt.lateral`) |
+| 우회전 | 화면 오른쪽 끝을 내림 | 〃 |
+| 상승 + 감속 | 폰을 세움 (윗변을 내 쪽으로) | 화면이 뒤로 누운 각도 (`ScreenTilt.lean`) 감소 |
+| 하강 + 가속 | 폰을 앞으로 눕힘 (윗변을 앞으로) | 〃 증가 |
+
+- 축은 `CMDeviceMotion.gravity` 를 가로 화면 좌표로 바꿔 읽는다 (`TiltMapping`, 좌/우 가로 모두).
+  Euler `attitude.roll/pitch` 는 세로 기준 축이라 가로에서 조종·상하가 뒤바뀌었다 (2026-11-24 실기기에서 발견, 수정).
+- 속도는 에너지 모델로 상하와 연동 (오너 결정 2026-11-24): 모든 단계에서 내려가면 빨라지고 올라가면 느려진다. Easy 는 상하 속도가 느려 약 165–235 km/h 로 완만, 실속 없음.
+- **원점 보정:** 비행 시작·다시 하기·일시정지 복귀·스테이지 시작·보정 버튼마다, 플레이어가 지금 들고 있는
+  자세를 중립으로 잡는다. 기기가 0.6초 가만히 있으면 그 평균, 2.5초 안에 못 멈추면 그동안의 평균,
+  "바로 시작" 을 누르면 그 순간의 자세. 그동안 세계는 멈춘다 (`FlightViewModel.isCalibrating`, `CalibrationOverlay`).
 
 #### 3.2.2 Sensitivity Profiles (3단계)
 
 | Parameter | Lv.1 Easy | Lv.2 Normal | Lv.3 Expert |
 |-----------|-----------|-------------|-------------|
-| Dead Zone | ±8° | ±4° | ±1.5° |
-| Max Tilt Angle | ±25° | ±35° | ±50° |
-| Response Curve | Cubic (x³) | Quadratic (x²) | Linear (x) |
+| 좌우(조향) 데드존 / 최대 기울기 / 곡선 | 3° / 18° / x^1.6 | 2° / 20° / x^1.4 | 1° / 25° / x |
+| 앞뒤(상승·하강) 데드존 / 최대 기울기 / 곡선 | 2.5° / 12° / x^1.4 | 2° / 12° / x^1.25 | 1° / 15° / x |
 | Smoothing (α) | 0.08 | 0.15 | 0.35 |
 | Turn Speed | 45°/s max | 90°/s max | 180°/s max |
-| Pitch Speed | ±30 m/s max | ±60 m/s max | ±120 m/s max |
+| Pitch Speed | ±40 m/s max | ±70 m/s max | ±120 m/s max |
 | Auto-Level | 2초 미조작 시 | 4초 미조작 시 | 없음 |
 | 최저고도 보호 | 50m 자동 상승 | 20m 자동 상승 | 5m (경고만) |
 | Stall 실속 | 없음 | 없음 | < 100km/h 시 |
+
+2026-11-26 변경 (오너 실기기): 예전엔 축 하나에 데드존 8/4/1.5°, 최대 25/35/50°, 3차/2차/선형 곡선이라
+상승하려면 화면이 안 보일 만큼 눕혀야 했고 조향도 팔이 아팠다. 조향과 상승을 따로 잡아 **상승은 12–15° 면 최대,
+조향은 18–25° 면 최대**, 곡선은 완만하게 (`AxisResponse`). 터치 조종도 같은 곡선을 쓴다.
 
 ### 3.3 Thumb Button Controls
 | 위치 | 버튼 | 기능 |
@@ -246,6 +256,11 @@ TurtleFlight/
 | 평면 통과했으나 링 밖 | MISS | 콤보 리셋 |
 
 콤보 1스텝당 +10 % (최대 +100 %). 게이트 종류: 기본 / 축소(6초에 50 %) / 기울기 슬릿(45 %, 45°) / 이동(±40 m, 4초). `CourseSpec.comboShrink` 가 켜지면 콤보에 따라 판정 반경이 4 %씩(바닥 60 %) 줄어든다. 판정은 `MissionEngine.crossing(of:index:from:to:at:comboFactor:)` 의 세그먼트-원판 교차로 계산한다.
+
+**놓친 링 (2026-11-26):** MISS(링 밖 통과, 멀리 비켜 지나감, 80 m 넘게 지나침)면 목표가 다음 링으로 넘어간다
+(`missCurrentRing`). 전에는 목표가 그 링에 남아 플레이어 뒤에 있게 됐다. 절반 넘게 놓치면 실패, 놓친 링이 있으면
+별 최대 2, 4분의 1 초과면 1. Sky Run 은 MISS 마다 목숨 1. 모든 스테이지는 원점에서 첫 링 높이로 시작
+(`placeAtCourseStart`). 목표 링이 화면 밖이면 가장자리에 방향·거리 안내(`RingGuide`, `RingGuideIndicator`).
 
 ### 3.5.5 리텐션 시스템 (Phase 3–4)
 

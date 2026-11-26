@@ -77,6 +77,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "校准";
+"flight.calibrate.title" = "用舒服的姿势拿着";
+"flight.calibrate.body" = "我们会以现在的姿势为基准，请稍微保持不动。";
+"flight.calibrate.now" = "立即开始";
 "flight.control.pause"     = "暂停";
 "flight.control.exit"      = "退出";
 "flight.control.boost"     = "加速";
@@ -108,6 +111,9 @@
 "mission.result.collisionsFormat"  = "碰撞：%lld 次";
 "mission.result.failed"       = "任务失败";
 "mission.fail.timeout"        = "时间到！";
+"mission.fail.missedRings"    = "错过了一半以上的圆环！";
+"hud.ringGuide.a11y"           = "下一个圆环 %lld 米";
+"hud.ringGuide.behind"         = "在后面";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "天空漫步";
@@ -214,10 +220,10 @@
 "onboarding.page.label"        = "第 %lld / %lld 页";
 "onboarding.welcome.title"     = "欢迎来到 Turtle Flight";
 "onboarding.welcome.body"      = "一款为不会飞的动物打造的陀螺仪飞行冒险。挑一个伙伴，一起飞向天空吧。";
-"onboarding.calibrate.title"   = "将设备放平";
-"onboarding.calibrate.body"    = "以舒适的姿势握持设备，点击校准即可将该姿势设为中立。你随时可以重新校准。";
+"onboarding.calibrate.title"   = "用舒服的姿势拿着";
+"onboarding.calibrate.body"    = "每次开始飞行时，都会以你当前的握持姿势为基准。稍微保持不动就会出发。飞行中也可以点击校准重新设定。";
 "onboarding.tilt.title"        = "倾斜操控";
-"onboarding.tilt.body"         = "左右倾斜转向，抬起或压低顶部来爬升或俯冲。小而平滑的动作手感最好。";
+"onboarding.tilt.body"         = "压低左侧或右侧即可转向。向前倾斜会俯冲加速，竖起来会爬升减速。小而平滑的动作手感最好。";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "再慢的乌龟也能飞上天！";

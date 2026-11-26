@@ -47,11 +47,11 @@ All characters also share the **Cloud Surf** — a cloud-riding vehicle availabl
 
 TurtleFlight uses your device's gyroscope for intuitive tilt-based controls with three sensitivity levels:
 
-| Level | Dead Zone | Curve | Smoothing | Auto-Level |
+| Level | Full turn (left/right) | Full climb (forward/back) | Smoothing | Auto-Level |
 |-------|-----------|-------|-----------|------------|
-| Easy | 8° | Cubic (x³) | 0.08 | 2s |
-| Normal | 4° | Quadratic (x²) | 0.15 | 4s |
-| Expert | 1.5° | Linear (x) | 0.35 | Stall enabled |
+| Easy | 18° (x^1.6) | 12° (x^1.4) | 0.08 | 2s |
+| Normal | 20° (x^1.4) | 12° (x^1.25) | 0.15 | 4s |
+| Expert | 25° (linear) | 15° (linear) | 0.35 | Stall enabled |
 
 ## Tech Stack
 
@@ -200,11 +200,11 @@ This project is licensed under the BSD 3-Clause License. See [LICENSE](LICENSE) 
 
 기기를 기울여 조종합니다. 3단계 민감도를 지원합니다.
 
-| 단계 | 데드존 | 응답 곡선 | 스무딩 α | 자동 수평화 |
+| 단계 | 좌우 최대 기울기 | 앞뒤 최대 기울기 | 스무딩 α | 자동 수평화 |
 |------|--------|-----------|----------|-------------|
-| 쉬움 (Easy) | 8° | 3차 (x³) | 0.08 | 2초 |
-| 보통 (Normal) | 4° | 2차 (x²) | 0.15 | 4초 |
-| 전문가 (Expert) | 1.5° | 선형 (x) | 0.35 | 실속 있음 |
+| 쉬움 (Easy) | 18° (x^1.6) | 12° (x^1.4) | 0.08 | 2초 |
+| 보통 (Normal) | 20° (x^1.4) | 12° (x^1.25) | 0.15 | 4초 |
+| 전문가 (Expert) | 25° (선형) | 15° (선형) | 0.35 | 실속 있음 |
 
 ## 기술 스택
 

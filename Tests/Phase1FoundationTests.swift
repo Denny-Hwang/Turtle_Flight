@@ -174,7 +174,7 @@ final class Phase1FoundationTests: XCTestCase {
         for _ in 0..<250 {          // 4s at 60fps ≈ 220m of travel
             vm.update(deltaTime: 0.016)
         }
-        XCTAssertEqual(engine.currentRingIndex, 0)
+        XCTAssertEqual(engine.currentRingIndex, 1, "the target moves on to the ring ahead")
         XCTAssertEqual(engine.crossingCount, 1)
         XCTAssertEqual(engine.ringMisses, 1)
         XCTAssertEqual(engine.lastCrossing!.accuracy, 2.0, accuracy: 0.05)

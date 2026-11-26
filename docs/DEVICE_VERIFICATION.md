@@ -11,12 +11,18 @@ Xcode 에 계정이 없어 `com.turtleflight.app` 프로비저닝 프로파일�
 (`error: No Accounts`). 로그인 후 아이폰에서 설정 → 개인정보 보호 및 보안 →
 **개발자 모드** 를 켠다.
 
+2026-11-23 재확인: iPhone XS(iOS 18.7.12) 유선 연결·페어링, **개발자 모드 켜짐**, 개발 인증서 있음.
+서명 없는 기기 빌드(`-O`)는 통과(앱 22MB). 남은 것은 **Xcode 계정 로그인 하나**
+(`xcodebuild` 가 아직 `No Accounts` / `No profiles for 'com.turtleflight.app'`).
+같은 날 스크립트의 기기 찾기 버그(아이디 대신 `available` 을 잡던 것)를 고치고 `--no-scenes` 를 추가했다.
+
 ## 1. 자동 측정 + 장면 확인 (약 10분)
 
 ```bash
-TEAM=AFQ4SC9L65 scripts/device/verify.sh          # 빌드 → 설치 → 3분 자동 비행 측정 → 장면 14개 순서대로 보기
-TEAM=AFQ4SC9L65 SOAK=600 scripts/device/verify.sh # 발열 확인용 10분
-scripts/device/verify.sh --scenes-only            # 장면만 다시 보기
+TEAM=AFQ4SC9L65 scripts/device/verify.sh             # 빌드 → 설치 → 3분 자동 비행 측정 → 장면 14개 순서대로 보기
+TEAM=AFQ4SC9L65 SOAK=600 scripts/device/verify.sh    # 발열 확인용 10분
+TEAM=AFQ4SC9L65 scripts/device/verify.sh --no-scenes # 빌드·설치·측정만 (묻지 않음 — 에이전트가 대신 돌릴 때)
+scripts/device/verify.sh --scenes-only               # 장면만 다시 보기
 ```
 
 - 측정: 스카이런을 자동 조종으로 날며 1초마다 FPS·가장 느린 프레임·메모리·발열 상태를
@@ -54,4 +60,6 @@ scripts/device/verify.sh --scenes-only            # 장면만 다시 보기
 
 | 날짜 | 기기 / iOS | FPS 중앙 / 하위5% | 최대 메모리 | 발열 | H1–H10 메모 |
 |---|---|---|---|---|---|
-| | | | | | |
+| 2026-11-23 | iPhone XS / 18.7.12 | 60.0 / 59.0 (최저 54) | 111 MB | 0 nominal | 1단계 측정 **PASS** (V1–V9 포함 main `87f3504`, 3분 스카이런·하늘 월드). 30ms 넘는 프레임은 시작 5초째 1회(117ms)와 33ms 9회뿐. 메모리 100→110MB 로 거의 평평. 장면 확인·H1–H10 대기 |
+| 2026-11-24 | iPhone XS / 18.7.12 | — | — | — | **H1 ⚠️ 조종감**: 가로에서 앞뒤 기울기가 회전으로, 좌우 기울기가 거의 안 먹음 + 시작 시 원점 보정 필요(오너). 원인: 세로 기준 Euler 축 사용. 수정(`TiltMapping` + 매 시작 보정 `CalibrationOverlay`, 앞으로 눕히면 하강·가속 / 세우면 상승·감속). 재확인 대기 |
+| 2026-11-26 | iPhone XS / 18.7.12 | — | — | — | **H1 재확인 (오너)**: 축은 맞아짐. ⚠️ 상승·하강에 너무 많이 기울여야 해 화면이 안 보이고 좌우도 피곤 → 축별 범위(상승 12–15°, 조향 18–25°). ⚠️ 링 없는 구간 → 다시 하기·다음 코스 시작 위치, 놓친 링이 뒤에 남던 것 수정 + 화면 가장자리 링 안내. 조이스틱·볼거리·BGM 은 `docs/FLIGHT_FUN_PLAN.md`. 재확인 대기 |

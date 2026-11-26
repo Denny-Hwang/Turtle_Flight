@@ -208,7 +208,7 @@ struct TryTiltCard: View {
     let isActive: Bool
 
     @State private var roll: Double = 0     // radians, [-π, π]
-    @State private var pitch: Double = 0    // radians, [-π/2, π/2]
+    @State private var pitch: Double = 0    // radians, + = climb
     @StateObject private var sampler = TiltSampler()
 
     var body: some View {
@@ -229,7 +229,7 @@ struct TryTiltCard: View {
                     .foregroundColor(Theme.Color.brandPrimary)
                     .frame(width: 96, height: 96)
                     .rotationEffect(.radians(-roll))
-                    .offset(y: CGFloat(pitch * 90))
+                    .offset(y: CGFloat(-pitch * 90))   // + pitch = climb = up
                     .animation(.easeOut(duration: 0.08), value: roll)
                     .animation(.easeOut(duration: 0.08), value: pitch)
             }
@@ -266,20 +266,26 @@ struct TryTiltCard: View {
 /// Kept inside Onboarding rather than reusing GyroController because the
 /// latter is wired through the flight stack (calibration, sensitivity
 /// profiles, expression latching). For a 5-second feel test we just want
-/// the raw attitude.
+/// the tilt itself, mapped the same way.
 final class TiltSampler: ObservableObject {
     private let manager = CMMotionManager()
+    /// Neutral pose: the first sample after `start`. Main queue only.
+    private var reference: ScreenTilt?
 
     func start(_ onUpdate: @escaping (Double, Double) -> Void) {
         guard manager.isDeviceMotionAvailable, !manager.isDeviceMotionActive else { return }
         manager.deviceMotionUpdateInterval = 1.0 / 30.0
-        manager.startDeviceMotionUpdates(to: .main) { motion, _ in
-            guard let m = motion else { return }
-            // Landscape-friendly mapping. In landscape, device pitch
-            // becomes the "lean forward/back" axis and roll becomes
-            // "tilt left/right" — same convention GyroController uses
-            // in flight.
-            onUpdate(m.attitude.roll, m.attitude.pitch)
+        reference = nil
+        manager.startDeviceMotionUpdates(to: .main) { [weak self] motion, _ in
+            guard let self, let m = motion else { return }
+            // Same landscape mapping as the flight (`TiltMapping`): read
+            // from gravity in screen axes, relative to the first sample.
+            let orientation = MainActor.assumeIsolated { TiltMapping.currentInterfaceOrientation() }
+            let tilt = TiltMapping.tilt(gravity: SIMD3(m.gravity.x, m.gravity.y, m.gravity.z),
+                                        orientation: orientation)
+            guard let ref = self.reference else { self.reference = tilt; return }
+            let input = TiltMapping.inputs(tilt, reference: ref)
+            onUpdate(input.roll, input.pitch)
         }
     }
 

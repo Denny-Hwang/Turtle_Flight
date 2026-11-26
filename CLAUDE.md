@@ -8,6 +8,7 @@
 - `docs/VALIDATION_REPORT.md` — 출시 전 검증 보고서 (historical snapshot; 현재 테스트 460+)
 - `docs/DEVICE_VERIFICATION.md` — 배포 전 실기기 검증 절차 + 결과 기록 (`scripts/device/verify.sh`)
 - `docs/VISUAL_AUDIO_PLAN.md` — 지형·랜드마크·비주얼·소리 개선 진행표 (실기기 검증 후)
+- `docs/FLIGHT_FUN_PLAN.md` — 2026-11-26 오너 피드백 계획: 조종 범위(완료), 터치 조이스틱, 링 안내(일부 완료), 길목 볼거리, BGM
 - `docs/APP_STORE_SUBMISSION.md` — 앱스토어 제출 체크리스트 (계정에서 해야 할 일, Game Center ID, 프라이버시 라벨, 리뷰 노트). 마케팅 카피는 `docs/store/<locale>.md`
 
 ## Tech Stack — Native iOS only
@@ -45,9 +46,10 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 2. Step Goal — 5단계 미션, ⭐ 3단계 평가
 
 ## 3-Level Sensitivity
-- Lv.1 Easy: Dead zone 8°, Cubic(x³), α=0.08, Auto-Level 2초
-- Lv.2 Normal: Dead zone 4°, Quadratic(x²), α=0.15, Auto-Level 4초
-- Lv.3 Expert: Dead zone 1.5°, Linear(x), α=0.35, 실속 있음
+조향(좌우)·상승(앞뒤)은 축마다 따로 (`AxisResponse`, 2026-11-26 오너 실기기 피드백: 많이 기울이면 화면이 안 보이고 피곤함).
+- Lv.1 Easy: 조향 3°/18°/x^1.6, 상승 2.5°/12°/x^1.4 (데드존/최대/곡선), α=0.08, Auto-Level 2초
+- Lv.2 Normal: 조향 2°/20°/x^1.4, 상승 2°/12°/x^1.25, α=0.15, Auto-Level 4초
+- Lv.3 Expert: 조향 1°/25°/선형, 상승 1°/15°/선형, α=0.35, 실속 있음
 
 ## Camera — CRITICAL
 캐릭터+탈것이 항상 화면 중앙. 3인칭 뒤쪽 상단 카메라. 선회 시 뱅킹 효과. Lerp 추종.
@@ -56,7 +58,7 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 60 FPS on iPhone 12+, < 250MB memory, < 80MB app size.
 
 ## Open follow-ups (RN 폐기로 인한 손실분)
-- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 407키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
+- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 414키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
 - ⚠️ XcodeGen 주의: `project.yml` 의 `Resources` 는 `type: folder` 금지 — `.lproj` 가 `Resources/` 하위로 중첩되면 `NSLocalizedString` 이 못 찾음. 일반 그룹 참조로 두어 변형 그룹이 번들 루트에 위치하게 함.
 
 ## Sprint 0–4 closure

@@ -52,6 +52,16 @@ final class FlightEngine {
         energySpeed = Constants.Flight.defaultSpeed
     }
 
+    /// Put the character at `position` facing `heading` (degrees), level
+    /// and at cruise speed. Course starts (`FlightViewModel.placeAtCourseStart`).
+    func place(at position: SCNVector3, heading: Float) {
+        state.position = position
+        state.altitude = position.y
+        state.verticalSpeed = 0
+        state.heading = heading
+        state.rotation = SCNVector3(0, -heading * .pi / 180, 0)
+    }
+
     /// Per-character boost behaviour (see `FlightSpecialty`).
     var specialty = FlightSpecialty.neutral
 
@@ -111,10 +121,9 @@ final class FlightEngine {
             state.verticalSpeed *= 0.95 // Gradually reduce
         }
 
-        // Energy model (Normal / Expert): diving trades altitude for
-        // speed, climbing bleeds it, and drag pulls the speed back toward
-        // cruise. Easy keeps the flat constant-speed model so a first
-        // flight never has to think about airspeed.
+        // Energy model: diving trades altitude for speed, climbing bleeds
+        // it, and drag pulls the speed back toward cruise. Easy's slow
+        // pitch rate keeps the swing gentle.
         if profile.energyModelEnabled {
             let base = Constants.Flight.defaultSpeed
             let energyGain = -state.verticalSpeed * Constants.Flight.energyExchangeRate

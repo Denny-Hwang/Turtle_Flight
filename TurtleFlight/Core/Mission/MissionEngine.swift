@@ -111,7 +111,8 @@ final class MissionEngine {
     /// Number of near-misses (plane crossed inside the attempt window but
     /// outside the ring) during the current stage.
     private(set) var ringMisses: Int = 0
-    /// Rings a Kids course moved past without a pass (never a failure).
+    /// Rings moved past without a pass: Kids skips (never a failure) and,
+    /// elsewhere, misses (the target moves on — see `missCurrentRing`).
     private(set) var ringsSkipped: Int = 0
     /// Precision score for the current attempt (Phase 2).
     private(set) var score = RunScore()
@@ -316,17 +317,51 @@ final class MissionEngine {
             if crossing.isPass {
                 passCurrentRing()
             } else {
-                ringMisses += 1
-                if isEndless && ringMisses >= EndlessCourse.maxMisses {
-                    completeStage()
-                    return
-                }
+                missCurrentRing()
+                if case .inProgress = state {} else { return }
             }
+        } else if Self.planeCrossed(of: ring, from: prev, to: playerPosition, at: elapsedTime)
+                    || Self.distancePast(ring, playerPosition, at: elapsedTime) > Self.missSkipDistance {
+            // Went by well wide of it (or the course turned and the ring
+            // is already behind): that is a miss too, and the target moves
+            // on so the next ring is the one ahead.
+            lastCrossing = RingCrossing(ringIndex: currentRingIndex,
+                                        accuracy: Self.missAttemptRadiusMultiplier + 1,
+                                        hitPoint: playerPosition)
+            crossingCount += 1
+            lastJudgement = .miss
+            lastPointsEarned = score.register(.miss)
+            missCurrentRing()
+            if case .inProgress = state {} else { return }
         }
 
         // Animate current target ring
         animateTargetRing()
     }
+
+    /// Give up on the current target ring after a miss and move on.
+    /// Until 2026-11-26 a miss kept the target, which after a near-miss
+    /// left it *behind* the player: the gold ring vanished from view and
+    /// the rings ahead didn't count (owner: "stretches with no rings").
+    /// Endless runs spend a life; other courses fail once more than half
+    /// the rings are missed, and missed rings cap the stars.
+    private func missCurrentRing() {
+        ringMisses += 1
+        if isEndless && ringMisses >= EndlessCourse.maxMisses {
+            completeStage()
+            return
+        }
+        ringsSkipped += 1
+        if !isEndless, ringsSkipped * 2 > rings.count {
+            state = .failed(reason: L10n.t("mission.fail.missedRings"))
+            return
+        }
+        passCurrentRing(skipped: true)
+    }
+
+    /// How far past a ring's plane (metres, along the course) the player
+    /// may drift before the ring counts as missed.
+    static let missSkipDistance: Float = 80
 
     /// Misses left before an endless run ends (nil outside endless).
     var endlessLivesRemaining: Int? {
@@ -509,7 +544,7 @@ final class MissionEngine {
             collisions: collisions,
             starsCollected: starsCollected,
             ringsCompleted: currentRingIndex - ringsSkipped,
-            totalRings: isEndless ? currentRingIndex : rings.count,
+            totalRings: isEndless ? currentRingIndex - ringsSkipped : rings.count,
             date: Date(),
             score: score.points,
             maxCombo: score.maxCombo,
@@ -548,6 +583,10 @@ final class MissionEngine {
             }
         }
 
+        // Missed rings cap the rating: any → at most 2, more than a
+        // quarter → 1.
+        if ringsSkipped > 0 { stars = min(stars, 2) }
+        if ringsSkipped * 4 > rings.count { stars = 1 }
         return stars
     }
 

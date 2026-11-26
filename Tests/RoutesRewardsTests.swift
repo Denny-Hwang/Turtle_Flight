@@ -198,13 +198,16 @@ final class RoutesRewardsTests: XCTestCase {
         XCTAssertEqual(result.ringsCompleted, result.totalRings)
     }
 
-    func testNormalCourseStillSendsThePlayerBackAfterAMiss() {
+    func testNormalCourseMovesOnAfterAMissButCountsIt() {
+        // 2026-11-26: a miss no longer sends the player back (the target
+        // ended up behind them); it costs the ring and caps the stars.
         let scene = SCNScene()
         let engine = MissionEngine(parentNode: scene.rootNode)
         engine.startStage(RouteCatalog.course(index: 10)!)
         engine.testPass(ringIndex: 0, lateralOffset: 2000)
-        XCTAssertEqual(engine.currentRingIndex, 0)
-        XCTAssertEqual(engine.ringsSkipped, 0)
+        XCTAssertEqual(engine.currentRingIndex, 1)
+        XCTAssertEqual(engine.ringsSkipped, 1)
+        XCTAssertEqual(engine.ringMisses, 1)
     }
 
     // MARK: - Mission view model

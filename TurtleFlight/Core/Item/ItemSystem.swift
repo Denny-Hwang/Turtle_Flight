@@ -58,6 +58,24 @@ final class ItemSystem {
         }
     }
 
+    /// Let go of stars the player has left far behind (and forget the
+    /// collected ones). Without this, flying away from the first cluster
+    /// left 3+ stars stranded there, the pool never read "low", and no new
+    /// stars ever appeared — a star desert for the rest of the flight.
+    /// Returns how many uncollected stars were dropped.
+    @discardableResult
+    func dropStars(fartherThan distance: Float, from position: SCNVector3) -> Int {
+        var dropped = 0
+        stars.removeAll { star in
+            if star.isCollected { return true }
+            guard (star.position - position).length > distance else { return false }
+            star.node.runAction(.sequence([.fadeOut(duration: 0.4), .removeFromParentNode()]))
+            dropped += 1
+            return true
+        }
+        return dropped
+    }
+
     /// Check for star collection near player
     func checkCollection(playerPosition: SCNVector3, radiusMultiplier: Float = 1) -> Int {
         var collected = 0

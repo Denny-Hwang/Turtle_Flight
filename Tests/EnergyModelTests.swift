@@ -14,13 +14,19 @@ final class EnergyModelTests: XCTestCase {
         }
     }
 
-    func testEasyKeepsConstantSpeedRegardlessOfPitch() {
-        let engine = FlightEngine(sensitivity: .easy)
-        run(engine, seconds: 2, pitch: -1)
-        XCTAssertEqual(engine.state.speed, Constants.Flight.defaultSpeed, accuracy: 0.01)
-        run(engine, seconds: 2, pitch: 1)
-        XCTAssertEqual(engine.state.speed, Constants.Flight.defaultSpeed, accuracy: 0.01)
-        XCTAssertFalse(engine.isStalling)
+    func testEasyDiveSpeedsUpGently() {
+        // Owner decision 2026-11-24: tipping the phone forward (dive) is
+        // faster and standing it up (climb) slower on every level.
+        let easy = FlightEngine(sensitivity: .easy)
+        let normal = FlightEngine(sensitivity: .normal)
+        run(easy, seconds: 2, pitch: -1)
+        run(normal, seconds: 2, pitch: -1)
+        XCTAssertGreaterThan(easy.state.speed, Constants.Flight.defaultSpeed + 10)
+        XCTAssertLessThan(easy.state.speed, normal.state.speed, "Easy stays gentler than Normal")
+        run(easy, seconds: 6, pitch: 1)
+        XCTAssertLessThan(easy.state.speed, Constants.Flight.defaultSpeed - 10)
+        XCTAssertGreaterThan(easy.state.speed, Constants.Flight.stallSpeed)
+        XCTAssertFalse(easy.isStalling, "Easy never stalls")
     }
 
     func testNormalDiveGainsSpeedAndClimbLosesIt() {

@@ -24,6 +24,7 @@ struct MissionHUD: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
+            RingGuideIndicator(guide: flightVM.ringGuide)
             judgementCallout
                 .onChange(of: flightVM.judgementEvent) { event in
                     guard let event else { return }

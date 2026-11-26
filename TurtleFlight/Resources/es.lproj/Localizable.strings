@@ -76,6 +76,9 @@
 
 // MARK: - Control buttons
 "flight.control.calibrate" = "Calibrar";
+"flight.calibrate.title" = "Sujétalo como quieras";
+"flight.calibrate.body" = "Usaremos esta postura como neutra. Quédate quieto un momento.";
+"flight.calibrate.now" = "Empezar ya";
 "flight.control.pause"     = "Pausa";
 "flight.control.exit"      = "Salir";
 "flight.control.boost"     = "Turbo";
@@ -107,6 +110,9 @@
 "mission.result.collisionsFormat"  = "Golpes: %lld";
 "mission.result.failed"       = "Misión fallida";
 "mission.fail.timeout"        = "¡Se acabó el tiempo!";
+"mission.fail.missedRings"    = "¡Demasiados aros fallados!";
+"hud.ringGuide.a11y"           = "Siguiente aro a %lld m";
+"hud.ringGuide.behind"         = "Detrás";
 
 // MARK: - Stage names (display)
 "stage.0.name" = "Paseo por el cielo";
@@ -213,10 +219,10 @@
 "onboarding.page.label"        = "Página %lld de %lld";
 "onboarding.welcome.title"     = "Te damos la bienvenida a Turtle Flight";
 "onboarding.welcome.body"      = "Una aventura de vuelo con giroscopio para animales que no pueden volar. Elige un amigo y lánzate al cielo.";
-"onboarding.calibrate.title"   = "Sujeta el dispositivo plano";
-"onboarding.calibrate.body"    = "Sujeta el dispositivo en una postura cómoda y toca Calibrar para fijarla como posición neutra. Puedes recalibrar cuando quieras.";
+"onboarding.calibrate.title"   = "Sujétalo como quieras";
+"onboarding.calibrate.body"    = "Cada vuelo empieza tomando como neutra la forma en que sujetas el dispositivo. Quédate quieto un momento y despegas. En pleno vuelo, toca Calibrar para reajustarla.";
 "onboarding.tilt.title"        = "Inclina para pilotar";
-"onboarding.tilt.body"         = "Inclina a izquierda/derecha para girar; sube o baja la parte de arriba para ascender o descender. Los movimientos pequeños y suaves van mejor.";
+"onboarding.tilt.body"         = "Baja el lado izquierdo o derecho para girar. Inclina el teléfono hacia delante para descender y acelerar; enderézalo para subir y frenar. Los movimientos pequeños y suaves van mejor.";
 
 // MARK: - Character descriptions (shown in CharacterSelectView)
 "character.turtle.description"  = "¡Hasta una tortuga lenta puede volar!";

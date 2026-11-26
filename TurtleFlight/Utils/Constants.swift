@@ -32,7 +32,7 @@ enum Constants {
         static let maxAltitude: Float = 10000.0
         static let gravity: Float = 9.8
 
-        // Phase 2 — energy model (Normal / Expert only; see
+        // Phase 2 — energy model (all levels since 2026-11-24; see
         // `SensitivityProfile.energyModelEnabled`).
         /// km/h gained per second per m/s of descent (and lost per m/s of
         /// climb). At Expert's 120 m/s max climb that's -72 km/h per
@@ -132,6 +132,11 @@ enum Constants {
         /// cluster. 2.0s keeps a fresh cluster reachable without
         /// devolving into a confetti-everywhere blur.
         static let starRespawnCooldown: TimeInterval = 2.0
+        /// Uncollected stars this far behind are let go so the pool reads
+        /// low and a fresh cluster appears (2026-11-26 star-desert fix).
+        static let starDropDistance: Float = 700
+        /// A fresh cluster is centred this far ahead of the character.
+        static let starSpawnLead: Float = 250
     }
 
     // MARK: - Collision

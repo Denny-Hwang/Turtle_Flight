@@ -95,6 +95,14 @@ struct FlightView: View {
             .accessibilityHidden(chromeHidden)
             .animation(.easeOut(duration: 0.25), value: chromeHidden)
 
+            // Start-of-flight calibration: zero the tilt to how the player
+            // holds the phone, every flight / retry / resume.
+            if flightVM.isCalibrating && !flightVM.isPaused && !isShowingResult {
+                CalibrationOverlay(gyro: flightVM.gyroController,
+                                   onStartNow: { flightVM.finishCalibrationNow() })
+                    .transition(.opacity)
+            }
+
             // Step Goal — full-screen StageResultView when the mission
             // finishes (success or fail). Replaces the previous in-HUD
             // overlay (DESIGN_GAP_REPORT §S6).
@@ -168,6 +176,7 @@ struct FlightView: View {
             }
         }
         .animation(.easeInOut(duration: 0.18), value: flightVM.isPaused)
+        .animation(.easeOut(duration: 0.2), value: flightVM.isCalibrating)
         .onAppear { setupScene() }
         .onDisappear { flightVM.stopFlight() }
         .onChange(of: scenePhase) { newPhase in
