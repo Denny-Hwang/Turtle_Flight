@@ -44,6 +44,9 @@ extension FlightViewModel {
             case milestone(MapTheme, PostcardMilestone)
             case wonder(SkyWonder, isNew: Bool)
             case wonderBonus(SkyWonder, stars: Int)
+            /// A set piece was flown through / touched. `stars` is what it
+            /// paid (0 for lift / boost).
+            case setPiece(SetPiece, isNew: Bool, stars: Int)
         }
         let id: Int
         let kind: Kind
@@ -100,6 +103,7 @@ extension FlightViewModel {
         }
 
         updateWondersAndFestival(deltaTime: elapsed, position: position, heading: heading)
+        updateSetPieces(deltaTime: elapsed, position: position, heading: heading)
 
         // Friends → hello.
         for friend in terrainGenerator?.ungreetedFriends() ?? [] {
@@ -136,6 +140,20 @@ extension FlightViewModel {
         #endif
         wonderClock = 0
         wonderParent = scene.rootNode
+
+        var forcedPiece: SetPiece?
+        var piecesOn = true
+        #if DEBUG
+        // QA: `-TFSetPiece <name>` puts one three seconds in. Other
+        // screenshot runs stay deterministic (no set pieces).
+        forcedPiece = UserDefaults.standard.string(forKey: "TFSetPiece").flatMap(SetPiece.init(rawValue:))
+        if ScreenshotDirector.isActive && forcedPiece == nil { piecesOn = false }
+        #endif
+        if piecesOn {
+            setPieceScheduler = SetPieceScheduler(world: theme, seed: seed &+ 17, forced: forcedPiece)
+        }
+        setPieceClock = 0
+        setPieceLastPosition = nil
     }
 
     func tearDownFreeFlightExtras() {
@@ -145,6 +163,117 @@ extension FlightViewModel {
         activeWonder = nil
         wonderPlan = nil
         wonderClock = 0
+        for active in activeSetPieces { active.node.removeFromParentNode() }
+        activeSetPieces = []
+        setPieceScheduler = nil
+        setPieceLastPosition = nil
+        flightEngine.externalLift = 0
+    }
+
+    // MARK: - Set pieces along the route
+
+    /// Runs inside the throttled sightseeing tick: spawn the next piece
+    /// ahead, pay out fly-throughs and touches, drive updrafts, and clear
+    /// what has been left behind.
+    func updateSetPieces(deltaTime: Float, position: SCNVector3, heading: Float) {
+        guard var scheduler = setPieceScheduler, let parent = wonderParent else { return }
+        setPieceClock += deltaTime
+        let previous = setPieceLastPosition ?? position
+        setPieceLastPosition = position
+
+        var lift: Float = 0
+        for i in activeSetPieces.indices {
+            var active = activeSetPieces[i]
+            let piece = active.piece
+            switch piece.effect {
+            case .passThrough:
+                if !active.used, active.passes(from: previous, to: position) {
+                    active.used = true
+                    paySetPiece(piece, stars: SetPiece.passStars, alwaysToast: false)
+                }
+            case .lift:
+                let inside = active.contains(position)
+                if inside {
+                    lift = SetPiece.liftRate
+                    if !active.inLift { paySetPiece(piece, stars: 0, alwaysToast: !active.used) }
+                    active.used = true
+                }
+                active.inLift = inside
+            case .boost:
+                if !active.used, active.contains(position) {
+                    active.used = true
+                    flightEngine.addBoostCharge(SetPiece.boostRefill)
+                    paySetPiece(piece, stars: 0, alwaysToast: true)
+                }
+            case .stars:
+                if !active.used, active.contains(position) {
+                    active.used = true
+                    active.node.childNode(withName: "live", recursively: false)?
+                        .runAction(.fadeOut(duration: 0.4))
+                    paySetPiece(piece, stars: SetPiece.bundleStars, alwaysToast: true)
+                }
+            }
+            activeSetPieces[i] = active
+        }
+        flightEngine.externalLift = lift
+
+        // Clear what is well behind or far off.
+        activeSetPieces.removeAll { active in
+            let dx = active.center.x - position.x, dz = active.center.z - position.z
+            let gone = active.distancePast(position) > 450 || dx * dx + dz * dz > 1600 * 1600
+            if gone { active.node.runAction(.sequence([.fadeOut(duration: 1), .removeFromParentNode()])) }
+            return gone
+        }
+
+        if scheduler.isDue(at: setPieceClock), activeSetPieces.count < SetPieceScheduler.maxActive {
+            let h = heading * .pi / 180
+            let forward = SIMD2<Float>(sin(h), -cos(h))
+            let mid = (SetPieceScheduler.spawnDistance.lowerBound + SetPieceScheduler.spawnDistance.upperBound) / 2
+            let probe = SCNVector3(position.x + forward.x * mid, position.y, position.z + forward.y * mid)
+            let nearLandmark = landmarkField?.nearest(to: probe).map { $0.distance < SetPieceScheduler.landmarkClearance } ?? false
+            if activeWonder != nil || nearLandmark {
+                scheduler.postpone(from: setPieceClock)
+            } else {
+                let next = scheduler.take(at: setPieceClock)
+                let side = SIMD2<Float>(-forward.y, forward.x)
+                let x = position.x + forward.x * next.distance + side.x * next.lateral
+                let z = position.z + forward.y * next.distance + side.y * next.lateral
+                let ground = Float(terrainGenerator?.heightAt(x: x, z: z) ?? 0)
+                let floor = next.piece.effect == .lift ? ground + 60 : ground + next.piece.depthBelowCentre + 20
+                let center = SCNVector3(x, max(position.y, floor), z)
+                let node = SetPieceFactory.build(next.piece)
+                node.position = center
+                node.eulerAngles.y = -h
+                parent.addChildNode(node)
+                activeSetPieces.append(ActiveSetPiece(piece: next.piece, node: node, center: center, forward: forward))
+            }
+        }
+        setPieceScheduler = scheduler
+    }
+
+    private func paySetPiece(_ piece: SetPiece, stars: Int, alwaysToast: Bool) {
+        if stars > 0 { awardWonderStars(stars) }
+        let isNew = SetPieceLog.shared.record(piece)
+        if isNew || alwaysToast {
+            emitToast(.setPiece(piece, isNew: isNew, stars: stars))
+        }
+        if isNew { Analytics.shared.track(.setPieceSeen, ["piece": piece.rawValue]) }
+        let effect = piece.effect
+        onMain {
+            switch effect {
+            case .passThrough:
+                AudioManager.shared.playRingPass()
+                Haptics.shared.play(.ringGreat)
+            case .lift:
+                Haptics.shared.play(.ringOk)
+            case .boost:
+                AudioManager.shared.playRingPass()
+                Haptics.shared.play(.pickup)
+            case .stars:
+                AudioManager.shared.playStarCollect()
+                Haptics.shared.play(.pickup)
+            }
+        }
     }
 
     /// Runs inside the throttled sightseeing tick.
