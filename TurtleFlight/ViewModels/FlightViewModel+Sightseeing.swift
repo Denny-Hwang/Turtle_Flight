@@ -149,7 +149,7 @@ extension FlightViewModel {
         // QA: `-TFSetPiece <name>` puts one three seconds in. Other
         // screenshot runs stay deterministic (no set pieces).
         forcedPiece = UserDefaults.standard.string(forKey: "TFSetPiece").flatMap(SetPiece.init(rawValue:))
-        if ScreenshotDirector.isActive && forcedPiece == nil { piecesOn = false }
+        if !ScreenshotDirector.allowsFreeFlightExtras && forcedPiece == nil { piecesOn = false }
         #endif
         if piecesOn {
             setPieceScheduler = SetPieceScheduler(world: theme, seed: seed &+ 17, forced: forcedPiece)
@@ -159,7 +159,7 @@ extension FlightViewModel {
         #if DEBUG
         // QA: `-TFCompanion YES` brings the flock two seconds in.
         companionSoon = UserDefaults.standard.bool(forKey: "TFCompanion")
-        if ScreenshotDirector.isActive && !companionSoon { companionsOn = false }
+        if !ScreenshotDirector.allowsFreeFlightExtras && !companionSoon { companionsOn = false }
         #endif
         companionScheduler = companionsOn ? CompanionScheduler(seed: seed &+ 29, forcedSoon: companionSoon) : nil
         companionWorld = theme

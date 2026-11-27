@@ -5,6 +5,7 @@
 #   TEAM=<team id> SOAK=600 scripts/device/verify.sh   # 10-minute soak (heat check)
 #   TEAM=<team id> scripts/device/verify.sh --no-scenes # build, install, soak only (no prompts; fine for agents)
 #   scripts/device/verify.sh --scenes-only              # skip build + soak, just step through the scenes
+#   TEAM=<team id> scripts/device/verify.sh --free      # build, install, Free Flight soak (set pieces + companions), no scenes
 #
 # Needs: Xcode → Settings → Accounts signed in with the Apple ID of TEAM,
 # an unlocked, connected iPhone with Developer Mode on. The team id is
@@ -59,8 +60,13 @@ if [ "$MODE" != "--scenes-only" ]; then
   }
   xcrun devicectl device install app --device "$DEVICE" build/device-dd/Build/Products/Debug-iphoneos/TurtleFlight.app
 
-  echo "== soak: Sky Run on autopilot for ${SOAK}s (keep the phone unlocked)"
-  launch soak -TFPerfProbe YES -selectedCharacter turtle -selectedVehicle shellJet -selectedMapTheme sky
+  if [ "$MODE" = "--free" ]; then
+    echo "== soak: Free Flight with set pieces + companions for ${SOAK}s (keep the phone unlocked)"
+    launch soak-free -TFPerfProbe YES -selectedCharacter turtle -selectedVehicle shellJet -selectedMapTheme "${WORLD:-sky}"
+  else
+    echo "== soak: Sky Run on autopilot for ${SOAK}s (keep the phone unlocked)"
+    launch soak -TFPerfProbe YES -selectedCharacter turtle -selectedVehicle shellJet -selectedMapTheme sky
+  fi
   sleep "$SOAK"
   xcrun devicectl device process launch --terminate-existing --device "$DEVICE" "$BUNDLE_ID" >/dev/null || true
   xcrun devicectl device copy from --device "$DEVICE" --domain-type appDataContainer \
@@ -81,7 +87,7 @@ PY
   echo "   raw: $OUT/perf.csv"
 fi
 
-if [ "$MODE" = "--no-scenes" ]; then
+if [ "$MODE" = "--no-scenes" ] || [ "$MODE" = "--free" ]; then
   echo "Skipped scenes. Step through them later with: scripts/device/verify.sh --scenes-only"
   exit 0
 fi
