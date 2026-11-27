@@ -100,7 +100,10 @@ enum LandmarkKind: String, CaseIterable, Codable {
 /// into square cells; each cell holds exactly one landmark, picked and
 /// placed by a hash of the cell so the map is the same on every flight
 /// and a place found once can be found again.
-final class LandmarkField {
+/// `@unchecked Sendable`: everything is render-thread only except
+/// `pool`, which background builders fill and is only touched under
+/// `poolLock`.
+final class LandmarkField: @unchecked Sendable {
     struct Placement: Equatable {
         let kind: LandmarkKind
         let cell: SIMD2<Int32>
@@ -125,6 +128,15 @@ final class LandmarkField {
     private let heightAt: (Float, Float) -> Float
     private var loaded: [SIMD2<Int32>: (placement: Placement, node: SCNNode)] = [:]
 
+    /// Landmarks built ahead of time off the render thread, by kind.
+    /// Crossing into a new cell row used to build three landmarks on the
+    /// render thread: a 67–100 ms hitch every 1.2 km on the iPhone XS
+    /// Free Flight soak (2026-11-27). Behind `poolLock`.
+    private var pool: [LandmarkKind: [SCNNode]] = [:]
+    private let poolLock = NSLock()
+    /// Built nodes kept ready per kind (a new row is three cells).
+    static let poolDepth = 2
+
     init(parentNode: SCNNode, world: MapTheme, seed: Int = 42,
          heightAt: @escaping (Float, Float) -> Float) {
         self.parentNode = parentNode
@@ -136,6 +148,34 @@ final class LandmarkField {
         self.kinds = kinds
         self.seed = seed
         self.heightAt = heightAt
+        for kind in Set(kinds) { for _ in 0..<Self.poolDepth { refill(kind) } }
+    }
+
+    /// Build one `kind` in the background into the pool.
+    private func refill(_ kind: LandmarkKind) {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let node = LandmarkFactory.build(kind)
+            guard let self else { return }
+            self.poolLock.lock()
+            if self.pool[kind, default: []].count < Self.poolDepth { self.pool[kind, default: []].append(node) }
+            self.poolLock.unlock()
+        }
+    }
+
+    /// A ready-built landmark if one is waiting (and another queued),
+    /// otherwise built here.
+    private func take(_ kind: LandmarkKind) -> SCNNode {
+        poolLock.lock()
+        let ready = pool[kind]?.popLast()
+        poolLock.unlock()
+        refill(kind)
+        return ready ?? LandmarkFactory.build(kind)
+    }
+
+    /// Nodes waiting in the pool (tests).
+    var pooledCount: Int {
+        poolLock.lock(); defer { poolLock.unlock() }
+        return pool.values.reduce(0) { $0 + $1.count }
     }
 
     /// Deterministic placement for a cell. Pure, so tests can pin it.
@@ -177,7 +217,7 @@ final class LandmarkField {
         }
         for key in needed where loaded[key] == nil {
             guard let placement = Self.placement(cell: key, kinds: kinds, seed: seed, heightAt: heightAt) else { continue }
-            let node = LandmarkFactory.build(placement.kind)
+            let node = take(placement.kind)
             node.position = placement.position
             node.name = "landmark_\(placement.kind.rawValue)"
             parentNode.addChildNode(node)
