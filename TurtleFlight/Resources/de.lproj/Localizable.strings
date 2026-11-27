@@ -528,6 +528,7 @@
 "companion.satellites.name" = "Kleine Satelliten";
 "companion.dolphins.name" = "Delfine";
 "companion.toast" = "Mitgeflogen: %1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "Ringpfad geschafft! +%lld ★";
 "album.skydex.title" = "Himmelsführer";
 "album.skydex.hint" = "Sehenswürdigkeiten im freien Flug. Alle drei einer Welt: +%1$lld ★. Alle 21: +%2$lld ★.";
 "album.skydex.complete" = "Alles gesehen";

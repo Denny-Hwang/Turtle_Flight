@@ -527,6 +527,7 @@
 "companion.satellites.name" = "小卫星们";
 "companion.dolphins.name" = "海豚群";
 "companion.toast" = "一起飞翔：%1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "圆环之路完成！+%lld ★";
 "album.skydex.title" = "天空图鉴";
 "album.skydex.hint" = "自由飞行途中遇到的景点。看完一个世界的3个：+%1$lld ★，全部21个：+%2$lld ★。";
 "album.skydex.complete" = "全部看过";

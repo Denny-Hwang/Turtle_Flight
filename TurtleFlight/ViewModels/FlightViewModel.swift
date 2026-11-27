@@ -223,6 +223,12 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     var companionNode: SCNNode?
     var companionClock: Float = 0
     var companionWorld: MapTheme = .sky
+    /// Free Flight ring trails (R2). Render-thread only.
+    var ringTrailScheduler: RingTrailScheduler?
+    var ringTrail: RingTrail?
+    var ringTrailNode: SCNNode?
+    var ringTrailClock: Float = 0
+    var ringTrailLastPosition: SCNVector3?
     /// The flight's view, for `prepare` (shader warm-up). Main only.
     weak var sceneView: SCNView?
     /// Set pieces / companion flock built ahead of time off the render

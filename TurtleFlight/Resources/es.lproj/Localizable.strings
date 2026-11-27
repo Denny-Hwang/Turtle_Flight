@@ -526,6 +526,7 @@
 "companion.satellites.name" = "Satélites pequeños";
 "companion.dolphins.name" = "Delfines";
 "companion.toast" = "¡Volaste con: %1$@! +%2$lld ★";
+"ringtrail.toast.complete" = "¡Camino de aros completo! +%lld ★";
 "album.skydex.title" = "Guía del cielo";
 "album.skydex.hint" = "Vistas del camino en Vuelo libre. Las tres de un mundo: +%1$lld ★. Las 21: +%2$lld ★.";
 "album.skydex.complete" = "Todo visto";
