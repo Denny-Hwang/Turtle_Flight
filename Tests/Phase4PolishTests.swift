@@ -152,6 +152,17 @@ final class Phase4PolishTests: XCTestCase {
 
     // MARK: - Audio asset hook
 
+    func testWorldMusicIsAFullFormNotAShortLoop() throws {
+        // 2026-11-26 (owner: "too monotonous"): each world's music is a
+        // ~2–3 minute form (A A′ B breakdown A″ B′ A‴), not a 40 s loop.
+        for world in MapTheme.allCases {
+            let url = try XCTUnwrap(AudioManager.assetURL(named: "bgm_\(world.rawValue)"))
+            let player = try AVAudioPlayer(contentsOf: url)
+            XCTAssertGreaterThan(player.duration, 100, world.rawValue)
+            XCTAssertLessThan(player.duration, 200, world.rawValue)
+        }
+    }
+
     func testBundledAudioCoversEveryWorldVehicleAndEffect() throws {
         // Rendered by scripts/audio/build_audio.sh into TurtleFlight/Audio/.
         var names = MapTheme.allCases.map { "bgm_\($0.rawValue)" }

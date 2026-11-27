@@ -318,8 +318,24 @@ func writeWav(_ path: String, left: [Double], right: [Double]?) {
 }
 
 // MARK: - Songwriting
+//
+// 2026-11-26 rewrite (docs/FLIGHT_FUN_PLAN.md §5, M1–M3). The first
+// version looped one 8-chord progression for ~40 s with a melody that
+// copied a two-bar motif, flat drums and flat levels — "monotonous"
+// (owner). Now each world's tune has a form:
+//
+//   A → A′ → B → breakdown → A″ → B′ → A‴   (≈2 min, loops back to A)
+//
+// - B has its own progression and swaps the lead and counter voices.
+// - One motif per song is developed rather than copied: stated,
+//   sequenced up/down the scale, inverted for B, ornamented later.
+//   Phrases end on a half cadence (5th) the first time, the tonic after.
+// - Texture and dynamics follow the form: lighter drums in A, half-time
+//   in B, a crescendo into the breakdown, drums and bass out in the
+//   breakdown, full band plus fills every 4 bars in A″/A‴. Notes get
+//   accents on strong beats and a few milliseconds of human timing.
 
-/// One world's tune: a progression, a scale, a groove and a band.
+/// One world's tune: two progressions, a scale, a groove and a band.
 struct Song {
     enum Lead { case marimba, pluck, reed, gayageum, flute, bell }
     enum Groove { case pop, darbuka, waltz, janggu, tribal, none, tide }
@@ -330,9 +346,13 @@ struct Song {
     /// Scale as semitones above `root`.
     let scale: [Int]
     let root: Int
-    /// One chord per bar (MIDI notes), 8 bars; the tune plays them `reps` times.
+    /// A-section progression, one chord per bar (MIDI notes), 8 bars.
     let chords: [[Int]]
-    let reps: Int
+    /// B-section progression, 8 bars; ends on a chord that leads home.
+    let bChords: [[Int]]
+    /// Each section's 8 (or 4) bars are played this many times — the
+    /// quick 3/4 waltz needs 2 to reach the same length.
+    let sectionReps: Int
     let lead: Lead
     let counter: Lead?
     let groove: Groove
@@ -345,91 +365,199 @@ struct Song {
     let seed: UInt64
 }
 
-/// Scale-degree melody that leans on chord tones on strong beats and
-/// steps between them, with a two-bar motif repeated and varied.
-func melody(for song: Song, rep: Int) -> [(beat: Double, len: Double, midi: Int)] {
-    var rng = Rng(song.seed &+ UInt64(rep * 7919))
-    // All scale notes across three octaves around the root.
-    var scaleNotes: [Int] = []
-    for octave in -1...2 {
-        for s in song.scale { scaleNotes.append(song.root + octave * 12 + s) }
+/// A part of the form and how it is played.
+struct Section {
+    enum Kind { case a, b, breakdown }
+    let kind: Kind
+    /// Which variation (0 = first statement).
+    let variant: Int
+
+    var bars: Int { kind == .breakdown ? 4 : 8 }
+    /// 0 = no drums, 1 = light, 2 = half-time, 3 = full, 4 = driving.
+    var drums: Int {
+        switch (kind, variant) {
+        case (.a, 0): return 1
+        case (.a, 1): return 3
+        case (.a, _): return 4
+        case (.b, _): return 2
+        case (.breakdown, _): return 0
+        }
     }
-    scaleNotes.sort()
+    var gain: Double {
+        switch kind {
+        case .a: return variant == 0 ? 0.88 : 1.0
+        case .b: return 0.92
+        case .breakdown: return 0.72
+        }
+    }
+    var counterOn: Bool { kind == .a ? variant > 0 : (kind == .b && variant > 0) }
+}
+
+let form: [Section] = [
+    Section(kind: .a, variant: 0), Section(kind: .a, variant: 1), Section(kind: .b, variant: 0),
+    Section(kind: .breakdown, variant: 0), Section(kind: .a, variant: 2), Section(kind: .b, variant: 1),
+    Section(kind: .a, variant: 3),
+]
+
+typealias Note = (beat: Double, len: Double, midi: Int)
+
+/// Scale notes the melody may use, low to high.
+func usableNotes(_ song: Song) -> [Int] {
+    var notes: [Int] = []
+    for octave in -1...2 { for s in song.scale { notes.append(song.root + octave * 12 + s) } }
     let low = song.root - 3, high = song.root + 16
-    let usable = scaleNotes.filter { $0 >= low && $0 <= high }
+    return notes.sorted().filter { $0 >= low && $0 <= high }
+}
 
-    func nearest(_ target: Int, in set: [Int]) -> Int {
-        set.min { abs($0 - target) < abs($1 - target) } ?? target
-    }
+func nearest(_ target: Int, in set: [Int]) -> Int {
+    set.min { abs($0 - target) < abs($1 - target) } ?? target
+}
 
+func chordTones(_ chord: [Int], _ usable: [Int]) -> [Int] {
+    let tones = usable.filter { n in chord.contains { (($0 - n) % 12 + 12) % 12 == 0 } }
+    return tones.isEmpty ? usable : tones
+}
+
+func isStrong(_ beatInBar: Double, _ song: Song) -> Bool {
+    guard beatInBar.truncatingRemainder(dividingBy: 1) == 0 else { return false }
+    return song.beatsPerBar == 3 ? beatInBar == 0 : Int(beatInBar) % 2 == 0
+}
+
+/// Free melodic line over `chords` (one bar each): chord tones on strong
+/// beats, steps between, the odd rest.
+func freeLine(_ song: Song, chords: [[Int]], from prevNote: Int, seed: UInt64) -> [Note] {
+    var rng = Rng(seed)
+    let usable = usableNotes(song)
     let bpb = Double(song.beatsPerBar)
-    // Rhythm cells, in beats, that fill one bar.
     let cells: [[Double]] = song.beatsPerBar == 3
-        ? [[1, 1, 1], [2, 1], [1.5, 0.5, 1], [3]]
+        ? [[1, 1, 1], [2, 1], [1.5, 0.5, 1], [1, 2]]
         : (song.density >= 2
             ? [[1, 0.5, 0.5, 1, 1], [0.5, 0.5, 1, 0.5, 0.5, 1], [1.5, 0.5, 2], [1, 1, 0.5, 0.5, 1], [2, 1, 1]]
-            : [[2, 2], [1, 1, 2], [3, 1], [4], [1.5, 0.5, 2]])
-
-    var notes: [(Double, Double, Int)] = []
-    var prev = song.root + 4
-    var motif: [(Double, Double, Int)] = []   // two bars, relative to bar start
-    for bar in 0..<song.chords.count {
-        let chord = song.chords[bar]
-        let chordTones = usable.filter { n in chord.contains { ($0 - n) % 12 == 0 } }
-        let start = Double(bar) * bpb
-        // Bars 2–3 repeat bars 0–1 snapped onto the new chords; the last
-        // bar resolves to a long chord tone.
-        if bar == 2 || bar == 3, !motif.isEmpty {
-            for (b, len, m) in motif where (bar == 2 ? b < bpb : b >= bpb) {
-                let rel = bar == 2 ? b : b - bpb
-                let onBeat = rel.truncatingRemainder(dividingBy: 1) == 0
-                let shifted = nearest(m + (rep % 2 == 1 ? 0 : 2), in: onBeat ? chordTones : usable)
-                notes.append((start + rel, len, shifted))
-                prev = shifted
-            }
-            continue
-        }
-        if bar == song.chords.count - 1 {
-            let target = nearest(song.root + (rep % 2 == 0 ? 0 : 12), in: chordTones.isEmpty ? usable : chordTones)
-            notes.append((start, bpb * 0.75, target))
-            prev = target
-            continue
-        }
-        var cell = cells[rng.int(cells.count)]
-        if bar % 2 == 1 && rng.chance(0.3) { cell = cells[0] }
+            : [[2, 2], [1, 1, 2], [3, 1], [1.5, 0.5, 2], [2, 1, 1]])
+    var out: [Note] = []
+    var prev = prevNote
+    for (bar, chord) in chords.enumerated() {
+        let tones = chordTones(chord, usable)
         var b = 0.0
-        for len in cell {
-            // Rests now and then so the line breathes.
+        for len in cells[rng.int(cells.count)] {
             if b > 0 && rng.chance(0.12) { b += len; continue }
-            let strong = b.truncatingRemainder(dividingBy: 2) == 0 || b == 0
             var next: Int
-            if strong || chordTones.isEmpty == false && rng.chance(0.35) {
-                let options = chordTones.filter { abs($0 - prev) <= 7 }
-                next = options.isEmpty ? nearest(prev, in: chordTones) : options[rng.int(options.count)]
+            if isStrong(b, song) || rng.chance(0.3) {
+                let options = tones.filter { abs($0 - prev) <= 7 }
+                next = options.isEmpty ? nearest(prev, in: tones) : options[rng.int(options.count)]
             } else {
                 let i = usable.firstIndex(of: nearest(prev, in: usable)) ?? 0
                 let step = rng.chance(0.5) ? 1 : -1
                 let leap = rng.chance(0.15) ? 2 : 1
                 next = usable[max(0, min(usable.count - 1, i + step * leap))]
             }
-            notes.append((start + b, len, next))
-            if bar < 2 { motif.append((Double(bar) * bpb + b, len, next)) }
+            out.append((Double(bar) * bpb + b, len, next))
             prev = next
             b += len
         }
     }
-    return notes
+    return out
+}
+
+/// Move a phrase by `steps` scale degrees (a sequence), or mirror it
+/// around its first note (inversion); then pull strong-beat notes onto
+/// the chords they now sit over.
+func develop(_ phrase: [Note], song: Song, chords: [[Int]], steps: Int = 0, invert: Bool = false) -> [Note] {
+    let usable = usableNotes(song)
+    let bpb = Double(song.beatsPerBar)
+    guard let first = phrase.first else { return [] }
+    let pivot = usable.firstIndex(of: nearest(first.midi, in: usable)) ?? 0
+    return phrase.map { n in
+        var i = usable.firstIndex(of: nearest(n.midi, in: usable)) ?? 0
+        if invert { i = pivot - (i - pivot) }
+        i = max(0, min(usable.count - 1, i + steps))
+        var midi = usable[i]
+        let bar = min(chords.count - 1, Int(n.beat / bpb))
+        if isStrong(n.beat.truncatingRemainder(dividingBy: bpb), song) {
+            midi = nearest(midi, in: chordTones(chords[bar], usable))
+        }
+        return (n.beat, n.len, midi)
+    }
+}
+
+/// Split each note of a beat or more into two (passing-note ornament).
+func ornament(_ phrase: [Note], song: Song) -> [Note] {
+    let usable = usableNotes(song)
+    var out: [Note] = []
+    for (k, n) in phrase.enumerated() {
+        if n.len >= 1, k + 1 < phrase.count {
+            let target = phrase[k + 1].midi
+            let i = usable.firstIndex(of: nearest(n.midi, in: usable)) ?? 0
+            let step = target > n.midi ? 1 : -1
+            let passing = usable[max(0, min(usable.count - 1, i + step))]
+            out.append((n.beat, n.len / 2, n.midi))
+            out.append((n.beat + n.len / 2, n.len / 2, passing))
+        } else {
+            out.append(n)
+        }
+    }
+    return out
+}
+
+/// The song's motif: two bars over the first two A chords.
+func motif(_ song: Song) -> [Note] {
+    freeLine(song, chords: Array(song.chords.prefix(2)), from: song.root + 4, seed: song.seed)
+}
+
+/// Melody for one 8-bar section (beats relative to the section start).
+func sectionMelody(_ song: Song, _ section: Section) -> [Note] {
+    let bpb = Double(song.beatsPerBar)
+    let usable = usableNotes(song)
+    let m = motif(song)
+    let chords = section.kind == .b ? song.bChords : song.chords
+    func shifted(_ notes: [Note], bars: Int) -> [Note] { notes.map { ($0.beat + Double(bars) * bpb, $0.len, $0.midi) } }
+    func slice(_ from: Int, _ count: Int) -> [[Int]] { Array(chords[from..<(from + count)]) }
+
+    switch section.kind {
+    case .breakdown:
+        // Sparse: the motif's first note of each beat, an octave up, then
+        // one long held note.
+        var out: [Note] = []
+        for n in m where n.beat.truncatingRemainder(dividingBy: 1) == 0 && n.beat < bpb * 2 {
+            out.append((n.beat, 1.5, n.midi + 12))
+        }
+        let hold = nearest(song.root + 7 + 12, in: chordTones(chords[2], usable.map { $0 + 12 }))
+        out.append((bpb * 2.5, bpb * 1.4, hold))
+        return out
+    case .a, .b:
+        let invert = section.kind == .b
+        let steps = [0, 2, -1, 3][section.variant % 4] + (invert ? 2 : 0)
+        var head = develop(m, song: song, chords: slice(0, 2), steps: invert ? steps : 0, invert: invert)
+        if section.variant == 3 { head = ornament(head, song: song) }
+        let seq = develop(m, song: song, chords: slice(2, 2), steps: steps == 0 ? 2 : steps, invert: invert)
+        let last = seq.last?.midi ?? song.root
+        let free = freeLine(song, chords: slice(4, 2), from: last,
+                            seed: song.seed &+ UInt64(section.variant * 131 + (invert ? 977 : 0)))
+        // Bar 6: the motif's first bar again, mirrored, as the phrase turns.
+        let turn = develop(m.filter { $0.beat < bpb }, song: song, chords: slice(6, 1), steps: 1, invert: !invert)
+        // Bar 7: cadence — the 5th the first time through and in B (it
+        // leads on), the tonic otherwise.
+        let toTonic = section.kind == .a && section.variant > 0
+        let target = nearest(song.root + (toTonic ? 0 : 7) + (section.variant % 2 == 0 ? 0 : 12),
+                             in: chordTones(chords[7], usable))
+        return head + shifted(seq, bars: 2) + shifted(free, bars: 4) + shifted(turn, bars: 6)
+            + [(bpb * 7, bpb * 0.85, target)]
+    }
 }
 
 func render(_ song: Song) -> Mix {
     let beat = 60 / song.bpm
-    let bars = song.chords.count * song.reps
-    let loopBeats = Double(bars * song.beatsPerBar)
-    let loopLen = Int(loopBeats * beat * sr)
-    let mix = Mix(samples: loopLen + Int(4 * sr))
-    var rng = Rng(song.seed &* 31)
-    func at(_ b: Double) -> Int { Int(b * beat * sr) }
     let bpb = Double(song.beatsPerBar)
+    let totalBars = form.reduce(0) { $0 + $1.bars * song.sectionReps }
+    let loopLen = Int(Double(totalBars) * bpb * beat * sr)
+    let mix = Mix(samples: loopLen + Int(5 * sr))
+    var rng = Rng(song.seed &* 31)
+    var feel = Rng(song.seed &* 977)
+    func at(_ b: Double, humanize: Bool = false) -> Int {
+        // Never before the loop start: a note nudged below 0 would lose
+        // its attack (`Mix.add` drops negative samples).
+        max(0, Int(b * beat * sr) + (humanize ? Int(feel.signed() * 0.008 * sr) : 0))
+    }
 
     func play(_ lead: Song.Lead, midi: Int, beat b: Double, len: Double, gain: Double, pan: Double) {
         let f = mtof(Double(midi))
@@ -443,81 +571,139 @@ func render(_ song: Song) -> Mix {
         case .flute:    v = flute(f, d * 0.98, seed: UInt64(midi))
         case .bell:     v = bell(f, max(1.5, d + 1.5))
         }
-        mix.add(v, at: at(b), gain: gain, pan: pan)
+        mix.add(v, at: at(b, humanize: true), gain: gain, pan: pan)
     }
 
-    for rep in 0..<song.reps {
-        let repStart = Double(rep * song.chords.count) * bpb
-        // Chords: pad + bass.
-        for (bar, chord) in song.chords.enumerated() {
-            let b0 = repStart + Double(bar) * bpb
-            mix.add(pad(chord.map { mtof(Double($0)) }, bpb * beat + 0.6, cutoff: song.padCutoff),
-                    at: at(b0), gain: 0.22, pan: 0)
-            let rootNote = chord[0] - 24
-            switch song.groove {
-            case .waltz:
-                // Oom-pah-pah.
-                mix.add(bass(mtof(Double(rootNote)), beat * 0.9), at: at(b0), gain: 0.30)
-                for k in 1...2 {
-                    for (j, n) in chord.enumerated() {
-                        mix.add(pluck(mtof(Double(n)), beat * 0.6, bright: 0.4, sustain: 0.99, seed: UInt64(n + k)),
-                                at: at(b0 + Double(k)), gain: 0.07, pan: Double(j - 1) * 0.3)
+    /// One bar of groove at `intensity` (see `Section.drums`), with a fill
+    /// in the second half when `fill`.
+    func groove(bar b0: Double, intensity: Int, fill: Bool, seedBase: UInt64, level: Double) {
+        guard intensity > 0 else { return }
+        let steps = Int(bpb * 2)
+        for s in 0..<steps {
+            let b = b0 + Double(s) * 0.5
+            let seed = seedBase &+ UInt64(s)
+            let inFill = fill && s >= steps / 2 && intensity >= 3
+            if inFill {
+                // Two sixteenths per eighth, rising.
+                for k in 0..<2 {
+                    let bb = b + Double(k) * 0.25
+                    let up = Double(s - steps / 2) / Double(steps / 2)
+                    switch song.groove {
+                    case .pop, .tribal: mix.add(tom(110 + 60 * up), at: at(bb, humanize: true), gain: 0.18 * level, pan: -0.3 + up * 0.6)
+                    case .darbuka, .janggu: mix.add(handDrum(low: k == 0 && s == steps / 2, seed: seed &+ UInt64(k)), at: at(bb, humanize: true), gain: 0.2 * level, pan: 0.2)
+                    case .waltz: mix.add(shaker(seed &+ UInt64(k)), at: at(bb), gain: 0.1 * level, pan: 0.3)
+                    case .tide, .none: break
                     }
                 }
-            case .none, .tide:
-                mix.add(bass(mtof(Double(rootNote)), bpb * beat * 0.95), at: at(b0), gain: 0.18)
-            default:
-                mix.add(bass(mtof(Double(rootNote)), beat * 1.8), at: at(b0), gain: 0.26)
-                mix.add(bass(mtof(Double(rootNote + (rng.chance(0.5) ? 7 : 12))), beat * 1.6),
-                        at: at(b0 + 2), gain: 0.2)
+                continue
             }
-            // Arpeggio: chord tones climbing in quavers.
-            if song.arp {
-                let tones = chord + chord.map { $0 + 12 }
-                let steps = Int(bpb * 2)
-                for s in 0..<steps {
-                    let n = tones[(s + bar) % tones.count]
-                    let lead: Song.Lead = song.lead == .gayageum ? .gayageum : .pluck
-                    play(lead, midi: n, beat: b0 + Double(s) * 0.5, len: 0.5,
-                         gain: 0.06 + (s % 2 == 0 ? 0.015 : 0), pan: s % 2 == 0 ? -0.45 : 0.45)
+            switch song.groove {
+            case .pop:
+                let kickSteps: Set<Int> = intensity == 2 ? [0] : (intensity >= 4 ? [0, 3, 4] : [0, 4])
+                if kickSteps.contains(s) { mix.add(kick(), at: at(b), gain: 0.32 * level) }
+                if intensity >= 3 || s % 2 == 1 {
+                    mix.add(shaker(seed), at: at(b, humanize: true), gain: (s % 2 == 1 ? 0.12 : 0.06) * level, pan: 0.3)
                 }
-            }
-            // Groove.
-            for s in 0..<Int(bpb * 2) {
-                let b = b0 + Double(s) * 0.5
-                let seed = UInt64(rep * 1000 + bar * 10 + s)
-                switch song.groove {
-                case .pop:
-                    if s == 0 || s == 4 { mix.add(kick(), at: at(b), gain: 0.32) }
-                    mix.add(shaker(seed), at: at(b), gain: s % 2 == 1 ? 0.12 : 0.07, pan: 0.3)
-                case .darbuka:
-                    // doum . tek . doum doum tek .
-                    let pattern: [Int: Bool] = [0: true, 2: false, 4: true, 5: true, 6: false]
-                    if let low = pattern[s] { mix.add(handDrum(low: low, seed: seed), at: at(b), gain: 0.30, pan: low ? -0.1 : 0.2) }
-                    if s % 2 == 1 && s != 5 { mix.add(shaker(seed), at: at(b), gain: 0.06, pan: 0.4) }
-                case .waltz:
-                    if s == 2 || s == 4 { mix.add(shaker(seed), at: at(b), gain: 0.07, pan: 0.3) }
-                case .janggu:
-                    // A lilting 12/8-ish feel: deep on 1, light taps after.
-                    if s == 0 { mix.add(handDrum(low: true, seed: seed), at: at(b), gain: 0.26, pan: -0.2) }
-                    if s == 3 || s == 5 || s == 6 { mix.add(handDrum(low: false, seed: seed), at: at(b), gain: 0.14, pan: 0.25) }
-                case .tribal:
-                    if s == 0 || s == 3 || s == 4 { mix.add(tom(s == 3 ? 130 : 95), at: at(b), gain: 0.30, pan: s == 3 ? 0.3 : -0.2) }
-                    mix.add(shaker(seed), at: at(b), gain: 0.08, pan: 0.35)
-                case .tide:
-                    break
-                case .none:
-                    break
-                }
+                if intensity >= 3 && (s == 2 || s == 6) { mix.add(handDrum(low: false, seed: seed), at: at(b), gain: 0.12 * level, pan: -0.25) }
+            case .darbuka:
+                let pattern: [Int: Bool] = intensity == 2 ? [0: true, 4: false] : [0: true, 2: false, 4: true, 5: true, 6: false]
+                if let low = pattern[s] { mix.add(handDrum(low: low, seed: seed), at: at(b, humanize: true), gain: 0.30 * level, pan: low ? -0.1 : 0.2) }
+                if intensity >= 3 && s % 2 == 1 && s != 5 { mix.add(shaker(seed), at: at(b), gain: 0.06 * level, pan: 0.4) }
+            case .waltz:
+                if s == 2 || s == 4 { mix.add(shaker(seed), at: at(b), gain: 0.07 * level, pan: 0.3) }
+                if intensity >= 4 && s == 0 { mix.add(handDrum(low: true, seed: seed), at: at(b), gain: 0.12 * level, pan: -0.2) }
+            case .janggu:
+                if s == 0 { mix.add(handDrum(low: true, seed: seed), at: at(b), gain: 0.26 * level, pan: -0.2) }
+                let taps: Set<Int> = intensity == 2 ? [5] : (intensity >= 4 ? [2, 3, 5, 6] : [3, 5, 6])
+                if taps.contains(s) { mix.add(handDrum(low: false, seed: seed), at: at(b, humanize: true), gain: 0.14 * level, pan: 0.25) }
+            case .tribal:
+                let hits: Set<Int> = intensity == 2 ? [0, 4] : (intensity >= 4 ? [0, 2, 3, 4, 7] : [0, 3, 4])
+                if hits.contains(s) { mix.add(tom(s == 3 || s == 7 ? 130 : 95), at: at(b, humanize: true), gain: 0.30 * level, pan: s == 3 ? 0.3 : -0.2) }
+                if intensity >= 3 { mix.add(shaker(seed), at: at(b), gain: 0.08 * level, pan: 0.35) }
+            case .tide, .none:
+                // Ambient worlds: a soft bell tick marks the bar when the
+                // band is "full".
+                if intensity >= 3 && s == 0 { mix.add(bell(mtof(Double(song.root + 24)), 1.2), at: at(b), gain: 0.03 * level, pan: 0.5) }
             }
         }
-        // Lead melody (and the counter line on the second pass).
-        for (b, len, m) in melody(for: song, rep: rep) {
-            play(song.lead, midi: m, beat: repStart + b, len: len, gain: 0.26, pan: -0.1)
-            if rep % 2 == 1, let counter = song.counter {
-                play(counter, midi: m + (counter == .bell ? 12 : 0), beat: repStart + b + (counter == .bell ? 0.5 : 0),
-                     len: len, gain: 0.12, pan: 0.35)
+    }
+
+    var cursor = 0.0   // beats from loop start
+    for (si, section) in form.enumerated() {
+        let chords = section.kind == .b ? song.bChords : song.chords
+        let lead = section.kind == .b ? (song.counter ?? song.lead) : song.lead
+        let counter = section.kind == .b ? song.lead : song.counter
+        let melodyNotes = sectionMelody(song, section)
+        for rep in 0..<song.sectionReps {
+            let sectionStart = cursor
+            for bar in 0..<section.bars {
+                let chord = chords[bar % chords.count]
+                let b0 = sectionStart + Double(bar) * bpb
+                // Crescendo through the last two bars of B into the breakdown.
+                let swell = section.kind == .b && bar >= section.bars - 2 ? 1.0 + 0.12 * Double(bar - section.bars + 3) : 1.0
+                let level = section.gain * swell
+                let cutoff = song.padCutoff * (section.kind == .breakdown ? 0.6 : (section.kind == .b ? 0.85 : 1.0))
+                mix.add(pad(chord.map { mtof(Double($0)) }, bpb * beat + 0.6, cutoff: cutoff),
+                        at: at(b0), gain: 0.22 * (section.kind == .breakdown ? 1.15 : 1.0) * swell, pan: 0)
+                let rootNote = chord[0] - 24
+                if section.kind == .breakdown {
+                    if bar % 2 == 0 { mix.add(bass(mtof(Double(rootNote)), bpb * 2 * beat * 0.9), at: at(b0), gain: 0.12) }
+                } else {
+                    switch song.groove {
+                    case .waltz:
+                        mix.add(bass(mtof(Double(rootNote)), beat * 0.9), at: at(b0), gain: 0.30 * level)
+                        for k in 1...2 {
+                            for (j, n) in chord.enumerated() {
+                                mix.add(pluck(mtof(Double(n)), beat * 0.6, bright: 0.4, sustain: 0.99, seed: UInt64(n + k)),
+                                        at: at(b0 + Double(k), humanize: true), gain: 0.07 * level, pan: Double(j - 1) * 0.3)
+                            }
+                        }
+                    case .none, .tide:
+                        mix.add(bass(mtof(Double(rootNote)), bpb * beat * 0.95), at: at(b0), gain: 0.18 * level)
+                    default:
+                        mix.add(bass(mtof(Double(rootNote)), beat * 1.8), at: at(b0), gain: 0.26 * level)
+                        if section.drums != 2 {
+                            mix.add(bass(mtof(Double(rootNote + (rng.chance(0.5) ? 7 : 12))), beat * 1.6),
+                                    at: at(b0 + 2), gain: 0.2 * level)
+                        }
+                    }
+                }
+                // Arpeggio: on where the song has one, and flipped in B for
+                // a change of texture; soft and slow in the breakdown.
+                let arpOn = section.kind == .breakdown || (section.kind == .b ? !song.arp : song.arp && section.variant != 0)
+                    || (section.kind == .a && section.variant >= 2)
+                if arpOn {
+                    let tones = chord + chord.map { $0 + 12 }
+                    let rate = section.kind == .breakdown ? 1.0 : 0.5
+                    let steps = Int(bpb / rate)
+                    let arpVoice: Song.Lead = section.kind == .breakdown ? .bell : (song.lead == .gayageum ? .gayageum : .pluck)
+                    for s in 0..<steps {
+                        let idx = section.kind == .b ? (tones.count - 1 - (s + bar) % tones.count) : (s + bar) % tones.count
+                        play(arpVoice, midi: tones[idx], beat: b0 + Double(s) * rate, len: rate,
+                             gain: (section.kind == .breakdown ? 0.045 : 0.06 + (s % 2 == 0 ? 0.015 : 0)) * level,
+                             pan: s % 2 == 0 ? -0.45 : 0.45)
+                    }
+                }
+                let phraseEnd = bar % 4 == 3
+                groove(bar: b0, intensity: section.drums, fill: phraseEnd && section.kind == .a,
+                       seedBase: UInt64(si * 10_000 + rep * 1000 + bar * 10), level: level)
             }
+            // Melody (and counter line when the section calls for it).
+            for (b, len, m) in melodyNotes {
+                let inBar = b.truncatingRemainder(dividingBy: bpb)
+                let accent = isStrong(inBar, song) ? 1.0 : 0.82
+                let bar = Int(b / bpb)
+                let swell = section.kind == .b && bar >= section.bars - 2 ? 1.12 : 1.0
+                let voice: Song.Lead = section.kind == .breakdown ? .bell : lead
+                play(voice, midi: m, beat: sectionStart + b, len: len,
+                     gain: 0.26 * accent * section.gain * swell * (1 + feel.signed() * 0.06), pan: -0.1)
+                if section.counterOn, let counter {
+                    play(counter, midi: m + (counter == .bell ? 12 : 0),
+                         beat: sectionStart + b + (counter == .bell ? 0.5 : 0),
+                         len: len, gain: 0.11 * accent * section.gain, pan: 0.35)
+                }
+            }
+            cursor += Double(section.bars) * bpb
         }
     }
     if song.groove == .tide {
@@ -545,37 +731,51 @@ let songs: [Song] = [
     Song(name: "sky", bpm: 100, beatsPerBar: 4, scale: [0, 2, 4, 5, 7, 9, 11], root: C,
          chords: [[C, E, G], [G - 12, B - 12, D], [A - 12, C, E], [F - 12, A - 12, C],
                   [C, E, G], [G - 12, B - 12, D], [F - 12, A - 12, C], [G - 12, B - 12, D]],
-         reps: 2, lead: .marimba, counter: .bell, groove: .pop, arp: true,
+         bChords: [[A - 12, C, E], [F - 12, A - 12, C], [C, E, G], [G - 12, B - 12, D],
+                   [D, F, A], [G - 12, B - 12, D], [E - 12, G - 12, B - 12], [G - 12, B - 12, D, F]],
+         sectionReps: 1, lead: .marimba, counter: .bell, groove: .pop, arp: true,
          padCutoff: 1500, reverbWet: 0.9, echoWet: 0, density: 2, seed: 11),
     Song(name: "desert", bpm: 92, beatsPerBar: 4, scale: [0, 1, 4, 5, 7, 8, 10], root: D,
          chords: [[D, F + 1, A], [D + 1, G, A + 1], [D, F + 1, A], [C, D + 1, G],
                   [D, F + 1, A], [D + 1, G, A + 1], [G - 12, A + 1 - 12, D], [D, F + 1, A]],
-         reps: 2, lead: .pluck, counter: .flute, groove: .darbuka, arp: false,
+         bChords: [[G - 12, A + 1 - 12, D], [C, D + 1, G], [D + 1, G, A + 1], [D, F + 1, A],
+                   [G - 12, A + 1 - 12, D], [D + 1, G, A + 1], [C, D + 1, G], [D, F + 1, A]],
+         sectionReps: 1, lead: .pluck, counter: .flute, groove: .darbuka, arp: false,
          padCutoff: 900, reverbWet: 1.0, echoWet: 0.18, density: 2, seed: 23),
     Song(name: "city", bpm: 138, beatsPerBar: 3, scale: [0, 2, 4, 5, 7, 9, 10, 11], root: F,
          chords: [[F, A, C + 12, E + 12], [D, F, A, C + 12], [G - 12, A + 1 - 12, D, F], [C, E, G, A + 1],
                   [F, A, C + 12, E + 12], [A - 12, C, E, G], [A + 1 - 12, D, F, A], [C, E, G, A + 1]],
-         reps: 4, lead: .reed, counter: .marimba, groove: .waltz, arp: false,
+         bChords: [[A + 1 - 12, D, F], [G - 12, A + 1 - 12, D], [C, E, G, A + 1], [F, A, C + 12],
+                   [D, F, A], [A + 1 - 12, D, F], [G - 12, B - 12, D, F], [C, E, G, A + 1]],
+         sectionReps: 2, lead: .reed, counter: .marimba, groove: .waltz, arp: false,
          padCutoff: 1100, reverbWet: 0.8, echoWet: 0, density: 1, seed: 37),
     Song(name: "seoul", bpm: 84, beatsPerBar: 4, scale: [0, 2, 4, 7, 9], root: G - 12,
          chords: [[G - 12, B - 12, D], [E - 12, G - 12, B - 12], [C, E, G], [D, A, D + 12],
                   [G - 12, B - 12, D], [E - 12, G - 12, B - 12], [A - 12, C, E], [D, G, A]],
-         reps: 2, lead: .gayageum, counter: .flute, groove: .janggu, arp: false,
+         bChords: [[C, E, G], [A - 12, C, E], [E - 12, G - 12, B - 12], [G - 12, B - 12, D],
+                   [C, E, G], [D, A, D + 12], [E - 12, G - 12, B - 12], [D, G, A]],
+         sectionReps: 1, lead: .gayageum, counter: .flute, groove: .janggu, arp: false,
          padCutoff: 1000, reverbWet: 1.1, echoWet: 0.15, density: 2, seed: 41),
     Song(name: "wild", bpm: 104, beatsPerBar: 4, scale: [0, 2, 3, 5, 7, 9, 10], root: A - 12,
          chords: [[A - 12, E, A], [G - 12, D, G], [A - 12, E, A], [D, A, D + 12],
                   [A - 12, E, A], [C, G, C + 12], [G - 12, D, G], [E - 12, B - 12, E]],
-         reps: 2, lead: .flute, counter: .pluck, groove: .tribal, arp: true,
+         bChords: [[D, F + 1, A], [G - 12, B - 12, D], [C, E, G], [A - 12, C, E],
+                   [D, F + 1, A], [E - 12, G - 12, B - 12], [G - 12, B - 12, D], [E - 12, G - 12, B - 12]],
+         sectionReps: 1, lead: .flute, counter: .pluck, groove: .tribal, arp: true,
          padCutoff: 1200, reverbWet: 1.1, echoWet: 0.1, density: 2, seed: 53),
     Song(name: "space", bpm: 72, beatsPerBar: 4, scale: [0, 2, 4, 6, 7, 9, 11], root: E,
          chords: [[E - 12, G + 1 - 12, B - 12, D + 1], [F + 1 - 12, A + 1 - 12, C + 1], [C + 1 - 12, E - 12, G + 1 - 12, B - 12], [B - 24, D + 1 - 12, F + 1 - 12, A - 12 + 2],
                   [E - 12, G + 1 - 12, B - 12, D + 1], [F + 1 - 12, A + 1 - 12, C + 1], [A - 12, C + 1, E], [B - 24, D + 1 - 12, F + 1 - 12]],
-         reps: 2, lead: .bell, counter: .bell, groove: .none, arp: true,
+         bChords: [[F + 1 - 12, A + 1 - 12, C + 1], [G + 1 - 12, B - 12, D + 1], [C + 1 - 12, E - 12, G + 1 - 12], [E - 12, G + 1 - 12, B - 12, D + 1],
+                   [D + 1 - 12, F + 1 - 12, A + 1 - 12], [F + 1 - 12, A + 1 - 12, C + 1, E], [C + 1 - 12, E - 12, G + 1 - 12, B - 12], [B - 24, D + 1 - 12, F + 1 - 12]],
+         sectionReps: 1, lead: .bell, counter: .flute, groove: .none, arp: true,
          padCutoff: 900, reverbWet: 1.6, echoWet: 0.35, density: 1, seed: 67),
     Song(name: "ocean", bpm: 80, beatsPerBar: 4, scale: [0, 2, 4, 5, 7, 9, 11], root: D,
          chords: [[D, F + 1, A, C + 1 + 12], [B - 12, D, F + 1, A], [G - 12, B - 12, D, F + 1], [A - 12, C + 1, E],
                   [D, F + 1, A, C + 1 + 12], [F + 1 - 12, A - 12, C + 1, E], [G - 12, B - 12, D, F + 1], [A - 12, C + 1, E, G]],
-         reps: 2, lead: .bell, counter: .flute, groove: .tide, arp: true,
+         bChords: [[G - 12, B - 12, D], [A - 12, C + 1, E], [F + 1 - 12, A - 12, C + 1], [B - 12, D, F + 1],
+                   [G - 12, B - 12, D, F + 1], [E - 12, G - 12, B - 12], [A - 12, C + 1, E, G], [A - 12, C + 1, E]],
+         sectionReps: 1, lead: .bell, counter: .flute, groove: .tide, arp: true,
          padCutoff: 800, reverbWet: 1.4, echoWet: 0.25, density: 1, seed: 79),
 ]
 
