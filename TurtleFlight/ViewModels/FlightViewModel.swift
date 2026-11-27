@@ -236,6 +236,9 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// building + first-time shader compile). Behind `prebuiltLock`.
     var prebuiltPieces: [SetPiece: SCNNode] = [:]
     var prebuiltCompanion: SCNNode?
+    /// A throwaway ring trail, only so its shaders are compiled before the
+    /// first real one (an 83 ms frame on the iPhone XS otherwise).
+    var prebuiltTrailWarmup: SCNNode?
     let prebuiltLock = NSLock()
     /// Last friendly bump off a landmark (debounces sound + haptic).
     var lastLandmarkBumpTime: TimeInterval = 0

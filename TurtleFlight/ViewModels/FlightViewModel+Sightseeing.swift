@@ -182,7 +182,8 @@ extension FlightViewModel {
         ringTrailLastPosition = nil
         companionWorld = theme
         companionClock = 0
-        prewarm(world: theme, pieces: setPieceScheduler != nil, companion: companionScheduler != nil)
+        prewarm(world: theme, pieces: setPieceScheduler != nil, companion: companionScheduler != nil,
+                trail: ringTrailScheduler != nil)
         setPieceClock = 0
         setPieceLastPosition = nil
     }
@@ -283,20 +284,26 @@ extension FlightViewModel {
     /// Build this world's set pieces and flock in the background and ask
     /// the view to compile their shaders, so the first one to appear does
     /// not stall the render thread.
-    func prewarm(world: MapTheme, pieces: Bool, companion: Bool) {
+    func prewarm(world: MapTheme, pieces: Bool, companion: Bool, trail: Bool = false) {
         prebuiltLock.lock()
         prebuiltPieces = [:]
         prebuiltCompanion = nil
+        prebuiltTrailWarmup = nil
         prebuiltLock.unlock()
-        guard pieces || companion else { return }
+        guard pieces || companion || trail else { return }
         DispatchQueue.global(qos: .utility).async { [weak self] in
             var built: [SetPiece: SCNNode] = [:]
             if pieces { for piece in SetPiece.pieces(for: world) { built[piece] = SetPieceFactory.build(piece) } }
             let flock = companion ? CompanionFactory.build(Companion.of(world)) : nil
+            let warmTrail = trail
+                ? RingTrailFactory.build(RingTrail(position: SIMD3(0, 500, 0), heading: 0, targetBearing: nil,
+                                                   seed: 0) { _, _ in 0 })
+                : nil
             guard let self else { return }
             self.prebuiltLock.lock()
             self.prebuiltPieces.merge(built) { old, _ in old }
             if self.prebuiltCompanion == nil { self.prebuiltCompanion = flock }
+            self.prebuiltTrailWarmup = warmTrail
             self.prebuiltLock.unlock()
             self.onMain { [weak self] in
                 guard let self else { return }
@@ -304,6 +311,8 @@ extension FlightViewModel {
                 // nodes across threads.
                 self.prebuiltLock.lock()
                 let nodes = Array(self.prebuiltPieces.values) + (self.prebuiltCompanion.map { [$0] } ?? [])
+                    + (self.prebuiltTrailWarmup.map { [$0] } ?? [])
+                self.prebuiltTrailWarmup = nil   // only needed for the shader warm-up
                 self.prebuiltLock.unlock()
                 // `onMain` runs this on the main queue.
                 MainActor.assumeIsolated { self.sceneView?.prepare(nodes, completionHandler: nil) }
