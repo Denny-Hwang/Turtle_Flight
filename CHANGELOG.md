@@ -9,6 +9,15 @@ window.
 
 ## [Unreleased]
 
+### Ring path, course climb limit, miss feedback (2026-11-26, plan R1/R3/R4)
+- The ring after the target is shown bright and opaque. Rings further on are dimmed to 50%. Seven sparkle dots light up in turn from the target ring toward the next one, so the next turn reads early.
+- Audit: some courses asked for climbs steeper than Easy can fly.
+  - Mountain Cross needed about 2.0 m up per metre forward. Some Daily Run days needed about 1.7, and route 23 about 1.4.
+  - `CourseGenerator.limitClimb` now caps every step at a slope of 0.5. That is about 28 m/s at cruise, against Easy's 40 m/s.
+  - The cap applies to all courses and to Sky Run chunks. `CourseClimbTests` enforces it.
+- A missed ring flashes red as it fades, and the screen-edge guide pops for a moment.
+- The ring guide now measures from the chase camera. Before, it showed for a ring a little above and ahead that was plainly on screen.
+
 ### Tilt comfort + ring flow (2026-11-26, owner device feedback)
 - Steering and climbing have their own tilt ranges (`AxisResponse`): full
   climb at 12–15°, full turn at 18–25°, smaller dead zones and gentler

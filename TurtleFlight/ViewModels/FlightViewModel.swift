@@ -1071,13 +1071,11 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
 
     /// Bearing, elevation and distance to the target ring (see `RingGuide`).
     private func computeRingGuide(flightState: FlightEngine.FlightState) -> RingGuide? {
-        guard let bearing = computeObjectiveDirection(flightState: flightState),
+        guard computeObjectiveDirection(flightState: flightState) != nil,
               let ringPos = missionEngine?.currentRingPosition else { return nil }
         let pos = flightState.position
-        return RingGuide.make(bearing: bearing,
-                              dx: ringPos.x - pos.x,
-                              dy: ringPos.y - pos.y,
-                              dz: ringPos.z - pos.z)
+        return RingGuide.fromCamera(ringDelta: SIMD3(ringPos.x - pos.x, ringPos.y - pos.y, ringPos.z - pos.z),
+                                    heading: flightState.heading)
     }
 
     /// Boost ring value (0…1). While boosting it is the remaining
