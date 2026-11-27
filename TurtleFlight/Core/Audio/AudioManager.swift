@@ -11,6 +11,12 @@ final class AudioManager: @unchecked Sendable {
     static let shared = AudioManager()
 
     private var bgmPlayer: AVAudioPlayer?
+    /// Reactive layer (M4): `bgm_<world>_energy`, same length as the song,
+    /// started on the same device clock tick and faded in by
+    /// `setMusicEnergy`. Nil when the world has no energy stem.
+    private var energyPlayer: AVAudioPlayer?
+    /// 0…1, how much of the energy layer is mixed in.
+    private(set) var musicEnergy: Float = 0
     private var sfxPlayers: [String: AVAudioPlayer] = [:]
     private var activeLoopPlayer: AVAudioPlayer?
     /// Single channel for spoken callouts (`VoiceLine`) so two lines never
@@ -38,6 +44,7 @@ final class AudioManager: @unchecked Sendable {
         didSet {
             UserDefaults.standard.set(bgmVolume, forKey: Keys.bgmVolume)
             bgmPlayer?.volume = bgmVolume
+            energyPlayer?.volume = bgmVolume * musicEnergy
         }
     }
     /// SFX volume in [0, 1]. The vehicle loop adopts the new volume live;
@@ -143,14 +150,14 @@ final class AudioManager: @unchecked Sendable {
         case .began:
             // Phone call, Siri, etc. — iOS already paused us. Just drop our refs
             // so we resume cleanly on `.ended`.
-            bgmPlayer?.pause()
+            pauseBGMPlayers()
             activeLoopPlayer?.pause()
         case .ended:
             // Apple recommends only resuming if the system says we should.
             let optsRaw = info[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
             let opts = AVAudioSession.InterruptionOptions(rawValue: optsRaw)
             if opts.contains(.shouldResume), !isMuted {
-                bgmPlayer?.play()
+                resumeBGMPlayers()
                 activeLoopPlayer?.play()
             }
         @unknown default:
@@ -167,7 +174,7 @@ final class AudioManager: @unchecked Sendable {
         else { return }
         // User unplugged headphones / disconnected AirPods — Apple HIG says
         // pause rather than blast the speaker.
-        bgmPlayer?.pause()
+        pauseBGMPlayers()
         activeLoopPlayer?.pause()
     }
 
@@ -213,14 +220,66 @@ final class AudioManager: @unchecked Sendable {
         let data = soundData(key: "bgm:\(theme)", asset: "bgm_\(theme)") {
             SynthAudio.generateBGM(theme: theme, durationSeconds: 32)
         }
-        play(data: data, volume: bgmVolume, loops: -1) { [weak self] player in
-            self?.bgmPlayer = player
+        let energyData = Self.assetURL(named: "bgm_\(theme)_energy").map { url in
+            soundData(key: "bgm-energy:\(theme)", asset: "bgm_\(theme)_energy") { (try? Data(contentsOf: url)) ?? Data() }
+        }
+        let volume = bgmVolume
+        let energyVolume = bgmVolume * musicEnergy
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let song = try? AVAudioPlayer(data: data)
+            song?.numberOfLoops = -1
+            song?.volume = volume
+            song?.prepareToPlay()
+            let energy = energyData.flatMap { try? AVAudioPlayer(data: $0) }
+            energy?.numberOfLoops = -1
+            energy?.volume = energyVolume
+            energy?.prepareToPlay()
+            // One device-clock start for both, so the layer lines up with
+            // the song to the sample.
+            if let song {
+                let start = song.deviceCurrentTime + 0.08
+                song.play(atTime: start)
+                energy?.play(atTime: start)
+            }
+            DispatchQueue.main.async {
+                self?.bgmPlayer = song
+                self?.energyPlayer = energy
+            }
         }
     }
 
     func stopBGM() {
         bgmPlayer?.stop()
         bgmPlayer = nil
+        energyPlayer?.stop()
+        energyPlayer = nil
+    }
+
+    /// Fade the reactive layer to `level` (0…1) over `fade` seconds.
+    /// Call on main; see `MusicEnergy.level`.
+    func setMusicEnergy(_ level: Float, fade: TimeInterval = 0.8) {
+        let clamped = max(0, min(1, level))
+        guard clamped != musicEnergy else { return }
+        musicEnergy = clamped
+        energyPlayer?.setVolume(bgmVolume * clamped, fadeDuration: fade)
+    }
+
+    private func pauseBGMPlayers() {
+        bgmPlayer?.pause()
+        energyPlayer?.pause()
+    }
+
+    /// Resume both on one clock tick, the layer re-aligned to the song.
+    private func resumeBGMPlayers() {
+        guard let song = bgmPlayer else { return }
+        if let energy = energyPlayer {
+            energy.currentTime = song.currentTime
+            let start = song.deviceCurrentTime + 0.05
+            song.play(atTime: start)
+            energy.play(atTime: start)
+        } else {
+            song.play()
+        }
     }
 
     // MARK: - Vehicle SFX
@@ -365,14 +424,14 @@ final class AudioManager: @unchecked Sendable {
     func setMuted(_ muted: Bool) {
         isMuted = muted
         if muted {
-            bgmPlayer?.pause()
+            pauseBGMPlayers()
             activeLoopPlayer?.pause()
             stopVoice()
         } else {
             // Re-engage what was last requested. If players exist, just resume;
             // otherwise re-spawn them via the same code path that built the
             // first ones (this hits the wavCache, so no re-synthesis cost).
-            if bgmPlayer != nil { bgmPlayer?.play() }
+            if bgmPlayer != nil { resumeBGMPlayers() }
             else if let theme = lastBGMTheme { startBGM(theme: theme) }
 
             if activeLoopPlayer != nil { activeLoopPlayer?.play() }

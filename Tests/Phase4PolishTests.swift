@@ -163,6 +163,36 @@ final class Phase4PolishTests: XCTestCase {
         }
     }
 
+    func testEveryWorldHasAMatchingEnergyLayer() throws {
+        // M4: the reactive layer must line up with the song sample for
+        // sample, or it drifts out of time as both loop.
+        for world in MapTheme.allCases {
+            let song = try AVAudioPlayer(contentsOf: XCTUnwrap(AudioManager.assetURL(named: "bgm_\(world.rawValue)")))
+            let energy = try AVAudioPlayer(contentsOf: XCTUnwrap(AudioManager.assetURL(named: "bgm_\(world.rawValue)_energy"),
+                                                                 "\(world) energy layer missing"))
+            XCTAssertEqual(energy.duration, song.duration, accuracy: 0.01, world.rawValue)
+        }
+    }
+
+    func testMusicEnergyRules() {
+        XCTAssertEqual(MusicEnergy.level(isBoosting: false, combo: 0, isTimeCritical: false, isPaused: false), 0)
+        XCTAssertEqual(MusicEnergy.level(isBoosting: true, combo: 0, isTimeCritical: false, isPaused: false), 1)
+        XCTAssertGreaterThan(MusicEnergy.level(isBoosting: false, combo: 5, isTimeCritical: false, isPaused: false),
+                             MusicEnergy.level(isBoosting: false, combo: 3, isTimeCritical: false, isPaused: false))
+        XCTAssertEqual(MusicEnergy.level(isBoosting: false, combo: 2, isTimeCritical: false, isPaused: false), 0)
+        XCTAssertGreaterThan(MusicEnergy.level(isBoosting: false, combo: 0, isTimeCritical: true, isPaused: false), 0)
+        XCTAssertEqual(MusicEnergy.level(isBoosting: true, combo: 9, isTimeCritical: true, isPaused: true), 0, "pause is quiet")
+    }
+
+    func testFlightDrivesTheEnergyLayer() {
+        let vm = FlightViewModel()
+        vm.updateMusicEnergy(isBoosting: true, combo: 0)
+        XCTAssertEqual(vm.lastMusicEnergy, 1)
+        XCTAssertEqual(AudioManager.shared.musicEnergy, 1)
+        vm.updateMusicEnergy(isBoosting: false, combo: 0)
+        XCTAssertEqual(AudioManager.shared.musicEnergy, 0)
+    }
+
     func testBundledAudioCoversEveryWorldVehicleAndEffect() throws {
         // Rendered by scripts/audio/build_audio.sh into TurtleFlight/Audio/.
         var names = MapTheme.allCases.map { "bgm_\($0.rawValue)" }

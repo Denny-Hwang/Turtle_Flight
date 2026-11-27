@@ -119,6 +119,8 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     }
 
     private var lastPublishedFrame: HUDFrame?
+    /// Last level sent to `AudioManager.setMusicEnergy` (main thread).
+    private(set) var lastMusicEnergy: Float = 0
     /// Frame waiting to be applied on main (render-thread path only).
     private var pendingFrame: HUDFrame?
     private let pendingFrameLock = NSLock()
@@ -181,6 +183,19 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         if combo != frame.combo { combo = frame.combo }
         if isStalled != frame.isStalled { isStalled = frame.isStalled }
         if judgementEvent?.id != frame.judgementEvent?.id { judgementEvent = frame.judgementEvent }
+        updateMusicEnergy(isBoosting: frame.isBoosting, combo: frame.combo)
+    }
+
+    /// Fade the reactive music layer with boost / combo / the last 30 s
+    /// (M4). Main thread, from `apply`.
+    func updateMusicEnergy(isBoosting: Bool, combo: Int) {
+        var timeCritical = false
+        if let engine = missionEngine, case .inProgress = engine.state { timeCritical = engine.isTimeCritical }
+        let level = MusicEnergy.level(isBoosting: isBoosting, combo: combo,
+                                      isTimeCritical: timeCritical, isPaused: isPaused)
+        guard level != lastMusicEnergy else { return }
+        lastMusicEnergy = level
+        AudioManager.shared.setMusicEnergy(level)
     }
 
     // MARK: - Components
@@ -596,6 +611,9 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
 
         // Start audio
         let audio = AudioManager.shared
+        // Each flight starts calm; the energy layer comes in with play.
+        audio.setMusicEnergy(0, fade: 0)
+        lastMusicEnergy = 0
         audio.startBGM(theme: theme.rawValue)
         if let def = VehicleDefinition.definition(for: vehicle) {
             audio.playVehicleSound(def.soundEffect)
@@ -733,6 +751,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         isPaused = true
         gyroController.stop()
         lastRenderTime = 0
+        updateMusicEnergy(isBoosting: false, combo: 0)
     }
 
     /// Resume from pause. Idempotent. Recalibrates the gyro to the
