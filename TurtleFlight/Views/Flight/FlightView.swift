@@ -539,6 +539,8 @@ struct SceneKitView: UIViewRepresentable {
         scnView.showsStatistics = false
         scnView.preferredFramesPerSecond = 60
         scnView.antialiasingMode = .multisampling2X
+        // Lets the flight compile shaders for set pieces before they appear.
+        flightVM.sceneView = scnView
 
         // Simulator / iPad-without-gyro fallback: a pan gesture on the
         // scene view is mapped to roll / pitch input so the app stays
