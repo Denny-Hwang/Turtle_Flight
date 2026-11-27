@@ -339,6 +339,7 @@ final class MissionViewModel: ObservableObject {
         }
         // Postcard milestones reached on this flight pay out with it.
         let milestoneStars = claimPostcardRewards(credit: false).reduce(0) { $0 + $1.stars }
+            + claimSetPieceRewards(credit: false).reduce(0) { $0 + $1.stars }
         pay(stars: milestoneStars, treats: RewardRules.treats(forFreeFlightStars: starsCollected))
         progress.totalFlightTime += max(0, flightTime)
         QuestTracker.shared.record(.flightTime(seconds: max(0, flightTime)))
@@ -359,6 +360,18 @@ final class MissionViewModel: ObservableObject {
     func claimPostcardRewards(album: PostcardAlbum = .shared, credit: Bool = true) -> [PostcardReward] {
         let due = PostcardRewards.due(album: album, claimed: progress.claimedPostcardRewards)
         guard !due.isEmpty else { return [] }
+        for reward in due {
+            progress.claimedPostcardRewards.insert(reward.id)
+            if credit { progress.earnStars(reward.stars) }
+        }
+        return due
+    }
+
+    /// Pay sky-dex rewards (a world's set pieces all seen, or all 21)
+    /// not yet paid. Same `credit` contract as `claimPostcardRewards`.
+    @discardableResult
+    func claimSetPieceRewards(log: SetPieceLog = .shared, credit: Bool = true) -> [SetPieceReward] {
+        let due = SetPieceReward.due(log: log, claimed: progress.claimedPostcardRewards)
         for reward in due {
             progress.claimedPostcardRewards.insert(reward.id)
             if credit { progress.earnStars(reward.stars) }

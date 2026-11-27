@@ -47,6 +47,8 @@ extension FlightViewModel {
             /// A set piece was flown through / touched. `stars` is what it
             /// paid (0 for lift / boost).
             case setPiece(SetPiece, isNew: Bool, stars: Int)
+            /// Flew alongside a companion flock.
+            case companion(Companion, stars: Int)
         }
         let id: Int
         let kind: Kind
@@ -152,6 +154,16 @@ extension FlightViewModel {
         if piecesOn {
             setPieceScheduler = SetPieceScheduler(world: theme, seed: seed &+ 17, forced: forcedPiece)
         }
+        var companionSoon = false
+        var companionsOn = true
+        #if DEBUG
+        // QA: `-TFCompanion YES` brings the flock two seconds in.
+        companionSoon = UserDefaults.standard.bool(forKey: "TFCompanion")
+        if ScreenshotDirector.isActive && !companionSoon { companionsOn = false }
+        #endif
+        companionScheduler = companionsOn ? CompanionScheduler(seed: seed &+ 29, forcedSoon: companionSoon) : nil
+        companionWorld = theme
+        companionClock = 0
         setPieceClock = 0
         setPieceLastPosition = nil
     }
@@ -168,6 +180,54 @@ extension FlightViewModel {
         setPieceScheduler = nil
         setPieceLastPosition = nil
         flightEngine.externalLift = 0
+        companionNode?.removeFromParentNode()
+        companionNode = nil
+        companionFlight = nil
+        companionScheduler = nil
+    }
+
+    // MARK: - Companions (W4)
+
+    /// Every frame in Free Flight: bring a flock in when one is due, fly
+    /// it beside the character, pay the greeting star, see it off.
+    func updateCompanions(deltaTime: Float, position: SCNVector3, heading: Float, speed: Float) {
+        guard var scheduler = companionScheduler, let parent = wonderParent else { return }
+        companionClock += deltaTime
+        let p = SIMD3<Float>(position.x, position.y, position.z)
+        if companionFlight == nil, scheduler.isDue(at: companionClock) {
+            if activeWonder != nil {
+                scheduler.postpone(from: companionClock)
+            } else {
+                let side = scheduler.take(at: companionClock)
+                let companion = Companion.of(companionWorld)
+                let flight = CompanionFlight(companion: companion, side: side, characterPosition: p, heading: heading)
+                let node = CompanionFactory.build(companion)
+                parent.addChildNode(node)
+                companionFlight = flight
+                companionNode = node
+            }
+            companionScheduler = scheduler
+        }
+        guard var flight = companionFlight, let node = companionNode else { return }
+        let greeted = flight.step(deltaTime: deltaTime, characterPosition: p, heading: heading, speedMetresPerSecond: speed)
+        node.position = SCNVector3(flight.position.x, flight.position.y, flight.position.z)
+        node.eulerAngles.y = -flight.heading * .pi / 180
+        node.opacity = CGFloat(flight.opacity)
+        if greeted {
+            awardWonderStars(Companion.greetStars)
+            emitToast(.companion(flight.companion, stars: Companion.greetStars))
+            onMain {
+                AudioManager.shared.playStarCollect()
+                Haptics.shared.play(.pickup)
+            }
+        }
+        if flight.phase == .done {
+            node.removeFromParentNode()
+            companionFlight = nil
+            companionNode = nil
+        } else {
+            companionFlight = flight
+        }
     }
 
     // MARK: - Set pieces along the route

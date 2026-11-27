@@ -239,3 +239,30 @@ final class SetPieceLog: @unchecked Sendable {
         defaults.removeObject(forKey: key)
     }
 }
+
+/// Sky-dex rewards (W5): finishing a world's three set pieces, and all
+/// 21. Claimed ids share `PlayerProgress.claimedPostcardRewards` (prefix
+/// `setpiece.`), so no new saved field is needed; they pay out with the
+/// Free Flight result like postcard milestones.
+struct SetPieceReward: Equatable {
+    let id: String
+    let stars: Int
+
+    static let worldStars = 3
+    static let allStars = 15
+
+    static func reached(log: SetPieceLog) -> [SetPieceReward] {
+        var out: [SetPieceReward] = []
+        for world in MapTheme.allCases where SetPiece.pieces(for: world).allSatisfy(log.hasSeen) {
+            out.append(SetPieceReward(id: "setpiece.\(world.rawValue)", stars: worldStars))
+        }
+        if log.seenCount == SetPiece.allCases.count {
+            out.append(SetPieceReward(id: "setpiece.all", stars: allStars))
+        }
+        return out
+    }
+
+    static func due(log: SetPieceLog, claimed: Set<String>) -> [SetPieceReward] {
+        reached(log: log).filter { !claimed.contains($0.id) }
+    }
+}

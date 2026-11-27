@@ -9,6 +9,21 @@ window.
 
 ## [Unreleased]
 
+### Companions + sky guide (2026-11-27, plan W4/W5)
+- Free Flight companions:
+  - Each world has its own flock, built from primitives: geese in a V, sandpipers, pigeons, magpies, eagles, little satellites and dolphins.
+  - A flock first arrives 40–70 s into the flight, then every 70–110 s. It comes in from ahead and settles 26 m beside the character.
+  - It flies alongside for 12 s, then peels away outward and up.
+  - Flying within 20 m during the cruise pays +1 ★.
+  - It is postponed while a sky wonder is showing.
+  - Updated every frame on the render thread (`CompanionFlight`), and tested without SceneKit.
+- The geese have a neck, tapered two-part wings and a tail fan. An earlier version looked like a small plane in the simulator, against the not-airplanes rule.
+- Album: new "Sky guide" section listing the 21 set pieces by world.
+  - All three in a world pay +3 ★; all 21 pay +15 ★.
+  - Paid with the Free Flight result like postcard milestones.
+  - Claimed ids reuse `claimedPostcardRewards` with a `setpiece.` prefix, so no new saved field.
+- 11 new strings in all 7 locales.
+
 ### Set pieces along the route (2026-11-26, plan W1–W3)
 - Free Flight now places a set piece ahead of the player every 25–35 s. It appears 420–560 m ahead at the player's own height, and is skipped near landmarks and during a sky wonder. At most 2 are in the sky at once.
 - 21 original pieces, 3 per world:

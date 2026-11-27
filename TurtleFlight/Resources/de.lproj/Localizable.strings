@@ -520,6 +520,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "Boost aufgeladen!";
 "setpiece.toast.lift" = "Mit dem Aufwind hoch!";
+"companion.geese.name" = "Gänse";
+"companion.sandpipers.name" = "Strandläufer";
+"companion.pigeons.name" = "Tauben";
+"companion.magpies.name" = "Elstern";
+"companion.eagles.name" = "Adler";
+"companion.satellites.name" = "Kleine Satelliten";
+"companion.dolphins.name" = "Delfine";
+"companion.toast" = "Mitgeflogen: %1$@ +%2$lld ★";
+"album.skydex.title" = "Himmelsführer";
+"album.skydex.hint" = "Sehenswürdigkeiten im freien Flug. Alle drei einer Welt: +%1$lld ★. Alle 21: +%2$lld ★.";
+"album.skydex.complete" = "Alles gesehen";
 "album.wonders.title" = "Himmelswunder";
 "album.wonders.hint" = "Seltene Anblicke, die im Freiflug manchmal auftauchen. Flieg nah heran für einen Bonus.";
 "album.milestone.half.format" = "Hälfte: +%lld ★";

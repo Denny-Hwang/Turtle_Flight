@@ -518,6 +518,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "¡Turbo recargado!";
 "setpiece.toast.lift" = "¡Arriba con el viento!";
+"companion.geese.name" = "Gansos";
+"companion.sandpipers.name" = "Correlimos";
+"companion.pigeons.name" = "Palomas";
+"companion.magpies.name" = "Urracas";
+"companion.eagles.name" = "Águilas";
+"companion.satellites.name" = "Satélites pequeños";
+"companion.dolphins.name" = "Delfines";
+"companion.toast" = "¡Volaste con: %1$@! +%2$lld ★";
+"album.skydex.title" = "Guía del cielo";
+"album.skydex.hint" = "Vistas del camino en Vuelo libre. Las tres de un mundo: +%1$lld ★. Las 21: +%2$lld ★.";
+"album.skydex.complete" = "Todo visto";
 "album.wonders.title" = "Maravillas del cielo";
 "album.wonders.hint" = "Vistas raras que a veces aparecen en Vuelo libre. Acércate para un premio.";
 "album.milestone.half.format" = "Mitad: +%lld ★";

@@ -9,11 +9,13 @@ struct PostcardAlbumView: View {
     @ObservedObject var missionVM: MissionViewModel
     private let album = PostcardAlbum.shared
     private let wonders = WonderLog.shared
+    private let setPieces = SetPieceLog.shared
 
     private let columns = [GridItem(.adaptive(minimum: 150), spacing: Theme.Spacing.m)]
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { reader in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.l) {
                     Text(L10n.t("album.empty.hint"))
@@ -40,8 +42,18 @@ struct PostcardAlbumView: View {
                     }
 
                     wondersSection
+                    skyDexSection.id("skydex")
                 }
                 .padding(Theme.Spacing.l)
+            }
+            .onAppear {
+                #if DEBUG
+                // QA: `-TFAlbumSection skydex` opens scrolled to the sky-dex.
+                if let section = UserDefaults.standard.string(forKey: "TFAlbumSection") {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { reader.scrollTo(section, anchor: .top) }
+                }
+                #endif
+            }
             }
             .navigationTitle(L10n.t("album.title"))
             .navigationBarTitleDisplayMode(.inline)
@@ -88,6 +100,41 @@ extension PostcardAlbumView {
                 ))
                 .font(Theme.Typography.labelSmall)
                 .fixedSize()
+            }
+        }
+    }
+
+    /// Sky-dex (W5): the set pieces met along the route, three per world.
+    /// Unseen ones stay a mystery; a world's three and all 21 pay stars.
+    var skyDexSection: some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.s) {
+            HStack {
+                Text("🗺️  \(L10n.t("album.skydex.title"))")
+                    .font(Theme.Typography.titleSmall)
+                Spacer()
+                Text("\(setPieces.seenCount)/\(SetPiece.allCases.count)")
+                    .font(Theme.Typography.label)
+                    .foregroundColor(.secondary)
+            }
+            Text(L10n.format("album.skydex.hint", SetPieceReward.worldStars, SetPieceReward.allStars))
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            ForEach(MapTheme.allCases, id: \.self) { world in
+                let pieces = SetPiece.pieces(for: world)
+                let complete = pieces.allSatisfy(setPieces.hasSeen)
+                HStack(spacing: Theme.Spacing.s) {
+                    Text(world.emoji)
+                        .font(.title3)
+                        .frame(width: 30)
+                        .accessibilityLabel(world.displayName)
+                    ForEach(pieces, id: \.self) { piece in
+                        SkyDexCell(piece: piece, seen: setPieces.hasSeen(piece))
+                    }
+                    Image(systemName: complete ? "checkmark.seal.fill" : "seal")
+                        .foregroundColor(complete ? Theme.Color.easyGreen : .secondary)
+                        .accessibilityLabel(complete ? L10n.t("album.skydex.complete") : "")
+                }
             }
         }
     }
@@ -182,5 +229,30 @@ struct PostcardCard: View {
         .background(RoundedRectangle(cornerRadius: Theme.Radius.l).fill(Color(.secondarySystemBackground)))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(found ? kind.displayName : L10n.t("album.undiscovered"))
+    }
+}
+
+/// One sky-dex entry: the effect symbol and name once seen, "?" before.
+struct SkyDexCell: View {
+    let piece: SetPiece
+    let seen: Bool
+
+    var body: some View {
+        HStack(spacing: Theme.Spacing.xs) {
+            Image(systemName: seen ? SightseeingOverlay.symbol(for: piece.effect) : "questionmark")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(seen ? Theme.Color.brandPrimary : .secondary)
+                .frame(width: 20)
+            Text(seen ? piece.displayName : L10n.t("album.undiscovered"))
+                .font(Theme.Typography.labelSmall)
+                .foregroundColor(seen ? .primary : .secondary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.75)
+        }
+        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+        .padding(.horizontal, Theme.Spacing.s)
+        .background(RoundedRectangle(cornerRadius: Theme.Radius.m).fill(Color(.secondarySystemBackground)))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(seen ? piece.displayName : L10n.t("album.undiscovered"))
     }
 }
