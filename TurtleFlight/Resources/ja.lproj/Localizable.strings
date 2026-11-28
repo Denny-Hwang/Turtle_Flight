@@ -80,6 +80,7 @@
 "flight.calibrate.title" = "楽な持ち方でどうぞ";
 "flight.calibrate.body" = "今の持ち方を基準にします。少しだけそのままで。";
 "flight.calibrate.now" = "すぐ始める";
+"flight.calibrate.useStick" = "指でそうさする";
 "flight.control.pause"     = "一時停止";
 "flight.control.exit"      = "終了";
 "flight.control.boost"     = "ブースト";
@@ -276,6 +277,12 @@
 "onboarding.try.cta"           = "傾けてみる";
 "onboarding.try.exit"          = "完了";
 "onboarding.try.timeLeft.format" = "%lld秒";
+"onboarding.control.title" = "どうやって飛ぶ？";
+"onboarding.control.tilt" = "かたむけて";
+"onboarding.control.tilt.body" = "きかいをかたむけてそうさ";
+"onboarding.control.stick" = "指で";
+"onboarding.control.stick.body" = "画面のスティックでそうさ";
+"onboarding.control.footer" = "せっていでいつでも変えられます";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "シェア";
@@ -368,8 +375,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "操作";
-"settings.controls.touch"         = "タッチ操作";
-"settings.controls.touch.caption" = "本体を傾ける代わりに、画面をドラッグして操縦します。寝転んでいるとき、車の中、傾け操作がつらいときに。";
+"settings.controls.mode" = "そうさ方法";
+"settings.controls.mode.tilt" = "かたむけ";
+"settings.controls.mode.joystick" = "スティック";
+"settings.controls.mode.mixed" = "ミックス";
+"settings.controls.mode.tilt.caption" = "左右にかたむけると曲がり、前にたおすと下がり、起こすと上がります。";
+"settings.controls.mode.joystick.caption" = "画面下のスティックを親指でおして飛びます。かたむけなくていいので、ねころんでも車の中でも楽です。";
+"settings.controls.mode.mixed.caption" = "左右はかたむけて曲がり、上下は親指でそうさします。前後にたおさないので画面がよく見えます。";
+"settings.controls.stickInvert" = "スティックの上下を反対に";
+"settings.controls.stickLeft" = "スティックを左がわに";
 "flight.control.view"             = "表示";
 "a11y.cleanView.label"            = "計器の表示・非表示を切り替え";
 
@@ -542,5 +556,8 @@
 "flight.control.lookAtMe" = "こっち見て";
 "flight.control.lookAhead" = "前を見て";
 "a11y.lookAtMe.label" = "なかまをこっちに向かせるか、飛ぶ方向を向かせるかを切りかえる";
+"a11y.joystick" = "スティック";
+"a11y.joystick.hint" = "左右におすと曲がり、上におすと上がります";
+"a11y.joystick.hint.vertical" = "上におすと上がり、下におすと下がります";
 "settings.controls.lookAtMe" = "飛行中になかまがこっちを見る";
 "settings.controls.simpleHUD" = "フリーフライトで計器をひかえめに";

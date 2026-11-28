@@ -25,6 +25,9 @@ struct ControlButtons: View {
     /// ahead). Nil hides the button.
     var onToggleLookAtMe: (() -> Void)? = nil
     var lookAtMeOn: Bool = false
+    /// Left-handed joystick layout: the stick takes the left thumb, so
+    /// Boost moves to the right.
+    var boostOnRight: Bool = false
 
     var body: some View {
         VStack {
@@ -78,53 +81,59 @@ struct ControlButtons: View {
 
             Spacer()
 
-            // Bottom: Boost (left) + Fire (right)
+            // Bottom: Boost (left) + Fire (right); mirrored for a
+            // left-handed joystick.
             HStack {
-                // Boost Button (left bottom). The progress ring drains
-                // from full → empty as the boost timer counts down so
-                // the player can read remaining boost at a glance.
-                ThumbButton(
-                    icon: "flame.fill",
-                    label: L10n.t("flight.control.boost"),
-                    color: Theme.Color.boostOrange,
-                    progress: boostProgress,
-                    ringColor: boostReady ? Theme.Color.starGold : Color.white.opacity(0.92),
-                    action: onBoost
-                )
-                .padding(.leading, Constants.Controls.buttonPadding)
-                .accessibilityLabel(L10n.t("a11y.boost.label"))
-                .accessibilityHint(L10n.t("a11y.boost.hint"))
-
-                Spacer()
-
-                // Fire Button (right bottom). v1 hides this entirely
-                // because the projectile has no impact behaviour yet —
-                // showing a useless button trains the player to ignore
-                // controls, which is worse than just not offering them.
-                // A future release that wires up a scoring target
-                // re-introduces this by passing a non-nil onFire.
-                if let onFire {
-                    ThumbButton(
-                        icon: "star.fill",
-                        label: L10n.t("flight.control.item"),
-                        color: Theme.Color.starGold,
-                        action: onFire
-                    )
-                    .padding(.trailing, Constants.Controls.buttonPadding)
-                    .accessibilityLabel(L10n.t("a11y.item.label"))
-                    .accessibilityHint(L10n.t("a11y.item.hint"))
+                if boostOnRight {
+                    itemSlot.padding(.leading, Constants.Controls.buttonPadding)
+                    Spacer()
+                    boostButton.padding(.trailing, Constants.Controls.buttonPadding)
                 } else {
-                    // Reserve symmetric trailing space so the boost
-                    // button doesn't drift to centre when the item slot
-                    // is empty.
-                    Color.clear
-                        .frame(width: Constants.Controls.buttonSize,
-                               height: Constants.Controls.buttonSize)
-                        .padding(.trailing, Constants.Controls.buttonPadding)
-                        .accessibilityHidden(true)
+                    boostButton.padding(.leading, Constants.Controls.buttonPadding)
+                    Spacer()
+                    itemSlot.padding(.trailing, Constants.Controls.buttonPadding)
                 }
             }
             .padding(.bottom, Constants.Controls.buttonPadding)
+        }
+    }
+
+    /// Boost. The progress ring drains from full → empty as the boost
+    /// timer counts down so the player can read remaining boost at a glance.
+    private var boostButton: some View {
+        ThumbButton(
+            icon: "flame.fill",
+            label: L10n.t("flight.control.boost"),
+            color: Theme.Color.boostOrange,
+            progress: boostProgress,
+            ringColor: boostReady ? Theme.Color.starGold : Color.white.opacity(0.92),
+            action: onBoost
+        )
+        .accessibilityLabel(L10n.t("a11y.boost.label"))
+        .accessibilityHint(L10n.t("a11y.boost.hint"))
+    }
+
+    /// Fire button. v1 hides it entirely because the projectile has no
+    /// impact behaviour yet — showing a useless button trains the player
+    /// to ignore controls. A future release that wires up a scoring target
+    /// re-introduces it by passing a non-nil onFire. The empty slot keeps
+    /// Boost from drifting to the centre.
+    @ViewBuilder
+    private var itemSlot: some View {
+        if let onFire {
+            ThumbButton(
+                icon: "star.fill",
+                label: L10n.t("flight.control.item"),
+                color: Theme.Color.starGold,
+                action: onFire
+            )
+            .accessibilityLabel(L10n.t("a11y.item.label"))
+            .accessibilityHint(L10n.t("a11y.item.hint"))
+        } else {
+            Color.clear
+                .frame(width: Constants.Controls.buttonSize,
+                       height: Constants.Controls.buttonSize)
+                .accessibilityHidden(true)
         }
     }
 }

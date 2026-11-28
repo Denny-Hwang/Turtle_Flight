@@ -5,6 +5,8 @@ import SwiftUI
 /// the player it sits low on the side to turn toward and says so.
 struct RingGuideIndicator: View {
     let guide: RingGuide?
+    /// Briefly larger right after a miss, to point the way on (R4).
+    var emphasized: Bool = false
 
     /// Distance from the screen edge to the chip centre.
     private let inset: CGFloat = 56
@@ -17,12 +19,14 @@ struct RingGuideIndicator: View {
                 let h = proxy.size.height / 2 - inset
                 let angle = Angle(radians: atan2(Double(p.y * h), Double(p.x * w)))
                 chip(guide: guide, angle: angle)
+                    .scaleEffect(emphasized ? 1.35 : 1)
                     .position(x: proxy.size.width / 2 + p.x * w,
                               y: proxy.size.height / 2 + p.y * h)
                     .transition(.opacity)
             }
         }
         .animation(.easeOut(duration: 0.2), value: guide?.displayKey)
+        .animation(.spring(response: 0.25, dampingFraction: 0.5), value: emphasized)
         .allowsHitTesting(false)
     }
 

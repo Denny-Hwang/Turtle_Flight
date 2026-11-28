@@ -186,6 +186,15 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     // MARK: - Components
     let flightEngine: FlightEngine
     let gyroController: GyroController
+    /// On-screen joystick (joystick / mixed modes, and any device without
+    /// a gyro). Fed by `JoystickOverlay` on main, filtered in `update`.
+    let stick = StickInput()
+    /// Effective control mode for this flight: the player's choice, or
+    /// joystick when there is no gyro (Simulator, some iPads). Main-thread
+    /// writes only (`refreshControlMode`); the render loop reads it.
+    @Published private(set) var controlMode: ControlMode = .tilt
+    /// Roll actually applied last frame (tilt or stick), for the bank.
+    private var appliedRoll: Double = 0
     let characterAnimator = CharacterAnimator()
     var terrainGenerator: TerrainGenerator?
 
@@ -838,12 +847,14 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         #if DEBUG
         let poseBeforePhysics = flightEngine.state.position
         #endif
+        let input = controlInputs(deltaTime: deltaTime)
+        appliedRoll = input.roll
         flightEngine.update(
             deltaTime: deltaTime,
-            rollInput: gyroController.rollInput,
-            pitchInput: gyroController.pitchInput,
+            rollInput: input.roll,
+            pitchInput: input.pitch,
             isBoosting: wantsBoost,
-            shouldAutoLevel: gyroController.shouldAutoLevel
+            shouldAutoLevel: input.autoLevel
         )
         #if DEBUG
         if ScreenshotDirector.autopilot {
@@ -910,7 +921,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
             }
         }
 
-        var bankInput = gyroController.rollInput
+        var bankInput = appliedRoll
         #if DEBUG
         // QA: `-TFRoll 0.8` holds a lean for screenshots (no gyro in the simulator).
         if let forced = UserDefaults.standard.string(forKey: "TFRoll").flatMap(Double.init) { bankInput = forced }
@@ -1094,13 +1105,11 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
 
     /// Bearing, elevation and distance to the target ring (see `RingGuide`).
     private func computeRingGuide(flightState: FlightEngine.FlightState) -> RingGuide? {
-        guard let bearing = computeObjectiveDirection(flightState: flightState),
+        guard computeObjectiveDirection(flightState: flightState) != nil,
               let ringPos = missionEngine?.currentRingPosition else { return nil }
         let pos = flightState.position
-        return RingGuide.make(bearing: bearing,
-                              dx: ringPos.x - pos.x,
-                              dy: ringPos.y - pos.y,
-                              dz: ringPos.z - pos.z)
+        return RingGuide.fromCamera(ringDelta: SIMD3(ringPos.x - pos.x, ringPos.y - pos.y, ringPos.z - pos.z),
+                                    heading: flightState.heading)
     }
 
     /// Boost ring value (0…1). While boosting it is the remaining
@@ -1272,7 +1281,41 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     /// now. Runs at every flight start, restart, resume, stage start and on
     /// the Calibrate button. The world waits (`isCalibrating`) until the
     /// phone is held still briefly or the player taps Start now.
+    /// Re-read the player's control choice. Call on main (flight start,
+    /// Settings / onboarding / calibration-card changes).
+    func refreshControlMode() {
+        let mode = gyroController.isAvailable ? ControlPreferences.mode : .joystick
+        if controlMode != mode { controlMode = mode }
+        if !mode.usesStick { stick.reset() }
+    }
+
+    /// Switch control mode mid-flight (calibration card "Use my finger").
+    func setControlMode(_ mode: ControlMode) {
+        ControlPreferences.mode = mode
+        refreshControlMode()
+        if !mode.usesTilt, isCalibrating {
+            gyroController.finishCalibrationNow()
+            isCalibrating = false
+            lastRenderTime = 0
+        }
+    }
+
+    /// This frame's roll / pitch / auto-level from tilt, stick or both.
+    func controlInputs(deltaTime: Float) -> (roll: Double, pitch: Double, autoLevel: Bool) {
+        let mode = controlMode
+        guard mode.usesStick else {
+            return (gyroController.rollInput, gyroController.pitchInput, gyroController.shouldAutoLevel)
+        }
+        let profile = SensitivityProfile.profile(for: effectiveSensitivity)
+        let s = stick.step(deltaTime: deltaTime, profile: profile)
+        let roll = mode.stickDrivesRoll ? s.roll : gyroController.rollInput
+        // Auto-level only touches the climb rate, so it follows whichever
+        // input owns pitch (the stick, here).
+        return (roll, s.pitch, stick.shouldAutoLevel(profile: profile))
+    }
+
     func beginCalibration() {
+        refreshControlMode()
         #if DEBUG
         // Screenshot / soak runs drive themselves; no neutral pose needed.
         if ScreenshotDirector.isActive {

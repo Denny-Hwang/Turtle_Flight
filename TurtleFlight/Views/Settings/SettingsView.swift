@@ -29,7 +29,9 @@ struct SettingsView: View {
 
     // MARK: - Local audio mirror
 
-    @State private var touchControls: Bool = GyroController.touchControlEnabled
+    @State private var controlMode: ControlMode = ControlPreferences.mode
+    @AppStorage(ControlPreferences.invertStickKey) private var invertStick = false
+    @AppStorage(ControlPreferences.stickOnLeftKey) private var stickOnLeft = false
     /// Character faces the player instead of where it is flying.
     @AppStorage(FlightViewModel.lookAtCameraKey) private var lookAtMe = false
     /// V9: quieter speed / altitude gauges in free flight.
@@ -143,10 +145,18 @@ struct SettingsView: View {
     /// a tangible target.
     private var controlsSection: some View {
         Section {
-            Toggle(L10n.t("settings.controls.touch"), isOn: $touchControls)
-                .onChange(of: touchControls) { newValue in
-                    GyroController.touchControlEnabled = newValue
+            Picker(L10n.t("settings.controls.mode"), selection: $controlMode) {
+                ForEach(ControlMode.allCases, id: \.self) { mode in
+                    Text(L10n.t(mode.titleKey)).tag(mode)
                 }
+            }
+            .onChange(of: controlMode) { newValue in
+                ControlPreferences.mode = newValue
+            }
+            if controlMode.usesStick {
+                Toggle(L10n.t("settings.controls.stickInvert"), isOn: $invertStick)
+                Toggle(L10n.t("settings.controls.stickLeft"), isOn: $stickOnLeft)
+            }
             Toggle(L10n.t("settings.controls.lookAtMe"), isOn: $lookAtMe)
             Toggle(L10n.t("settings.controls.simpleHUD"), isOn: $simpleHUD)
             Toggle(L10n.t("settings.controls.haptics"), isOn: $hapticsOn)
@@ -157,7 +167,7 @@ struct SettingsView: View {
         } header: {
             Text(L10n.t("settings.section.controls"))
         } footer: {
-            Text(L10n.t("settings.controls.touch.caption"))
+            Text(L10n.t(controlMode.captionKey))
         }
     }
 
