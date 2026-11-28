@@ -533,6 +533,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "ブースト回ふく！";
 "setpiece.toast.lift" = "風にのってぐーん！";
+"companion.geese.name" = "ガンのむれ";
+"companion.sandpipers.name" = "すなどりのむれ";
+"companion.pigeons.name" = "ハトのむれ";
+"companion.magpies.name" = "カササギ";
+"companion.eagles.name" = "ワシ";
+"companion.satellites.name" = "ちいさな衛星たち";
+"companion.dolphins.name" = "イルカのむれ";
+"companion.toast" = "いっしょに飛んだ：%1$@ +%2$lld ★";
+"album.skydex.title" = "そらのずかん";
+"album.skydex.hint" = "自由飛行のとちゅうで出会った見どころ。ひとつのワールドの3つを見ると +%1$lld ★、21こ全部で +%2$lld ★。";
+"album.skydex.complete" = "ぜんぶ見た";
 "album.wonders.title" = "空のふしぎ";
 "album.wonders.hint" = "フリーフライトでときどき現れるめずらしい景色。近くまで飛ぶとボーナス！";
 "album.milestone.half.format" = "半分：+%lld ★";

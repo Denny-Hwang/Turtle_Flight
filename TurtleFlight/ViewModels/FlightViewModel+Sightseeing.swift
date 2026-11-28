@@ -47,6 +47,8 @@ extension FlightViewModel {
             /// A set piece was flown through / touched. `stars` is what it
             /// paid (0 for lift / boost).
             case setPiece(SetPiece, isNew: Bool, stars: Int)
+            /// Flew alongside a companion flock.
+            case companion(Companion, stars: Int)
         }
         let id: Int
         let kind: Kind
@@ -147,11 +149,27 @@ extension FlightViewModel {
         // QA: `-TFSetPiece <name>` puts one three seconds in. Other
         // screenshot runs stay deterministic (no set pieces).
         forcedPiece = UserDefaults.standard.string(forKey: "TFSetPiece").flatMap(SetPiece.init(rawValue:))
-        if ScreenshotDirector.isActive && forcedPiece == nil { piecesOn = false }
+        if !ScreenshotDirector.allowsFreeFlightExtras && forcedPiece == nil { piecesOn = false }
         #endif
         if piecesOn {
             setPieceScheduler = SetPieceScheduler(world: theme, seed: seed &+ 17, forced: forcedPiece)
         }
+        var companionSoon = false
+        var companionsOn = true
+        #if DEBUG
+        // QA: `-TFCompanion YES` brings the flock two seconds in.
+        companionSoon = UserDefaults.standard.bool(forKey: "TFCompanion")
+        if !ScreenshotDirector.allowsFreeFlightExtras && !companionSoon { companionsOn = false }
+        #endif
+        #if DEBUG
+        // Perf comparison: `-TFNoExtras YES` turns both off.
+        if UserDefaults.standard.bool(forKey: "TFNoExtras") { piecesOn = false; companionsOn = false }
+        if !piecesOn { setPieceScheduler = nil }
+        #endif
+        companionScheduler = companionsOn ? CompanionScheduler(seed: seed &+ 29, forcedSoon: companionSoon) : nil
+        companionWorld = theme
+        companionClock = 0
+        prewarm(world: theme, pieces: setPieceScheduler != nil, companion: companionScheduler != nil)
         setPieceClock = 0
         setPieceLastPosition = nil
     }
@@ -168,6 +186,112 @@ extension FlightViewModel {
         setPieceScheduler = nil
         setPieceLastPosition = nil
         flightEngine.externalLift = 0
+        companionNode?.removeFromParentNode()
+        companionNode = nil
+        companionFlight = nil
+        companionScheduler = nil
+    }
+
+    // MARK: - Prebuilt nodes
+
+    /// Build this world's set pieces and flock in the background and ask
+    /// the view to compile their shaders, so the first one to appear does
+    /// not stall the render thread.
+    func prewarm(world: MapTheme, pieces: Bool, companion: Bool) {
+        prebuiltLock.lock()
+        prebuiltPieces = [:]
+        prebuiltCompanion = nil
+        prebuiltLock.unlock()
+        guard pieces || companion else { return }
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            var built: [SetPiece: SCNNode] = [:]
+            if pieces { for piece in SetPiece.pieces(for: world) { built[piece] = SetPieceFactory.build(piece) } }
+            let flock = companion ? CompanionFactory.build(Companion.of(world)) : nil
+            guard let self else { return }
+            self.prebuiltLock.lock()
+            self.prebuiltPieces.merge(built) { old, _ in old }
+            if self.prebuiltCompanion == nil { self.prebuiltCompanion = flock }
+            self.prebuiltLock.unlock()
+            self.onMain { [weak self] in
+                guard let self else { return }
+                // Read them back under the lock here rather than send the
+                // nodes across threads.
+                self.prebuiltLock.lock()
+                let nodes = Array(self.prebuiltPieces.values) + (self.prebuiltCompanion.map { [$0] } ?? [])
+                self.prebuiltLock.unlock()
+                // `onMain` runs this on the main queue.
+                MainActor.assumeIsolated { self.sceneView?.prepare(nodes, completionHandler: nil) }
+            }
+        }
+    }
+
+    /// A ready-built node for `piece` (and a fresh one queued for next
+    /// time), or a build right here if none is ready yet.
+    func takeSetPieceNode(_ piece: SetPiece) -> SCNNode {
+        prebuiltLock.lock()
+        let ready = prebuiltPieces.removeValue(forKey: piece)
+        prebuiltLock.unlock()
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let next = SetPieceFactory.build(piece)
+            guard let self else { return }
+            self.prebuiltLock.lock()
+            if self.prebuiltPieces[piece] == nil { self.prebuiltPieces[piece] = next }
+            self.prebuiltLock.unlock()
+        }
+        return ready ?? SetPieceFactory.build(piece)
+    }
+
+    func takeCompanionNode(_ companion: Companion) -> SCNNode {
+        prebuiltLock.lock()
+        let ready = prebuiltCompanion
+        prebuiltCompanion = nil
+        prebuiltLock.unlock()
+        if let ready, ready.name == "companion_\(companion.rawValue)" { return ready }
+        return CompanionFactory.build(companion)
+    }
+
+    // MARK: - Companions (W4)
+
+    /// Every frame in Free Flight: bring a flock in when one is due, fly
+    /// it beside the character, pay the greeting star, see it off.
+    func updateCompanions(deltaTime: Float, position: SCNVector3, heading: Float, speed: Float) {
+        guard var scheduler = companionScheduler, let parent = wonderParent else { return }
+        companionClock += deltaTime
+        let p = SIMD3<Float>(position.x, position.y, position.z)
+        if companionFlight == nil, scheduler.isDue(at: companionClock) {
+            if activeWonder != nil {
+                scheduler.postpone(from: companionClock)
+            } else {
+                let side = scheduler.take(at: companionClock)
+                let companion = Companion.of(companionWorld)
+                let flight = CompanionFlight(companion: companion, side: side, characterPosition: p, heading: heading)
+                let node = takeCompanionNode(companion)
+                parent.addChildNode(node)
+                companionFlight = flight
+                companionNode = node
+            }
+            companionScheduler = scheduler
+        }
+        guard var flight = companionFlight, let node = companionNode else { return }
+        let greeted = flight.step(deltaTime: deltaTime, characterPosition: p, heading: heading, speedMetresPerSecond: speed)
+        node.position = SCNVector3(flight.position.x, flight.position.y, flight.position.z)
+        node.eulerAngles.y = -flight.heading * .pi / 180
+        node.opacity = CGFloat(flight.opacity)
+        if greeted {
+            awardWonderStars(Companion.greetStars)
+            emitToast(.companion(flight.companion, stars: Companion.greetStars))
+            onMain {
+                AudioManager.shared.playStarCollect()
+                Haptics.shared.play(.pickup)
+            }
+        }
+        if flight.phase == .done {
+            node.removeFromParentNode()
+            companionFlight = nil
+            companionNode = nil
+        } else {
+            companionFlight = flight
+        }
     }
 
     // MARK: - Set pieces along the route
@@ -241,7 +365,7 @@ extension FlightViewModel {
                 let ground = Float(terrainGenerator?.heightAt(x: x, z: z) ?? 0)
                 let floor = next.piece.effect == .lift ? ground + 60 : ground + next.piece.depthBelowCentre + 20
                 let center = SCNVector3(x, max(position.y, floor), z)
-                let node = SetPieceFactory.build(next.piece)
+                let node = takeSetPieceNode(next.piece)
                 node.position = center
                 node.eulerAngles.y = -h
                 parent.addChildNode(node)

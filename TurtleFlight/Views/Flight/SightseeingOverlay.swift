@@ -91,6 +91,10 @@ struct SightseeingOverlay: View {
             banner(symbol: "star.fill",
                    text: L10n.format("wonder.bonus.toast", stars),
                    fill: Theme.Color.brandPrimary, onDark: true)
+        case .companion(let companion, let stars):
+            banner(symbol: "bird.fill",
+                   text: L10n.format("companion.toast", companion.displayName, stars),
+                   fill: Theme.Color.brandPrimary, onDark: true)
         case .setPiece(let piece, let isNew, let stars):
             banner(symbol: Self.symbol(for: piece.effect),
                    text: Self.setPieceText(piece, isNew: isNew, stars: stars),

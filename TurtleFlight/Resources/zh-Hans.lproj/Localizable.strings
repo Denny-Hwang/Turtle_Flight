@@ -533,6 +533,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "加速已充能！";
 "setpiece.toast.lift" = "乘风而上！";
+"companion.geese.name" = "雁群";
+"companion.sandpipers.name" = "沙鸟群";
+"companion.pigeons.name" = "鸽群";
+"companion.magpies.name" = "喜鹊";
+"companion.eagles.name" = "老鹰";
+"companion.satellites.name" = "小卫星们";
+"companion.dolphins.name" = "海豚群";
+"companion.toast" = "一起飞翔：%1$@ +%2$lld ★";
+"album.skydex.title" = "天空图鉴";
+"album.skydex.hint" = "自由飞行途中遇到的景点。看完一个世界的3个：+%1$lld ★，全部21个：+%2$lld ★。";
+"album.skydex.complete" = "全部看过";
 "album.wonders.title" = "天空奇观";
 "album.wonders.hint" = "自由飞行中偶尔出现的罕见景象。飞近一点有奖励！";
 "album.milestone.half.format" = "一半：+%lld ★";

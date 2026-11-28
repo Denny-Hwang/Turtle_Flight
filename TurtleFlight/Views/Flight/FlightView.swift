@@ -554,6 +554,8 @@ struct SceneKitView: UIViewRepresentable {
         scnView.showsStatistics = false
         scnView.preferredFramesPerSecond = 60
         scnView.antialiasingMode = .multisampling2X
+        // Lets the flight compile shaders for set pieces before they appear.
+        flightVM.sceneView = scnView
 
         return scnView
     }

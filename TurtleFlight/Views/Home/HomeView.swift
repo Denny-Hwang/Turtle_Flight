@@ -530,7 +530,7 @@ struct HomeView: View {
                 showCharacterSelect = true
             case .onboarding:
                 showOnboarding = true
-            case .freeflight, .tour, .freeflightResult:
+            case .freeflight, .tour, .freeflightResult, .soakFree:
                 showQuickFlight = true
             case .stage:
                 missionVM.selectStage(0)

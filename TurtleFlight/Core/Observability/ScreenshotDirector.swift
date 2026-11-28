@@ -45,6 +45,10 @@ enum ScreenshotScene: String {
     /// autopilot with no freeze, so it keeps flying for as long as the
     /// perf probe records.
     case soak
+    /// Device soak in Free Flight (`verify.sh --free`): flies straight
+    /// with set pieces and companions on their normal rhythm, so the
+    /// perf probe measures them (plan W6).
+    case soakFree = "soak-free"
 }
 
 enum ScreenshotDirector {
@@ -52,6 +56,11 @@ enum ScreenshotDirector {
         UserDefaults.standard.string(forKey: "TFScreenshot").flatMap(ScreenshotScene.init(rawValue:))
 
     static var isActive: Bool { scene != nil }
+
+    /// Screenshot runs keep Free Flight deterministic (no set pieces or
+    /// companions) — except the Free Flight soak, which is there to
+    /// measure them.
+    static var allowsFreeFlightExtras: Bool { scene == nil || scene == .soakFree }
 
     /// `stage-result`: which campaign stage to fly.
     static var stageIndex: Int { UserDefaults.standard.integer(forKey: "TFStageIndex") }

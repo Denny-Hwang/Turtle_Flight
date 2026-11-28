@@ -532,6 +532,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "Turbo rechargé !";
 "setpiece.toast.lift" = "Porté par le vent !";
+"companion.geese.name" = "Oies";
+"companion.sandpipers.name" = "Bécasseaux";
+"companion.pigeons.name" = "Pigeons";
+"companion.magpies.name" = "Pies";
+"companion.eagles.name" = "Aigles";
+"companion.satellites.name" = "Petits satellites";
+"companion.dolphins.name" = "Dauphins";
+"companion.toast" = "Vol en compagnie : %1$@ +%2$lld ★";
+"album.skydex.title" = "Guide du ciel";
+"album.skydex.hint" = "Merveilles croisées en vol libre. Les trois d'un monde : +%1$lld ★. Les 21 : +%2$lld ★.";
+"album.skydex.complete" = "Tout vu";
 "album.wonders.title" = "Merveilles du ciel";
 "album.wonders.hint" = "Des spectacles rares qui apparaissent parfois en Vol libre. Approche-toi pour un bonus.";
 "album.milestone.half.format" = "Moitié : +%lld ★";

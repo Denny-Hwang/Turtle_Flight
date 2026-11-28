@@ -533,6 +533,17 @@
 "setpiece.toast.stars" = "%1$@ +%2$lld ★";
 "setpiece.toast.boost" = "Boost refilled!";
 "setpiece.toast.lift" = "Riding the updraft!";
+"companion.geese.name" = "Geese";
+"companion.sandpipers.name" = "Sandpipers";
+"companion.pigeons.name" = "Pigeons";
+"companion.magpies.name" = "Magpies";
+"companion.eagles.name" = "Eagles";
+"companion.satellites.name" = "Little Satellites";
+"companion.dolphins.name" = "Dolphins";
+"companion.toast" = "Flew with the %1$@ +%2$lld ★";
+"album.skydex.title" = "Sky Guide";
+"album.skydex.hint" = "Sights met along the way in Free Flight. All three in a world: +%1$lld ★. All 21: +%2$lld ★.";
+"album.skydex.complete" = "All seen";
 "album.wonders.title" = "Sky Wonders";
 "album.wonders.hint" = "Rare sights that sometimes appear in Free Flight. Fly up close for a bonus.";
 "album.milestone.half.format" = "Half: +%lld ★";

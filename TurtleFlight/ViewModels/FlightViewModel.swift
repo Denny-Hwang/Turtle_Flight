@@ -226,6 +226,20 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     var activeSetPieces: [ActiveSetPiece] = []
     var setPieceClock: Float = 0
     var setPieceLastPosition: SCNVector3?
+    /// Companion flocks (Free Flight, W4). Render-thread only.
+    var companionScheduler: CompanionScheduler?
+    var companionFlight: CompanionFlight?
+    var companionNode: SCNNode?
+    var companionClock: Float = 0
+    var companionWorld: MapTheme = .sky
+    /// The flight's view, for `prepare` (shader warm-up). Main only.
+    weak var sceneView: SCNView?
+    /// Set pieces / companion flock built ahead of time off the render
+    /// thread (first spawn used to cost a ~280 ms hitch on the iPhone XS:
+    /// building + first-time shader compile). Behind `prebuiltLock`.
+    var prebuiltPieces: [SetPiece: SCNNode] = [:]
+    var prebuiltCompanion: SCNNode?
+    let prebuiltLock = NSLock()
     /// Last friendly bump off a landmark (debounces sound + haptic).
     var lastLandmarkBumpTime: TimeInterval = 0
     /// Scene root the wonder is added to.
@@ -954,6 +968,8 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         if let pos = characterNode?.position {
             missionEngine?.update(deltaTime: deltaTime, playerPosition: pos)
             updateSightseeing(deltaTime: deltaTime, position: pos, heading: flightState.heading)
+            updateCompanions(deltaTime: deltaTime, position: pos, heading: flightState.heading,
+                             speed: flightState.speed / 3.6)
         }
         observeRingCrossings()
         #if DEBUG
