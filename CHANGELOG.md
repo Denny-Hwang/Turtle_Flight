@@ -19,7 +19,22 @@ window.
   - The trail fades once it is behind or 45 s old.
   - It is postponed while a sky wonder is showing or a set piece is within 700 m ahead.
 - A flown ring shrinks away. A swelling pop filled the screen in the simulator because the ring is right by the camera when it is flown.
-- One new string in all 7 locales.
+- One new string in all 7 locales (469 keys).
+
+### Reactive music layer (2026-11-27, plan M4)
+- Each world now has an energy layer, `bgm_<world>_energy`: the same form and length as the song, with driving percussion and a high sixteenth-note arpeggio. It is silent in the breakdown and encoded at 64 kbps.
+- `AudioManager` starts the song and the layer on the same device-clock tick, and lines them up again whenever playback resumes.
+- The layer fades in by `MusicEnergy.level` with a 0.8 s fade:
+
+  | Situation | Energy layer |
+  |---|---|
+  | Boost | 100% |
+  | Combo 5+ | 85% |
+  | Combo 3+ | 60% |
+  | Last 30 s of a timed course | 55% |
+  | Paused | 0% |
+
+- Bundled audio grew from 17 MB to 24 MB.
 
 ### Companions + sky guide (2026-11-27, plan W4/W5)
 - Free Flight companions:
@@ -34,7 +49,33 @@ window.
   - All three in a world pay +3 ★; all 21 pay +15 ★.
   - Paid with the Free Flight result like postcard milestones.
   - Claimed ids reuse `claimedPostcardRewards` with a `setpiece.` prefix, so no new saved field.
-- 11 new strings in all 7 locales.
+- 11 new strings in all 7 locales (468 keys).
+
+### World music: a real form instead of a 40 s loop (2026-11-26, plan M1–M3)
+- Each world's song is now a 2–3 minute form, A → A′ → B → breakdown → A″ → B′ → A‴, that loops back to A. Before, one 8-chord progression looped for 37–53 s.
+- B has its own chord progression and swaps the lead and counter voices.
+- One motif per song is developed rather than copied:
+  - stated, then sequenced up and down the scale
+  - inverted in B
+  - ornamented with passing notes in A‴
+  - phrases end on a half cadence the first time and on the tonic after that
+- Texture and dynamics follow the form:
+  - drum intensity changes by section: light, full, half-time, none, then driving
+  - a fill every 4 bars in A sections
+  - a crescendo into the breakdown, where drums and bass drop out
+  - accents on strong beats and ±8 ms timing variation
+- Still fully synthesised offline (`scripts/audio/render_assets.swift`). Vehicle and effect files are byte-identical.
+- Bundled audio grew from 6.4 MB to 17 MB.
+- Not yet heard by a person: owner ear check (H4 / A1) pending.
+
+### Ring path, course climb limit, miss feedback (2026-11-26, plan R1/R3/R4)
+- The ring after the target is shown bright and opaque. Rings further on are dimmed to 50%. Seven sparkle dots light up in turn from the target ring toward the next one, so the next turn reads early.
+- Audit: some courses asked for climbs steeper than Easy can fly.
+  - Mountain Cross needed about 2.0 m up per metre forward. Some Daily Run days needed about 1.7, and route 23 about 1.4.
+  - `CourseGenerator.limitClimb` now caps every step at a slope of 0.5. That is about 28 m/s at cruise, against Easy's 40 m/s.
+  - The cap applies to all courses and to Sky Run chunks. `CourseClimbTests` enforces it.
+- A missed ring flashes red as it fades, and the screen-edge guide pops for a moment.
+- The ring guide now measures from the chase camera. Before, it showed for a ring a little above and ahead that was plainly on screen.
 
 ### Set pieces along the route (2026-11-26, plan W1–W3)
 - Free Flight now places a set piece ahead of the player every 25–35 s. It appears 420–560 m ahead at the player's own height, and is skipped near landmarks and during a sky wonder. At most 2 are in the sky at once.
@@ -46,7 +87,23 @@ window.
   - Seeing a piece for the first time shows a "New sight" banner (`SetPieceLog`, kept on the device).
 - Static parts are baked into one mesh per material (`SetPieceFactory.bake`, reusing `PropMesh`). `flattenedClone()` lost rotated parents and produced empty meshes in tests.
 - Not in missions. Screenshot runs skip set pieces unless `-TFSetPiece` is passed.
-- 26 new strings in all 7 locales (440 keys).
+- 26 new strings in all 7 locales (457 keys with the joystick strings).
+
+### On-screen joystick + control modes (2026-11-26)
+- Settings → Controls now offers three ways to fly:
+  - **Tilt** (default).
+  - **Joystick**: a floating thumb stick in the lower half of the screen; the sensor and the calibration are skipped.
+  - **Mixed**: tilt to turn, thumb for up and down, so the phone never has to be tipped away.
+  - Options: invert up/down, and stick on the left (Boost moves right).
+- The last onboarding page asks "How do you want to fly?" (tilt or finger).
+  The calibration card has a "Use my finger instead" link.
+- `StickInput` filters the stick on the render thread, frame-rate
+  independent, with the level's curve. It fixes the old drag fallback,
+  which never reached full input while the finger was still and kept
+  65–92% of the turn after the finger lifted. A full diagonal is full turn
+  plus full climb. Devices without a gyro fly with the joystick.
+- 19 new strings × 7 locales; the 2 old touch-toggle strings were removed
+  (431 keys).
 
 ### Tilt comfort + ring flow (2026-11-26, owner device feedback)
 - Steering and climbing have their own tilt ranges (`AxisResponse`): full

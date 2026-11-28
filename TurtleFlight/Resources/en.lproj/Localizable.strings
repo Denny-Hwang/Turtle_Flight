@@ -79,6 +79,7 @@
 "flight.calibrate.title" = "Hold it how you like";
 "flight.calibrate.body" = "We'll use this pose as neutral. Hold still for a moment.";
 "flight.calibrate.now" = "Start now";
+"flight.calibrate.useStick" = "Use my finger instead";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Exit";
 "flight.control.boost"     = "Boost";
@@ -275,6 +276,12 @@
 "onboarding.try.cta"           = "Try Tilt";
 "onboarding.try.exit"          = "Done";
 "onboarding.try.timeLeft.format" = "%llds";
+"onboarding.control.title" = "How do you want to fly?";
+"onboarding.control.tilt" = "Tilt";
+"onboarding.control.tilt.body" = "Steer by tilting the device";
+"onboarding.control.stick" = "Finger";
+"onboarding.control.stick.body" = "Steer with an on-screen joystick";
+"onboarding.control.footer" = "You can change this any time in Settings";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "Share";
@@ -368,8 +375,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "Controls";
-"settings.controls.touch"         = "Touch controls";
-"settings.controls.touch.caption" = "Drag on the screen to steer instead of tilting. Good for lying down, car rides, or if tilting feels uncomfortable.";
+"settings.controls.mode" = "How to fly";
+"settings.controls.mode.tilt" = "Tilt";
+"settings.controls.mode.joystick" = "Joystick";
+"settings.controls.mode.mixed" = "Mixed";
+"settings.controls.mode.tilt.caption" = "Tilt left or right to turn. Tip forward to dive, stand it up to climb.";
+"settings.controls.mode.joystick.caption" = "Push the stick at the bottom of the screen with your thumb. No tilting needed, so it works lying down or in a car.";
+"settings.controls.mode.mixed.caption" = "Tilt left or right to turn, and use your thumb to go up and down. No tipping forward, so the screen stays easy to see.";
+"settings.controls.stickInvert" = "Invert stick up/down";
+"settings.controls.stickLeft" = "Joystick on the left";
 "flight.control.view"             = "View";
 "a11y.cleanView.label"            = "Hide or show the flight gauges";
 
@@ -543,5 +557,8 @@
 "flight.control.lookAtMe" = "Look at me";
 "flight.control.lookAhead" = "Look ahead";
 "a11y.lookAtMe.label" = "Turn your friend to face you or to face where it is flying";
+"a11y.joystick" = "Joystick";
+"a11y.joystick.hint" = "Push left or right to turn, up to climb";
+"a11y.joystick.hint.vertical" = "Push up to climb, down to dive";
 "settings.controls.lookAtMe" = "Friend looks at me while flying";
 "settings.controls.simpleHUD" = "Quiet gauges in free flight";

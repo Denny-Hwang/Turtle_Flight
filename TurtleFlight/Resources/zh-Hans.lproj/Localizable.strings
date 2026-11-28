@@ -80,6 +80,7 @@
 "flight.calibrate.title" = "用舒服的姿势拿着";
 "flight.calibrate.body" = "我们会以现在的姿势为基准，请稍微保持不动。";
 "flight.calibrate.now" = "立即开始";
+"flight.calibrate.useStick" = "改用手指操控";
 "flight.control.pause"     = "暂停";
 "flight.control.exit"      = "退出";
 "flight.control.boost"     = "加速";
@@ -276,6 +277,12 @@
 "onboarding.try.cta"           = "试着倾斜";
 "onboarding.try.exit"          = "完成";
 "onboarding.try.timeLeft.format" = "%lld 秒";
+"onboarding.control.title" = "想怎么飞？";
+"onboarding.control.tilt" = "倾斜";
+"onboarding.control.tilt.body" = "倾斜设备来操控";
+"onboarding.control.stick" = "手指";
+"onboarding.control.stick.body" = "用屏幕上的摇杆操控";
+"onboarding.control.footer" = "随时可以在设置中更改";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "分享";
@@ -368,8 +375,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "操控";
-"settings.controls.touch"         = "触屏操控";
-"settings.controls.touch.caption" = "拖动屏幕来操控，不用倾斜设备。适合躺着玩、坐车时，或觉得倾斜不舒服的时候。";
+"settings.controls.mode" = "操控方式";
+"settings.controls.mode.tilt" = "倾斜";
+"settings.controls.mode.joystick" = "摇杆";
+"settings.controls.mode.mixed" = "混合";
+"settings.controls.mode.tilt.caption" = "左右倾斜来转弯，向前倾下降，立起来上升。";
+"settings.controls.mode.joystick.caption" = "用拇指推动屏幕下方的摇杆飞行。不用倾斜设备，躺着或坐车也很方便。";
+"settings.controls.mode.mixed.caption" = "左右倾斜来转弯，用拇指控制上下。不用前后倾斜，屏幕看得更清楚。";
+"settings.controls.stickInvert" = "摇杆上下反转";
+"settings.controls.stickLeft" = "摇杆放在左边";
 "flight.control.view"             = "视图";
 "a11y.cleanView.label"            = "隐藏或显示飞行仪表";
 
@@ -543,5 +557,8 @@
 "flight.control.lookAtMe" = "看我";
 "flight.control.lookAhead" = "看前面";
 "a11y.lookAtMe.label" = "让伙伴面向你，或面向飞行方向";
+"a11y.joystick" = "摇杆";
+"a11y.joystick.hint" = "左右推动转弯，向上推上升";
+"a11y.joystick.hint.vertical" = "向上推上升，向下推下降";
 "settings.controls.lookAtMe" = "飞行时伙伴看着我";
 "settings.controls.simpleHUD" = "自由飞行时简化仪表";
