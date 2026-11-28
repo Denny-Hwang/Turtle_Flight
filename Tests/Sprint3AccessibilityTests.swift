@@ -5,77 +5,22 @@ import SwiftUI
 /// Sprint 3 — accessibility / portability pass.
 ///
 /// Pins:
-///   1. GyroController fallback path: when the gyro is unavailable, the
-///      `injectFallback(...)` API moves the published roll/pitch values
-///      and the auto-level timer reflects activity.
+///   1. No gyro → the on-screen stick drives the flight.
 ///   2. DeviceCanvas leaves iPhones at 1x and scales iPads up.
 ///   3. Theme.Typography Dynamic Type variants exist as `Font` values
 ///      (compile-time check only — visual assertions belong in UI tests).
 final class Sprint3AccessibilityTests: XCTestCase {
 
-    // MARK: - Gyro fallback
+    // MARK: - No-gyro fallback
+    // The drag fallback moved to the on-screen stick (`StickInput`,
+    // 2026-11-26); `JoystickTests` covers the filter. Here: a device
+    // without a gyro always flies with the stick.
 
-    func testInjectFallbackMovesPublishedInputs() {
-        let controller = GyroController(sensitivity: .easy)
-        // Simulate "no real gyro available" — that's the default in the
-        // unit-test target since CMMotionManager.isDeviceMotionAvailable
-        // is false on a Mac host runner.
-        XCTAssertFalse(controller.isAvailable,
-                       "Test runner has no gyro; precondition for this test")
-
-        // Drag right-and-up.
-        controller.injectFallback(rollNormalized: 1.0, pitchNormalized: 1.0)
-        // After one sample the smoothing has only applied alpha (0.08)
-        // of the curved input, so we expect SOMETHING > 0 but not the
-        // full rail. The exact value depends on the curve; just sanity-
-        // check sign + non-zero.
-        XCTAssertGreaterThan(controller.rollInput, 0,
-                             "Right drag should produce positive roll")
-        XCTAssertGreaterThan(controller.pitchInput, 0,
-                             "Up drag should produce positive pitch")
-
-        // Sustained input drives values closer to 1.0 over time.
-        for _ in 0..<200 {
-            controller.injectFallback(rollNormalized: 1.0, pitchNormalized: 0)
-        }
-        XCTAssertGreaterThan(controller.rollInput, 0.5,
-                             "Sustained right drag should accumulate toward 1.0")
-    }
-
-    func testInjectFallbackClampsOutOfRangeInputs() {
-        let controller = GyroController(sensitivity: .normal)
-        controller.injectFallback(rollNormalized: 5.0, pitchNormalized: -5.0)
-        XCTAssertLessThanOrEqual(controller.rollInput, 1.0)
-        XCTAssertGreaterThanOrEqual(controller.pitchInput, -1.0)
-    }
-
-    func testReleaseFallbackDecaysSmoothing() {
-        let controller = GyroController(sensitivity: .easy)
-        // Drive input up.
-        for _ in 0..<200 {
-            controller.injectFallback(rollNormalized: 1.0, pitchNormalized: 0)
-        }
-        let before = controller.rollInput
-        XCTAssertGreaterThan(before, 0.3)
-
-        // Release for a bunch of frames.
-        for _ in 0..<200 {
-            controller.releaseFallback()
-        }
-        XCTAssertLessThan(controller.rollInput, before * 0.1,
-                          "After many release frames the smoothing should decay near zero")
-    }
-
-    func testInjectFallbackIsNoOpWhenGyroIsAvailable() {
-        // We can't easily fake `isAvailable=true` without intercepting
-        // CMMotionManager, but we can flip the published flag directly
-        // in tests since it's `@Published var`. That covers the public
-        // contract: "ignored when a real gyro is feeding samples".
-        let controller = GyroController(sensitivity: .easy)
-        controller.isAvailable = true
-        controller.injectFallback(rollNormalized: 1.0, pitchNormalized: 1.0)
-        XCTAssertEqual(controller.rollInput, 0)
-        XCTAssertEqual(controller.pitchInput, 0)
+    func testNoGyroMeansJoystick() {
+        let vm = FlightViewModel()
+        XCTAssertFalse(vm.gyroController.isAvailable, "test host has no gyro")
+        vm.refreshControlMode()
+        XCTAssertEqual(vm.controlMode, .joystick)
     }
 
     // MARK: - Device canvas (iPad scale-up)
@@ -166,17 +111,6 @@ final class Sprint3AccessibilityTests: XCTestCase {
     }
 
     // MARK: - Touch controls preference
-
-    func testTouchControlPreferencePersistsAndDefaultsOff() {
-        let key = GyroController.touchControlKey
-        let saved = UserDefaults.standard.object(forKey: key)
-        defer { UserDefaults.standard.set(saved, forKey: key) }
-        UserDefaults.standard.removeObject(forKey: key)
-        XCTAssertFalse(GyroController.touchControlEnabled, "tilt stays the default")
-        GyroController.touchControlEnabled = true
-        XCTAssertTrue(GyroController.touchControlEnabled)
-        XCTAssertTrue(GyroController().usesTouchInput)
-    }
 
     func testGatePulseOnlyRewardsCleanPasses() {
         XCTAssertEqual(FlightViewModel.gatePulseStrength(for: .bullseye), 1.0)

@@ -79,6 +79,7 @@
 "flight.calibrate.title" = "Tiens-le comme tu veux";
 "flight.calibrate.body" = "Cette position sera ta position neutre. Ne bouge pas un instant.";
 "flight.calibrate.now" = "Commencer";
+"flight.calibrate.useStick" = "Utiliser plutôt le doigt";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Quitter";
 "flight.control.boost"     = "Turbo";
@@ -275,6 +276,12 @@
 "onboarding.try.cta"           = "Essayer l'inclinaison";
 "onboarding.try.exit"          = "OK";
 "onboarding.try.timeLeft.format" = "%lld s";
+"onboarding.control.title" = "Comment veux-tu voler ?";
+"onboarding.control.tilt" = "En inclinant";
+"onboarding.control.tilt.body" = "Pilote en inclinant l'appareil";
+"onboarding.control.stick" = "Au doigt";
+"onboarding.control.stick.body" = "Pilote avec un joystick à l'écran";
+"onboarding.control.footer" = "Modifiable à tout moment dans Réglages";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "Partager";
@@ -367,8 +374,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "Commandes";
-"settings.controls.touch"         = "Commandes tactiles";
-"settings.controls.touch.caption" = "Fais glisser ton doigt sur l’écran pour piloter au lieu d’incliner l’appareil. Pratique allongé, en voiture ou si l’inclinaison est inconfortable.";
+"settings.controls.mode" = "Mode de pilotage";
+"settings.controls.mode.tilt" = "Inclinaison";
+"settings.controls.mode.joystick" = "Joystick";
+"settings.controls.mode.mixed" = "Mixte";
+"settings.controls.mode.tilt.caption" = "Inclinez à gauche ou à droite pour tourner. Penchez vers l'avant pour descendre, redressez pour monter.";
+"settings.controls.mode.joystick.caption" = "Poussez le joystick en bas de l'écran avec le pouce. Pas besoin d'incliner : idéal allongé ou en voiture.";
+"settings.controls.mode.mixed.caption" = "Inclinez à gauche ou à droite pour tourner, et montez ou descendez avec le pouce. Sans pencher l'appareil, l'écran reste lisible.";
+"settings.controls.stickInvert" = "Inverser haut/bas du joystick";
+"settings.controls.stickLeft" = "Joystick à gauche";
 "flight.control.view"             = "Vue";
 "a11y.cleanView.label"            = "Masquer ou afficher les instruments de vol";
 
@@ -492,6 +506,32 @@
 "wonder.glowTide.name" = "Marée lumineuse";
 "wonder.toast.format" = "Regarde ! %@";
 "wonder.bonus.toast" = "Vœu exaucé ! +%lld ★";
+"setpiece.rainbowArch.name" = "Arche arc-en-ciel";
+"setpiece.cloudTunnel.name" = "Tunnel de nuages";
+"setpiece.thermal.name" = "Courant ascendant";
+"setpiece.sandWindRing.name" = "Anneau de sable";
+"setpiece.cactusGate.name" = "Porte des cactus";
+"setpiece.mirageOasis.name" = "Oasis mirage";
+"setpiece.flagLine.name" = "Guirlande de fanions";
+"setpiece.laundryBridge.name" = "Pont du linge";
+"setpiece.bubbleFountain.name" = "Fontaine à bulles";
+"setpiece.lanternTunnel.name" = "Tunnel de lanternes";
+"setpiece.roofGate.name" = "Porte au toit de tuiles";
+"setpiece.kiteWind.name" = "Roue de cerfs-volants";
+"setpiece.waterfallArch.name" = "Arche cascade";
+"setpiece.logBridge.name" = "Pont de rondin";
+"setpiece.fireflies.name" = "Bosquet des lucioles";
+"setpiece.ringedPlanet.name" = "Planète à anneaux";
+"setpiece.constellationGate.name" = "Porte des constellations";
+"setpiece.cometTail.name" = "Queue de comète";
+"setpiece.kelpArch.name" = "Arche d'algues";
+"setpiece.coralGate.name" = "Porte de corail";
+"setpiece.bubbleColumn.name" = "Colonne de bulles";
+"setpiece.toast.new" = "Nouvelle merveille : %@";
+"setpiece.toast.newStars" = "Nouvelle merveille : %1$@ +%2$lld ★";
+"setpiece.toast.stars" = "%1$@ +%2$lld ★";
+"setpiece.toast.boost" = "Turbo rechargé !";
+"setpiece.toast.lift" = "Porté par le vent !";
 "album.wonders.title" = "Merveilles du ciel";
 "album.wonders.hint" = "Des spectacles rares qui apparaissent parfois en Vol libre. Approche-toi pour un bonus.";
 "album.milestone.half.format" = "Moitié : +%lld ★";
@@ -504,5 +544,8 @@
 "flight.control.lookAtMe" = "Regarde-moi";
 "flight.control.lookAhead" = "Regarde devant";
 "a11y.lookAtMe.label" = "Tourne ton ami vers toi ou vers là où il vole";
+"a11y.joystick" = "Joystick";
+"a11y.joystick.hint" = "Poussez à gauche ou à droite pour tourner, vers le haut pour monter";
+"a11y.joystick.hint.vertical" = "Poussez vers le haut pour monter, vers le bas pour descendre";
 "settings.controls.lookAtMe" = "Mon ami me regarde en vol";
 "settings.controls.simpleHUD" = "Jauges discrètes en vol libre";

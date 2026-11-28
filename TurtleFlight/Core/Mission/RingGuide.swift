@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import simd
 
 /// Where the target ring is, seen from the character. Drives the
 /// screen-edge guide that appears when the ring is out of view
@@ -20,11 +21,32 @@ struct RingGuide: Equatable, Sendable {
                          distance: (flat * flat + dy * dy).squareRoot())
     }
 
+    /// Seen from the chase camera (15 m behind, 5 m above the character),
+    /// which is what decides whether the ring is on screen. Measuring
+    /// from the character overstated the angle up close: a ring 110 m
+    /// ahead and a little above read as off-screen while plainly in view.
+    /// `distance` stays the character's distance to the ring.
+    static func fromCamera(ringDelta d: SIMD3<Float>, heading: Float) -> RingGuide {
+        let h = heading * .pi / 180
+        let forward = SIMD2<Float>(sin(h), -cos(h))
+        let cam = SIMD3<Float>(d.x + forward.x * cameraBack, d.y - cameraUp, d.z + forward.y * cameraBack)
+        let flat = (cam.x * cam.x + cam.z * cam.z).squareRoot()
+        var bearing = Double(atan2(cam.x, -cam.z) - h)
+        while bearing > .pi { bearing -= 2 * .pi }
+        while bearing < -.pi { bearing += 2 * .pi }
+        return RingGuide(bearing: bearing,
+                         elevation: Double(atan2(cam.y, max(flat, 0.001))),
+                         distance: simd_length(d))
+    }
+
+    static let cameraBack = Constants.Camera.followDistance
+    static let cameraUp = Constants.Camera.followHeight
+
     // The chase camera sits 15 m behind and 5 m above the character and
     // looks at it, so it points ~18° down; the view is 70° tall and, in
     // landscape, ~113° wide. A far point at elevation e appears at
     // e + 18° from the screen centre.
-    static let cameraPitchDown = 18.0 * .pi / 180
+    static let cameraPitchDown = atan(Double(Constants.Camera.followHeight / Constants.Camera.followDistance))
     static let halfVerticalFOV = 35.0 * .pi / 180
     static let halfHorizontalFOV = 56.0 * .pi / 180
 
@@ -36,7 +58,7 @@ struct RingGuide: Equatable, Sendable {
     /// The ring is comfortably inside the view (with a margin so the guide
     /// doesn't flicker at the edge).
     var isOnScreen: Bool {
-        let margin = 0.8
+        let margin = 0.88
         guard !isBehind else { return false }
         let up = elevation + Self.cameraPitchDown
         return abs(bearing) < Self.halfHorizontalFOV * margin

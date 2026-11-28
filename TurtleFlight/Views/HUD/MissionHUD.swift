@@ -19,16 +19,22 @@ struct MissionHUD: View {
     /// `flightVM.judgementEvent`; fades out on its own.
     @State private var calloutEvent: FlightViewModel.JudgementEvent?
     @State private var calloutVisible = false
+    /// Ring guide pops for a moment after a miss.
+    @State private var guideEmphasized = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-            RingGuideIndicator(guide: flightVM.ringGuide)
+            RingGuideIndicator(guide: flightVM.ringGuide, emphasized: guideEmphasized)
             judgementCallout
                 .onChange(of: flightVM.judgementEvent) { event in
                     guard let event else { return }
                     calloutEvent = event
+                    if event.judgement == .miss {
+                        guideEmphasized = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { guideEmphasized = false }
+                    }
                     if reduceMotion {
                         calloutVisible = true
                     } else {

@@ -26,6 +26,43 @@ window.
 - Bundled audio grew from 6.4 MB to 17 MB.
 - Not yet heard by a person: owner ear check (H4 / A1) pending.
 
+### Ring path, course climb limit, miss feedback (2026-11-26, plan R1/R3/R4)
+- The ring after the target is shown bright and opaque. Rings further on are dimmed to 50%. Seven sparkle dots light up in turn from the target ring toward the next one, so the next turn reads early.
+- Audit: some courses asked for climbs steeper than Easy can fly.
+  - Mountain Cross needed about 2.0 m up per metre forward. Some Daily Run days needed about 1.7, and route 23 about 1.4.
+  - `CourseGenerator.limitClimb` now caps every step at a slope of 0.5. That is about 28 m/s at cruise, against Easy's 40 m/s.
+  - The cap applies to all courses and to Sky Run chunks. `CourseClimbTests` enforces it.
+- A missed ring flashes red as it fades, and the screen-edge guide pops for a moment.
+- The ring guide now measures from the chase camera. Before, it showed for a ring a little above and ahead that was plainly on screen.
+
+### Set pieces along the route (2026-11-26, plan W1–W3)
+- Free Flight now places a set piece ahead of the player every 25–35 s. It appears 420–560 m ahead at the player's own height, and is skipped near landmarks and during a sky wonder. At most 2 are in the sky at once.
+- 21 original pieces, 3 per world:
+  - 14 to fly through, worth +1 ★ each: arches, tunnels and gates.
+  - 2 updrafts that lift 30 m/s without costing speed.
+  - 3 boost refills (+50% gauge).
+  - 2 star bundles (+3 ★).
+  - Seeing a piece for the first time shows a "New sight" banner (`SetPieceLog`, kept on the device).
+- Static parts are baked into one mesh per material (`SetPieceFactory.bake`, reusing `PropMesh`). `flattenedClone()` lost rotated parents and produced empty meshes in tests.
+- Not in missions. Screenshot runs skip set pieces unless `-TFSetPiece` is passed.
+- 26 new strings in all 7 locales (457 keys with the joystick strings).
+
+### On-screen joystick + control modes (2026-11-26)
+- Settings → Controls now offers three ways to fly:
+  - **Tilt** (default).
+  - **Joystick**: a floating thumb stick in the lower half of the screen; the sensor and the calibration are skipped.
+  - **Mixed**: tilt to turn, thumb for up and down, so the phone never has to be tipped away.
+  - Options: invert up/down, and stick on the left (Boost moves right).
+- The last onboarding page asks "How do you want to fly?" (tilt or finger).
+  The calibration card has a "Use my finger instead" link.
+- `StickInput` filters the stick on the render thread, frame-rate
+  independent, with the level's curve. It fixes the old drag fallback,
+  which never reached full input while the finger was still and kept
+  65–92% of the turn after the finger lifted. A full diagonal is full turn
+  plus full climb. Devices without a gyro fly with the joystick.
+- 19 new strings × 7 locales; the 2 old touch-toggle strings were removed
+  (431 keys).
+
 ### Tilt comfort + ring flow (2026-11-26, owner device feedback)
 - Steering and climbing have their own tilt ranges (`AxisResponse`): full
   climb at 12–15°, full turn at 18–25°, smaller dead zones and gentler
