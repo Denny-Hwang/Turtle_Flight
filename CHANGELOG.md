@@ -9,6 +9,20 @@ window.
 
 ## [Unreleased]
 
+### Performance probe: terrain work + scene snapshot (2026-11-28, benchmark B0)
+- `PerfProbe` (`-TFPerfProbe YES`) now logs extra columns each second:
+  - detailed chunks built, the slowest chunk build, and the slowest far-terrain rebuild, all timed where they run on the render thread;
+  - every 10 s, a scene snapshot (`SceneStats`): visible nodes, triangles, draw elements and particle systems.
+- `scripts/device/perf_summary.py` replaces the inline summary in `verify.sh`.
+  - It reads old and new CSVs.
+  - It counts how many hitch seconds (a frame over 20 ms) overlap terrain work.
+- First results (iPhone XS, free flight in sky, city and Seoul, plus Sky Run): all PASS.
+  - Nearly every remaining hitch is a chunk-boundary crossing: 47 of 49 hitch seconds overlap terrain work.
+  - A crossing builds three chunks in one frame, at 6–18 ms each.
+  - Far-terrain rebuilds stay under 3.1 ms.
+  - Scenes hold 290k–570k triangles.
+  - Next step: build chunks off the render thread (B4-2).
+
 ### Free Flight ring trails (2026-11-27, plan R2)
 - Free Flight had no rings. Now a trail of five mint rings appears ahead.
   - The first trail comes 28–38 s in. After that, a new one comes 30–40 s after the previous trail ends.
