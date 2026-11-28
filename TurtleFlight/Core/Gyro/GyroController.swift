@@ -21,20 +21,9 @@ final class GyroController: ObservableObject {
     /// 0…1 — how long the phone has been held still, for the overlay ring.
     @Published private(set) var calibrationProgress: Double = 0
 
-    /// Player preference (Settings → Controls): steer by dragging on the
-    /// screen instead of tilting. Tilt can be uncomfortable — or simply
-    /// impossible lying down or in a car — and a large screen makes it
-    /// worse, so the drag path is a first-class option rather than a
-    /// Simulator-only fallback. Persisted; default off.
-    static let touchControlKey = "controls.touchEnabled"
-    static var touchControlEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: touchControlKey) }
-        set { UserDefaults.standard.set(newValue, forKey: touchControlKey) }
-    }
-
-    /// True when drag input should drive the flight: no gyro, or the
-    /// player chose touch controls.
-    var usesTouchInput: Bool { !isAvailable || Self.touchControlEnabled }
+    /// The joystick owns the input: ignore the sensor and skip the
+    /// start-of-flight calibration (`ControlPreferences.mode`).
+    var sensorIgnored: Bool { ControlPreferences.mode == .joystick }
 
     // MARK: - Properties
     private let motionManager = CMMotionManager()
@@ -82,10 +71,10 @@ final class GyroController: ObservableObject {
     /// Find the player's neutral pose afresh: inputs read zero until the
     /// phone has been held still briefly (or `TiltCalibrator.timeout`
     /// passes), then `completion` runs on main. Finishes at once when the
-    /// sensor is not driving the flight (Simulator, touch controls).
+    /// sensor is not driving the flight (Simulator, joystick mode).
     func beginCalibration(completion: (() -> Void)? = nil) {
         resetSmoothing()
-        guard isAvailable, !Self.touchControlEnabled else {
+        guard isAvailable, !sensorIgnored else {
             isCalibrating = false
             calibrationProgress = 1
             completion?()
@@ -112,55 +101,6 @@ final class GyroController: ObservableObject {
         profile = SensitivityProfile.profile(for: level)
     }
 
-    // MARK: - Fallback (Simulator / iPad-without-gyro)
-
-    /// Inject a manual roll/pitch sample. Each component is a tilt
-    /// approximation in [-1, 1] — typically sourced from a touch-drag
-    /// gesture on the SCNView when `isAvailable == false`. Goes through
-    /// the same dead-zone → response-curve → low-pass filter pipeline
-    /// as a real gyro sample so the in-flight feel matches.
-    ///
-    /// Idempotent if `isAvailable == true` — when a real gyro is
-    /// providing samples we ignore manual injection so an accidental
-    /// touch on a connected device doesn't fight the sensor.
-    func injectFallback(rollNormalized: Double, pitchNormalized: Double) {
-        guard usesTouchInput else { return }
-
-        let clampedRoll  = rollNormalized.clamped(to: -1...1)
-        let clampedPitch = pitchNormalized.clamped(to: -1...1)
-
-        // Map the [-1, 1] stick onto the same tilt range a full sensor
-        // deflection covers, so the dead zone + curve below are shared.
-        let curvedRoll  = profile.roll.input(for: clampedRoll * profile.roll.fullTilt)
-        let curvedPitch = profile.pitch.input(for: clampedPitch * profile.pitch.fullTilt)
-
-        let alpha = profile.smoothingAlpha
-        smoothedRoll  = smoothedRoll  * (1 - alpha) + curvedRoll  * alpha
-        smoothedPitch = smoothedPitch * (1 - alpha) + curvedPitch * alpha
-
-        rollInput  = smoothedRoll.clamped(to: -1...1)
-        pitchInput = smoothedPitch.clamped(to: -1...1)
-
-        if abs(rollInput) > 0.05 || abs(pitchInput) > 0.05 {
-            lastInputTime = Date()
-        }
-        timeSinceLastInput = Date().timeIntervalSince(lastInputTime)
-    }
-
-    /// Drop fallback input back to neutral. Called when the user lifts
-    /// their finger off the SCNView so the auto-level path can kick in
-    /// after the configured delay.
-    func releaseFallback() {
-        guard usesTouchInput else { return }
-        // Don't slam to zero — let the smoothing decay so the camera
-        // doesn't jump back to neutral instantly.
-        let alpha = profile.smoothingAlpha
-        smoothedRoll  = smoothedRoll  * (1 - alpha)
-        smoothedPitch = smoothedPitch * (1 - alpha)
-        rollInput  = smoothedRoll.clamped(to: -1...1)
-        pitchInput = smoothedPitch.clamped(to: -1...1)
-    }
-
     // MARK: - Private Methods
 
     private func resetSmoothing() {
@@ -185,9 +125,9 @@ final class GyroController: ObservableObject {
     /// One sensor sample, already in landscape screen terms. Internal so
     /// tests can drive the pipeline without CoreMotion.
     func processTilt(_ tilt: ScreenTilt, at time: TimeInterval) {
-        // Touch controls own the input; ignoring the sensor here keeps
+        // Joystick mode owns the input; ignoring the sensor here keeps
         // the two from fighting.
-        guard !Self.touchControlEnabled else { return }
+        guard !sensorIgnored else { return }
         latestTilt = tilt
 
         if isCalibrating {
