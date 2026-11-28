@@ -10,6 +10,7 @@
 - `docs/VISUAL_AUDIO_PLAN.md` — 지형·랜드마크·비주얼·소리 개선 진행표 (실기기 검증 후)
 - `docs/FLIGHT_FUN_PLAN.md` — 2026-11-26 오너 피드백 계획: 조종 범위(완료), 터치 조이스틱, 링 안내(일부 완료), 길목 볼거리, BGM
 - `docs/APP_STORE_SUBMISSION.md` — 앱스토어 제출 체크리스트 (계정에서 해야 할 일, Game Center ID, 프라이버시 라벨, 리뷰 노트). 마케팅 카피는 `docs/store/<locale>.md`
+- `benchmark/` — 오픈소스 게임 기술 10종 검토(2026-11-28)와 반영 계획 `benchmark/PLAN.md` (B0 측정 → 이펙트 프리셋 → 노이즈 레시피 → 스윕 충돌; 라이브러리 링크는 측정 게이트 통과 시 meshoptimizer 만)
 
 ## Tech Stack — Native iOS only
 Swift 5.9+, SwiftUI+UIKit, SceneKit, CoreMotion, AVFoundation. iOS 16.0+, Landscape only.
