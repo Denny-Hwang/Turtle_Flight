@@ -51,6 +51,9 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 - Lv.2 Normal: 조향 2°/20°/x^1.4, 상승 2°/12°/x^1.25, α=0.15, Auto-Level 4초
 - Lv.3 Expert: 조향 1°/25°/선형, 상승 1°/15°/선형, α=0.35, 실속 있음
 
+조종 방식 3가지 (`ControlMode`, 설정 → 조작 / 온보딩 마지막 장 / 보정 카드): 기울이기(기본) · 조이스틱 · 섞어서(좌우 기울기 + 위아래 엄지).
+조이스틱 입력은 `StickInput` (렌더 스레드 필터) 하나로만, 자이로 없는 기기는 자동 조이스틱.
+
 ## Camera — CRITICAL
 캐릭터+탈것이 항상 화면 중앙. 3인칭 뒤쪽 상단 카메라. 선회 시 뱅킹 효과. Lerp 추종.
 
@@ -58,7 +61,7 @@ RN 실험 코드는 git tag `rn-experiment-20260327` 에 보존되어 있음 (�
 60 FPS on iPhone 12+, < 250MB memory, < 80MB app size.
 
 ## Open follow-ups (RN 폐기로 인한 손실분)
-- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 414키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
+- 다국어 리소스: 네이티브 `Localizable.strings` (per-locale `.lproj/`)로 재구축 완료. **번들 7개 로케일 — ko/en/ja/zh-Hans/es/fr/de — 모두 468키 패리티** (`Tests/LocalizationParityTests.swift`가 강제). 남은 것은 App Store Connect 마케팅 카피(설명/키워드/스크린샷)로, 번들 문자열과 별개. 로케일 추가 절차는 `docs/I18N.md` 참조.
 - ⚠️ XcodeGen 주의: `project.yml` 의 `Resources` 는 `type: folder` 금지 — `.lproj` 가 `Resources/` 하위로 중첩되면 `NSLocalizedString` 이 못 찾음. 일반 그룹 참조로 두어 변형 그룹이 번들 루트에 위치하게 함.
 
 ## Sprint 0–4 closure
@@ -107,8 +110,8 @@ Release 빌드 + 테스트) 를 로컬에서 돌립니다. 자세한 절차는 `
 
 ## 비행 방향 · 하늘 추가 요소 · 오디오 · Swift 6 (2026-11-22)
 - 비행 중 캐릭터는 **기본으로 앞(날아가는 쪽)을 본다** — 뒷모습 아틀라스 `<name>_back_atlas` / `<name>_cloud_back_atlas`. "나를 봐" 버튼(비행 컨트롤)과 설정 → 조작에서 앞모습으로 전환, `flight.lookAtMe` 에 저장. 뒷모습은 각 캐릭터 모듈의 `ride_back` / `fig_back` (생성기), 아틀라스 셀 순서는 앞모습과 동일.
-- 자유 비행 전용: 랜드마크 충돌(`LandmarkKind.colliders`, 벌점 없는 튕김), 하늘의 신비(`SkyWonder`, 비행당 35%), 엽서 마일스톤(절반 5★ / 전부 10★ + 축제 `FestivalLayer`). 미션은 `startStage` 에서 모두 제거.
-- 번들 오디오 `TurtleFlight/Audio/` 는 `bash scripts/audio/build_audio.sh` 로 재생성 (전부 합성, 샘플·생성형 모델 없음 → 에이전트/CI 에서 실행 가능). 파일이 없으면 기존 인앱 합성으로 폴백.
+- 자유 비행 전용: 랜드마크 충돌(`LandmarkKind.colliders`, 벌점 없는 튕김), 하늘의 신비(`SkyWonder`, 비행당 35%), 길목 볼거리(`SetPiece` 21개, 25–35초마다 앞쪽에 1개, 정지 부분은 `SetPieceFactory.bake` 로 재질별 한 메시 — `flattenedClone` 쓰지 말 것), 엽서 마일스톤(절반 5★ / 전부 10★ + 축제 `FestivalLayer`). 미션은 `startStage` 에서 모두 제거.
+- 번들 오디오 `TurtleFlight/Audio/` 는 `bash scripts/audio/build_audio.sh` 로 재생성 (월드 음악은 A A′ B 브레이크 A″ B′ A‴ 형식, 곡당 2–3분 — `render_assets.swift` 의 `form` / `sectionMelody`. 반응형 에너지 층 `bgm_<world>_energy` 는 본곡과 샘플 수가 같아야 함 — `MusicEnergy` 가 부스트·콤보·남은 시간에 따라 페이드) (전부 합성, 샘플·생성형 모델 없음 → 에이전트/CI 에서 실행 가능). 파일이 없으면 기존 인앱 합성으로 폴백.
 - 앱 타깃은 **Swift 6 언어 모드** (`project.yml`), 테스트 타깃은 Swift 5.9. 스레드를 넘는 타입은 `@unchecked Sendable` + 보호 방법(락/직렬 큐/메인 전용) 주석을 단다. 렌더 스레드에서 UI·햅틱·오디오는 `onMain` / `performOnMainActor` 로만.
 
 ## 남은 백로그 (저장소 밖 또는 선택 사항)

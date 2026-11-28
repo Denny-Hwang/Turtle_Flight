@@ -23,6 +23,7 @@ rm -f "$OUT"/*.m4a "$OUT"/*.caf
 for f in "$WORK"/wav/*.wav; do
   name=$(basename "$f" .wav)
   case "$name" in
+    bgm_*_energy) afconvert -f m4af -d aac -b 64000 "$f" "$OUT/$name.m4a" ;;   # reactive layer (M4)
     bgm_*)     afconvert -f m4af -d aac -b 128000 "$f" "$OUT/$name.m4a" ;;
     vehicle_*) afconvert -f caff -d LEI16@22050 "$f" "$OUT/$name.caf" ;;
     *)         afconvert -f caff -d LEI16 "$f" "$OUT/$name.caf" ;;
