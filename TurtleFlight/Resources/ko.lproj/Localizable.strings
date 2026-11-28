@@ -544,6 +544,7 @@
 "companion.satellites.name" = "꼬마 위성들";
 "companion.dolphins.name" = "돌고래 무리";
 "companion.toast" = "함께 날았어요: %1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "링 길 완주! +%lld ★";
 "album.skydex.title" = "하늘 도감";
 "album.skydex.hint" = "자유 비행 길목에서 만난 볼거리예요. 한 월드의 세 개를 다 보면 +%1$lld ★, 21개 전부 보면 +%2$lld ★.";
 "album.skydex.complete" = "다 봤어요";

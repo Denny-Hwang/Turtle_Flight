@@ -540,6 +540,7 @@
 "companion.satellites.name" = "Petits satellites";
 "companion.dolphins.name" = "Dauphins";
 "companion.toast" = "Vol en compagnie : %1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "Chemin d'anneaux réussi ! +%lld ★";
 "album.skydex.title" = "Guide du ciel";
 "album.skydex.hint" = "Merveilles croisées en vol libre. Les trois d'un monde : +%1$lld ★. Les 21 : +%2$lld ★.";
 "album.skydex.complete" = "Tout vu";

@@ -541,6 +541,7 @@
 "companion.satellites.name" = "Little Satellites";
 "companion.dolphins.name" = "Dolphins";
 "companion.toast" = "Flew with the %1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "Ring trail complete! +%lld ★";
 "album.skydex.title" = "Sky Guide";
 "album.skydex.hint" = "Sights met along the way in Free Flight. All three in a world: +%1$lld ★. All 21: +%2$lld ★.";
 "album.skydex.complete" = "All seen";

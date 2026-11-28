@@ -541,6 +541,7 @@
 "companion.satellites.name" = "ちいさな衛星たち";
 "companion.dolphins.name" = "イルカのむれ";
 "companion.toast" = "いっしょに飛んだ：%1$@ +%2$lld ★";
+"ringtrail.toast.complete" = "リングの道クリア！ +%lld ★";
 "album.skydex.title" = "そらのずかん";
 "album.skydex.hint" = "自由飛行のとちゅうで出会った見どころ。ひとつのワールドの3つを見ると +%1$lld ★、21こ全部で +%2$lld ★。";
 "album.skydex.complete" = "ぜんぶ見た";

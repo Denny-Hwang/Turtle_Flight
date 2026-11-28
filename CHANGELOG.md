@@ -9,6 +9,18 @@ window.
 
 ## [Unreleased]
 
+### Free Flight ring trails (2026-11-27, plan R2)
+- Free Flight had no rings. Now a trail of five mint rings appears ahead.
+  - The first trail comes 28–38 s in. After that, a new one comes 30–40 s after the previous trail ends.
+  - It starts 300 m ahead with rings 110 m apart, and bends up to 15° per ring toward the nearest landmark not yet stamped.
+  - Climbs are gentle (slope ≤ 0.25).
+- Flying all five pays +3 ★ and a 50% boost refill.
+  - Missing a ring just moves on.
+  - The trail fades once it is behind or 45 s old.
+  - It is postponed while a sky wonder is showing or a set piece is within 700 m ahead.
+- A flown ring shrinks away. A swelling pop filled the screen in the simulator because the ring is right by the camera when it is flown.
+- One new string in all 7 locales (469 keys).
+
 ### Reactive music layer (2026-11-27, plan M4)
 - Each world now has an energy layer, `bgm_<world>_energy`: the same form and length as the song, with driving percussion and a high sixteenth-note arpeggio. It is silent in the breakdown and encoded at 64 kbps.
 - `AudioManager` starts the song and the layer on the same device-clock tick, and lines them up again whenever playback resumes.

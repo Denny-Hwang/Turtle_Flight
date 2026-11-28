@@ -49,6 +49,8 @@ extension FlightViewModel {
             case setPiece(SetPiece, isNew: Bool, stars: Int)
             /// Flew alongside a companion flock.
             case companion(Companion, stars: Int)
+            /// Flew all five rings of a trail.
+            case ringTrail(stars: Int)
         }
         let id: Int
         let kind: Kind
@@ -106,6 +108,7 @@ extension FlightViewModel {
 
         updateWondersAndFestival(deltaTime: elapsed, position: position, heading: heading)
         updateSetPieces(deltaTime: elapsed, position: position, heading: heading)
+        updateRingTrail(deltaTime: elapsed, position: position, heading: heading)
 
         // Friends → hello.
         for friend in terrainGenerator?.ungreetedFriends() ?? [] {
@@ -167,9 +170,20 @@ extension FlightViewModel {
         if !piecesOn { setPieceScheduler = nil }
         #endif
         companionScheduler = companionsOn ? CompanionScheduler(seed: seed &+ 29, forcedSoon: companionSoon) : nil
+        var trailSoon = false
+        #if DEBUG
+        // QA: `-TFRingTrail YES` lays a trail two seconds in.
+        trailSoon = UserDefaults.standard.bool(forKey: "TFRingTrail")
+        #endif
+        // Trails ride with the other Free Flight extras (off in screenshot
+        // runs and with -TFNoExtras), unless forced.
+        ringTrailScheduler = (companionsOn || trailSoon) ? RingTrailScheduler(seed: seed &+ 41, forcedSoon: trailSoon) : nil
+        ringTrailClock = 0
+        ringTrailLastPosition = nil
         companionWorld = theme
         companionClock = 0
-        prewarm(world: theme, pieces: setPieceScheduler != nil, companion: companionScheduler != nil)
+        prewarm(world: theme, pieces: setPieceScheduler != nil, companion: companionScheduler != nil,
+                trail: ringTrailScheduler != nil)
         setPieceClock = 0
         setPieceLastPosition = nil
     }
@@ -190,6 +204,79 @@ extension FlightViewModel {
         companionNode = nil
         companionFlight = nil
         companionScheduler = nil
+        ringTrailNode?.removeFromParentNode()
+        ringTrailNode = nil
+        ringTrail = nil
+        ringTrailScheduler = nil
+        ringTrailLastPosition = nil
+    }
+
+    // MARK: - Ring trails (R2)
+
+    /// Sightseeing tick: lay a trail when one is due, judge fly-throughs,
+    /// pay a finished trail, clear it when it is behind.
+    func updateRingTrail(deltaTime: Float, position: SCNVector3, heading: Float) {
+        guard var scheduler = ringTrailScheduler, let parent = wonderParent else { return }
+        ringTrailClock += deltaTime
+        let p = SIMD3<Float>(position.x, position.y, position.z)
+        let previous = ringTrailLastPosition.map { SIMD3<Float>($0.x, $0.y, $0.z) } ?? p
+        ringTrailLastPosition = position
+
+        if ringTrail == nil, scheduler.isDue(at: ringTrailClock) {
+            // Keep the sky readable: no trail on top of a wonder or a set
+            // piece coming up.
+            let pieceAhead = activeSetPieces.contains { a in
+                let past = a.distancePast(position)
+                return past < 0 && past > -700
+            }
+            if activeWonder != nil || pieceAhead {
+                scheduler.postpone(from: ringTrailClock)
+            } else {
+                let bearing = lastSimLandmarkHint.map { Float($0.bearing * 180 / .pi) }
+                let trail = RingTrail(position: p, heading: heading, targetBearing: bearing,
+                                      seed: scheduler.nextSeed()) { [weak self] x, z in
+                    Float(self?.terrainGenerator?.heightAt(x: x, z: z) ?? 0)
+                }
+                let node = RingTrailFactory.build(trail)
+                parent.addChildNode(node)
+                ringTrail = trail
+                ringTrailNode = node
+                scheduler.taken()
+            }
+        }
+
+        if var trail = ringTrail, let node = ringTrailNode {
+            let before = trail.next
+            if let passed = trail.step(deltaTime: deltaTime, from: previous, to: p) {
+                RingTrailFactory.highlight(node, next: trail.next, popped: passed)
+                if trail.allPassed {
+                    awardWonderStars(RingTrail.completeStars)
+                    flightEngine.addBoostCharge(RingTrail.boostRefill)
+                    emitToast(.ringTrail(stars: RingTrail.completeStars))
+                    onMain {
+                        AudioManager.shared.playStarCollect()
+                        Haptics.shared.play(.ringBullseye)
+                    }
+                } else {
+                    onMain {
+                        AudioManager.shared.playRingPass()
+                        Haptics.shared.play(.ringOk)
+                    }
+                }
+            } else if trail.next != before {
+                // Went by one: let it fade and light the next.
+                RingTrailFactory.highlight(node, next: trail.next, popped: before)
+            }
+            if trail.isFinished(playerPosition: p) {
+                node.runAction(.sequence([.fadeOut(duration: 0.8), .removeFromParentNode()]))
+                ringTrail = nil
+                ringTrailNode = nil
+                scheduler.finished(at: ringTrailClock)
+            } else {
+                ringTrail = trail
+            }
+        }
+        ringTrailScheduler = scheduler
     }
 
     // MARK: - Prebuilt nodes
@@ -197,20 +284,26 @@ extension FlightViewModel {
     /// Build this world's set pieces and flock in the background and ask
     /// the view to compile their shaders, so the first one to appear does
     /// not stall the render thread.
-    func prewarm(world: MapTheme, pieces: Bool, companion: Bool) {
+    func prewarm(world: MapTheme, pieces: Bool, companion: Bool, trail: Bool = false) {
         prebuiltLock.lock()
         prebuiltPieces = [:]
         prebuiltCompanion = nil
+        prebuiltTrailWarmup = nil
         prebuiltLock.unlock()
-        guard pieces || companion else { return }
+        guard pieces || companion || trail else { return }
         DispatchQueue.global(qos: .utility).async { [weak self] in
             var built: [SetPiece: SCNNode] = [:]
             if pieces { for piece in SetPiece.pieces(for: world) { built[piece] = SetPieceFactory.build(piece) } }
             let flock = companion ? CompanionFactory.build(Companion.of(world)) : nil
+            let warmTrail = trail
+                ? RingTrailFactory.build(RingTrail(position: SIMD3(0, 500, 0), heading: 0, targetBearing: nil,
+                                                   seed: 0) { _, _ in 0 })
+                : nil
             guard let self else { return }
             self.prebuiltLock.lock()
             self.prebuiltPieces.merge(built) { old, _ in old }
             if self.prebuiltCompanion == nil { self.prebuiltCompanion = flock }
+            self.prebuiltTrailWarmup = warmTrail
             self.prebuiltLock.unlock()
             self.onMain { [weak self] in
                 guard let self else { return }
@@ -218,6 +311,8 @@ extension FlightViewModel {
                 // nodes across threads.
                 self.prebuiltLock.lock()
                 let nodes = Array(self.prebuiltPieces.values) + (self.prebuiltCompanion.map { [$0] } ?? [])
+                    + (self.prebuiltTrailWarmup.map { [$0] } ?? [])
+                self.prebuiltTrailWarmup = nil   // only needed for the shader warm-up
                 self.prebuiltLock.unlock()
                 // `onMain` runs this on the main queue.
                 MainActor.assumeIsolated { self.sceneView?.prepare(nodes, completionHandler: nil) }
