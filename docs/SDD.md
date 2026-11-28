@@ -184,6 +184,14 @@ TurtleFlight/
   자세를 중립으로 잡는다. 기기가 0.6초 가만히 있으면 그 평균, 2.5초 안에 못 멈추면 그동안의 평균,
   "바로 시작" 을 누르면 그 순간의 자세. 그동안 세계는 멈춘다 (`FlightViewModel.isCalibrating`, `CalibrationOverlay`).
 
+- **조종 방식 (2026-11-26):** 설정 → 조작에서 고른다.
+  - 기울이기 (기본).
+  - 조이스틱: 화면 아래 절반을 엄지로 누르면 그 자리에 생기는 떠 있는 스틱. 센서와 보정은 건너뛴다.
+  - 섞어서: 좌우는 기울기, 위아래는 엄지.
+  - 스틱 입력은 `StickInput` 이 렌더 스레드에서 프레임레이트와 상관없이 스무딩한다. 데드존은 반지름의 10%,
+    곡선은 레벨의 `AxisResponse.exponent`. 손을 떼면 약 0.15초 만에 중앙으로 돌아온다.
+  - 자이로가 없는 기기는 자동으로 조이스틱 (`FlightViewModel.refreshControlMode`).
+
 #### 3.2.2 Sensitivity Profiles (3단계)
 
 | Parameter | Lv.1 Easy | Lv.2 Normal | Lv.3 Expert |

@@ -79,6 +79,7 @@
 "flight.calibrate.title" = "Tiens-le comme tu veux";
 "flight.calibrate.body" = "Cette position sera ta position neutre. Ne bouge pas un instant.";
 "flight.calibrate.now" = "Commencer";
+"flight.calibrate.useStick" = "Utiliser plutôt le doigt";
 "flight.control.pause"     = "Pause";
 "flight.control.exit"      = "Quitter";
 "flight.control.boost"     = "Turbo";
@@ -275,6 +276,12 @@
 "onboarding.try.cta"           = "Essayer l'inclinaison";
 "onboarding.try.exit"          = "OK";
 "onboarding.try.timeLeft.format" = "%lld s";
+"onboarding.control.title" = "Comment veux-tu voler ?";
+"onboarding.control.tilt" = "En inclinant";
+"onboarding.control.tilt.body" = "Pilote en inclinant l'appareil";
+"onboarding.control.stick" = "Au doigt";
+"onboarding.control.stick.body" = "Pilote avec un joystick à l'écran";
+"onboarding.control.footer" = "Modifiable à tout moment dans Réglages";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "Partager";
@@ -367,8 +374,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "Commandes";
-"settings.controls.touch"         = "Commandes tactiles";
-"settings.controls.touch.caption" = "Fais glisser ton doigt sur l’écran pour piloter au lieu d’incliner l’appareil. Pratique allongé, en voiture ou si l’inclinaison est inconfortable.";
+"settings.controls.mode" = "Mode de pilotage";
+"settings.controls.mode.tilt" = "Inclinaison";
+"settings.controls.mode.joystick" = "Joystick";
+"settings.controls.mode.mixed" = "Mixte";
+"settings.controls.mode.tilt.caption" = "Inclinez à gauche ou à droite pour tourner. Penchez vers l'avant pour descendre, redressez pour monter.";
+"settings.controls.mode.joystick.caption" = "Poussez le joystick en bas de l'écran avec le pouce. Pas besoin d'incliner : idéal allongé ou en voiture.";
+"settings.controls.mode.mixed.caption" = "Inclinez à gauche ou à droite pour tourner, et montez ou descendez avec le pouce. Sans pencher l'appareil, l'écran reste lisible.";
+"settings.controls.stickInvert" = "Inverser haut/bas du joystick";
+"settings.controls.stickLeft" = "Joystick à gauche";
 "flight.control.view"             = "Vue";
 "a11y.cleanView.label"            = "Masquer ou afficher les instruments de vol";
 
@@ -504,5 +518,8 @@
 "flight.control.lookAtMe" = "Regarde-moi";
 "flight.control.lookAhead" = "Regarde devant";
 "a11y.lookAtMe.label" = "Tourne ton ami vers toi ou vers là où il vole";
+"a11y.joystick" = "Joystick";
+"a11y.joystick.hint" = "Poussez à gauche ou à droite pour tourner, vers le haut pour monter";
+"a11y.joystick.hint.vertical" = "Poussez vers le haut pour monter, vers le bas pour descendre";
 "settings.controls.lookAtMe" = "Mon ami me regarde en vol";
 "settings.controls.simpleHUD" = "Jauges discrètes en vol libre";

@@ -8,6 +8,8 @@ import SwiftUI
 struct CalibrationOverlay: View {
     @ObservedObject var gyro: GyroController
     let onStartNow: () -> Void
+    /// "Use my finger instead": switch to the joystick. Nil hides it.
+    var onUseFinger: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: Theme.Spacing.m) {
@@ -47,6 +49,16 @@ struct CalibrationOverlay: View {
                     .background(Capsule().fill(Theme.Color.brandPrimary))
             }
             .buttonStyle(.plain)
+
+            if let onUseFinger {
+                Button(action: onUseFinger) {
+                    Label(L10n.t("flight.calibrate.useStick"), systemImage: "hand.point.up.left.fill")
+                        .font(Theme.Typography.label)
+                        .foregroundColor(Theme.Color.textOnDarkMuted)
+                        .frame(minHeight: 44)
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(Theme.Spacing.xl)
         .frame(maxWidth: 380)

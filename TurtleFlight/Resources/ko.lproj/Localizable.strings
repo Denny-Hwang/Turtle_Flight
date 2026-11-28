@@ -82,6 +82,7 @@
 "flight.calibrate.title" = "편하게 들어 주세요";
 "flight.calibrate.body" = "지금 잡은 자세를 기준으로 맞출게요. 잠깐만 그대로 있어요.";
 "flight.calibrate.now" = "바로 시작";
+"flight.calibrate.useStick" = "손가락으로 할래요";
 "flight.control.pause"     = "일시정지";
 "flight.control.exit"      = "종료";
 "flight.control.boost"     = "부스터";
@@ -278,6 +279,12 @@
 "onboarding.try.cta"           = "기울여 보기";
 "onboarding.try.exit"          = "완료";
 "onboarding.try.timeLeft.format" = "%lld초";
+"onboarding.control.title" = "어떻게 날까요?";
+"onboarding.control.tilt" = "기울여서";
+"onboarding.control.tilt.body" = "기기를 기울여 조종해요";
+"onboarding.control.stick" = "손가락으로";
+"onboarding.control.stick.body" = "화면의 조이스틱으로 조종해요";
+"onboarding.control.footer" = "설정에서 언제든 바꿀 수 있어요";
 
 // 자유 비행 결과 공유.
 "freeFlight.result.share"      = "공유하기";
@@ -371,8 +378,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "조종";
-"settings.controls.touch"         = "터치 조종";
-"settings.controls.touch.caption" = "기기를 기울이는 대신 화면을 드래그해서 조종해요. 누워서 하거나 차 안에서, 또는 기울이기가 불편할 때 좋아요.";
+"settings.controls.mode" = "조종 방법";
+"settings.controls.mode.tilt" = "기울이기";
+"settings.controls.mode.joystick" = "조이스틱";
+"settings.controls.mode.mixed" = "섞어서";
+"settings.controls.mode.tilt.caption" = "기기를 좌우로 기울이면 돌고, 앞으로 숙이면 내려가고 세우면 올라가요.";
+"settings.controls.mode.joystick.caption" = "화면 아래쪽을 엄지로 밀어서 날아요. 기기를 기울이지 않아도 돼요. 누워서나 차 안에서도 편해요.";
+"settings.controls.mode.mixed.caption" = "좌우는 기울여서 돌고, 위아래는 엄지로 조종해요. 앞뒤로 숙이지 않으니 화면이 잘 보여요.";
+"settings.controls.stickInvert" = "조이스틱 위아래 반대로";
+"settings.controls.stickLeft" = "조이스틱을 왼쪽에";
 "flight.control.view"             = "화면";
 "a11y.cleanView.label"            = "비행 계기 숨기기 또는 보이기";
 
@@ -508,5 +522,8 @@
 "flight.control.lookAtMe" = "나를 봐";
 "flight.control.lookAhead" = "앞을 봐";
 "a11y.lookAtMe.label" = "친구가 나를 보게 하거나 날아가는 쪽을 보게 바꾸기";
+"a11y.joystick" = "조이스틱";
+"a11y.joystick.hint" = "좌우로 밀면 돌고, 위로 밀면 올라가요";
+"a11y.joystick.hint.vertical" = "위로 밀면 올라가고, 아래로 밀면 내려가요";
 "settings.controls.lookAtMe" = "비행 중 친구가 나를 보기";
 "settings.controls.simpleHUD" = "자유 비행에서 계기 간단히";
