@@ -9,6 +9,23 @@ window.
 
 ## [Unreleased]
 
+### World music: a real form instead of a 40 s loop (2026-11-26, plan M1–M3)
+- Each world's song is now a 2–3 minute form, A → A′ → B → breakdown → A″ → B′ → A‴, that loops back to A. Before, one 8-chord progression looped for 37–53 s.
+- B has its own chord progression and swaps the lead and counter voices.
+- One motif per song is developed rather than copied:
+  - stated, then sequenced up and down the scale
+  - inverted in B
+  - ornamented with passing notes in A‴
+  - phrases end on a half cadence the first time and on the tonic after that
+- Texture and dynamics follow the form:
+  - drum intensity changes by section: light, full, half-time, none, then driving
+  - a fill every 4 bars in A sections
+  - a crescendo into the breakdown, where drums and bass drop out
+  - accents on strong beats and ±8 ms timing variation
+- Still fully synthesised offline (`scripts/audio/render_assets.swift`). Vehicle and effect files are byte-identical.
+- Bundled audio grew from 6.4 MB to 17 MB.
+- Not yet heard by a person: owner ear check (H4 / A1) pending.
+
 ### Ring path, course climb limit, miss feedback (2026-11-26, plan R1/R3/R4)
 - The ring after the target is shown bright and opaque. Rings further on are dimmed to 50%. Seven sparkle dots light up in turn from the target ring toward the next one, so the next turn reads early.
 - Audit: some courses asked for climbs steeper than Easy can fly.
