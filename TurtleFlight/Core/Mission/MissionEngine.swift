@@ -97,6 +97,8 @@ final class MissionEngine {
     /// mountain pillars, etc.). Tracked separately so `clearRings()` can
     /// tear them down without scanning the scene graph.
     private(set) var decorations: [SCNNode] = []
+    /// Sparkle dots from the target ring toward the next one (R1).
+    private(set) var pathNode: SCNNode?
     private let parentNode: SCNNode
 
     /// Player position from the previous `update` call. Plane-crossing
@@ -351,6 +353,7 @@ final class MissionEngine {
             completeStage()
             return
         }
+        flashMissed(rings[currentRingIndex])
         ringsSkipped += 1
         if !isEndless, ringsSkipped * 2 > rings.count {
             state = .failed(reason: L10n.t("mission.fail.missedRings"))
@@ -534,6 +537,8 @@ final class MissionEngine {
 
     private func completeStage() {
         guard let stage = currentStage else { return }
+        pathNode?.removeFromParentNode()
+        pathNode = nil
 
         let stars = calculateStars(stage: stage)
 
@@ -591,6 +596,8 @@ final class MissionEngine {
     }
 
     private func clearRings() {
+        pathNode?.removeFromParentNode()
+        pathNode = nil
         for ring in rings {
             ring.node.removeFromParentNode()
         }
@@ -699,9 +706,83 @@ final class MissionEngine {
         }
     }
 
+    /// A missed ring flashes red as it fades, so the miss reads at a
+    /// glance (R4, 2026-11-26).
+    private func flashMissed(_ ring: Ring) {
+        ring.node.enumerateChildNodes { node, _ in
+            guard let torus = node.geometry as? SCNTorus else { return }
+            torus.firstMaterial?.diffuse.contents = UIColor(red: 1.0, green: 0.30, blue: 0.28, alpha: 1)
+            torus.firstMaterial?.emission.contents = UIColor(red: 1.0, green: 0.25, blue: 0.2, alpha: 0.9)
+        }
+    }
+
+    /// Ring look by position in the queue (R1): the target is gold, the
+    /// one after it bright and fully opaque so the player can read where
+    /// the course turns next, and the rest dimmed. A trail of sparkles
+    /// runs from the target toward the next ring.
+    static let previewOpacity: CGFloat = 1
+    static let distantOpacity: CGFloat = 0.5
+
+    private func refreshRingPreview() {
+        let next = currentRingIndex + 1
+        if next < rings.count {
+            rings[next].node.opacity = Self.previewOpacity
+            rings[next].node.enumerateChildNodes { node, _ in
+                guard let torus = node.geometry as? SCNTorus else { return }
+                torus.firstMaterial?.emission.contents = UIColor(white: 1, alpha: 0.75)
+            }
+        }
+        // Dim what lies beyond (a window is enough on long Sky Runs).
+        if next + 1 < rings.count {
+            for i in (next + 1)..<min(rings.count, next + 40) where rings[i].node.opacity > Self.distantOpacity {
+                rings[i].node.opacity = Self.distantOpacity
+            }
+        }
+        rebuildPath()
+    }
+
+    /// Dots along the line from the target ring to the next, lighting up
+    /// in turn toward the next ring so the direction reads.
+    private func rebuildPath() {
+        pathNode?.removeFromParentNode()
+        pathNode = nil
+        let next = currentRingIndex + 1
+        guard currentRingIndex < rings.count, next < rings.count else { return }
+        let a = rings[currentRingIndex].center(at: elapsedTime)
+        let b = rings[next].center(at: elapsedTime)
+        let node = SCNNode()
+        node.name = "ring_path"
+        let dot = SCNSphere(radius: CGFloat(max(2.5, rings[next].radius * 0.12)))
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor(red: 1.0, green: 0.95, blue: 0.70, alpha: 1)
+        material.emission.contents = UIColor(red: 1.0, green: 0.90, blue: 0.55, alpha: 1)
+        material.lightingModel = .constant
+        dot.materials = [material]
+        let count = Self.pathDots
+        for i in 0..<count {
+            let t = 0.15 + 0.7 * Float(i) / Float(count - 1)
+            let d = SCNNode(geometry: dot)
+            d.position = SCNVector3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t)
+            d.opacity = 0.25
+            d.runAction(.sequence([
+                .wait(duration: 0.12 * Double(i)),
+                .repeatForever(.sequence([.fadeOpacity(to: 1, duration: 0.15),
+                                          .fadeOpacity(to: 0.25, duration: 0.45),
+                                          .wait(duration: 0.12 * Double(count))]))
+            ]))
+            node.addChildNode(d)
+        }
+        parentNode.addChildNode(node)
+        pathNode = node
+    }
+
+    static let pathDots = 7
+
     private func highlightRing(at index: Int) {
         guard index < rings.count else { return }
         rings[index].targetedAt = elapsedTime
+        rings[index].node.opacity = 1
+        defer { refreshRingPreview() }
 
         // Make target ring more visible
         rings[index].node.enumerateChildNodes { node, _ in

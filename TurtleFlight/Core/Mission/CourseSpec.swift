@@ -138,7 +138,37 @@ enum CourseGenerator {
             let z = spec.startZ - fi * spec.spacing
             rings.append(SCNVector3(x, y, z))
         }
-        return rings
+        return limitClimb(rings)
+    }
+
+    /// Steepest climb or dive between consecutive rings, as height change
+    /// over horizontal distance. 0.5 at cruise (200 km/h ≈ 56 m/s) asks
+    /// for ~28 m/s — inside Easy's 40 m/s with room to spare.
+    ///
+    /// 2026-11-26 audit: Mountain Cross asked for ~2.0 (200 m up per 200 m
+    /// forward) and some Daily Run days for ~1.7 — over 90 m/s, impossible
+    /// on Easy and a stretch on Normal, so the next ring sat far above the
+    /// view ("stretches with no rings").
+    static let maxClimbSlope: Float = 0.5
+
+    /// Pull each ring's height toward the previous one so no step is
+    /// steeper than `maxClimbSlope`. `previous` continues a course that
+    /// already has rings (Sky Run chunks).
+    static func limitClimb(_ rings: [SCNVector3], after previous: SCNVector3? = nil) -> [SCNVector3] {
+        var out: [SCNVector3] = []
+        out.reserveCapacity(rings.count)
+        var last = previous
+        for ring in rings {
+            var r = ring
+            if let p = last {
+                let flat = ((r.x - p.x) * (r.x - p.x) + (r.z - p.z) * (r.z - p.z)).squareRoot()
+                let limit = flat * maxClimbSlope
+                r.y = max(minimumAltitude, min(p.y + limit, max(p.y - limit, r.y)))
+            }
+            out.append(r)
+            last = r
+        }
+        return out
     }
 
     /// Unit horizontal travel direction through each ring, derived from
