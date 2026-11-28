@@ -838,11 +838,19 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
         beginCalibration()
     }
 
+    /// Top of the graph `node` hangs in (the scene's root node), for
+    /// `PerfProbe` snapshots.
+    private static func sceneRoot(of node: SCNNode?) -> SCNNode? {
+        var top = node
+        while let parent = top?.parent { top = parent }
+        return top
+    }
+
     /// Render-thread entry point. Converts the renderer's absolute time
     /// into a clamped delta and runs one simulation step. The first frame
     /// after a start / pause / resume only establishes the baseline.
     func tick(at time: TimeInterval) {
-        PerfProbe.shared.frame(at: time)
+        PerfProbe.shared.frame(at: time, sceneRoot: Self.sceneRoot(of: characterNode))
         guard lastRenderTime != 0 else {
             lastRenderTime = time
             return

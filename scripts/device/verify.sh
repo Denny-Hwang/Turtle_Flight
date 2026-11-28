@@ -71,19 +71,7 @@ if [ "$MODE" != "--scenes-only" ]; then
   xcrun devicectl device process launch --terminate-existing --device "$DEVICE" "$BUNDLE_ID" >/dev/null || true
   xcrun devicectl device copy from --device "$DEVICE" --domain-type appDataContainer \
     --domain-identifier "$BUNDLE_ID" --source Documents/perf.csv --destination "$OUT/perf.csv" >/dev/null
-  python3 - "$OUT/perf.csv" <<'PY'
-import sys
-rows = [l.strip().split(",") for l in open(sys.argv[1]) if l[0].isdigit()]
-rows = [r for r in rows if float(r[0]) >= 5]           # skip warm-up
-fps = sorted(float(r[1]) for r in rows)
-worst = max(float(r[2]) for r in rows)
-mem = max(float(r[3]) for r in rows)
-therm = max(int(r[4]) for r in rows)
-p5 = fps[len(fps) // 20]
-print(f"seconds {len(rows)}  fps median {fps[len(fps)//2]:.1f}  5th pct {p5:.1f}  worst frame {worst:.0f} ms  peak memory {mem:.0f} MB  thermal max {therm} (0 nominal … 3 critical)")
-ok = p5 >= 55 and mem < 250 and therm < 2
-print("PASS" if ok else "CHECK: target is 60 fps (5th pct ≥ 55), < 250 MB, thermal below 'serious'")
-PY
+  python3 scripts/device/perf_summary.py "$OUT/perf.csv" || true
   echo "   raw: $OUT/perf.csv"
 fi
 

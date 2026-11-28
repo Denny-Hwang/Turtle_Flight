@@ -73,7 +73,7 @@ final class TerrainGenerator {
         }
 
         for coord in neededChunks where loadedChunks[coord] == nil {
-            let chunkNode = generateChunk(coord: coord)
+            let chunkNode = PerfProbe.shared.measure(.chunk) { generateChunk(coord: coord) }
             parentNode.addChildNode(chunkNode)
             loadedChunks[coord] = chunkNode
         }
@@ -99,6 +99,10 @@ final class TerrainGenerator {
         let cz = (playerPosition.z / snap).rounded() * snap
         if let centre = farCentre, centre.x == cx, centre.y == cz { return }
         farCentre = SIMD2<Float>(cx, cz)
+        PerfProbe.shared.measure(.farTerrain) { rebuildFarTerrain(cx: cx, cz: cz) }
+    }
+
+    private func rebuildFarTerrain(cx: Float, cz: Float) {
         farNode?.removeFromParentNode()
 
         let n = Self.farCells
