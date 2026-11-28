@@ -26,6 +26,7 @@ enum AnalyticsEvent: String, CaseIterable {
     case settingsOpened
     case landmarkDiscovered
     case wonderSeen
+    case setPieceSeen
     case itemPurchased
     case codeRedeemed
 }

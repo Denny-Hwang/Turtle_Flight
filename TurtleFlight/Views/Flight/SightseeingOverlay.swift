@@ -91,6 +91,33 @@ struct SightseeingOverlay: View {
             banner(symbol: "star.fill",
                    text: L10n.format("wonder.bonus.toast", stars),
                    fill: Theme.Color.brandPrimary, onDark: true)
+        case .setPiece(let piece, let isNew, let stars):
+            banner(symbol: Self.symbol(for: piece.effect),
+                   text: Self.setPieceText(piece, isNew: isNew, stars: stars),
+                   fill: isNew ? Theme.Color.starGold : Theme.Color.surfaceOverlay, onDark: !isNew)
+        }
+    }
+
+    static func symbol(for effect: SetPiece.Effect) -> String {
+        switch effect {
+        case .passThrough: return "sparkles"
+        case .lift:        return "wind"
+        case .boost:       return "flame.fill"
+        case .stars:       return "star.fill"
+        }
+    }
+
+    static func setPieceText(_ piece: SetPiece, isNew: Bool, stars: Int) -> String {
+        let name = piece.displayName
+        if isNew {
+            return stars > 0 ? L10n.format("setpiece.toast.newStars", name, stars)
+                             : L10n.format("setpiece.toast.new", name)
+        }
+        switch piece.effect {
+        case .stars:       return L10n.format("setpiece.toast.stars", name, stars)
+        case .boost:       return L10n.t("setpiece.toast.boost")
+        case .lift:        return L10n.t("setpiece.toast.lift")
+        case .passThrough: return name
         }
     }
 
