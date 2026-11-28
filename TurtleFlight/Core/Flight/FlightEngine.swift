@@ -47,7 +47,14 @@ final class FlightEngine {
         profile = SensitivityProfile.profile(for: level)
     }
 
+    /// Extra climb (m/s) from the world, e.g. a set-piece updraft. Moves
+    /// the altitude directly so it does not feed the energy model (an
+    /// updraft should not slow the character down). Set by the
+    /// sightseeing tick; 0 = none.
+    var externalLift: Float = 0
+
     func reset() {
+        externalLift = 0
         state = FlightState()
         energySpeed = Constants.Flight.defaultSpeed
     }
@@ -154,7 +161,7 @@ final class FlightEngine {
         if state.heading < 0 { state.heading += 360 }
 
         // Update altitude
-        state.altitude += state.verticalSpeed * deltaTime
+        state.altitude += (state.verticalSpeed + externalLift) * deltaTime
 
         // Min altitude protection
         let minAlt = Float(profile.minAltitude)

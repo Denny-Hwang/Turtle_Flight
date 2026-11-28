@@ -24,6 +24,21 @@ window.
 
 - Bundled audio grew from 17 MB to 24 MB.
 
+### Companions + sky guide (2026-11-27, plan W4/W5)
+- Free Flight companions:
+  - Each world has its own flock, built from primitives: geese in a V, sandpipers, pigeons, magpies, eagles, little satellites and dolphins.
+  - A flock first arrives 40–70 s into the flight, then every 70–110 s. It comes in from ahead and settles 26 m beside the character.
+  - It flies alongside for 12 s, then peels away outward and up.
+  - Flying within 20 m during the cruise pays +1 ★.
+  - It is postponed while a sky wonder is showing.
+  - Updated every frame on the render thread (`CompanionFlight`), and tested without SceneKit.
+- The geese have a neck, tapered two-part wings and a tail fan. An earlier version looked like a small plane in the simulator, against the not-airplanes rule.
+- Album: new "Sky guide" section listing the 21 set pieces by world.
+  - All three in a world pay +3 ★; all 21 pay +15 ★.
+  - Paid with the Free Flight result like postcard milestones.
+  - Claimed ids reuse `claimedPostcardRewards` with a `setpiece.` prefix, so no new saved field.
+- 11 new strings in all 7 locales (468 keys).
+
 ### World music: a real form instead of a 40 s loop (2026-11-26, plan M1–M3)
 - Each world's song is now a 2–3 minute form, A → A′ → B → breakdown → A″ → B′ → A‴, that loops back to A. Before, one 8-chord progression looped for 37–53 s.
 - B has its own chord progression and swaps the lead and counter voices.
@@ -40,6 +55,43 @@ window.
 - Still fully synthesised offline (`scripts/audio/render_assets.swift`). Vehicle and effect files are byte-identical.
 - Bundled audio grew from 6.4 MB to 17 MB.
 - Not yet heard by a person: owner ear check (H4 / A1) pending.
+
+### Ring path, course climb limit, miss feedback (2026-11-26, plan R1/R3/R4)
+- The ring after the target is shown bright and opaque. Rings further on are dimmed to 50%. Seven sparkle dots light up in turn from the target ring toward the next one, so the next turn reads early.
+- Audit: some courses asked for climbs steeper than Easy can fly.
+  - Mountain Cross needed about 2.0 m up per metre forward. Some Daily Run days needed about 1.7, and route 23 about 1.4.
+  - `CourseGenerator.limitClimb` now caps every step at a slope of 0.5. That is about 28 m/s at cruise, against Easy's 40 m/s.
+  - The cap applies to all courses and to Sky Run chunks. `CourseClimbTests` enforces it.
+- A missed ring flashes red as it fades, and the screen-edge guide pops for a moment.
+- The ring guide now measures from the chase camera. Before, it showed for a ring a little above and ahead that was plainly on screen.
+
+### Set pieces along the route (2026-11-26, plan W1–W3)
+- Free Flight now places a set piece ahead of the player every 25–35 s. It appears 420–560 m ahead at the player's own height, and is skipped near landmarks and during a sky wonder. At most 2 are in the sky at once.
+- 21 original pieces, 3 per world:
+  - 14 to fly through, worth +1 ★ each: arches, tunnels and gates.
+  - 2 updrafts that lift 30 m/s without costing speed.
+  - 3 boost refills (+50% gauge).
+  - 2 star bundles (+3 ★).
+  - Seeing a piece for the first time shows a "New sight" banner (`SetPieceLog`, kept on the device).
+- Static parts are baked into one mesh per material (`SetPieceFactory.bake`, reusing `PropMesh`). `flattenedClone()` lost rotated parents and produced empty meshes in tests.
+- Not in missions. Screenshot runs skip set pieces unless `-TFSetPiece` is passed.
+- 26 new strings in all 7 locales (457 keys with the joystick strings).
+
+### On-screen joystick + control modes (2026-11-26)
+- Settings → Controls now offers three ways to fly:
+  - **Tilt** (default).
+  - **Joystick**: a floating thumb stick in the lower half of the screen; the sensor and the calibration are skipped.
+  - **Mixed**: tilt to turn, thumb for up and down, so the phone never has to be tipped away.
+  - Options: invert up/down, and stick on the left (Boost moves right).
+- The last onboarding page asks "How do you want to fly?" (tilt or finger).
+  The calibration card has a "Use my finger instead" link.
+- `StickInput` filters the stick on the render thread, frame-rate
+  independent, with the level's curve. It fixes the old drag fallback,
+  which never reached full input while the finger was still and kept
+  65–92% of the turn after the finger lifted. A full diagonal is full turn
+  plus full climb. Devices without a gyro fly with the joystick.
+- 19 new strings × 7 locales; the 2 old touch-toggle strings were removed
+  (431 keys).
 
 ### Tilt comfort + ring flow (2026-11-26, owner device feedback)
 - Steering and climbing have their own tilt ranges (`AxisResponse`): full

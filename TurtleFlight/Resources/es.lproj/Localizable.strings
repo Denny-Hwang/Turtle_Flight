@@ -79,6 +79,7 @@
 "flight.calibrate.title" = "Sujétalo como quieras";
 "flight.calibrate.body" = "Usaremos esta postura como neutra. Quédate quieto un momento.";
 "flight.calibrate.now" = "Empezar ya";
+"flight.calibrate.useStick" = "Prefiero usar el dedo";
 "flight.control.pause"     = "Pausa";
 "flight.control.exit"      = "Salir";
 "flight.control.boost"     = "Turbo";
@@ -275,6 +276,12 @@
 "onboarding.try.cta"           = "Probar inclinación";
 "onboarding.try.exit"          = "Listo";
 "onboarding.try.timeLeft.format" = "%lld s";
+"onboarding.control.title" = "¿Cómo quieres volar?";
+"onboarding.control.tilt" = "Inclinando";
+"onboarding.control.tilt.body" = "Dirige inclinando el dispositivo";
+"onboarding.control.stick" = "Con el dedo";
+"onboarding.control.stick.body" = "Dirige con un joystick en pantalla";
+"onboarding.control.footer" = "Puedes cambiarlo cuando quieras en Ajustes";
 
 // Free Flight result sharing.
 "freeFlight.result.share"      = "Compartir";
@@ -367,8 +374,15 @@
 
 // MARK: - Flight delight (2026-11) — touch controls, clean view
 "settings.section.controls"       = "Controles";
-"settings.controls.touch"         = "Control táctil";
-"settings.controls.touch.caption" = "Arrastra en la pantalla para pilotar en lugar de inclinar el dispositivo. Ideal tumbado, en el coche o si inclinar resulta incómodo.";
+"settings.controls.mode" = "Cómo volar";
+"settings.controls.mode.tilt" = "Inclinar";
+"settings.controls.mode.joystick" = "Joystick";
+"settings.controls.mode.mixed" = "Mixto";
+"settings.controls.mode.tilt.caption" = "Inclina a izquierda o derecha para girar. Inclina hacia delante para bajar y levántalo para subir.";
+"settings.controls.mode.joystick.caption" = "Empuja el joystick de la parte inferior con el pulgar. No hace falta inclinar, así que sirve tumbado o en el coche.";
+"settings.controls.mode.mixed.caption" = "Inclina a los lados para girar y usa el pulgar para subir y bajar. Sin inclinar hacia delante, la pantalla se ve bien.";
+"settings.controls.stickInvert" = "Invertir arriba/abajo del joystick";
+"settings.controls.stickLeft" = "Joystick a la izquierda";
 "flight.control.view"             = "Vista";
 "a11y.cleanView.label"            = "Ocultar o mostrar los indicadores de vuelo";
 
@@ -492,6 +506,43 @@
 "wonder.glowTide.name" = "Marea brillante";
 "wonder.toast.format" = "¡Mira! %@";
 "wonder.bonus.toast" = "¡Deseo cumplido! +%lld ★";
+"setpiece.rainbowArch.name" = "Arco iris";
+"setpiece.cloudTunnel.name" = "Túnel de nubes";
+"setpiece.thermal.name" = "Corriente ascendente";
+"setpiece.sandWindRing.name" = "Anillo de arena";
+"setpiece.cactusGate.name" = "Puerta de cactus";
+"setpiece.mirageOasis.name" = "Oasis espejismo";
+"setpiece.flagLine.name" = "Banderines";
+"setpiece.laundryBridge.name" = "Puente de la colada";
+"setpiece.bubbleFountain.name" = "Fuente de burbujas";
+"setpiece.lanternTunnel.name" = "Túnel de farolillos";
+"setpiece.roofGate.name" = "Puerta de tejas";
+"setpiece.kiteWind.name" = "Rueda de cometas";
+"setpiece.waterfallArch.name" = "Arco cascada";
+"setpiece.logBridge.name" = "Puente de tronco";
+"setpiece.fireflies.name" = "Bosque de luciérnagas";
+"setpiece.ringedPlanet.name" = "Planeta anillado";
+"setpiece.constellationGate.name" = "Puerta de constelación";
+"setpiece.cometTail.name" = "Cola de cometa";
+"setpiece.kelpArch.name" = "Arco de algas";
+"setpiece.coralGate.name" = "Puerta de coral";
+"setpiece.bubbleColumn.name" = "Columna de burbujas";
+"setpiece.toast.new" = "Nueva vista: %@";
+"setpiece.toast.newStars" = "Nueva vista: %1$@ +%2$lld ★";
+"setpiece.toast.stars" = "%1$@ +%2$lld ★";
+"setpiece.toast.boost" = "¡Turbo recargado!";
+"setpiece.toast.lift" = "¡Arriba con el viento!";
+"companion.geese.name" = "Gansos";
+"companion.sandpipers.name" = "Correlimos";
+"companion.pigeons.name" = "Palomas";
+"companion.magpies.name" = "Urracas";
+"companion.eagles.name" = "Águilas";
+"companion.satellites.name" = "Satélites pequeños";
+"companion.dolphins.name" = "Delfines";
+"companion.toast" = "¡Volaste con: %1$@! +%2$lld ★";
+"album.skydex.title" = "Guía del cielo";
+"album.skydex.hint" = "Vistas del camino en Vuelo libre. Las tres de un mundo: +%1$lld ★. Las 21: +%2$lld ★.";
+"album.skydex.complete" = "Todo visto";
 "album.wonders.title" = "Maravillas del cielo";
 "album.wonders.hint" = "Vistas raras que a veces aparecen en Vuelo libre. Acércate para un premio.";
 "album.milestone.half.format" = "Mitad: +%lld ★";
@@ -504,5 +555,8 @@
 "flight.control.lookAtMe" = "Mírame";
 "flight.control.lookAhead" = "Mira adelante";
 "a11y.lookAtMe.label" = "Haz que tu amigo te mire o mire hacia donde vuela";
+"a11y.joystick" = "Joystick";
+"a11y.joystick.hint" = "Empuja a los lados para girar y hacia arriba para subir";
+"a11y.joystick.hint.vertical" = "Empuja hacia arriba para subir y hacia abajo para bajar";
 "settings.controls.lookAtMe" = "Mi amigo me mira al volar";
 "settings.controls.simpleHUD" = "Indicadores discretos en vuelo libre";

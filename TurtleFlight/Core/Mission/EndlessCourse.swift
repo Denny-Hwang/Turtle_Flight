@@ -93,7 +93,9 @@ enum EndlessCourse {
             let y = max(CourseGenerator.minimumAltitude,
                         baseY + sin(angle * 1.3) * altitudeAmplitude(at: index))
             let kind = gateKind(at: index, rng: &rng)
-            out.append(RingSpec(position: SCNVector3(x, y, z), radius: radius(at: index), kind: kind))
+            let raw = SCNVector3(x, y, z)
+            let position = CourseGenerator.limitClimb([raw], after: out.last?.position ?? previousEnd)[0]
+            out.append(RingSpec(position: position, radius: radius(at: index), kind: kind))
         }
         return out
     }
