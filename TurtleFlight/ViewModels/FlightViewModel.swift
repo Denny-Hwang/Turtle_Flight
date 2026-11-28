@@ -219,6 +219,13 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
     var wonderPlan: SkyWonder.Plan?
     var wonderClock: Float = 0
     var activeWonder: (wonder: SkyWonder, node: SCNNode, endsAt: Float, bonusPaid: Bool)?
+    /// Set pieces along the route (Free Flight): what comes next, what is
+    /// in the sky, the clock they run on, and last tick's position (fly-
+    /// through needs a segment). Render-thread only.
+    var setPieceScheduler: SetPieceScheduler?
+    var activeSetPieces: [ActiveSetPiece] = []
+    var setPieceClock: Float = 0
+    var setPieceLastPosition: SCNVector3?
     /// Last friendly bump off a landmark (debounces sound + haptic).
     var lastLandmarkBumpTime: TimeInterval = 0
     /// Scene root the wonder is added to.
@@ -315,7 +322,7 @@ final class FlightViewModel: ObservableObject, @unchecked Sendable {
 
     /// Render-thread copy of the star count. `starsCollected` (published)
     /// is a display mirror of this.
-    private var simStarsCollected: Int = 0
+    private(set) var simStarsCollected: Int = 0
     /// Render-thread copy of the boost request. `activateBoost()` sets it
     /// from main; the engine consumes it on the next frame.
     private var boostRequested: Bool = false

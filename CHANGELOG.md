@@ -9,6 +9,18 @@ window.
 
 ## [Unreleased]
 
+### Set pieces along the route (2026-11-26, plan W1–W3)
+- Free Flight now places a set piece ahead of the player every 25–35 s. It appears 420–560 m ahead at the player's own height, and is skipped near landmarks and during a sky wonder. At most 2 are in the sky at once.
+- 21 original pieces, 3 per world:
+  - 14 to fly through, worth +1 ★ each: arches, tunnels and gates.
+  - 2 updrafts that lift 30 m/s without costing speed.
+  - 3 boost refills (+50% gauge).
+  - 2 star bundles (+3 ★).
+  - Seeing a piece for the first time shows a "New sight" banner (`SetPieceLog`, kept on the device).
+- Static parts are baked into one mesh per material (`SetPieceFactory.bake`, reusing `PropMesh`). `flattenedClone()` lost rotated parents and produced empty meshes in tests.
+- Not in missions. Screenshot runs skip set pieces unless `-TFSetPiece` is passed.
+- 26 new strings in all 7 locales (457 keys with the joystick strings).
+
 ### On-screen joystick + control modes (2026-11-26)
 - Settings → Controls now offers three ways to fly:
   - **Tilt** (default).
