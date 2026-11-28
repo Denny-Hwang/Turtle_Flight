@@ -9,6 +9,21 @@ window.
 
 ## [Unreleased]
 
+### Reactive music layer (2026-11-27, plan M4)
+- Each world now has an energy layer, `bgm_<world>_energy`: the same form and length as the song, with driving percussion and a high sixteenth-note arpeggio. It is silent in the breakdown and encoded at 64 kbps.
+- `AudioManager` starts the song and the layer on the same device-clock tick, and lines them up again whenever playback resumes.
+- The layer fades in by `MusicEnergy.level` with a 0.8 s fade:
+
+  | Situation | Energy layer |
+  |---|---|
+  | Boost | 100% |
+  | Combo 5+ | 85% |
+  | Combo 3+ | 60% |
+  | Last 30 s of a timed course | 55% |
+  | Paused | 0% |
+
+- Bundled audio grew from 17 MB to 24 MB.
+
 ### Companions + sky guide (2026-11-27, plan W4/W5)
 - Free Flight companions:
   - Each world has its own flock, built from primitives: geese in a V, sandpipers, pigeons, magpies, eagles, little satellites and dolphins.

@@ -545,7 +545,14 @@ func sectionMelody(_ song: Song, _ section: Section) -> [Note] {
     }
 }
 
-func render(_ song: Song) -> Mix {
+/// `.full` is the song; `.energy` is the reactive layer (M4): the same
+/// form and timing, but only driving percussion and a high sixteenth-note
+/// arpeggio, silent in the breakdown. The app plays both in sync and
+/// fades the energy layer in for boosts, combos and the last seconds.
+enum Stem { case full, energy }
+
+func render(_ song: Song, stem: Stem = .full) -> Mix {
+    let full = stem == .full
     let beat = 60 / song.bpm
     let bpb = Double(song.beatsPerBar)
     let totalBars = form.reduce(0) { $0 + $1.bars * song.sectionReps }
@@ -642,6 +649,31 @@ func render(_ song: Song) -> Mix {
                 // Crescendo through the last two bars of B into the breakdown.
                 let swell = section.kind == .b && bar >= section.bars - 2 ? 1.0 + 0.12 * Double(bar - section.bars + 3) : 1.0
                 let level = section.gain * swell
+                let phraseEnd = bar % 4 == 3
+                if !full {
+                    // Energy layer only.
+                    guard section.kind != .breakdown else { continue }
+                    groove(bar: b0, intensity: 4, fill: phraseEnd,
+                           seedBase: UInt64(50_000 + si * 10_000 + rep * 1000 + bar * 10), level: 0.9)
+                    let ambient = song.groove == .none || song.groove == .tide
+                    for k in 0..<Int(bpb * 4) {
+                        let b = b0 + Double(k) * 0.25
+                        if !ambient {
+                            mix.add(shaker(UInt64(90_000 + si * 1000 + bar * 50 + k)), at: at(b, humanize: true),
+                                    gain: k % 2 == 1 ? 0.06 : 0.035, pan: -0.35)
+                        }
+                        let tones = chord.map { $0 + 12 } + chord.map { $0 + 24 }
+                        let n = tones[(k + bar * 3) % tones.count]
+                        play(ambient ? .bell : .pluck, midi: n, beat: b, len: 0.25,
+                             gain: (k % 4 == 0 ? 0.06 : 0.04), pan: k % 2 == 0 ? 0.4 : -0.4)
+                    }
+                    if ambient {
+                        for k in 0..<Int(bpb * 2) {
+                            mix.add(bass(mtof(Double(chord[0] - 12)), beat * 0.4), at: at(b0 + Double(k) * 0.5), gain: 0.10)
+                        }
+                    }
+                    continue
+                }
                 let cutoff = song.padCutoff * (section.kind == .breakdown ? 0.6 : (section.kind == .b ? 0.85 : 1.0))
                 mix.add(pad(chord.map { mtof(Double($0)) }, bpb * beat + 0.6, cutoff: cutoff),
                         at: at(b0), gain: 0.22 * (section.kind == .breakdown ? 1.15 : 1.0) * swell, pan: 0)
@@ -684,12 +716,11 @@ func render(_ song: Song) -> Mix {
                              pan: s % 2 == 0 ? -0.45 : 0.45)
                     }
                 }
-                let phraseEnd = bar % 4 == 3
                 groove(bar: b0, intensity: section.drums, fill: phraseEnd && section.kind == .a,
                        seedBase: UInt64(si * 10_000 + rep * 1000 + bar * 10), level: level)
             }
             // Melody (and counter line when the section calls for it).
-            for (b, len, m) in melodyNotes {
+            for (b, len, m) in full ? melodyNotes : [] {
                 let inBar = b.truncatingRemainder(dividingBy: bpb)
                 let accent = isStrong(inBar, song) ? 1.0 : 0.82
                 let bar = Int(b / bpb)
@@ -706,7 +737,7 @@ func render(_ song: Song) -> Mix {
             cursor += Double(section.bars) * bpb
         }
     }
-    if song.groove == .tide {
+    if full, song.groove == .tide {
         // Waves: slow swells of filtered noise.
         var r2 = Rng(song.seed)
         var lp = 0.0
@@ -721,7 +752,8 @@ func render(_ song: Song) -> Mix {
     reverb(mix, wet: song.reverbWet)
     let looped = fold(mix, length: loopLen)
     // Music sits under the effects: about -7 dBFS peak, like the old synth.
-    normalize(looped, peak: 0.45)
+    // The energy layer sits a little under the song it rides on.
+    normalize(looped, peak: full ? 0.45 : 0.36)
     return looped
 }
 
@@ -918,6 +950,9 @@ for song in songs {
     let mix = render(song)
     writeWav("\(outDir)/bgm_\(song.name).wav", left: mix.l, right: mix.r)
     print("bgm_\(song.name)  \(String(format: "%.1f", Double(mix.count) / sr)) s")
+    let energy = render(song, stem: .energy)
+    precondition(energy.count == mix.count, "energy layer must match the song sample for sample")
+    writeWav("\(outDir)/bgm_\(song.name)_energy.wav", left: energy.l, right: energy.r)
 }
 for name in ["jet_whoosh", "jet_whoosh_soft", "glide_wind", "copter_spin", "balloon_hiss", "balloon_inflate", "cloud_whoosh"] {
     writeWav("\(outDir)/vehicle_\(name).wav", left: vehicleLoop(name), right: nil)
